@@ -34,12 +34,14 @@ export class SubmissionsProcessor extends WorkerHost {
 
 			await this.submissionService.update(submission.id, {
 				status: result.success ? "COMPLETED" : "ERROR",
+				output: result.output,
 			});
 
 			return result;
 		} catch (err) {
 			await this.submissionService.update(submission.id, {
 				status: "ERROR",
+				output: err.message,
 			});
 			throw err;
 		}

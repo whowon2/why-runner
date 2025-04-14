@@ -3,5 +3,6 @@ import { CreateSubmissionDto } from "./create-submission.dto";
 import { SubmissionStatus } from "@prisma/client";
 
 export class UpdateSubmissionDto extends PartialType(CreateSubmissionDto) {
-	status: SubmissionStatus;
+	status?: SubmissionStatus;
+	output?: string;
 }
