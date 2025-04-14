@@ -14,10 +14,12 @@ datasource db {
 }
 
 model Problem {
-  id        String     @id @default(uuid())
-  title     String
-  inputs    String[]
-  outputs   String[]
+  id      String   @id @default(uuid())
+  title   String
+  inputs  String[]
+  outputs String[]
+
+  submissions Submission[]
 }
 
 model Submission {
@@ -29,6 +31,8 @@ model Submission {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Problem   Problem @relation(fields: [problemId], references: [id])
+  problemId String
 }
 
 enum Language {

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # Read code and testcases from /app
 if [ ! -f code.cpp ]; then
   echo "Missing code.cpp" >&2
@@ -12,6 +13,10 @@ if [ $? -ne 0 ]; then
   echo "Compilation failed" >&2
   exit 1
 fi
+
+echo "files"
+ls
+echo "end "
 
 # Loop over input files
 for input in input*.txt; do

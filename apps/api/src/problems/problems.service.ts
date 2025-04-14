@@ -39,4 +39,10 @@ export class ProblemsService {
 			where: { id },
 		});
 	}
+
+	async delete(id: string): Promise<Problem> {
+		return this.database.problem.delete({
+			where: { id },
+		});
+	}
 }

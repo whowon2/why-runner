@@ -1,5 +1,5 @@
 import { Language } from "@prisma/client";
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateSubmissionDto {
 	@IsNotEmpty()
@@ -7,4 +7,8 @@ export class CreateSubmissionDto {
 
 	@IsNotEmpty()
 	code: string;
+
+	@IsNotEmpty()
+	@IsString()
+	problemId: string;
 }

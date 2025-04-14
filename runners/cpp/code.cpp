@@ -1,11 +1,3 @@
 #include <iostream>
 
-int main() {
-    int a,b;
-
-    std::cin >> a >> b;
-
-    int sum = a + b;
-
-    std::cout << sum << std::endl;
-}
+int main() { int a, b; std::cin >> a >> b; std::cout << a + b << std::endl; }

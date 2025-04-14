@@ -3,57 +3,46 @@ import { promisify } from "node:util";
 import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Job } from "bullmq";
 import { SubmissionsService } from "./submissions.service";
-import { Language } from "@prisma/client";
+import { Language, Submission } from "@prisma/client";
+import { runCppJudge } from "src/runners/cpp-runner";
+import { ProblemsService } from "src/problems/problems.service";
 
 const asyncExec = promisify(exec);
 
 @Processor("submission")
 export class SubmissionsProcessor extends WorkerHost {
-	constructor(private readonly submissionService: SubmissionsService) {
+	constructor(
+		private readonly submissionService: SubmissionsService,
+		private readonly problemService: ProblemsService,
+	) {
 		super();
 	}
 
 	async process(job: Job) {
-		if (!job.id) {
-			throw new Error("Job ID is missing");
-		}
+		const submission: Submission = job.data;
 
 		console.log(`🚀 Processing submission ${job.id}`);
 
-		const { language, code, id } = job.data as {
-			language: string;
-			code: string;
-			id: string;
-		};
+		const problem = await this.problemService.findOne(submission.problemId);
+
+		if (!problem) {
+			throw new Error("Problem not found");
+		}
 
 		try {
-			const output = await this.runCode(language, code);
+			const result = await runCppJudge(problem, submission);
 
-			// ✅ Update submission as SUCCESS
-			await this.submissionService.update(id, {
-				status: "COMPLETED",
+			await this.submissionService.update(submission.id, {
+				status: result.success ? "COMPLETED" : "ERROR",
 			});
 
-			return { success: true, output };
-		} catch (error) {
-			// ❌ Update submission as ERROR
-			await this.submissionService.update(id, {
+			return result;
+		} catch (err) {
+			await this.submissionService.update(submission.id, {
 				status: "ERROR",
 			});
-
-			throw error;
+			throw err;
 		}
-	}
-
-	async runCode(language: string, code: string): Promise<string> {
-		const command = `docker run --rm -i ${language} ${code}`;
-		const { stdout, stderr } = await asyncExec(command);
-
-		if (stderr) {
-			throw new Error(stderr);
-		}
-
-		return stdout;
 	}
 
 	@OnWorkerEvent("completed")

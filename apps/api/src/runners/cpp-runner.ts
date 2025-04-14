@@ -1,0 +1,36 @@
+import { Problem, Submission } from "@prisma/client";
+import { exec } from "node:child_process";
+import { mkdir, readdir, writeFile } from "node:fs/promises";
+import { promisify } from "node:util";
+import { of } from "rxjs";
+
+const asyncExec = promisify(exec);
+
+export async function runCppJudge(problem: Problem, submission: Submission) {
+	const dir = `/tmp/judge-${submission.id}`;
+	await mkdir(dir, { recursive: true });
+
+	await writeFile(`${dir}/code.cpp`, submission.code);
+
+	for (let i = 0; i < problem.inputs.length; i++) {
+		await writeFile(`${dir}/input${i}.txt`, problem.inputs[i]);
+		await writeFile(`${dir}/expected${i}.txt`, `${problem.outputs[i]}\n`);
+	}
+
+	console.log({ dir });
+	console.log("files created");
+
+	const command = `docker run --rm -v ${dir}:/app/data cpp`;
+
+	try {
+		const { stdout, stderr } = await asyncExec(command);
+
+		console.log({ stdout, stderr });
+
+		return { success: true, output: stdout };
+	} catch (err: any) {
+		console.error(err);
+
+		return { success: false, error: err.stderr || err.message };
+	}
+}
