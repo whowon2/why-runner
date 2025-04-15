@@ -5,6 +5,7 @@ import { DatabaseService } from "src/database/database.service";
 import { BullModule } from "@nestjs/bullmq";
 import { SubmissionsProcessor } from "./submissions.processor";
 import { ProblemsService } from "src/problems/problems.service";
+import { FileLogger } from "src/logger/file-logger";
 
 @Module({
 	controllers: [SubmissionsController],
@@ -12,6 +13,7 @@ import { ProblemsService } from "src/problems/problems.service";
 		SubmissionsService,
 		DatabaseService,
 		SubmissionsProcessor,
+		{ provide: FileLogger, useValue: new FileLogger("submissions") },
 		ProblemsService,
 	],
 	imports: [
