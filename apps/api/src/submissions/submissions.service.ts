@@ -1,63 +1,79 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { CreateSubmissionDto } from "./dto/create-submission.dto";
-import { UpdateSubmissionDto } from "./dto/update-submission.dto";
-import { DatabaseService } from "src/database/database.service";
-import { InjectQueue } from "@nestjs/bullmq";
-import { Queue } from "bullmq";
-import { FileLogger } from "src/logger/file-logger";
-import { ProblemsService } from "src/problems/problems.service";
-import { Problem, Submission } from "@prisma/client";
+import { InjectQueue } from '@nestjs/bullmq';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { prisma, PrismaClient, Problem, Submission } from '@repo/db';
+import { Queue } from 'bullmq';
+import { CreateSubmissionDto } from './dto/create-submission.dto';
+import { UpdateSubmissionDto } from './dto/update-submission.dto';
+import { FileLogger } from '../logger/file-logger';
+import { ProblemsService } from '../problems/problems.service';
 
 type SubmissionData = {
-	submission: Submission;
-	problem: Problem;
+  submission: Submission;
+  problem: Problem;
 };
 
 @Injectable()
 export class SubmissionsService {
-	constructor(
-		@InjectQueue("submission")
-		private readonly submissionQueue: Queue<SubmissionData>,
-		private readonly database: DatabaseService,
-		private readonly logger: FileLogger,
-		private readonly problemService: ProblemsService,
-	) {}
+  database: PrismaClient = prisma;
 
-	async create(dto: CreateSubmissionDto) {
-		const problem = await this.problemService.findOne(dto.problemId);
+  constructor(
+    @InjectQueue('submission')
+    private readonly submissionQueue: Queue<SubmissionData>,
+    private readonly logger: FileLogger,
+    private readonly problemService: ProblemsService,
+  ) {}
 
-		if (!problem) {
-			throw new HttpException("Problem not found", HttpStatus.NOT_FOUND);
-		}
+  async create(dto: CreateSubmissionDto) {
+    const problem = await this.problemService.findOne(dto.problemId);
 
-		const submission = await this.database.submission.create({ data: dto });
+    if (!problem) {
+      throw new HttpException('Problem not found', HttpStatus.NOT_FOUND);
+    }
 
-		this.logger.log("Service", `Submission created: ${submission.id}`);
+    const submission = await prisma.submission.create({ data: dto });
 
-		const queue = await this.submissionQueue.add(submission.id, {
-			submission,
-			problem,
-		});
+    this.logger.log('Service', `Submission created: ${submission.id}`);
 
-		return submission;
-	}
+    const queue = await this.submissionQueue.add(submission.id, {
+      submission,
+      problem,
+    });
 
-	findAll() {
-		return this.database.submission.findMany();
-	}
+    return submission;
+  }
 
-	findOne(id: string) {
-		return this.database.submission.findUnique({ where: { id } });
-	}
+  findAll() {
+    return this.database.submission.findMany();
+  }
 
-	update(id: string, updateSubmissionDto: UpdateSubmissionDto) {
-		return this.database.submission.update({
-			where: { id },
-			data: updateSubmissionDto,
-		});
-	}
+  async findOne(id: string): Promise<Submission> {
+    const submission = await this.database.submission.findUnique({
+      where: { id },
+    });
 
-	remove(id: string) {
-		return this.database.submission.delete({ where: { id } });
-	}
+    if (!submission) {
+      throw new HttpException('Submission not found', HttpStatus.NOT_FOUND);
+    }
+
+    return submission;
+  }
+
+  async update(id: string, updateSubmissionDto: UpdateSubmissionDto) {
+    const submission = await this.database.submission.findUnique({
+      where: { id },
+    });
+
+    if (!submission) {
+      throw new HttpException('Submission not found', HttpStatus.NOT_FOUND);
+    }
+
+    return this.database.submission.update({
+      where: { id },
+      data: updateSubmissionDto,
+    });
+  }
+
+  async remove(id: string) {
+    return this.database.submission.delete({ where: { id } });
+  }
 }
