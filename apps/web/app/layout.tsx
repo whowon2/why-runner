@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Source_Code_Pro } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 const source_code_pro = Source_Code_Pro({
   variable: "--font-source-code-pro",
@@ -22,6 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${source_code_pro.variable} antialiased`}>
         {children}
+        <Toaster />
       </body>
     </html>
   );
