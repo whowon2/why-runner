@@ -8,11 +8,7 @@ export class ProblemsService {
 
   async create(input: CreateProblemDto): Promise<Problem> {
     return this.database.problem.create({
-      data: {
-        title: input.title,
-        inputs: input.inputs,
-        outputs: input.outputs,
-      },
+      data: input,
     });
   }
 

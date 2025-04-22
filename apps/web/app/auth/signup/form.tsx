@@ -37,7 +37,7 @@ const formSchema = z.object({
   }),
 });
 
-export function SignupForm({ redirectUrl }: { redirectUrl?: string }) {
+export function SignupForm({ callbackUrl }: { callbackUrl?: string }) {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -56,12 +56,13 @@ export function SignupForm({ redirectUrl }: { redirectUrl?: string }) {
         values,
       );
 
-      router.push(redirectUrl || "/");
+      router.push(callbackUrl || "/");
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast.error(error.message);
+        toast.error(
+          error.response?.data.message || "Unexpected error occurred",
+        );
       } else {
-        console.log(error);
         toast.error("Unexpected error occurred");
       }
     }

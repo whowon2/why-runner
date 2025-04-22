@@ -1,12 +1,16 @@
-import { IsNotEmpty, Min } from "class-validator";
+import { Difficulty } from '@repo/db';
+import { IsNotEmpty, IsString, Min } from 'class-validator';
 
 export class CreateProblemDto {
-	@IsNotEmpty()
-	title: string;
+  @IsString()
+  title: string;
 
-	@IsNotEmpty()
-	inputs: string[];
+  @IsNotEmpty()
+  inputs: string[];
 
-	@IsNotEmpty()
-	outputs: string[];
+  @IsNotEmpty()
+  outputs: string[];
+
+  @IsString()
+  difficulty: Difficulty;
 }

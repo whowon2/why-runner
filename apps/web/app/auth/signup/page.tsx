@@ -15,14 +15,14 @@ export default async function SignupPage({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
-  const redirectUrl = (await searchParams).redirectUrl;
+  const callbackUrl = (await searchParams).callbackUrl;
 
   return (
-    <div className="flex min-h-screen justify-center items-center">
+    <div className="flex justify-center items-center">
       <Card className="w-full max-w-sm">
         <CardHeader>Signup</CardHeader>
         <CardContent>
-          <SignupForm redirectUrl={redirectUrl} />
+          <SignupForm callbackUrl={callbackUrl} />
         </CardContent>
       </Card>
     </div>
