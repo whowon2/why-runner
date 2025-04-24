@@ -1,12 +1,12 @@
-import { registerAs } from '@nestjs/config';
-import { JwtModuleOptions } from '@nestjs/jwt';
+import { registerAs } from "@nestjs/config";
+import { JwtModuleOptions } from "@nestjs/jwt";
 
 export default registerAs(
-  'jwt',
-  (): JwtModuleOptions => ({
-    secret: process.env.JWT_SECRET,
-    signOptions: {
-      expiresIn: 60,
-    },
-  }),
+	"jwt",
+	(): JwtModuleOptions => ({
+		secret: process.env.JWT_SECRET,
+		signOptions: {
+			expiresIn: 60,
+		},
+	}),
 );

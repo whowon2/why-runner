@@ -1,46 +1,46 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { SubmissionsService } from './submissions.service';
-import { CreateSubmissionDto } from './dto/create-submission.dto';
-import { UpdateSubmissionDto } from './dto/update-submission.dto';
-import { Submission } from '@repo/db';
+	Controller,
+	Get,
+	Post,
+	Body,
+	Patch,
+	Param,
+	Delete,
+} from "@nestjs/common";
+import { SubmissionsService } from "./submissions.service";
+import { CreateSubmissionDto } from "./dto/create-submission.dto";
+import { UpdateSubmissionDto } from "./dto/update-submission.dto";
+import { Submission } from "@repo/db";
 
-@Controller('submissions')
+@Controller("submissions")
 export class SubmissionsController {
-  constructor(private readonly submissionsService: SubmissionsService) {}
+	constructor(private readonly submissionsService: SubmissionsService) {}
 
-  @Post()
-  create(@Body() createSubmissionDto: CreateSubmissionDto) {
-    return this.submissionsService.create(createSubmissionDto);
-  }
+	@Post()
+	create(@Body() createSubmissionDto: CreateSubmissionDto) {
+		return this.submissionsService.create(createSubmissionDto);
+	}
 
-  @Get()
-  findAll() {
-    return this.submissionsService.findAll();
-  }
+	@Get()
+	findAll() {
+		return this.submissionsService.findAll();
+	}
 
-  @Get(':id')
-  findOne(@Param('id') id: string): Promise<Submission> {
-    return this.submissionsService.findOne(id);
-  }
+	@Get(":id")
+	findOne(@Param("id") id: string): Promise<Submission> {
+		return this.submissionsService.findOne(id);
+	}
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateSubmissionDto: UpdateSubmissionDto,
-  ) {
-    return this.submissionsService.update(id, updateSubmissionDto);
-  }
+	@Patch(":id")
+	update(
+		@Param("id") id: string,
+		@Body() updateSubmissionDto: UpdateSubmissionDto,
+	) {
+		return this.submissionsService.update(id, updateSubmissionDto);
+	}
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.submissionsService.remove(id);
-  }
+	@Delete(":id")
+	remove(@Param("id") id: string) {
+		return this.submissionsService.remove(id);
+	}
 }
