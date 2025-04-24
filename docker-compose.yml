@@ -1,0 +1,43 @@
+services:
+  # api:
+  #   container_name: runner-api
+  #   build:
+  #     context: .
+  #     dockerfile: apps/api/Dockerfile
+  #   ports:
+  #     - "4000:4000"
+  #   depends_on:
+  #     - db
+  #     - redis
+  #   environment:
+  #     DATABASE_URL: "postgres://postgres:postgres@db:5432/runner"
+  #     REDIS_URL: "redis://redis:6379"
+  #
+  db:
+    image: postgres:17.4
+    container_name: runner-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: runner
+
+  redis:
+    container_name: runner-redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+    command: redis-server --appendonly yes
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+      start_period: 10s
+
+    restart: always
