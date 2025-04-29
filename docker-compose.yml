@@ -13,6 +13,7 @@ services:
   #     DATABASE_URL: "postgres://postgres:postgres@db:5432/runner"
   #     REDIS_URL: "redis://redis:6379"
   #
+
   db:
     image: postgres:17.4
     container_name: runner-db
@@ -41,3 +42,8 @@ services:
       start_period: 10s
 
     restart: always
+
+  cpp:
+    build:
+      context: runners/cpp
+      dockerfile: Dockerfile

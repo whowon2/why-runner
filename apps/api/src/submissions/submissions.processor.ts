@@ -6,7 +6,6 @@ import { promisify } from "node:util";
 import { SubmissionsService } from "./submissions.service";
 import { runCppJudge } from "../runners/cpp-runner";
 import { ProblemsService } from "../problems/problems.service";
-import { FileLogger } from "../logger/file-logger";
 
 const asyncExec = promisify(exec);
 
@@ -15,7 +14,6 @@ export class SubmissionsProcessor extends WorkerHost {
 	constructor(
 		private readonly submissionService: SubmissionsService,
 		private readonly problemService: ProblemsService,
-		private readonly logger: FileLogger,
 	) {
 		super();
 	}
@@ -25,8 +23,6 @@ export class SubmissionsProcessor extends WorkerHost {
 			submission: Submission;
 			problem: Problem;
 		};
-
-		this.logger.log("Processor", `🚀 Processing submission ${job.id}`);
 
 		try {
 			const { output } = await runCppJudge(problem, submission);
@@ -49,16 +45,14 @@ export class SubmissionsProcessor extends WorkerHost {
 
 	@OnWorkerEvent("completed")
 	onCompleted(job: Job, result: { output: string }) {
-		this.logger.log(
-			"Processor",
+		console.log(
 			`✅ Submission ${job.id} processed successfully`,
 		);
-		this.logger.log("Processor", `Output: ${result.output}`);
+		console.log("Processor", `Output: ${result.output}`);
 	}
 
 	@OnWorkerEvent("failed") onFailed(job: Job, err: Error) {
-		this.logger.error(
-			"Processor",
+		console.error(
 			`❌ Submission ${job.id} failed: ${err.message}`,
 		);
 	}

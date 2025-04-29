@@ -36,6 +36,39 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Contest       Contest[]       @relation("ContestsCreated")
+  UserOnContest UserOnContest[]
+}
+
+model Contest {
+  id   String @id @default(uuid())
+  name String
+
+  start DateTime
+  end   DateTime
+
+  startRegistration DateTime
+  endRegistration   DateTime
+
+  CreatedBy   User   @relation("ContestsCreated", fields: [createdById], references: [id])
+  createdById String
+
+  Problems Problem[]
+
+  UserOnContest UserOnContest[]
+}
+
+model UserOnContest {
+  id        String @id @default(cuid())
+  userId    String
+  contestId String
+  score     Int    @default(0)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contestId])
 }
 
 model Problem {
@@ -47,6 +80,8 @@ model Problem {
   outputs     String[]
 
   submissions Submission[]
+  Contest     Contest?     @relation(fields: [contestId], references: [id])
+  contestId   String?
 }
 
 model Submission {

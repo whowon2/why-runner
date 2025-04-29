@@ -1,11 +1,10 @@
 import { InjectQueue } from "@nestjs/bullmq";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { prisma, PrismaClient, Problem, Submission } from "@repo/db";
+import { PrismaClient, Problem, Submission, prisma } from "@repo/db";
 import { Queue } from "bullmq";
+import { ProblemsService } from "../problems/problems.service";
 import { CreateSubmissionDto } from "./dto/create-submission.dto";
 import { UpdateSubmissionDto } from "./dto/update-submission.dto";
-import { FileLogger } from "../logger/file-logger";
-import { ProblemsService } from "../problems/problems.service";
 
 type SubmissionData = {
 	submission: Submission;
@@ -19,7 +18,6 @@ export class SubmissionsService {
 	constructor(
 		@InjectQueue("submission")
 		private readonly submissionQueue: Queue<SubmissionData>,
-		private readonly logger: FileLogger,
 		private readonly problemService: ProblemsService,
 	) {}
 
@@ -31,8 +29,6 @@ export class SubmissionsService {
 		}
 
 		const submission = await prisma.submission.create({ data: dto });
-
-		this.logger.log("Service", `Submission created: ${submission.id}`);
 
 		const queue = await this.submissionQueue.add(submission.id, {
 			submission,
@@ -73,7 +69,4 @@ export class SubmissionsService {
 		});
 	}
 
-	async remove(id: string) {
-		return this.database.submission.delete({ where: { id } });
-	}
 }
