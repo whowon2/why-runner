@@ -1,19 +1,15 @@
 import { Module } from "@nestjs/common";
 import { SubmissionsService } from "./submissions.service";
 import { SubmissionsController } from "./submissions.controller";
-import { DatabaseService } from "src/database/database.service";
 import { BullModule } from "@nestjs/bullmq";
 import { SubmissionsProcessor } from "./submissions.processor";
-import { ProblemsService } from "src/problems/problems.service";
-import { FileLogger } from "src/logger/file-logger";
+import { ProblemsService } from "../problems/problems.service";
 
 @Module({
 	controllers: [SubmissionsController],
 	providers: [
 		SubmissionsService,
-		DatabaseService,
 		SubmissionsProcessor,
-		{ provide: FileLogger, useValue: new FileLogger("submissions") },
 		ProblemsService,
 	],
 	imports: [

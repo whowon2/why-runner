@@ -10,6 +10,7 @@ import {
 import { SubmissionsService } from "./submissions.service";
 import { CreateSubmissionDto } from "./dto/create-submission.dto";
 import { UpdateSubmissionDto } from "./dto/update-submission.dto";
+import { Submission } from "@repo/db";
 
 @Controller("submissions")
 export class SubmissionsController {
@@ -26,7 +27,7 @@ export class SubmissionsController {
 	}
 
 	@Get(":id")
-	findOne(@Param("id") id: string) {
+	findOne(@Param("id") id: string): Promise<Submission> {
 		return this.submissionsService.findOne(id);
 	}
 
@@ -36,10 +37,5 @@ export class SubmissionsController {
 		@Body() updateSubmissionDto: UpdateSubmissionDto,
 	) {
 		return this.submissionsService.update(id, updateSubmissionDto);
-	}
-
-	@Delete(":id")
-	remove(@Param("id") id: string) {
-		return this.submissionsService.remove(id);
 	}
 }

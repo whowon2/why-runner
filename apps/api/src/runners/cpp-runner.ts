@@ -1,4 +1,4 @@
-import { Problem, Submission } from "@prisma/client";
+import { Problem, Submission } from "@repo/db";
 import { exec } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
 import { promisify } from "node:util";

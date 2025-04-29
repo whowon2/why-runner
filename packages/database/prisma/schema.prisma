@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+model User {
+  id       String @id @default(uuid())
+  email    String @unique
+  name     String
+  password String
+
+  role               Role    @default(USER)
+  hashedRefreshToken String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Contest       Contest[]       @relation("ContestsCreated")
+  UserOnContest UserOnContest[]
+}
+
+model Contest {
+  id   String @id @default(uuid())
+  name String
+
+  start DateTime
+  end   DateTime
+
+  startRegistration DateTime
+  endRegistration   DateTime
+
+  CreatedBy   User   @relation("ContestsCreated", fields: [createdById], references: [id])
+  createdById String
+
+  Problems Problem[]
+
+  UserOnContest UserOnContest[]
+}
+
+model UserOnContest {
+  id        String @id @default(cuid())
+  userId    String
+  contestId String
+  score     Int    @default(0)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contestId])
+}
+
+model Problem {
+  id          String     @id @default(uuid())
+  title       String
+  description String
+  difficulty  Difficulty
+  inputs      String[]
+  outputs     String[]
+
+  submissions Submission[]
+  Contest     Contest?     @relation(fields: [contestId], references: [id])
+  contestId   String?
+}
+
+model Submission {
+  id       String           @id @default(uuid())
+  language Language
+  code     String
+  status   SubmissionStatus @default(PENDING)
+  output   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Problem   Problem  @relation(fields: [problemId], references: [id])
+  problemId String
+}
+
+enum Language {
+  c
+  cpp
+  java
+  python
+  rust
+}
+
+enum SubmissionStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  ERROR
+}
