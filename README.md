@@ -1,5 +1,9 @@
 # Why Runner
 
+- [ ] WebSockets
+- [ ] Team
+- [ ] Contest
+
 Run the following command:
 
 To build all apps and packages, run the following command:
