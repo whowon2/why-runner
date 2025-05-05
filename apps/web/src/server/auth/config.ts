@@ -43,7 +43,7 @@ export const authConfig = {
       async authorize(credentials) {
         try {
           const res = await fetch(
-            `${env.NEXT_PUBLIC_BACKEND_URL}/api/auth/signin`,
+            `${env.NEXT_PUBLIC_BACKEND_URL}/auth/signin`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -56,6 +56,7 @@ export const authConfig = {
 
           if (res.ok) {
             const user = await res.json();
+            console.log(user);
             return user;
           }
 

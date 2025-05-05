@@ -16,6 +16,26 @@ services:
       JWT_SECRET: "pnUc6rhS2sLe9u2cj8Bjo+d7r+vS2pimxYssaUJ76bw="
       JWT_EXPIRES_IN: 60
 
+  web:
+    container_name: runner-web
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        AUTH_SECRET: "your secret"
+        DATABASE_URL: "postgresql://postgres:postgres@db:5432/runner?schema=public"
+        NEXT_PUBLIC_BACKEND_URL: "http://localhost:4000/api"
+        AUTH_TRUST_HOST: "true"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    environment:
+      AUTH_SECRET: "your secret"
+      NEXT_PUBLIC_BACKEND_URL: "http://localhost:4000/api"
+      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/runner?schema=public"
+    env_file: apps/web/.env
+
   db:
     image: postgres:17.4
     container_name: runner-db
@@ -45,9 +65,9 @@ services:
 
     restart: always
 
-  # cpp:
-  #   image: runner-cpp
-  #   build:
-  #     context: runners/cpp
-  #     dockerfile: Dockerfile
-  #   command:
+  cpp:
+    image: runner-cpp
+    build:
+      context: runners/cpp
+      dockerfile: Dockerfile
+    command:

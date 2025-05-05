@@ -7,8 +7,6 @@ import { ModeToggle } from "./theme";
 export async function Header() {
   const session = await auth();
 
-  console.log(session);
-
   return (
     <header className="flex items-center justify-between border-b p-4">
       <Link href={"/"}>

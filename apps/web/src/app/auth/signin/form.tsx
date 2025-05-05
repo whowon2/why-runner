@@ -42,10 +42,14 @@ export function SigninForm({ callbackUrl }: { callbackUrl: string }) {
       redirect: false,
     });
 
-    if (res?.error) {
+    if (!res || res?.error) {
       toast.error("Invalid email or password");
-    } else if (res?.ok) {
-      router.push(callbackUrl);
+      return;
+    }
+
+    if (res.ok) {
+      router.push(callbackUrl ?? "");
+      router.refresh();
     }
   }
 
