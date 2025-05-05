@@ -15,24 +15,23 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+sum = 0
+total = 0
+
 # Loop over input files
 for input in input*.txt; do
   idx="${input//[!0-9]/}" # extract index
   expected="expected${idx}.txt"
-
-  echo "Running test case #$idx..."
 
   # Run the executable with input
   ./code.out < "$input" > "output${idx}.txt"
 
   # Compare output
   if diff -q "output${idx}.txt" "$expected" >/dev/null; then
-    echo "✅ Test #$idx passed"
-  else
-    echo "❌ Test #$idx failed"
-    echo "Expected:"
-    cat "$expected"
-    echo "Got:"
-    cat "output${idx}.txt"
+    sum=$((sum + 1))
   fi
+
+  total=$((total + 1))
 done
+
+echo "$sum/$total"

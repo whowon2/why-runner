@@ -180,7 +180,7 @@ export function UploadSubmission({ problem }: { problem: Problem }) {
                 setCode(c);
               }
             }}
-            height={"60vh"}
+            height={"40vh"}
             width={"100%"}
           />
         </CardContent>
