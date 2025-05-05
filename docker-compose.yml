@@ -44,6 +44,8 @@ services:
     restart: always
 
   cpp:
+    image: runner-cpp
     build:
       context: runners/cpp
       dockerfile: Dockerfile
+    command:
