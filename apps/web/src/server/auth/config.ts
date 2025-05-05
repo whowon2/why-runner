@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import {
   CredentialsSignin,
@@ -41,14 +42,17 @@ export const authConfig = {
       },
       async authorize(credentials) {
         try {
-          const res = await fetch("http://localhost:4000/api/auth/signin", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: credentials.email,
-              password: credentials.password,
-            }),
-          });
+          const res = await fetch(
+            `${env.NEXT_PUBLIC_BACKEND_URL}/api/auth/signin`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: credentials.email,
+                password: credentials.password,
+              }),
+            },
+          );
 
           if (res.ok) {
             const user = await res.json();

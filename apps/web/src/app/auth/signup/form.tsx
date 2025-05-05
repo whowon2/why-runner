@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { env } from "@/env";
 
 const formSchema = z.object({
   email: z.string().min(2).max(50),
@@ -37,7 +38,7 @@ export function SignupForm({ callbackUrl }: { callbackUrl: string }) {
   const router = useRouter();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const res = await fetch("http://localhost:4000/api/auth/signup", {
+    const res = await fetch(`${env.NEXT_PUBLIC_BACKEND_URL}/api/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
