@@ -38,7 +38,7 @@ export function SignupForm({ callbackUrl }: { callbackUrl: string }) {
   const router = useRouter();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const res = await fetch(`${env.NEXT_PUBLIC_BACKEND_URL}/auth/signup`, {
+    const res = await fetch(`${env.BACKEND_URL}/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

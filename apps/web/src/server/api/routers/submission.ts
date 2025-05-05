@@ -15,7 +15,7 @@ export const SubmissionRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createSubmissionInput)
     .mutation(async ({ ctx, input }) => {
-      const res = await fetch(`${env.NEXT_PUBLIC_BACKEND_URL}/submissions`, {
+      const res = await fetch(`${env.BACKEND_URL}/submissions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -23,11 +23,11 @@ RUN apt-get update -y && apt-get install openssl -y
 # Build-time environment variables
 ARG AUTH_SECRET
 ARG DATABASE_URL
-ARG NEXT_PUBLIC_BACKEND_URL
+ARG BACKEND_URL
 
 ENV AUTH_SECRET=$AUTH_SECRET
 ENV DATABASE_URL=$DATABASE_URL
-ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
+ENV BACKEND_URL=$BACKEND_URL
 
 COPY --from=builder /app/out/json/ .
 RUN bun install

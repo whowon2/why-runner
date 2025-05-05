@@ -24,7 +24,7 @@ services:
       args:
         AUTH_SECRET: "your secret"
         DATABASE_URL: "postgresql://postgres:postgres@db:5432/runner?schema=public"
-        NEXT_PUBLIC_BACKEND_URL: "http://localhost:4000/api"
+        BACKEND_URL: "http://localhost:4000/api"
         AUTH_TRUST_HOST: "true"
     ports:
       - "3000:3000"
@@ -32,7 +32,7 @@ services:
       - api
     environment:
       AUTH_SECRET: "your secret"
-      NEXT_PUBLIC_BACKEND_URL: "http://localhost:4000/api"
+      BACKEND_URL: "http://localhost:4000/api"
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/runner?schema=public"
     env_file: apps/web/.env
 
