@@ -31,17 +31,17 @@ export default function Profile() {
     },
   });
 
-  const { mutate: updateUser } = api.user.update.useMutation();
+  // const { mutate: updateUser } = api.user.update.useMutation();
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    updateUser(values, {
-      onSuccess() {
-        toast("Profile updated");
-      },
-      onError() {
-        toast("Failed to update profile");
-      },
-    });
+    //   updateUser(values, {
+    //     onSuccess() {
+    //       toast("Profile updated");
+    //     },
+    //     onError() {
+    //       toast("Failed to update profile");
+    //     },
+    //   });
   }
 
   return (
