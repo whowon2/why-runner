@@ -1,15 +1,17 @@
 import { auth } from "@/server/auth";
 import Profile from "./profile";
+import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
-	const session = await auth();
+  const session = await auth();
 
-	console.log(session);
+  if (!session) {
+    redirect("/auth/signin?callbackUrl=profile");
+  }
 
-	return (
-		<div className="flex p-8">
-			<h1>Profile</h1>
-			<Profile />
-		</div>
-	);
+  return (
+    <div className="p-8">
+      <Profile session={session} />
+    </div>
+  );
 }

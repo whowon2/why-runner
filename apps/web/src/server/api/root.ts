@@ -1,7 +1,7 @@
 import { contestRouter } from "@/server/api/routers/contest";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 import { problemsRouter } from "./routers/problems";
-import { SubmissionRouter } from "./routers/submission";
+import { submissionRouter } from "./routers/submission";
 import { userRouter } from "./routers/user";
 
 /**
@@ -12,7 +12,7 @@ import { userRouter } from "./routers/user";
 export const appRouter = createTRPCRouter({
   contest: contestRouter,
   problem: problemsRouter,
-  submission: SubmissionRouter,
+  submission: submissionRouter,
   user: userRouter,
 });
 

@@ -27,6 +27,7 @@ import type { Session } from "next-auth";
 import Link from "next/link";
 
 export function AvatarButton({ session }: { session: Session }) {
+  console.log({ session });
   const initials = session.user.name
     .split(" ")
     .map((name) => name[0])

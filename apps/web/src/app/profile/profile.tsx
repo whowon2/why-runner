@@ -1,91 +1,41 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 import { api } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { LoaderCircle } from "lucide-react";
+import type { Session } from "next-auth";
+import { UpdateForm } from "./form";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { signOut } from "next-auth/react";
 
-const formSchema = z.object({
-  name: z.string(),
-  image: z.string().url(),
-});
-
-export default function Profile() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      image: "",
-    },
+export default function Profile({ session }: { session: Session }) {
+  const { data, isPending } = api.user.get.useQuery({
+    userId: session.user.id,
   });
 
-  // const { mutate: updateUser } = api.user.update.useMutation();
+  if (isPending) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Profile</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-8">
+          <Skeleton className="w-full h-10 border-card flex items-center justify-center" />
+          <Skeleton className="w-full h-10 border-card flex items-center justify-center" />
+          <Skeleton className="w-50 h-10 border-card flex items-center justify-center" />
+        </CardContent>
+      </Card>
+    );
+  }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    //   updateUser(values, {
-    //     onSuccess() {
-    //       toast("Profile updated");
-    //     },
-    //     onError() {
-    //       toast("Failed to update profile");
-    //     },
-    //   });
+  if (!data) {
+    signOut();
+    return;
   }
 
   return (
-    <div className="flex p-8">
-      <h1>Profile</h1>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input placeholder="shadcn" {...field} />
-                </FormControl>
-                <FormDescription>
-                  This is your public display name.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Avatar URL</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="https://example.com/avatar.png"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>This is your public avatar.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form>
+    <div className="w-full flex flex-col gap-8">
+      <UpdateForm user={data} />
     </div>
   );
 }

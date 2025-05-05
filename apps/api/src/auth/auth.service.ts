@@ -34,9 +34,7 @@ export class AuthService {
     });
 
     return {
-      id: dto.id,
-      name: dto.name,
-      role: dto.role,
+      ...dto,
       accessToken,
       refreshToken,
     };
@@ -67,7 +65,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid password');
     }
 
-    return { id: user.id, name: user.name, role: user.role };
+    return {
+      id: user.id,
+      name: user.name,
+      role: user.role,
+      image: user.image,
+      email: user.email,
+    };
   }
 
   async generateTokens(userId: string) {

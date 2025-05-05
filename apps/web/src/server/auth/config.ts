@@ -17,6 +17,8 @@ declare module "next-auth" {
       id: string;
       name: string;
       role: string;
+      email: string;
+      image: string;
     } & DefaultSession["user"];
     accessToken: string;
     refreshToken: string;
@@ -66,10 +68,13 @@ export const authConfig = {
   ],
   callbacks: {
     async jwt({ token, user }) {
+      console.log("jwt", user);
       if (user) {
         token.id = user.id;
         token.name = user.name;
         token.role = user.role;
+        token.email = user.email;
+        token.image = user.image;
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
       }
@@ -79,6 +84,8 @@ export const authConfig = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.name = token.name as string;
+        session.user.email = token.email as string;
+        session.user.image = token.image as string;
         session.user.role = token.role as string;
       }
       session.accessToken = token.accessToken as string;

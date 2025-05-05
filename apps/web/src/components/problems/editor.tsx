@@ -16,15 +16,18 @@ import Editor from "@monaco-editor/react";
 import type { Language, Problem } from "@repo/db";
 import { FilePlus2, Save, Upload } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-export function UploadSubmission({ problem }: { problem: Problem }) {
+export function UploadCode({ problem }: { problem: Problem }) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState<Language | null>(null);
-  const { mutate } = api.submission.create.useMutation();
+  const { mutate, isPending } = api.submission.create.useMutation();
   const { theme } = useTheme();
+  const utils = api.useUtils();
+  const router = useRouter();
 
   const extensions = {
     rust: ["rs"],
@@ -57,9 +60,10 @@ export function UploadSubmission({ problem }: { problem: Problem }) {
       {
         onSuccess: () => {
           toast.success("Code Submitted");
+          utils.submission.find.invalidate({ problemId: problem.id });
         },
         onError: (error) => {
-          toast.error("Failed to submit code");
+          toast.error("Failed to submit code", { description: error.message });
         },
       },
     );
@@ -130,61 +134,59 @@ export function UploadSubmission({ problem }: { problem: Problem }) {
   }, [code, problem.id, language]);
 
   return (
-    <div className="flex w-full flex-col gap-4">
-      <div className="grid w-full items-center gap-1.5">
-        <div className="flex justify-between gap-2">
-          <Select onValueChange={handleLanguageChange}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Language" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="rust">rust</SelectItem>
-              <SelectItem value="cpp">cpp</SelectItem>
-              <SelectItem value="java">java</SelectItem>
-              <SelectItem value="python">python</SelectItem>
-            </SelectContent>
-          </Select>
+    <Card className="w-full max-w-7xl">
+      <CardContent className="flex flex-col gap-4 w-full">
+        <div className="grid w-full items-center gap-1.5">
+          <div className="flex justify-between gap-2">
+            <Select onValueChange={handleLanguageChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="rust">rust</SelectItem>
+                <SelectItem value="cpp">cpp</SelectItem>
+                <SelectItem value="java">java</SelectItem>
+                <SelectItem value="python">python</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Input
-            id="picture"
-            type="file"
-            className="w-full hidden"
-            onChange={handleFileChange}
-            ref={fileRef}
-          />
-          <Button
-            variant={"outline"}
-            onClick={() => {
-              fileRef.current?.click();
-            }}
-          >
-            <FilePlus2 />
-          </Button>
-          <Button variant={"outline"} onClick={handleSaveCode}>
-            <Save />
-          </Button>
-          <Button onClick={handleUpload}>
-            <Upload />
-          </Button>
+            <Input
+              id="picture"
+              type="file"
+              className="w-full hidden"
+              onChange={handleFileChange}
+              ref={fileRef}
+            />
+            <Button
+              variant={"outline"}
+              onClick={() => {
+                fileRef.current?.click();
+              }}
+            >
+              <FilePlus2 />
+            </Button>
+            <Button variant={"outline"} onClick={handleSaveCode}>
+              <Save />
+            </Button>
+            <Button disabled={isPending} onClick={handleUpload}>
+              <Upload />
+            </Button>
+          </div>
         </div>
-      </div>
-      <Card>
-        <CardContent>
-          <Editor
-            className="rounded"
-            language={language || ""}
-            value={code}
-            theme={theme === "dark" ? "vs-dark" : "vs"}
-            onChange={(c) => {
-              if (c) {
-                setCode(c);
-              }
-            }}
-            height={"40vh"}
-            width={"100%"}
-          />
-        </CardContent>
-      </Card>
-    </div>
+        <Editor
+          className="rounded"
+          language={language || ""}
+          value={code}
+          theme={theme === "dark" ? "vs-dark" : "vs"}
+          onChange={(c) => {
+            if (c) {
+              setCode(c);
+            }
+          }}
+          height={"40vh"}
+          width={"100%"}
+        />
+      </CardContent>
+    </Card>
   );
 }

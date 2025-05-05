@@ -1,8 +1,6 @@
-import { DifficultyBadge } from "@/components/problems/diff-badge";
-import { UploadSubmission } from "@/components/problems/editor";
-import { ProblemExamples } from "@/components/problems/examples";
+import { ProblemDescription } from "@/components/problems/description";
+import { UploadCode } from "@/components/problems/editor";
 import { SubmissionList } from "@/components/problems/submission-list";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/trpc/server";
 
 export default async function ProblemPage({
@@ -19,44 +17,12 @@ export default async function ProblemPage({
   }
 
   return (
-    <div className="flex w-full flex-col justify-center gap-8 p-8">
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div className="flex flex-1/2 flex-col gap-8">
-          <div className="flex items-center justify-between">
-            <h1 className="mb-2 font-bold text-3xl">{problem.title}</h1>
-            <DifficultyBadge difficulty={problem.difficulty} />
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-semibold text-xl">
-                Description
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <pre className="whitespace-pre-wrap rounded-md ">
-                {problem.description}
-              </pre>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-semibold text-xl">Examples</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ProblemExamples
-                inputs={problem.inputs}
-                outputs={problem.outputs}
-              />
-            </CardContent>
-          </Card>
-        </div>
-
-        <UploadSubmission problem={problem} />
+    <div className="flex w-full flex-col justify-center items-center gap-8 p-8">
+      <div className="w-full max-w-7xl flex flex-col gap-4">
+        <ProblemDescription problem={problem} />
+        <UploadCode problem={problem} />
+        <SubmissionList problemId={problem.id} />
       </div>
-
-      <SubmissionList submissions={problem.submissions} />
     </div>
   );
 }

@@ -12,14 +12,16 @@ export async function Header() {
       <Link href={"/"}>
         <h1 className="font-bold text-blue-600 text-xl">Why Runner</h1>
       </Link>
-      {session ? (
-        <AvatarButton session={session} />
-      ) : (
-        <Link href="/api/auth/signin" className="text-blue-500">
-          <Button variant="outline">Login</Button>
-        </Link>
-      )}
-      <ModeToggle />
+      <div className="flex gap-4 items-center justify-center">
+        {session ? (
+          <AvatarButton session={session} />
+        ) : (
+          <Link href="/api/auth/signin" className="text-blue-500">
+            <Button variant="outline">Login</Button>
+          </Link>
+        )}
+        <ModeToggle />
+      </div>
     </header>
   );
 }

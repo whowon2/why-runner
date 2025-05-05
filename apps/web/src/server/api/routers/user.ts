@@ -2,23 +2,24 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { hash } from "bcrypt";
 import { prisma } from "@repo/db";
-
-const loginInput = z.object({
-  email: z.string(),
-  password: z.string(),
-});
+import { updateProfileSchema } from "@/lib/schemas";
 
 export const userRouter = createTRPCRouter({
-  update: protectedProcedure
+  get: protectedProcedure
     .input(
       z.object({
-        name: z.string(),
-        image: z.string().url(),
+        userId: z.string().uuid(),
       }),
     )
-    .mutation(async ({ ctx, input }) => {
-      console.log(ctx.session.user);
+    .query(async ({ ctx, input }) => {
+      return await prisma.user.findUnique({
+        where: { id: ctx.session.user.id },
+      });
+    }),
 
+  update: protectedProcedure
+    .input(updateProfileSchema)
+    .mutation(async ({ ctx, input }) => {
       return await prisma.user.update({
         where: { id: ctx.session.user.id },
         data: {

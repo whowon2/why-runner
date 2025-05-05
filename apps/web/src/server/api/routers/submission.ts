@@ -11,7 +11,7 @@ const createSubmissionInput = z.object({
   problemId: z.string().uuid(),
 });
 
-export const SubmissionRouter = createTRPCRouter({
+export const submissionRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createSubmissionInput)
     .mutation(async ({ ctx, input }) => {
@@ -26,9 +26,17 @@ export const SubmissionRouter = createTRPCRouter({
       return await res.json();
     }),
 
-  find: protectedProcedure.query(({ ctx, input }) => {
-    return prisma.submission.findMany({});
-  }),
+  find: protectedProcedure
+    .input(
+      z.object({
+        problemId: z.string(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      return prisma.submission.findMany({
+        where: {},
+      });
+    }),
 
   findOne: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
     return prisma.submission.findUnique({
