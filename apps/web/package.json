@@ -49,6 +49,7 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
     "@types/bcrypt": "^5.0.2",
     "@biomejs/biome": "1.9.4",
     "@tailwindcss/postcss": "^4.0.15",

@@ -1,18 +1,20 @@
 services:
-  # api:
-  #   container_name: runner-api
-  #   build:
-  #     context: .
-  #     dockerfile: apps/api/Dockerfile
-  #   ports:
-  #     - "4000:4000"
-  #   depends_on:
-  #     - db
-  #     - redis
-  #   environment:
-  #     DATABASE_URL: "postgres://postgres:postgres@db:5432/runner"
-  #     REDIS_URL: "redis://redis:6379"
-  #
+  api:
+    container_name: runner-api
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+      - redis
+    env_file: apps/api/.env
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/runner"
+      REDIS_URL: "redis://redis:6379"
+      JWT_SECRET: "pnUc6rhS2sLe9u2cj8Bjo+d7r+vS2pimxYssaUJ76bw="
+      JWT_EXPIRES_IN: 60
 
   db:
     image: postgres:17.4
@@ -43,9 +45,9 @@ services:
 
     restart: always
 
-  cpp:
-    image: runner-cpp
-    build:
-      context: runners/cpp
-      dockerfile: Dockerfile
-    command:
+  # cpp:
+  #   image: runner-cpp
+  #   build:
+  #     context: runners/cpp
+  #     dockerfile: Dockerfile
+  #   command:
