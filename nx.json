@@ -5,6 +5,9 @@
 		"lint-biome": {
 			"inputs": ["default", "{workspaceRoot}/biome.json"],
 			"cache": true
+		},
+		"build": {
+			"dependsOn": ["^build"]
 		}
 	}
 }

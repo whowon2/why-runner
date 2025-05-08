@@ -1,5 +1,5 @@
 {
-	"name": "@repo/db",
+	"name": "@runner/db",
 	"version": "1.0.0",
 	"main": "dist/client.js",
 	"source": "dist/client.js",
