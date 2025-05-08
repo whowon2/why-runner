@@ -1,33 +1,31 @@
 {
-  "name": "@repo/db",
-  "version": "1.0.0",
-  "main": "dist/client.js",
-  "source": "dist/client.js",
-  "types": "src/client.ts",
-  "files": [
-    "dist/**"
-  ],
-  "scripts": {
-    "db:migrate:deploy": "prisma migrate deploy",
-    "db:migrate:dev": "prisma migrate dev",
-    "db:push": "prisma db push",
-    "db:seed": "tsx src/seed.ts",
-    "db:studio": "prisma studio --browser none",
-    "dev": "prisma studio --browser none",
-    "format": "prisma format",
-    "generate": "prisma generate",
-    "lint": "eslint . --max-warnings 0",
-    "prebuild": "npm run generate",
-    "predev": "npm run generate",
-    "studio": "prisma studio",
-    "build": "tsc",
-    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
-  },
-  "dependencies": {
-    "@prisma/client": "^6.6.0"
-  },
-  "devDependencies": {
-    "prisma": "^6.6.0",
-    "tsup": "^8.4.0"
-  }
+	"name": "@repo/db",
+	"version": "1.0.0",
+	"main": "dist/client.js",
+	"source": "dist/client.js",
+	"types": "src/client.ts",
+	"files": ["dist/**"],
+	"scripts": {
+		"db:migrate:deploy": "prisma migrate deploy",
+		"db:migrate:dev": "prisma migrate dev",
+		"db:push": "prisma db push",
+		"db:seed": "tsx src/seed.ts",
+		"db:studio": "prisma studio --browser none",
+		"dev": "prisma studio --browser none",
+		"format": "prisma format",
+		"generate": "prisma generate",
+		"lint": "eslint . --max-warnings 0",
+		"prebuild": "npm run generate",
+		"predev": "npm run generate",
+		"studio": "prisma studio",
+		"build": "tsc",
+		"clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+	},
+	"dependencies": {
+		"@prisma/client": "^6.6.0"
+	},
+	"devDependencies": {
+		"prisma": "^6.6.0",
+		"tsup": "^8.4.0"
+	}
 }

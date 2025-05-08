@@ -6,8 +6,8 @@
 		"useIgnoreFile": false
 	},
 	"files": {
-		"ignoreUnknown": false,
-		"ignore": ["node_modules", "dist"]
+		"ignoreUnknown": true,
+		"ignore": ["node_modules", "dist", ".nx", "generated", ".next"]
 	},
 	"formatter": {
 		"enabled": true,
