@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:17.4
+    container_name: runner-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: runner
+
+  redis:
+    container_name: runner-redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: always
+
+  cpp:
+    container_name: runner-cpp
+    image: runner-cpp
+    build:
+      context: packages/runners/cpp
+      dockerfile: Dockerfile
+    command:
