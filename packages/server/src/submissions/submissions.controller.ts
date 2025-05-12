@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
 import type { Submission } from "@runner/db";
-import type { CreateSubmissionDto } from "./dto/create-submission.dto";
-import type { UpdateSubmissionDto } from "./dto/update-submission.dto";
-import type { SubmissionsService } from "./submissions.service";
+import { CreateSubmissionDto } from "./dto/create-submission.dto";
+import { UpdateSubmissionDto } from "./dto/update-submission.dto";
+import { SubmissionsService } from "./submissions.service";
 
 @Controller("submissions")
 export class SubmissionsController {

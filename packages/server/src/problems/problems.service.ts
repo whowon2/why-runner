@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import type { Problem } from "@runner/db";
-import type { PrismaService } from "src/database.service";
+import { PrismaService } from "src/database.service";
 
 @Injectable()
 export class ProblemsService {

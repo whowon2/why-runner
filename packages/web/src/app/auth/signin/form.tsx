@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { kill } from "node:process";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -34,15 +35,26 @@ export function SigninForm({ callbackUrl }: { callbackUrl: string }) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			await signIn("credentials", {
+			const res = await signIn("credentials", {
 				email: values.email,
 				password: values.password,
-				redirectTo: callbackUrl ?? "/",
+				redirectTo: callbackUrl,
 			});
 
-			toast.success("logged");
+			console.log({ res });
+
+			if (res?.error) {
+				// Handle specific errors here
+				if (res.error === "CredentialsSignin") {
+					toast.error("Invalid email or password");
+				} else {
+					toast.error(`Login failed: ${res.error}`);
+				}
+				return;
+			}
 		} catch (e) {
-			toast.error("Failed to login");
+			console.error(e);
+			toast.error("Something went wrong during login");
 		}
 	}
 

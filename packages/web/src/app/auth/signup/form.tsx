@@ -43,7 +43,7 @@ export function SignupForm({ callbackUrl }: { callbackUrl: string }) {
 		signupMutation(values, {
 			onSuccess: () => {
 				toast.success("Account created");
-				router.push(`/auth/signin&callbackURL=${callbackUrl}`);
+				router.push(`/auth/signin?callbackURL=${callbackUrl}`);
 			},
 			onError: ({ data, message }) => {
 				toast.error(message);

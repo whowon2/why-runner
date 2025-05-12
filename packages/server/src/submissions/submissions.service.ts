@@ -1,11 +1,11 @@
 import { InjectQueue } from "@nestjs/bullmq";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import type { Problem, Submission } from "@runner/db";
-import type { Queue } from "bullmq";
-import type { PrismaService } from "src/database.service";
-import type { ProblemsService } from "../problems/problems.service";
-import type { CreateSubmissionDto } from "./dto/create-submission.dto";
-import type { UpdateSubmissionDto } from "./dto/update-submission.dto";
+import { Queue } from "bullmq";
+import { PrismaService } from "src/database.service";
+import { ProblemsService } from "../problems/problems.service";
+import { CreateSubmissionDto } from "./dto/create-submission.dto";
+import { UpdateSubmissionDto } from "./dto/update-submission.dto";
 
 type SubmissionData = {
 	submission: Submission;

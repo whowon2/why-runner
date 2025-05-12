@@ -1,25 +1,24 @@
 import {
-	ConflictException,
 	Inject,
 	Injectable,
 	UnauthorizedException,
 } from "@nestjs/common";
 import type { ConfigType } from "@nestjs/config";
-import type { JwtService } from "@nestjs/jwt";
+import { JwtService } from "@nestjs/jwt";
 import { hash, verify } from "argon2";
-import type { CreateUserDto } from "src/user/dto/create-user.dto";
-import type { UserService } from "src/user/user.service";
+import { CreateUserDto } from "src/user/dto/create-user.dto";
+import { UserService } from "src/user/user.service";
 import refreshConfig from "./config/refresh.config";
-import type { SigninDto } from "./dto/signin.dto";
+import { SigninDto } from "./dto/signin.dto";
 import type { AuthJwtPayload } from "./types/jwt";
 
 @Injectable()
 export class AuthService {
 	constructor(
-		private readonly userService: UserService,
-		private readonly jwtService: JwtService,
 		@Inject(refreshConfig.KEY)
 		private refreshTokenConfig: ConfigType<typeof refreshConfig>,
+		private readonly userService: UserService,
+		private readonly jwtService: JwtService,
 	) {}
 
 	async signin(dto: SigninDto) {
@@ -39,12 +38,6 @@ export class AuthService {
 	}
 
 	async signup(dto: CreateUserDto) {
-		const user = await this.userService.findByEmail(dto.email);
-
-		if (user) {
-			throw new ConflictException("Email already used");
-		}
-
 		return this.userService.create(dto);
 	}
 

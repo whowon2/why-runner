@@ -53,7 +53,7 @@ export const contestRouter = createTRPCRouter({
 		});
 	}),
 
-	findOne: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
+	findById: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
 		return prisma.contest.findUnique({
 			where: {
 				id: input,

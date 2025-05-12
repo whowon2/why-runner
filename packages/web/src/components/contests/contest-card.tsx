@@ -10,12 +10,12 @@ import { toast } from "sonner";
 export function ContestCard({
 	contest,
 	refetchAction,
+	session,
 }: {
 	contest: Prisma.ContestGetPayload<{ include: { UserOnContest: true } }>;
 	refetchAction: () => void;
+	session: Session;
 }) {
-	const { data: session } = useSession();
-
 	const isCreatedByUser = contest.createdById === session?.user.id;
 
 	if (!session) {

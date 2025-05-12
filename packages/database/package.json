@@ -9,10 +9,8 @@
 		"db:studio": "prisma studio --browser none",
 		"dev": "prisma studio --browser none",
 		"lint": "biome check . --write",
-		"format": "prisma format",
-		"generate": "prisma generate",
-		"prebuild": "npm run generate",
-		"predev": "npm run generate",
+		"prebuild": "prisma generate",
+		"predev": "prisma generate && prisma db push",
 		"build": "tsc",
 		"clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
 	},
