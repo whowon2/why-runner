@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { User } from "@runner/db";
+import type { User } from "@runner/db";
 import { hash } from "argon2";
-import { PrismaService } from "src/database.service";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
+import type { PrismaService } from "src/database.service";
+import type { CreateUserDto } from "./dto/create-user.dto";
+import type { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UserService {
@@ -12,7 +12,7 @@ export class UserService {
 	async create(dto: CreateUserDto): Promise<User> {
 		const hashedPassword = await hash(dto.password);
 
-		return this.prisma.user.create({
+		return await this.prisma.user.create({
 			data: {
 				...dto,
 				password: hashedPassword,
@@ -21,7 +21,7 @@ export class UserService {
 	}
 
 	async findAll(): Promise<Omit<User, "password">[]> {
-		return this.prisma.user.findMany({
+		return await this.prisma.user.findMany({
 			omit: {
 				password: true,
 			},
@@ -29,7 +29,7 @@ export class UserService {
 	}
 
 	async findByEmail(email: string): Promise<User | null> {
-		return this.prisma.user.findUnique({
+		return await this.prisma.user.findUnique({
 			where: {
 				email,
 			},
@@ -72,8 +72,8 @@ export class UserService {
 		});
 	}
 
-	remove(id: string) {
-		return this.prisma.user.delete({
+	async remove(id: string) {
+		return await this.prisma.user.delete({
 			where: {
 				id,
 			},

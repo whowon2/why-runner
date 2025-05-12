@@ -1,7 +1,7 @@
 import { exec } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
 import { promisify } from "node:util";
-import { Problem, Submission } from "@runner/db";
+import type { Problem, Submission } from "@runner/db";
 
 const asyncExec = promisify(exec);
 
@@ -19,7 +19,7 @@ export async function runCppJudge(problem: Problem, submission: Submission) {
 	const command = `docker run --rm -v ${dir}:/app/data runner-cpp`;
 
 	try {
-		const { stdout, stderr } = await asyncExec(command);
+		const { stdout } = await asyncExec(command);
 		return { success: true, output: stdout };
 	} catch (err) {
 		throw new Error(err.stderr || err.message);

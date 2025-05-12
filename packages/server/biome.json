@@ -1,7 +1,41 @@
 {
 	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-	"extends": ["../../biome.json"],
+	"vcs": {
+		"enabled": false,
+		"clientKind": "git",
+		"useIgnoreFile": false
+	},
+	"files": { "ignore": ["node_modules", "dist"] },
 	"linter": {
-		"enabled": true
+		"enabled": true,
+		"rules": {
+			"all": true,
+			"correctness": {
+				"useHookAtTopLevel": "off",
+				"useImportExtensions": "off",
+				"noNodejsModules": "off",
+				"noUndeclaredDependencies": "off"
+			},
+			"style": {
+				"useImportType": "off",
+				"noDefaultExport": "off",
+				"useNamingConvention": "off",
+				"noParameterProperties": "off"
+			}
+		}
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"javascript": {
+		"globals": ["it", "expect", "describe", "beforeEach"],
+		"formatter": {
+			"quoteStyle": "double",
+			"indentStyle": "tab"
+		},
+		"parser": {
+			"unsafeParameterDecoratorsEnabled": true
+		}
 	}
 }

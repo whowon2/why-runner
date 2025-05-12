@@ -1,4 +1,4 @@
-import { Language } from "@runner/db";
+import type { Language } from "@runner/db";
 import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateSubmissionDto {
