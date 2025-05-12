@@ -1,13 +1,13 @@
 {
 	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
 	"vcs": {
-		"enabled": false,
+		"enabled": true,
 		"clientKind": "git",
-		"useIgnoreFile": false
+		"useIgnoreFile": true
 	},
 	"files": {
-		"ignoreUnknown": true,
-		"ignore": ["node_modules", ".next"]
+		"ignoreUnknown": false,
+		"ignore": []
 	},
 	"linter": {
 		"enabled": true,
@@ -18,8 +18,7 @@
 					"level": "warn",
 					"fix": "safe",
 					"options": {
-						"attributes": ["classList"],
-						"functions": ["clsx", "cva", "tw"]
+						"functions": ["clsx", "cva", "cn"]
 					}
 				}
 			}

@@ -2,40 +2,48 @@
 
 import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
-import { Trash } from "lucide-react";
+import type { Contest } from "@runner/db";
+import { Pencil, Trash } from "lucide-react";
 import type { Session } from "next-auth";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AddProblemDialog } from "./add-problem-dialog";
 
-export function Contest({ id, session }: { id: string; session: Session }) {
+export function ContestPage({ id, session }: { id: string; session: Session }) {
 	const router = useRouter();
 	const utils = api.useUtils();
 
-	const { data: contest, refetch: refetchContest } =
-		api.contest.findOne.useQuery(id);
+	const {
+		data: contest,
+		refetch: refetchContest,
+		isLoading,
+	} = api.contest.findById.useQuery(id);
 
 	const { mutate: removeProblem } = api.contest.removeProblem.useMutation();
 
 	const { mutate: deleteContest } = api.contest.delete.useMutation();
 
+	if (isLoading) {
+		return null;
+	}
+
 	if (!contest) {
 		return <div>Contest not found</div>;
 	}
 
-	if (contest.createdById !== session.user.id) {
-		return <div>You are not the creator of this contest</div>;
-	}
-
 	return (
 		<div className="flex w-full flex-col items-center p-8">
-			<h1 className="font-bold text-4xl">{contest.name}</h1>
+			<div className="flex gap-2">
+				<h1 className="font-bold text-4xl">{contest.name}</h1>
+
+				<EditContest contest={contest} session={session} />
+			</div>
 			{new Intl.DateTimeFormat("en-US", {
 				dateStyle: "medium",
 				timeStyle: "short",
 			}).format(contest.start)}
 
 			<h2 className="mt-4 font-bold text-2xl">Problems</h2>
-			<AddProblemDialog refetchContest={refetchContest} contest={contest} />
+
 			<div className="mt-4 flex flex-col items-center justify-center">
 				{contest.Problems.map((problem, idx) => (
 					<div
@@ -64,6 +72,23 @@ export function Contest({ id, session }: { id: string; session: Session }) {
 				))}
 				{contest.Problems.length === 0 && <div>No problems yet</div>}
 			</div>
+		</div>
+	);
+}
+
+function EditContest({
+	contest,
+	session,
+}: { contest: Contest; session: Session }) {
+	if (contest.createdById !== session.user.id) {
+		return null;
+	}
+
+	return (
+		<div>
+			<Link href={`${contest.id}/edit`}>
+				<Pencil />
+			</Link>
 		</div>
 	);
 }

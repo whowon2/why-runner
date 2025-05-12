@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import type { Metadata } from "next";
 
 import { Footer } from "@/components/footer";
+import { HeaderBreadcrumbs } from "@/components/header/breadcrumbs";
 import { Header } from "@/components/header/header";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { TRPCReactProvider } from "@/trpc/react";
@@ -19,7 +20,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html lang="en" suppressHydrationWarning={true}>
-			<body className="flex min-h-screen flex-col justify-between">
+			<body>
 				<TRPCReactProvider>
 					<ThemeProvider
 						attribute="class"
@@ -31,7 +32,7 @@ export default function RootLayout({
 
 						{children}
 						<Toaster />
-						<Footer />
+						{/* <Footer /> */}
 					</ThemeProvider>
 				</TRPCReactProvider>
 			</body>

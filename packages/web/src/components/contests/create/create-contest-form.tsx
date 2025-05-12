@@ -14,11 +14,20 @@ import { Input } from "@/components/ui/input";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z.object({
 	name: z.string().min(2).max(50),
-	startDate: z.string(),
+	startDate: z.string().refine(
+		(dateStr) => {
+			const date = new Date(dateStr);
+			return !Number.isNaN(date.getTime()) && date > new Date();
+		},
+		{
+			message: "Start Date must be in the future",
+		},
+	),
 	duration: z.coerce.number().min(15),
 });
 
@@ -100,7 +109,7 @@ export function CreateContestForm({
 					name="duration"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Curation</FormLabel>
+							<FormLabel>Duration</FormLabel>
 							<FormControl>
 								<Input type="number" placeholder="15" {...field} />
 							</FormControl>

@@ -1,11 +1,12 @@
 "use client";
 
 import { api } from "@/trpc/react";
+import type { Session } from "next-auth";
 import { ContestCard } from "./contest-card";
 import { ContestSkeletons } from "./contest-skeleton";
 import { CreateContestDialog } from "./create/create-contest-dialog";
 
-export function ContestList() {
+export function ContestList({ session }: { session: Session }) {
 	const { data: contests, refetch } = api.contest.find.useQuery();
 
 	return (
@@ -27,6 +28,7 @@ export function ContestList() {
 				<div>
 					{contests.map((contest) => (
 						<ContestCard
+							session={session}
 							key={contest.id}
 							contest={contest}
 							refetchAction={refetch}

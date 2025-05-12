@@ -1,4 +1,5 @@
 import { ContestList } from "@/components/contests/contest-list";
+import { BreadCrumbs } from "@/components/header/breadcrumbs";
 import { auth } from "@/server/auth";
 import { redirect } from "next/navigation";
 
@@ -10,8 +11,9 @@ export default async function ContestsPage() {
 	}
 
 	return (
-		<div className="">
-			<ContestList />
+		<div className="flex w-full flex-col items-center justify-center gap-8 p-8">
+			<BreadCrumbs />
+			<ContestList session={session} />
 		</div>
 	);
 }
