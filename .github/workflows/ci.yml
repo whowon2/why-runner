@@ -22,4 +22,9 @@ jobs:
 
       - run: bun install --no-cache
 
-      - run: bun nx run-many -t lint test build --skip-nx-cache
+      - name: Run build with env vars
+        env:
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+        run: bun nx run-many -t lint test build --skip-nx-cache
