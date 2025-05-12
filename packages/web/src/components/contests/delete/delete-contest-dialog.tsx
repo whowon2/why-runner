@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
-import type { Contest } from "@repo/db";
+import type { Contest } from "@runner/db";
 import { useRouter } from "next/navigation";
 
 export function DeleteContestDialog({ contest }: { contest: Contest }) {

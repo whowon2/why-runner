@@ -1,4 +1,4 @@
-import { prisma } from "@repo/db";
+import { prisma } from "@runner/db";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 

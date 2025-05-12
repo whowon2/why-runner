@@ -1,4 +1,4 @@
-import type { Problem } from "@repo/db";
+import type { Problem } from "@runner/db";
 
 import { DifficultyBadge } from "@/components/problems/diff-badge";
 import { ProblemExamples } from "@/components/problems/examples";

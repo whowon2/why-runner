@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Contest } from "@repo/db";
+import type { Contest } from "@runner/db";
 import { DeleteContestDialog } from "../delete/delete-contest-dialog";
 
 export function EditContestTabs({ contest }: { contest: Contest }) {

@@ -16,7 +16,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { api } from "@/trpc/react";
-import type { Prisma, Problem } from "@repo/db";
+import type { Prisma, Problem } from "@runner/db";
 import { useState } from "react";
 
 export function AddProblemDialog({
