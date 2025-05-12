@@ -34,7 +34,7 @@ export function AvatarButton({ session }: { session: Session }) {
 
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
+			<DropdownMenuTrigger asChild={true}>
 				<Avatar className="cursor-pointer">
 					<AvatarImage src={session.user.image ?? ""} />
 					<AvatarFallback>{initials}</AvatarFallback>
@@ -94,7 +94,7 @@ export function AvatarButton({ session }: { session: Session }) {
 					<LifeBuoy />
 					<span>Support</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem disabled>
+				<DropdownMenuItem disabled={true}>
 					<Cloud />
 					<span>API</span>
 				</DropdownMenuItem>

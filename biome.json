@@ -19,9 +19,17 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true,
+			"all": true,
+			"suspicious": {
+				"noReactSpecificProps": "off"
+			},
+			"correctness": {
+				"useImportExtensions": "off"
+			},
 			"style": {
-				"useImportType": "off"
+				"useImportType": "off",
+				"noDefaultExport": "off",
+				"useNamingConvention": "off"
 			}
 		}
 	},

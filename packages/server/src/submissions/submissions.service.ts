@@ -1,6 +1,6 @@
 import { InjectQueue } from "@nestjs/bullmq";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { PrismaClient, Problem, Submission, prisma } from "@runner/db";
+import { Problem, Submission, } from "@runner/db";
 import { Queue } from "bullmq";
 import { PrismaService } from "src/database.service";
 import { ProblemsService } from "../problems/problems.service";

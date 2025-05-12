@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 import { env } from "@/env";
-import { Language, prisma } from "@repo/db";
+import { prisma } from "@runner/db";
 
 const createSubmissionInput = z.object({
 	code: z.string(),

@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Contest } from "@repo/db";
+import type { Contest } from "@runner/db";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 

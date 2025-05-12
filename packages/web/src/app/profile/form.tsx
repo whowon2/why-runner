@@ -21,7 +21,7 @@ import {
 import { updateProfileSchema } from "@/lib/schemas";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { User } from "@repo/db";
+import type { User } from "@runner/db";
 import { Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -91,7 +91,7 @@ export function UpdateForm({ user }: { user: User }) {
 						/>
 						<TooltipProvider>
 							<Tooltip>
-								<TooltipTrigger asChild>
+								<TooltipTrigger asChild={true}>
 									<Button type="submit" variant={"default"}>
 										<Save />
 									</Button>

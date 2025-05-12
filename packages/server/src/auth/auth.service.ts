@@ -2,7 +2,6 @@ import {
 	ConflictException,
 	Inject,
 	Injectable,
-	NotFoundException,
 	UnauthorizedException,
 } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
@@ -26,10 +25,10 @@ export class AuthService {
 	async signin(dto: SigninDto) {
 		const { accessToken, refreshToken } = await this.generateTokens(dto.id);
 
-		const hashedRT = await hash(refreshToken);
+		const hashedRt = await hash(refreshToken);
 
 		await this.userService.update(dto.id, {
-			hashedRefreshToken: hashedRT,
+			hashedRefreshToken: hashedRt,
 		});
 
 		return {

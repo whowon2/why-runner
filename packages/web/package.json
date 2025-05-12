@@ -5,8 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "next build",
-		"lint:unsafe": "biome check --write --unsafe .",
-		"lint:fix": "biome check --write .",
+		"lint": "biome check --write .",
 		"dev": "next dev --turbo",
 		"preview": "next build && next start",
 		"start": "next start",
@@ -24,6 +23,7 @@
 		"@radix-ui/react-slot": "^1.2.1",
 		"@radix-ui/react-tabs": "^1.1.9",
 		"@radix-ui/react-tooltip": "^1.2.5",
+		"@runner/db": "workspace:*",
 		"@t3-oss/env-nextjs": "^0.12.0",
 		"@tanstack/react-query": "^5.69.0",
 		"@trpc/client": "^11.0.0",
@@ -46,9 +46,9 @@
 		"zod": "^3.24.4"
 	},
 	"devDependencies": {
-		"@types/bcrypt": "^5.0.2",
-		"@biomejs/biome": "1.9.4",
+		"@biomejs/biome": "^1.9.4",
 		"@tailwindcss/postcss": "^4.0.15",
+		"@types/bcrypt": "^5.0.2",
 		"@types/node": "^20.14.10",
 		"@types/react": "^19.0.0",
 		"@types/react-dom": "^19.0.0",

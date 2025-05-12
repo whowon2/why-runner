@@ -15,10 +15,9 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { env } from "@/env";
+import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { api } from "@/trpc/react";
 
 const formSchema = z.object({
 	email: z.string().min(2).max(50),
@@ -36,23 +35,21 @@ export function SignupForm({ callbackUrl }: { callbackUrl: string }) {
 		},
 	});
 
-  const { mutate: signupMutation } = api.user.signup.useMutation()
+	const { mutate: signupMutation } = api.user.signup.useMutation();
 
 	const router = useRouter();
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-
-    signupMutation(values, {
-      onSuccess: () => {
-        toast.success("Account created")
-        router.push(`/auth/signin&callbackURL=${callbackUrl}`);
-      },
-      onError: ({ data, message }) => {
-        toast.error(message)
-      }
-    })
-  }
-
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		signupMutation(values, {
+			onSuccess: () => {
+				toast.success("Account created");
+				router.push(`/auth/signin&callbackURL=${callbackUrl}`);
+			},
+			onError: ({ data, message }) => {
+				toast.error(message);
+			},
+		});
+	}
 
 	return (
 		<Card>

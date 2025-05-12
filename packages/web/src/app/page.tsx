@@ -1,8 +1,7 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { auth } from "@/server/auth";
-import { HydrateClient, api } from "@/trpc/server";
+import { HydrateClient } from "@/trpc/server";
 
 export default async function Home() {
 	return (

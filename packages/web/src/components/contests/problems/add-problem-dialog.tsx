@@ -16,7 +16,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { api } from "@/trpc/react";
-import type { Prisma, Problem } from "@repo/db";
+import type { Prisma, Problem } from "@runner/db";
 import { useState } from "react";
 
 export function AddProblemDialog({
@@ -79,7 +79,7 @@ export function AddProblemDialog({
 				setIsOpen(open);
 			}}
 		>
-			<DialogTrigger asChild>
+			<DialogTrigger asChild={true}>
 				<Button variant="outline">Add problems</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">

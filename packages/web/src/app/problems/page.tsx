@@ -1,5 +1,4 @@
 import { DifficultyBadge } from "@/components/problems/diff-badge";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
