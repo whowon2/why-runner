@@ -4,14 +4,14 @@ import {
 	Injectable,
 	UnauthorizedException,
 } from "@nestjs/common";
-import { ConfigType } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
+import type { ConfigType } from "@nestjs/config";
+import type { JwtService } from "@nestjs/jwt";
 import { hash, verify } from "argon2";
-import { CreateUserDto } from "src/user/dto/create-user.dto";
-import { UserService } from "src/user/user.service";
+import type { CreateUserDto } from "src/user/dto/create-user.dto";
+import type { UserService } from "src/user/user.service";
 import refreshConfig from "./config/refresh.config";
-import { SigninDto } from "./dto/signin.dto";
-import { AuthJwtPayload } from "./types/jwt";
+import type { SigninDto } from "./dto/signin.dto";
+import type { AuthJwtPayload } from "./types/jwt";
 
 @Injectable()
 export class AuthService {
@@ -52,7 +52,6 @@ export class AuthService {
 		const user = await this.userService.findByEmail(dto.email);
 
 		if (!user) {
-			console.error("[Validate Local]: User not found");
 			throw new UnauthorizedException("Email not found");
 		}
 

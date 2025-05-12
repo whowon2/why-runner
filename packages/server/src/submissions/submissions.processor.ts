@@ -1,13 +1,9 @@
-import { exec } from "node:child_process";
-import { promisify } from "node:util";
-import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
-import { Problem, Submission } from "@runner/db";
-import { Job } from "bullmq";
-import { ProblemsService } from "../problems/problems.service";
+import { Processor, WorkerHost } from "@nestjs/bullmq";
+import type { Problem, Submission } from "@runner/db";
+import type { Job } from "bullmq";
+import type { ProblemsService } from "../problems/problems.service";
 import { runCppJudge } from "../runners/cpp-runner";
-import { SubmissionsService } from "./submissions.service";
-
-const asyncExec = promisify(exec);
+import type { SubmissionsService } from "./submissions.service";
 
 @Processor("submission")
 export class SubmissionsProcessor extends WorkerHost {
@@ -43,13 +39,14 @@ export class SubmissionsProcessor extends WorkerHost {
 		}
 	}
 
-	@OnWorkerEvent("completed")
-	onCompleted(job: Job, result: { output: string }) {
-		console.log(`✅ Submission ${job.id} processed successfully`);
-		console.log("Processor", `Output: ${result.output}`);
-	}
+	// @OnWorkerEvent("completed")
+	// onCompleted(job: Job, result: { output: string }) {
+	// 	console.log(`✅ Submission ${job.id} processed successfully`);
+	// 	console.log("Processor", `Output: ${result.output}`);
+	// }
 
-	@OnWorkerEvent("failed") onFailed(job: Job, err: Error) {
-		console.error(`❌ Submission ${job.id} failed: ${err.message}`);
-	}
+	// @OnWorkerEvent("failed")
+	// onFailed(job: Job, err: Error) {
+	// 	console.error(`❌ Submission ${job.id} failed: ${err.message}`);
+	// }
 }

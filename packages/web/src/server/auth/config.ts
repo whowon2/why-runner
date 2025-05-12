@@ -1,5 +1,5 @@
 import { env } from "@/env";
-import { type DefaultSession, type NextAuthConfig } from "next-auth";
+import type { DefaultSession, NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 /**
