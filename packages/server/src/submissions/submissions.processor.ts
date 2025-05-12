@@ -1,9 +1,9 @@
 import { Processor, WorkerHost } from "@nestjs/bullmq";
 import type { Problem, Submission } from "@runner/db";
-import type { Job } from "bullmq";
-import type { ProblemsService } from "../problems/problems.service";
+import { Job } from "bullmq";
+import { ProblemsService } from "../problems/problems.service";
 import { runCppJudge } from "../runners/cpp-runner";
-import type { SubmissionsService } from "./submissions.service";
+import { SubmissionsService } from "./submissions.service";
 
 @Processor("submission")
 export class SubmissionsProcessor extends WorkerHost {

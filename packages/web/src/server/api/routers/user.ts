@@ -8,13 +8,20 @@ export const userRouter = createTRPCRouter({
 	signup: publicProcedure
 		.input(signupSchema)
 		.mutation(async ({ ctx, input }) => {
-			return await fetch(`${env.BACKEND_URL}/api/auth/signup`, {
+			const res = await fetch(`${env.BACKEND_URL}/api/auth/signup`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify(input),
 			});
+
+			if (!res.ok) {
+				const error = await res.json();
+				throw new Error(error.message || "Something went wrong");
+			}
+
+			return res;
 		}),
 
 	signin: publicProcedure

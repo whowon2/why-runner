@@ -6,7 +6,7 @@ export default async function ContestsPage() {
 	const session = await auth();
 
 	if (!session) {
-		redirect("/api/auth/signin?callbackUrl=/contests");
+		redirect("/api/auth/signin");
 	}
 
 	return (

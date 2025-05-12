@@ -19,7 +19,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html lang="en" suppressHydrationWarning={true}>
-			<body className="">
+			<body className="flex min-h-screen flex-col justify-between">
 				<TRPCReactProvider>
 					<ThemeProvider
 						attribute="class"
@@ -30,8 +30,8 @@ export default function RootLayout({
 						<Header />
 
 						{children}
-						<Footer />
 						<Toaster />
+						<Footer />
 					</ThemeProvider>
 				</TRPCReactProvider>
 			</body>

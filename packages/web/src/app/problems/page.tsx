@@ -1,6 +1,6 @@
 import { DifficultyBadge } from "@/components/problems/diff-badge";
 import { Button } from "@/components/ui/button";
-import { auth } from "@/server/auth";
+import { auth, signIn } from "@/server/auth";
 import { api } from "@/trpc/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -9,7 +9,7 @@ export default async function ProblemsPage() {
 	const session = await auth();
 
 	if (!session) {
-		redirect("/auth/signin?callbackUrl=/problems");
+		redirect("/api/auth/signin");
 	}
 
 	const problems = await api.problem.getAll({});
