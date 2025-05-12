@@ -25,7 +25,7 @@ import type { User } from "@runner/db";
 import { Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import type { z } from "zod";
 
 export function UpdateForm({ user }: { user: User }) {
 	const form = useForm<z.infer<typeof updateProfileSchema>>({
