@@ -3,7 +3,11 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"style": {
+				"useImportType": "off",
+				"noDefaultExport": "off",
+				"useNamingConvention": "off"
+			}
 		}
 	}
 }

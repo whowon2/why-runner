@@ -20,7 +20,6 @@
 		"test:e2e": "jest --config ./test/jest-e2e.json"
 	},
 	"dependencies": {
-		"@runner/db": "workspace:*",
 		"@nestjs/bullmq": "^11.0.2",
 		"@nestjs/common": "^11.0.1",
 		"@nestjs/config": "^4.0.2",
@@ -29,6 +28,7 @@
 		"@nestjs/mapped-types": "*",
 		"@nestjs/passport": "^11.0.5",
 		"@nestjs/platform-express": "^11.0.1",
+		"@runner/db": "workspace:*",
 		"argon2": "^0.41.1",
 		"bullmq": "^5.48.1",
 		"class-transformer": "^0.5.1",
@@ -37,7 +37,8 @@
 		"passport": "^0.7.0",
 		"passport-local": "^1.0.0",
 		"reflect-metadata": "^0.2.2",
-		"rxjs": "^7.8.1"
+		"rxjs": "^7.8.1",
+		"zod": "^3.24.4"
 	},
 	"devDependencies": {
 		"@nestjs/cli": "^11.0.0",

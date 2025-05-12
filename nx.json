@@ -2,12 +2,11 @@
 	"$schema": "./node_modules/nx/schemas/nx-schema.json",
 	"nxCloudId": "681d08e3d7e5c51d9c05696c",
 	"targetDefaults": {
-		"lint-biome": {
-			"inputs": ["default", "{workspaceRoot}/biome.json"],
-			"cache": true
-		},
 		"build": {
 			"dependsOn": ["^build"]
+		},
+		"lint": {
+			"dependsOn": ["^lint"]
 		}
 	}
 }

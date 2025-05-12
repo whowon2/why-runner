@@ -91,7 +91,7 @@ export function UpdateForm({ user }: { user: User }) {
 						/>
 						<TooltipProvider>
 							<Tooltip>
-								<TooltipTrigger asChild>
+								<TooltipTrigger asChild={true}>
 									<Button type="submit" variant={"default"}>
 										<Save />
 									</Button>

@@ -1,9 +1,7 @@
 "use client";
-
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
-import type { Contest, Prisma } from "@repo/db";
+import type { Prisma } from "@repo/db";
 import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import Link from "next/link";

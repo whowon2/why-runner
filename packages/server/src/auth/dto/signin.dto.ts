@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength } from "class-validator";
+
 
 export class SigninDto {
 	id: string;

@@ -24,7 +24,7 @@ export function DeleteContestDialog({ contest }: { contest: Contest }) {
 
 	return (
 		<AlertDialog>
-			<AlertDialogTrigger asChild>
+			<AlertDialogTrigger asChild={true}>
 				<Button variant="destructive">Delete Contest</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent>

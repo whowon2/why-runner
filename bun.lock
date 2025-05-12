@@ -21,6 +21,7 @@
         "@prisma/client": "^6.6.0",
       },
       "devDependencies": {
+        "@biomejs/biome": "^1.9.4",
         "prisma": "^6.6.0",
         "tsup": "^8.4.0",
       },
@@ -47,6 +48,7 @@
         "passport-local": "^1.0.0",
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1",
+        "zod": "^3.24.4",
       },
       "devDependencies": {
         "@nestjs/cli": "^11.0.0",
@@ -86,6 +88,7 @@
         "@radix-ui/react-slot": "^1.2.1",
         "@radix-ui/react-tabs": "^1.1.9",
         "@radix-ui/react-tooltip": "^1.2.5",
+        "@runner/db": "workspace:*",
         "@t3-oss/env-nextjs": "^0.12.0",
         "@tanstack/react-query": "^5.69.0",
         "@trpc/client": "^11.0.0",
@@ -108,7 +111,7 @@
         "zod": "^3.24.4",
       },
       "devDependencies": {
-        "@biomejs/biome": "1.9.4",
+        "@biomejs/biome": "^1.9.4",
         "@tailwindcss/postcss": "^4.0.15",
         "@types/bcrypt": "^5.0.2",
         "@types/node": "^20.14.10",

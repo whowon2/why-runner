@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/trpc/react";
-import type { Submission } from "@repo/db";
 import { Skeleton } from "../ui/skeleton";
 
 const color = (output: string | null) => {

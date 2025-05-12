@@ -16,7 +16,7 @@ export function CreateContestDialog({ onCreate }: { onCreate: () => void }) {
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
-			<DialogTrigger asChild>
+			<DialogTrigger asChild={true}>
 				<Button variant="outline">Create Contest</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">

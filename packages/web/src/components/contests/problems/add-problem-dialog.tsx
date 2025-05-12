@@ -79,7 +79,7 @@ export function AddProblemDialog({
 				setIsOpen(open);
 			}}
 		>
-			<DialogTrigger asChild>
+			<DialogTrigger asChild={true}>
 				<Button variant="outline">Add problems</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">

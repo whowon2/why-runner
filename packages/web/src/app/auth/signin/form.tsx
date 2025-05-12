@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 const formSchema = z.object({
@@ -32,8 +31,6 @@ export function SigninForm({ callbackUrl }: { callbackUrl: string }) {
 			password: "",
 		},
 	});
-
-	const router = useRouter();
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
