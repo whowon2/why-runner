@@ -1,5 +1,6 @@
 import { env } from "@/env";
 import { signinSchema, signupSchema, updateProfileSchema } from "@/lib/schemas";
+import { unstable_update } from "@/server/auth";
 import { prisma } from "@runner/db";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
@@ -51,6 +52,10 @@ export const userRouter = createTRPCRouter({
 	update: protectedProcedure
 		.input(updateProfileSchema)
 		.mutation(async ({ ctx, input }) => {
+			await unstable_update({
+				user: { image: input.image },
+			});
+
 			return await prisma.user.update({
 				where: { id: ctx.session.user.id },
 				data: {

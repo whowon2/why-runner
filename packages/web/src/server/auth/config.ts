@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { prisma } from "@runner/db";
 import type { DefaultSession, NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -78,9 +79,9 @@ export const authConfig = {
 				session.user.id = token.id as string;
 				session.user.name = token.name as string;
 				session.user.email = token.email as string;
-				session.user.image = token.image as string;
 				session.user.role = token.role as string;
 			}
+
 			session.accessToken = token.accessToken as string;
 			session.refreshToken = token.refreshToken as string;
 			return session;

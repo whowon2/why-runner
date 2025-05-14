@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { auth } from "@/server/auth";
+import { api } from "@/trpc/server";
 import Link from "next/link";
 import { AvatarButton } from "./avatar-button";
 import { ModeToggle } from "./theme";
