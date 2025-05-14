@@ -23,7 +23,7 @@ export default async function Home() {
 							</Button>
 						</Link>
 						<Link href="problems">
-							<Button className="cursor-pointer" variant={"secondary"}>
+							<Button className="cursor-pointer" variant={"default"}>
 								Problems
 							</Button>
 						</Link>

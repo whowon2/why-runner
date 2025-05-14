@@ -47,7 +47,7 @@ export const contestRouter = createTRPCRouter({
 			});
 		}),
 
-	find: protectedProcedure.query(({ ctx, input }) => {
+	findAll: protectedProcedure.query(({ ctx, input }) => {
 		return prisma.contest.findMany({
 			include: { UserOnContest: true },
 		});
@@ -60,6 +60,7 @@ export const contestRouter = createTRPCRouter({
 			},
 			include: {
 				Problems: true,
+				UserOnContest: true,
 			},
 		});
 	}),
@@ -127,23 +128,23 @@ export const contestRouter = createTRPCRouter({
 		}),
 
 	join: protectedProcedure
-		.input(z.object({ contestId: z.string(), userId: z.string() }))
+		.input(z.object({ contestId: z.string() }))
 		.mutation(({ ctx, input }) => {
 			return prisma.userOnContest.create({
 				data: {
-					userId: input.userId,
+					userId: ctx.session.user.id,
 					contestId: input.contestId,
 				},
 			});
 		}),
 
 	leave: protectedProcedure
-		.input(z.object({ contestId: z.string(), userId: z.string() }))
+		.input(z.object({ contestId: z.string() }))
 		.mutation(({ ctx, input }) => {
 			return prisma.userOnContest.delete({
 				where: {
 					userId_contestId: {
-						userId: input.userId,
+						userId: ctx.session.user.id,
 						contestId: input.contestId,
 					},
 				},

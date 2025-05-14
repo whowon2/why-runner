@@ -1,22 +1,24 @@
 "use client";
 
-import { api } from "@/trpc/react";
+import type { Contest, Prisma } from "@runner/db";
 import type { Session } from "next-auth";
 import { ContestCard } from "./contest-card";
 import { ContestSkeletons } from "./contest-skeleton";
 import { CreateContestDialog } from "./create/create-contest-dialog";
 
-export function ContestList({ session }: { session: Session }) {
-	const { data: contests, refetch } = api.contest.find.useQuery();
-
+export function ContestList({
+	contests,
+	session,
+}: {
+	contests: Prisma.ContestGetPayload<{ include: { UserOnContest: true } }>[];
+	session: Session;
+}) {
 	return (
-		<div className="flex flex-col p-8">
+		<div className="flex w-full max-w-7xl flex-col">
 			<div className="flex justify-between">
 				<h1 className="font-bold text-2xl">Contests</h1>
-				<CreateContestDialog onCreate={refetch} />
+				<CreateContestDialog />
 			</div>
-
-			{!contests && <ContestSkeletons />}
 
 			{contests && contests.length === 0 && (
 				<div className="flex h-32 items-center justify-center">
@@ -24,18 +26,11 @@ export function ContestList({ session }: { session: Session }) {
 				</div>
 			)}
 
-			{contests && (
-				<div>
-					{contests.map((contest) => (
-						<ContestCard
-							session={session}
-							key={contest.id}
-							contest={contest}
-							refetchAction={refetch}
-						/>
-					))}
-				</div>
-			)}
+			<div>
+				{contests.map((contest) => (
+					<ContestCard session={session} key={contest.id} contest={contest} />
+				))}
+			</div>
 		</div>
 	);
 }

@@ -1,7 +1,8 @@
+import { ContestDescription } from "@/components/contests/description";
+import { ContestHeader } from "@/components/contests/header";
 import { BreadCrumbs } from "@/components/header/breadcrumbs";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
-import { ContestPage } from "./contest";
 
 export default async function Page({
 	params,
@@ -9,6 +10,7 @@ export default async function Page({
 	params: Promise<{ id: string }>;
 }) {
 	const { id } = await params;
+
 	const session = await auth();
 
 	if (!session) {
@@ -22,9 +24,10 @@ export default async function Page({
 	}
 
 	return (
-		<div className="flex w-full flex-col items-center justify-center gap-8 p-8">
+		<div className="flex w-full flex-col items-center justify-center gap-4 p-4">
 			<BreadCrumbs />
-			<ContestPage id={id} session={session} />
+			<ContestHeader contest={contest} session={session} />
+			<ContestDescription contest={contest} />
 		</div>
 	);
 }

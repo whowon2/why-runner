@@ -43,7 +43,7 @@ export function DeleteContestDialog({ contest }: { contest: Contest }) {
 								{ contestId: contest.id },
 								{
 									onSuccess: () => {
-										utils.contest.find.invalidate();
+										utils.contest.findAll.invalidate();
 										router.push("/contests");
 									},
 								},

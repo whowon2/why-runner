@@ -50,9 +50,6 @@ model Contest {
   start DateTime
   end   DateTime
 
-  startRegistration DateTime
-  endRegistration   DateTime
-
   CreatedBy   User   @relation("ContestsCreated", fields: [createdById], references: [id])
   createdById String
 
