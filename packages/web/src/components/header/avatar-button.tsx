@@ -23,6 +23,7 @@ import {
 	DropdownMenuShortcut,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { api } from "@/trpc/react";
 import type { Session } from "next-auth";
 import Link from "next/link";
 
@@ -32,11 +33,15 @@ export function AvatarButton({ session }: { session: Session }) {
 		.map((name) => name[0])
 		.join("");
 
+	const { data } = api.user.get.useQuery({
+		userId: session.user.id,
+	});
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild={true}>
 				<Avatar className="cursor-pointer">
-					<AvatarImage src={session.user.image ?? ""} />
+					<AvatarImage src={data?.image ?? ""} />
 					<AvatarFallback>{initials}</AvatarFallback>
 				</Avatar>
 			</DropdownMenuTrigger>

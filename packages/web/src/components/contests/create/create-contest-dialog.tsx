@@ -8,11 +8,13 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import { api } from "@/trpc/react";
 import { useState } from "react";
 import { CreateContestForm } from "./create-contest-form";
 
-export function CreateContestDialog({ onCreate }: { onCreate: () => void }) {
+export function CreateContestDialog() {
 	const [isOpen, setIsOpen] = useState(false);
+	const utils = api.useUtils();
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -26,7 +28,7 @@ export function CreateContestDialog({ onCreate }: { onCreate: () => void }) {
 				<CreateContestForm
 					onSuccessAction={() => {
 						setIsOpen(false);
-						onCreate();
+						utils.contest.findAll.invalidate();
 					}}
 				/>
 			</DialogContent>

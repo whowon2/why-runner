@@ -18,10 +18,14 @@ export default async function Home() {
 					</p>
 					<div className="flex gap-4">
 						<Link href="contests">
-							<Button variant={"outline"}>Contests</Button>
+							<Button className="cursor-pointer" variant={"outline"}>
+								Contests
+							</Button>
 						</Link>
 						<Link href="problems">
-							<Button variant={"secondary"}>Problems</Button>
+							<Button className="cursor-pointer" variant={"default"}>
+								Problems
+							</Button>
 						</Link>
 					</div>
 				</div>

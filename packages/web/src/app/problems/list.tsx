@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export function ProblemsList({ problems }: { problems: Problem[] }) {
 	return (
-		<div>
+		<div className="w-full max-w-7xl">
 			<div className="flex justify-between">
 				<h1 className="font-bold text-2xl">Problems</h1>
 				<Link href={"/problems/new"}>

@@ -19,6 +19,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { updateProfileSchema } from "@/lib/schemas";
+import { signIn, unstable_update } from "@/server/auth";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "@runner/db";
@@ -36,11 +37,15 @@ export function UpdateForm({ user }: { user: User }) {
 		},
 	});
 
+	const utils = api.useUtils();
+
 	const { mutate: updateUser } = api.user.update.useMutation();
 
-	function onSubmit(values: z.infer<typeof updateProfileSchema>) {
+	async function onSubmit(values: z.infer<typeof updateProfileSchema>) {
 		updateUser(values, {
-			onSuccess() {
+			async onSuccess() {
+				utils.user.invalidate();
+
 				toast("Profile updated");
 			},
 			onError() {
