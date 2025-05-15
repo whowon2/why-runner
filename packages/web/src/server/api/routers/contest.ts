@@ -36,8 +36,6 @@ export const contestRouter = createTRPCRouter({
 					name: input.name,
 					start: input.startDate,
 					end: input.endDate,
-					startRegistration: input.startDate,
-					endRegistration: input.endDate,
 					CreatedBy: {
 						connect: {
 							id: ctx.session.user.id,
