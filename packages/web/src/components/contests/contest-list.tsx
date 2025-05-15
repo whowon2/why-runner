@@ -28,7 +28,7 @@ export function ContestList({
 
 			<div>
 				{contests.map((contest) => (
-					<ContestCard session={session} key={contest.id} contest={contest} />
+					<ContestCard key={contest.id} contest={contest} />
 				))}
 			</div>
 		</div>
