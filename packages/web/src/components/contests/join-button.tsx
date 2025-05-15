@@ -5,6 +5,7 @@ import { api } from "@/trpc/react";
 import type { Prisma } from "@runner/db";
 import type { Session } from "next-auth";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { toast } from "sonner";
 
 export function JoinButton({
@@ -21,7 +22,6 @@ export function JoinButton({
 	const { mutate: leaveContest, isPending: isLeavePending } =
 		api.contest.leave.useMutation();
 
-	const utils = api.useUtils();
 	const router = useRouter();
 
 	const isUserInContest = contest.UserOnContest.some(
@@ -31,6 +31,10 @@ export function JoinButton({
 	if (isCreatedByUser) {
 		return null;
 	}
+
+	useEffect(() => {
+		console.log("fodase");
+	}, []);
 
 	if (isUserInContest) {
 		return (
@@ -46,8 +50,8 @@ export function JoinButton({
 						{ contestId: contest.id },
 						{
 							onSuccess: () => {
-								toast("You have left the contest.");
 								router.refresh();
+								toast("You have left the contest.");
 							},
 						},
 					);

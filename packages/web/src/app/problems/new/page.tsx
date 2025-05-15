@@ -36,6 +36,7 @@ const formSchema = z.object({
 });
 
 export default function NewProblem() {
+	const utils = api.useUtils();
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -70,7 +71,8 @@ export default function NewProblem() {
 		mutate(values, {
 			onSuccess(data) {
 				toast("Problem added!");
-				router.push("/problems");
+				utils.contest.findById.invalidate();
+				router.back();
 			},
 			onError(error) {
 				console.error(error);

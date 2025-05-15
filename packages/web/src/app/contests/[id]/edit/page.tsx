@@ -1,9 +1,8 @@
 import { BreadCrumbs } from "@/components/header/breadcrumbs";
-import { Button } from "@/components/ui/button";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
 import { redirect } from "next/navigation";
-import { EditContestPage } from "./edit";
+import { EditContest } from "./edit";
 
 export default async function Page({
 	params,
@@ -25,7 +24,7 @@ export default async function Page({
 	return (
 		<div className="flex flex-col items-center justify-center">
 			<BreadCrumbs />
-			<EditContestPage contest={contest} session={session} />
+			<EditContest contest={contest} session={session} />
 		</div>
 	);
 }

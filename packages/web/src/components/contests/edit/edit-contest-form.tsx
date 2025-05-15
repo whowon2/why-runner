@@ -13,8 +13,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Contest } from "@runner/db";
+import type { Contest, Prisma } from "@runner/db";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -23,12 +24,14 @@ const formSchema = z.object({
 
 export function EditContestForm({
 	contest,
-	onSuccess,
 }: {
-	contest: Contest;
-	onSuccess: () => void;
+	contest: Prisma.ContestGetPayload<{
+		include: {
+			Problems: true;
+		};
+	}>;
 }) {
-	const { mutate: createContest, isPending } = api.contest.create.useMutation();
+	const { mutate: updateContest, isPending } = api.contest.update.useMutation();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -40,19 +43,17 @@ export function EditContestForm({
 	function onSubmit(values: z.infer<typeof formSchema>) {
 		console.log(values);
 
-		createContest(
+		updateContest(
 			{
+				contestId: contest.id,
 				name: values.name,
-				startDate: new Date(),
-				endDate: new Date(),
 			},
 			{
 				onSuccess: () => {
-					console.log("success");
-					onSuccess();
+					toast.success("Updated");
 				},
 				onError: (error) => {
-					console.log("error", error);
+					toast.error("Fail to update");
 				},
 			},
 		);
@@ -74,11 +75,9 @@ export function EditContestForm({
 						</FormItem>
 					)}
 				/>
-				<DialogFooter>
-					<Button disabled={isPending} type="submit">
-						{isPending ? "Saving changes..." : "Edit"}
-					</Button>
-				</DialogFooter>
+				<Button disabled={isPending} type="submit">
+					{isPending ? "Saving changes..." : "Edit"}
+				</Button>
 			</form>
 		</Form>
 	);

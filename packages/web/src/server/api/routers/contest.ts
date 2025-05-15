@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 import { prisma } from "@runner/db";
+import { TRPCError } from "@trpc/server";
 
 const ContestStatus = z.enum([
 	"UNPUBLISHED",
@@ -19,12 +20,11 @@ const createContestInput = z.object({
 });
 
 const updateContestInput = z.object({
-	id: z.string(),
+	contestId: z.string(),
 	name: z.string().optional(),
 	status: ContestStatus.optional(),
-	startDate: z.date().optional(),
-	endDate: z.date().optional(),
-	createdBy: z.string().optional(),
+	start: z.date().optional(),
+	end: z.date().optional(),
 });
 
 export const contestRouter = createTRPCRouter({
@@ -65,18 +65,22 @@ export const contestRouter = createTRPCRouter({
 
 	update: protectedProcedure
 		.input(updateContestInput)
-		.mutation(({ ctx, input }) => {
-			return prisma.contest.update({
+		.mutation(async ({ ctx, input }) => {
+			console.log({ input });
+			const updated = await prisma.contest.update({
 				where: {
-					id: input.id,
+					id: input.contestId,
 				},
 				data: {
 					name: input.name,
-					start: input.startDate,
-					end: input.endDate,
-					CreatedBy: { connect: { id: input.createdBy } },
+					start: input.start,
+					end: input.end,
 				},
 			});
+
+			console.log(updated);
+
+			return updated;
 		}),
 
 	delete: protectedProcedure
@@ -94,17 +98,37 @@ export const contestRouter = createTRPCRouter({
 		}),
 
 	addProblems: protectedProcedure
-		.input(
-			z.object({ contestId: z.string(), problemsIds: z.array(z.string()) }),
-		)
-		.mutation(({ ctx, input }) => {
+		.input(z.object({ contestId: z.string(), problemId: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			const contest = await prisma.contest.findUnique({
+				where: { id: input.contestId },
+				include: {
+					Problems: true,
+				},
+			});
+
+			if (!contest) {
+				return new TRPCError({
+					message: "Contest does not exist!",
+					code: "CONFLICT",
+				});
+			}
+
+			const problem = contest.Problems.find((p) => p.id === input.problemId);
+
+			if (problem) {
+				throw new Error("Problem already in the contest!");
+			}
+
 			return prisma.contest.update({
 				where: {
 					id: input.contestId,
 				},
 				data: {
 					Problems: {
-						connect: input.problemsIds.map((id) => ({ id })),
+						connect: {
+							id: input.problemId,
+						},
 					},
 				},
 			});
