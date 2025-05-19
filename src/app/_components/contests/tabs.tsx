@@ -45,6 +45,7 @@ export default function ContestTabs({
 	contest: Prisma.ContestGetPayload<{
 		include: {
 			problems: true;
+			userOnContest: true;
 		};
 	}>;
 }) {
@@ -78,6 +79,12 @@ export default function ContestTabs({
 				>
 					Leaderboard
 				</TabsTrigger>
+				<TabsTrigger
+					className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
+					value="description"
+				>
+					Description
+				</TabsTrigger>
 			</TabsList>
 			<TabsContent value="problems" className="flex gap-4">
 				<RadioGroup.Root
@@ -98,14 +105,60 @@ export default function ContestTabs({
 				</RadioGroup.Root>
 				{problem && (
 					<div className="flex w-full flex-col gap-2">
-						<ProblemDescription problem={problem} />
-						<UploadCode problem={problem} />
-						<SubmissionList problemId={problem.id} />
+						<Tabs className="w-full" defaultValue="description">
+							<TabsList>
+								<TabsTrigger
+									className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
+									value="description"
+								>
+									Description
+								</TabsTrigger>
+								<TabsTrigger
+									className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
+									value="editor"
+								>
+									Editor
+								</TabsTrigger>
+								<TabsTrigger
+									className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
+									value="submissions"
+								>
+									Submissions
+								</TabsTrigger>
+							</TabsList>
+							<TabsContent value="description">
+								<ProblemDescription problem={problem} />
+							</TabsContent>
+							<TabsContent value="editor">
+								<UploadCode problem={problem} />
+							</TabsContent>
+							<TabsContent value="submissions">
+								<SubmissionList problemId={problem.id} />
+							</TabsContent>
+						</Tabs>
 					</div>
 				)}
 			</TabsContent>
 			<TabsContent value="leaderboard">
 				<Leaderboard contest={contest} />
+			</TabsContent>
+			<TabsContent value="description">
+				<div className="flex gap-2">
+					<p>Starts at: </p>
+					{new Intl.DateTimeFormat("en-US", {
+						dateStyle: "medium",
+						timeStyle: "short",
+					}).format(contest.start)}
+				</div>
+				<div className="flex gap-2">
+					<p>Ends at: </p>
+					{new Intl.DateTimeFormat("en-US", {
+						dateStyle: "medium",
+						timeStyle: "short",
+					}).format(contest.end)}
+				</div>
+				<div>Participants: {contest.userOnContest.length}</div>
+				<div>Problems: {contest.problems.length}</div>
 			</TabsContent>
 		</Tabs>
 	);
