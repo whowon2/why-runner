@@ -1,13 +1,13 @@
 services:
-  db:
-    image: postgres:17.4
+  postgres:
     container_name: runner-db
-    restart: always
+    image: postgres
     ports:
       - "5432:5432"
+    restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: runner
 
   redis:
@@ -24,11 +24,3 @@ services:
       retries: 3
       start_period: 10s
     restart: always
-
-  cpp:
-    container_name: runner-cpp
-    image: runner-cpp
-    build:
-      context: packages/runners/cpp
-      dockerfile: Dockerfile
-    command:

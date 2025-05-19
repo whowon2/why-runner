@@ -1,153 +1,29 @@
-# 🏃‍♂️ Runner: Code Execution Platform
+# Create T3 App
 
-This is a TCC (Trabalho de Conclusão de Curso) project designed to support the execution and evaluation of code submissions in multiple programming languages inside isolated environments (containers). It includes a web interface, API, and infrastructure to run, test, and manage code for contests and problem solving.
+This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
 
-## 📦 Monorepo Stack
+## What's next? How do I make an app with this?
 
-* **Monorepo:** [Nx](https://nx.dev/) for project structure and dependency graph
-* **Runtime:** [Bun](https://bun.sh/) for fast JavaScript/TypeScript execution
-* **Linter/Formatter:** [Biome](https://biomejs.dev/) for code quality
-* **Containers:** Docker + Docker Compose for service orchestration
-* **Database:** PostgreSQL
-* **Cache/Queue:** Redis (for job queueing and caching)
-* **Runners:** Language-specific isolated containers (e.g., `cpp`, `python`)
+We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
 
+If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
 
-## 🧱 Project Structure
+- [Next.js](https://nextjs.org)
+- [NextAuth.js](https://next-auth.js.org)
+- [Prisma](https://prisma.io)
+- [Drizzle](https://orm.drizzle.team)
+- [Tailwind CSS](https://tailwindcss.com)
+- [tRPC](https://trpc.io)
 
-```
-.
-├── apps/
-│   ├── web/               # Frontend client
-│   ├── server/            # API using tRPC or REST
-│   └── database/          # Prisma
-├── packages/
-│   └── runners/           # Dockerfiles for code execution environment
-│       ├── cpp/           
-│       └── rust/          
-├── docker-compose.yml 
-├── .biome.json            # Biome config
-└── nx.json                # Nx project config
-```
+## Learn More
 
+To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
 
-## 🚀 Getting Started
+- [Documentation](https://create.t3.gg/)
+- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
 
-### Prerequisites
+You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
 
-* [Docker](https://www.docker.com/)
-* [Bun](https://bun.sh/)
-* [Nx CLI](https://nx.dev/cli/nx)
+## How do I deploy this?
 
-### Development Setup
-
-```bash
-# Install dependencies
-bun install
-
-# Start all services
-docker compose up --build
-```
-
-> The services will include:
->
-> * `runner-db` (PostgreSQL)
-> * `runner-redis` (Redis)
-> * `runner-cpp` (C++ sandbox environment)
-
-
-## 🧪 Features
-
-* ✅ Secure code execution with time/resource limits
-* ✅ Isolated runner containers per language
-* ✅ Queue-based task processing (Redis)
-* ✅ API for managing contests, problems, and submissions
-* ✅ Code diffing and test case validation
-* ✅ Realtime feedback for submissions
-
-
-## 🧰 Commands
-
-### Lint & Format
-
-```bash
-nx run-many -t lint
-```
-
-### Dev Server
-
-```bash
-nx run -many -t dev
-```
-
-## 🐳 Docker Compose Services
-
-```yaml
-services:
-  db:
-    image: postgres:17.4
-    container_name: runner-db
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: runner
-
-  redis:
-    container_name: runner-redis
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    command: redis-server --appendonly yes
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-    restart: always
-
-  cpp:
-    container_name: runner-cpp
-    image: runner-cpp
-    build:
-      context: packages/runners/cpp
-      dockerfile: Dockerfile
-    command:
-```
-
-## 📚 Technologies
-
-| Tech       | Usage                        |
-| ---------- | ---------------------------- |
-| Bun        | Package manager + runtime    |
-| Nx         | Monorepo orchestration       |
-| Biome      | Linting/formatting           |
-| Docker     | Service and runner isolation |
-| PostgreSQL | Persistent database          |
-| Redis      | Queueing, caching            |
-| tRPC       | Type-safe API (or REST)      |
-
-## 📖 Future Improvements
-
-* [ ] WebSocket for live execution updates
-* [ ] Multi-language support (Rust, Python, Java)
-* [ ] Admin panel to manage users/problems
-* [ ] Advanced security sandbox (e.g., seccomp, firejail)
-
-## 🧑‍💻 Author
-
-**Juan Israel** 
-
-TCC Advisor: *Prof. Suelen Mapa*
-
-
-Institution: *IFMG*
-
-## 📜 License
-
-MIT License. See `LICENSE` for more info.
-
-Let me know if you'd like to include a logo, deployment steps, or CI/CD instructions!
+Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
