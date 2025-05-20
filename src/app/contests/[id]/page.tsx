@@ -1,7 +1,7 @@
 import { BreadCrumbs } from "@/app/_components/breadcrumbs";
 import { JoinButton } from "@/app/_components/contests/join";
 import ContestTabs from "@/app/_components/contests/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
 import { Pencil } from "lucide-react";
@@ -46,29 +46,6 @@ export default async function Page({
 					isCreatedByUser={isCreatedByUser}
 				/>
 			</div>
-			<Card className="w-full">
-				<CardHeader>
-					<CardTitle>Description</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<div className="flex gap-2">
-						<p>Starts at: </p>
-						{new Intl.DateTimeFormat("en-US", {
-							dateStyle: "medium",
-							timeStyle: "short",
-						}).format(contest.start)}
-					</div>
-					<div className="flex gap-2">
-						<p>Ends at: </p>
-						{new Intl.DateTimeFormat("en-US", {
-							dateStyle: "medium",
-							timeStyle: "short",
-						}).format(contest.end)}
-					</div>
-					<div>Participants: {contest.userOnContest.length}</div>
-					<div>Problems: {contest.problems.length}</div>
-				</CardContent>
-			</Card>
 
 			<Card className="w-full">
 				<CardContent>
