@@ -1,7 +1,7 @@
 import { BreadCrumbs } from "@/app/_components/breadcrumbs";
 import { JoinButton } from "@/app/_components/contests/join";
 import ContestTabs from "@/app/_components/contests/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
 import { Pencil } from "lucide-react";
