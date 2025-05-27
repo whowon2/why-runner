@@ -11,36 +11,36 @@ import { SubmissionList } from "../submissions/list";
 import { Leaderboard } from "./leaderboard";
 
 const letters = [
-	"A",
-	"B",
-	"C",
-	"D",
-	"E",
-	"F",
-	"G",
-	"H",
-	"I",
-	"J",
-	"K",
-	"L",
-	"M",
-	"N",
-	"O",
-	"P",
-	"Q",
-	"R",
-	"S",
-	"T",
-	"U",
-	"V",
-	"W",
-	"X",
-	"Y",
-	"Z",
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T",
+  "U",
+  "V",
+  "W",
+  "X",
+  "Y",
+  "Z",
 ];
 
 export default function ContestTabs({
-	contest,
+  contest,
 }: {
 	contest: Prisma.ContestGetPayload<{
 		include: {
@@ -49,20 +49,20 @@ export default function ContestTabs({
 		};
 	}>;
 }) {
-	const [problem, setProblem] = useState<Problem | null>(null);
+  const [problem, setProblem] = useState<Problem | null>(null);
 
-	const options = contest.problems.map((p, idx) => ({
-		value: p.id,
-		label: letters[idx],
-	}));
+  const options = contest.problems.map((p, idx) => ({
+    value: p.id,
+    label: letters[idx],
+  }));
 
-	function handleSelectProblem(value: string) {
-		const prob = contest.problems.find((p) => p.id === value);
+  function handleSelectProblem(value: string) {
+    const prob = contest.problems.find((p) => p.id === value);
 
-		if (prob) {
-			setProblem(prob);
-		}
-	}
+    if (prob) {
+      setProblem(prob);
+    }
+  }
 
 	return (
 		<Tabs defaultValue="problems" className="w-full">
