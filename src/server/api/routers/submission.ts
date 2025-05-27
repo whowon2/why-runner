@@ -1,8 +1,10 @@
 import { z } from "zod";
+import { Queue } from "bullmq";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 import { env } from "@/env";
+import Redis from "ioredis";
 
 const createSubmissionInput = z.object({
   code: z.string(),
@@ -10,11 +12,29 @@ const createSubmissionInput = z.object({
   problemId: z.string().uuid(),
 });
 
+const connection = new Redis(env.REDIS_URL);
+
+const queue = new Queue("submissions", {
+  connection,
+  defaultJobOptions: {
+    backoff: {
+      type: "exponential",
+      delay: 1000,
+    },
+  },
+});
+
 export const submissionRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createSubmissionInput)
     .mutation(async ({ ctx, input }) => {
       const submission = await ctx.db.submission.create({ data: input });
+
+      const item = await queue.add("processSubmission", {
+        submissionId: submission.id,
+      });
+
+      console.log("queue item", item);
 
       return submission;
     }),
@@ -28,6 +48,9 @@ export const submissionRouter = createTRPCRouter({
     .query(({ ctx, input }) => {
       return ctx.db.submission.findMany({
         where: {},
+        orderBy: {
+          createdAt: "desc",
+        },
       });
     }),
 

@@ -144,7 +144,8 @@ enum Language {
 enum SubmissionStatus {
   PENDING
   RUNNING
-  COMPLETED
+  PASSED
+  FAILED
   ERROR
 }
 

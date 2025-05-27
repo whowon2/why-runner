@@ -1,60 +1,107 @@
 "use client";
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/react";
+import type { SubmissionStatus } from "@prisma/client";
+import { RefreshCcw } from "lucide-react";
 
-const color = (output: string | null) => {
-	if (!output) return "border-card-400";
-
-	if (output === "Submission failed") return "border-destructive";
-	const [passed, total] = output.split("/").map(Number);
-
-	if (passed === total) return "border-green-500";
-	return "border-card-400";
+const color = (status: SubmissionStatus) => {
+  switch (status) {
+    case "ERROR":
+      return "border-destructive";
+    case "FAILED":
+      return "border-destructive";
+    case "PASSED":
+      return "border-green-400";
+    case "RUNNING":
+      return "border-blue-400";
+    default:
+      return "border-card-400";
+  }
 };
 
 export function SubmissionList({ problemId }: { problemId: string }) {
-	const { data: submissions, isPending } = api.submission.find.useQuery({
-		problemId,
-	});
+  const {
+    data: submissions,
+    isPending,
+    refetch: refetchSubmissions,
+  } = api.submission.find.useQuery({
+    problemId,
+  });
 
-	if (isPending) {
-		return <Skeleton className="h-20 w-full" />;
-	}
+  if (isPending) {
+    return <Skeleton className="h-20 w-full" />;
+  }
 
-	if (!submissions) {
-		return <div>No submissions!</div>;
-	}
+  if (!submissions) {
+    return <div>No submissions!</div>;
+  }
 
-	return (
-		<Card className="w-full">
-			<CardHeader>
-				<CardTitle>Submissions</CardTitle>
-			</CardHeader>
-			<CardContent>
-				<div className="flex flex-col gap-4">
-					{submissions.length > 0 ? (
-						<div className="flex flex-col gap-2">
-							{submissions.map((submission) => (
-								<div
-									key={submission.id}
-									className={`flex items-center gap-2 rounded border p-2 ${color(submission.output)}`}
-								>
-									<p className="text-gray-500 text-sm">
-										{submission.createdAt.toLocaleTimeString()}:
-									</p>
-									<p className="text-xs">
-										{submission.output ?? "Processing..."}
-									</p>
-								</div>
-							))}
-						</div>
-					) : (
-						<p className="text-sm">No submissions found.</p>
-					)}
-				</div>
-			</CardContent>
-		</Card>
-	);
+  return (
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle
+          className="flex justify-between"
+          onClick={() => refetchSubmissions()}
+        >
+          <h1>Submissions</h1>
+          <Button>
+            <RefreshCcw />
+          </Button>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="">
+        <Accordion type="single" collapsible className="w-full space-y-2">
+          {submissions.map((submission) => (
+            <AccordionItem
+              value={`item-${submission.id}`}
+              key={submission.id}
+              className={`border rounded-md px-4 last:border ${color(submission.status)}`}
+            >
+              <AccordionTrigger>
+                <p className="text-gray-500 text-sm w-full">
+                  {submission.createdAt.toLocaleTimeString()}:
+                </p>
+                <p className="text-xs">
+                  {submission.status ?? "Processing..."}
+                </p>
+              </AccordionTrigger>
+              <AccordionContent>
+                {submission.output && (
+                  <SubmissionDetails output={submission.output} />
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SubmissionDetails({ output }: { output: string }) {
+  console.log(JSON.parse(output));
+
+  const details: {
+    passed: boolean;
+    tests: string[];
+  } = JSON.parse(output);
+
+  return (
+    <div>
+      {details.tests?.map((t, idx) => (
+        <div key={idx}>
+          Test {idx}: {t}
+        </div>
+      ))}
+    </div>
+  );
 }
