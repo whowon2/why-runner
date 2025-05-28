@@ -7,7 +7,7 @@ Runner is a blazing-fast, containerized online judge system designed for running
 - 🖥️ Modern frontend powered by **Next.js**.
 - ⚡ Ultra-fast backend scripts using **Bun**.
 - 📝 Job queue handling with **BullMQ** and **Redis**.
-- 🐳 Secure execution of C++ code inside **Docker** containers.
+- 🐳 Secure execution of code inside **Docker** containers.
 - 🗃️ PostgreSQL database for problem and submission management.
 - ✅ Automated testing: compares program output against expected results.
 - 🔄 Supports multiple test cases per problem.
@@ -26,13 +26,13 @@ Next.js (Frontend & API Routes)
 
 - **Frontend**: Next.js
 - **Queue**: BullMQ + Redis
-- **Runner**: Bun + Docker + GCC
+- **Runner**: Bun + Docker + Language Compiler
 - **Database**: PostgreSQL
 - **Schema**: Prisma
 
 ## ⚙️ How it works
 
-1. **User submits** C++ code via Next.js frontend.
+1. **User submits** code via Next.js frontend.
 2. Job is queued to **Redis** using **BullMQ**.
 3. **Bun worker** picks the job, fetches problem details from **PostgreSQL**.
 4. Code and inputs are prepared in `/tmp` and mounted into a **Docker** container.
