@@ -1,29 +1,81 @@
-# Create T3 App
+# 🏃 Runner - Online Judge System
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Runner is a blazing-fast, containerized online judge system designed for running and evaluating C++ submissions in a secure, isolated environment. Built with **Next.js**, **Bun**, **BullMQ**, **PostgreSQL**, and **Redis**, it's optimized for speed and developer productivity.
 
-## What's next? How do I make an app with this?
+## 🚀 Features
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- 🖥️ Modern frontend powered by **Next.js**.
+- ⚡ Ultra-fast backend scripts using **Bun**.
+- 📝 Job queue handling with **BullMQ** and **Redis**.
+- 🐳 Secure execution of C++ code inside **Docker** containers.
+- 🗃️ PostgreSQL database for problem and submission management.
+- ✅ Automated testing: compares program output against expected results.
+- 🔄 Supports multiple test cases per problem.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## 🏗️ Architecture
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+```plaintext
+Next.js (Frontend & API Routes)
+ └──> BullMQ (Job Queue)
+       └──> Bun Worker (consumes jobs)
+             └──> Docker Container (C++ runner)
+                   └──> Output validation
+```
 
-## Learn More
+## 📦 Tech Stack
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- **Frontend**: Next.js
+- **Queue**: BullMQ + Redis
+- **Runner**: Bun + Docker + GCC
+- **Database**: PostgreSQL
+- **Schema**: Prisma
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## ⚙️ How it works
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+1. **User submits** C++ code via Next.js frontend.
+2. Job is queued to **Redis** using **BullMQ**.
+3. **Bun worker** picks the job, fetches problem details from **PostgreSQL**.
+4. Code and inputs are prepared in `/tmp` and mounted into a **Docker** container.
+5. C++ code is compiled and executed inside the container.
+6. Output is compared with expected output, and status (`PASSED` / `FAILED`) is updated in the DB.
 
-## How do I deploy this?
+## 🐳 Docker C++ Runner
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+Minimal image using `gcc:13`. It compiles `code.cpp`, runs it against input files, and compares outputs.
+
+## 🛠️ Setup
+
+1. Install dependencies:
+   ```bash
+   bun install
+   ```
+
+2. Set environment variables in `.env`:
+   ```bash
+   DATABASE_URL=postgres://user:password@localhost:5432/runner
+   REDIS_URL=redis://localhost:6379
+   BACKEND_URL=http://localhost:3000
+   ```
+
+3. Run Bun worker:
+   ```bash
+   bun run src/worker.ts
+   ```
+
+4. Start Next.js app:
+   ```bash
+   npm run dev
+   ```
+
+## 🚨 Important
+
+- **Ensure** Docker is running and `runner-cpp` image is built.
+- Make sure `/tmp` directory is writable by Bun.
+
+## 🤝 Contributing
+
+PRs and suggestions are welcome! Let's make Runner the fastest online judge out there.
+
+## 📄 License
+
+MIT License
