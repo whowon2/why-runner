@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/react";
-import type { SubmissionStatus } from "@prisma/client";
+import type { Problem, SubmissionStatus } from "@prisma/client";
 import { RefreshCcw } from "lucide-react";
 
 const color = (status: SubmissionStatus) => {
@@ -28,13 +28,13 @@ const color = (status: SubmissionStatus) => {
 	}
 };
 
-export function SubmissionList({ problemId }: { problemId: string }) {
+export function SubmissionList({ problem }: { problem: Problem }) {
 	const {
 		data: submissions,
 		isPending,
 		refetch: refetchSubmissions,
 	} = api.submission.find.useQuery({
-		problemId,
+		problemId: problem.id,
 	});
 
 	if (isPending) {

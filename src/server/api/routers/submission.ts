@@ -47,7 +47,9 @@ export const submissionRouter = createTRPCRouter({
 		)
 		.query(({ ctx, input }) => {
 			return ctx.db.submission.findMany({
-				where: {},
+				where: {
+					problemId: input.problemId,
+				},
 				orderBy: {
 					createdAt: "desc",
 				},

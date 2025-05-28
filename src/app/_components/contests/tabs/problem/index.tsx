@@ -79,7 +79,7 @@ export function SelectProblem({
 			{problem && (
 				<div className="flex w-full flex-col gap-2">
 					<ProblemDescription problem={problem} />
-					<SubmissionList problemId={problem.id} />
+					<SubmissionList problem={problem} />
 					<UploadCode problem={problem} />
 				</div>
 			)}
