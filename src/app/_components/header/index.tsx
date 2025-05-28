@@ -5,18 +5,18 @@ import { AvatarButton } from "./avatar-button";
 import { ModeToggle } from "./theme";
 
 export async function Header() {
-  const session = await auth();
+	const session = await auth();
 
-  return (
-    <div className="sticky flex items-center justify-between p-4">
-      {session ? (
-        <AvatarButton session={session} />
-      ) : (
-        <Link href={"/api/auth/signin"}>
-          <Button>Login</Button>
-        </Link>
-      )}
-      <ModeToggle />
-    </div>
-  );
+	return (
+		<div className="sticky flex items-center justify-between p-4">
+			{session ? (
+				<AvatarButton session={session} />
+			) : (
+				<Link href={"/api/auth/signin"}>
+					<Button>Login</Button>
+				</Link>
+			)}
+			<ModeToggle />
+		</div>
+	);
 }
