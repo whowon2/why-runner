@@ -44,7 +44,7 @@ export function ContestCard({
 	return (
 		<div
 			key={contest.id}
-			className="my-2 flex justify-between rounded-lg border p-4"
+			className="flex justify-between rounded-lg border p-4"
 		>
 			<Link href={`/contests/${contest.id}`}>
 				<h3 className="font-bold hover:underline">{contest.name}</h3>

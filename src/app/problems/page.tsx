@@ -1,5 +1,5 @@
 import { auth } from "@/server/auth";
-import { api } from "@/trpc/server";
+import { api, HydrateClient } from "@/trpc/server";
 import { redirect } from "next/navigation";
 import { BreadCrumbs } from "../_components/breadcrumbs";
 import { ProblemsList } from "../_components/problems/list";
@@ -11,12 +11,14 @@ export default async function ProblemsPage() {
     redirect("/api/auth/signin");
   }
 
-  const problems = await api.problem.getAll({});
+  void api.problem.getAll.prefetch({});
 
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-8 p-4">
-      <BreadCrumbs />
-      <ProblemsList problems={problems} />
-    </div>
+    <HydrateClient>
+      <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
+        <BreadCrumbs />
+        <ProblemsList />
+      </div>
+    </HydrateClient>
   );
 }

@@ -8,7 +8,7 @@ export function ContestList() {
 	const [contests] = api.contest.findAll.useSuspenseQuery();
 
 	return (
-		<div className="flex w-full max-w-7xl flex-col">
+		<div className="w-full max-w-7xl">
 			<div className="flex justify-between">
 				<h1 className="font-bold text-2xl">Contests</h1>
 				<CreateContestDialog />
@@ -20,7 +20,7 @@ export function ContestList() {
 				</div>
 			)}
 
-			<div>
+			<div className="flex flex-col gap-4 py-4">
 				{contests.map((contest) => (
 					<ContestCard key={contest.id} contest={contest} />
 				))}
