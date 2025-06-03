@@ -1,8 +1,8 @@
-import { BreadCrumbs } from "@/app/_components/breadcrumbs";
-import { JoinButton } from "@/app/_components/contests/join";
-import { Leaderboard } from "@/app/_components/contests/leaderboard";
-import { DescriptionTab } from "@/app/_components/contests/tabs/description";
-import { SelectProblem } from "@/app/_components/contests/tabs/problem";
+import { BreadCrumbs } from "@/components/breadcrumbs";
+import { JoinButton } from "@/components/contests/join";
+import { Leaderboard } from "@/components/contests/leaderboard";
+import { DescriptionTab } from "@/components/contests/tabs/description";
+import { SelectProblem } from "@/components/contests/tabs/problem";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auth } from "@/server/auth";
@@ -74,7 +74,7 @@ export default async function Page({
 							</TabsTrigger>
 						</TabsList>
 
-						<TabsContent value="problems" className="flex gap-4">
+						<TabsContent value="problems" className="flex w-full gap-4">
 							<SelectProblem contest={contest} />
 						</TabsContent>
 						<TabsContent value="leaderboard">

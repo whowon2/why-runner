@@ -138,8 +138,8 @@ export function UploadCode({ problem }: { problem: Problem }) {
 	}, [code, problem.id, language]);
 
 	return (
-		<Card className="w-full">
-			<CardContent className="flex w-full flex-col gap-4">
+		<Card className="h-full max-h-screen w-full">
+			<CardContent className="flex h-full w-full flex-col gap-4">
 				<div className="grid w-full items-center gap-1.5">
 					<div className="flex justify-between gap-2">
 						<Select onValueChange={handleLanguageChange}>
@@ -201,7 +201,7 @@ export function UploadCode({ problem }: { problem: Problem }) {
 						</TooltipProvider>
 					</div>
 				</div>
-				{/* <Editor
+				<Editor
 					className="rounded"
 					language={language || ""}
 					value={code}
@@ -211,9 +211,9 @@ export function UploadCode({ problem }: { problem: Problem }) {
 							setCode(c);
 						}
 					}}
-					height={"40vh"}
+					height={"100%"}
 					width={"100%"}
-				/> */}
+				/>
 			</CardContent>
 		</Card>
 	);

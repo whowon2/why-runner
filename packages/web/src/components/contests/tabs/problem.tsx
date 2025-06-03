@@ -1,8 +1,13 @@
 "use client";
 
-import { ProblemDescription } from "@/app/_components/problems/description";
-import { UploadCode } from "@/app/_components/problems/upload";
-import { SubmissionList } from "@/app/_components/submissions/list";
+import { ProblemDescription } from "@/components/problems/description";
+import { SubmissionList } from "@/components/problems/submissions";
+import { UploadCode } from "@/components/problems/upload";
+import {
+	ResizableHandle,
+	ResizablePanel,
+	ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import type { Prisma, Problem } from "@prisma/client";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { useState } from "react";
@@ -61,7 +66,7 @@ export function SelectProblem({
 		label: letters[idx],
 	}));
 	return (
-		<>
+		<div className="flex w-full gap-4">
 			<RadioGroup.Root
 				onValueChange={handleSelectProblem}
 				className="flex flex-col gap-2"
@@ -77,12 +82,20 @@ export function SelectProblem({
 				))}
 			</RadioGroup.Root>
 			{problem && (
-				<div className="flex w-full flex-col gap-2">
-					<ProblemDescription problem={problem} />
-					<UploadCode problem={problem} />
-					<SubmissionList problem={problem} />
-				</div>
+				<ResizablePanelGroup direction="horizontal">
+					<ResizablePanel>
+						<ProblemDescription problem={problem} />
+					</ResizablePanel>
+					<ResizableHandle withHandle />
+					<ResizablePanel>
+						<SubmissionList problem={problem} />
+					</ResizablePanel>
+					<ResizableHandle withHandle />
+					<ResizablePanel>
+						<UploadCode problem={problem} />
+					</ResizablePanel>
+				</ResizablePanelGroup>
 			)}
-		</>
+		</div>
 	);
 }

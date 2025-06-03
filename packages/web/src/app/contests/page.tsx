@@ -1,8 +1,8 @@
+import { BreadCrumbs } from "@/components/breadcrumbs";
+import { ContestList } from "@/components/contests/list";
 import { auth } from "@/server/auth";
 import { HydrateClient, api } from "@/trpc/server";
 import { redirect } from "next/navigation";
-import { BreadCrumbs } from "../_components/breadcrumbs";
-import { ContestList } from "../_components/contests/list";
 
 export default async function ContestsPage() {
 	const session = await auth();

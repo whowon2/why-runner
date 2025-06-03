@@ -1,6 +1,6 @@
+import { BreadCrumbs } from "@/components/breadcrumbs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BreadCrumbs } from "../_components/breadcrumbs";
-import { CreateContestDialog } from "../_components/contests/create/dialog";
+import { CreateContestDialog } from "../../components/contests/create/dialog";
 
 export default async function Loading() {
 	return (

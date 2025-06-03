@@ -1,7 +1,7 @@
+import { BreadCrumbs } from "@/components/breadcrumbs";
 import { auth } from "@/server/auth";
 import { redirect } from "next/navigation";
-import { BreadCrumbs } from "../_components/breadcrumbs";
-import Profile from "../_components/profile";
+import Profile from "../../components/profile";
 
 export default async function ProfilePage() {
 	const session = await auth();

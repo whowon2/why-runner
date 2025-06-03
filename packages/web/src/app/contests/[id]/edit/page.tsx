@@ -1,5 +1,5 @@
-import { BreadCrumbs } from "@/app/_components/breadcrumbs";
-import { EditContest } from "@/app/_components/contests/edit/edit";
+import { BreadCrumbs } from "@/components/breadcrumbs";
+import { EditContest } from "@/components/contests/edit/edit";
 import { auth } from "@/server/auth";
 import { api } from "@/trpc/server";
 import { redirect } from "next/navigation";
