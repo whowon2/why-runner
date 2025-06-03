@@ -1,8 +1,8 @@
+import { BreadCrumbs } from "@/components/breadcrumbs";
 import { auth } from "@/server/auth";
 import { HydrateClient, api } from "@/trpc/server";
 import { redirect } from "next/navigation";
-import { BreadCrumbs } from "../_components/breadcrumbs";
-import { ProblemsList } from "../_components/problems/list";
+import { ProblemsList } from "../../components/problems/list";
 
 export default async function ProblemsPage() {
 	const session = await auth();

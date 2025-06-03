@@ -24,8 +24,6 @@ new Worker(
 
 		const { submissionId } = parseResult.data;
 
-		console.log(parseResult.data);
-
 		try {
 			const submission = await getSubmission(submissionId);
 

@@ -46,7 +46,7 @@ export function SubmissionList({ problem }: { problem: Problem }) {
 	}
 
 	return (
-		<Card className="w-full">
+		<Card className="max-h-screen w-full overflow-auto">
 			<CardHeader>
 				<CardTitle
 					className="flex justify-between"

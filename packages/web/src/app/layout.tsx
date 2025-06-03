@@ -3,11 +3,11 @@ import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
 import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/react";
 import { ThemeProvider } from "next-themes";
-import { Footer } from "./_components/footer";
-import { Header } from "./_components/header";
 
 export const metadata: Metadata = {
 	title: "Why Runner",

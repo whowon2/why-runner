@@ -1,8 +1,8 @@
+import { BreadCrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { BreadCrumbs } from "../_components/breadcrumbs";
-import { DifficultyBadge } from "../_components/problems/badge";
+import { DifficultyBadge } from "../../components/problems/badge";
 
 export default async function Loading() {
 	return (
