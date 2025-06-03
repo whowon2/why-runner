@@ -1,18 +1,30 @@
 {
-	"$schema": "./node_modules/nx/schemas/nx-schema.json",
-	"targetDefaults": {
-		"build": {
-			"dependsOn": ["^build"],
-			"outputs": ["{projectRoot}/.next"],
-			"cache": true
-		},
-		"typecheck": {
-			"cache": true
-		},
-		"lint": {
-			"cache": true
-		}
-	},
-	"defaultBase": "main",
-	"nxCloudId": "683f18d833f9204174327ae8"
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "{projectRoot}/.next"
+      ],
+      "cache": true
+    },
+    "typecheck": {
+      "cache": true
+    },
+    "lint": {
+      "cache": true
+    }
+  },
+  "defaultBase": "main",
+  "nxCloudId": "683f18d833f9204174327ae8",
+  "namedInputs": {
+    "sharedGlobals": [
+      "{workspaceRoot}/.github/workflows/ci.yml"
+    ],
+    "default": [
+      "sharedGlobals"
+    ]
+  }
 }
