@@ -37,7 +37,8 @@ async function main() {
 			},
 			{
 				contestId: contest1.id,
-				description: `Given a string s, find the length of the longest substring without repeating characters.`,
+				description:
+					"Given a string s, find the length of the longest substring without repeating characters.",
 				title: "Longest Substring Without Repeating Characters",
 				difficulty: "MEDIUM",
 				inputs: ["abcabcbb", "bbbbb", "pwwkew"],
@@ -45,8 +46,9 @@ async function main() {
 			},
 			{
 				contestId: contest1.id,
-				description: `Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
-        The overall run time complexity should be O(log (m+n)).`,
+				description: `
+Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
+The overall run time complexity should be O(log (m+n)).`,
 				title: "Median of Two Sorted Arrays",
 				difficulty: "HARD",
 				inputs: ["1 3\n2", "1 2\n3 4"],
@@ -54,8 +56,9 @@ async function main() {
 			},
 			{
 				contestId: contest1.id,
-				description: `Given an integer array nums, move all 0's to the end of it while maintaining the relative order of the non-zero elements.
-              Note that you must do this in-place without making a copy of the array.`,
+				description: `
+Given an integer array nums, move all 0's to the end of it while maintaining the relative order of the non-zero elements.
+Note that you must do this in-place without making a copy of the array.`,
 				title: "Move Zeroes",
 				difficulty: "EASY",
 				inputs: ["0 1 0 3 12", "0", "1 0"],
@@ -63,7 +66,8 @@ async function main() {
 			},
 			{
 				contestId: contest1.id,
-				description: `Given an array nums of n integers where nums[i] is in the range [1, n], return an array of all the integers in the range [1, n] that do not appear in nums.`,
+				description:
+					"Given an array nums of n integers where nums[i] is in the range [1, n], return an array of all the integers in the range [1, n] that do not appear in nums.",
 				title: "Find All Numbers Disappeared in an Array",
 				difficulty: "EASY",
 				inputs: ["4 3 2 7 8 2 3 1", "1 1"],
@@ -71,7 +75,8 @@ async function main() {
 			},
 			{
 				contestId: contest1.id,
-				description: `Given the head of a singly linked list, reverse the list, and return the reversed list.`,
+				description:
+					"Given the head of a singly linked list, reverse the list, and return the reversed list.",
 				title: "Reverse Linked List",
 				difficulty: "EASY",
 				inputs: ["1 2 3 4 5", "1 2"],
@@ -106,7 +111,8 @@ async function main() {
 			},
 			{
 				contestId: contest1.id,
-				description: `Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.`,
+				description:
+					"Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.",
 				title: "Merge Intervals",
 				difficulty: "MEDIUM",
 				inputs: ["1 3,2 6,8 10,15 18", "1 4,4 5"],
@@ -114,7 +120,8 @@ async function main() {
 			},
 			{
 				contestId: contest1.id,
-				description: `Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.`,
+				description:
+					"Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.",
 				title: "3Sum",
 				difficulty: "MEDIUM",
 				inputs: ["-1 0 1 2 -1 -4", "0 1 1", "0 0 0"],
@@ -122,7 +129,8 @@ async function main() {
 			},
 			{
 				contestId: contest1.id,
-				description: `Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.`,
+				description:
+					"Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.",
 				title: "Generate Parentheses",
 				difficulty: "MEDIUM",
 				inputs: ["3", "1"],
@@ -130,7 +138,8 @@ async function main() {
 			},
 			{
 				contestId: contest1.id,
-				description: `Given a collection of distinct integers, return all possible permutations. You can return the answer in any order.`,
+				description:
+					"Given a collection of distinct integers, return all possible permutations. You can return the answer in any order.",
 				title: "Permutations",
 				difficulty: "MEDIUM",
 				inputs: ["1 2 3", "0 1"],
@@ -138,7 +147,8 @@ async function main() {
 			},
 			{
 				contestId: contest1.id,
-				description: `Given a non-empty array of integers nums, every element appears three times except for one, which appears exactly once. Find that single one.`,
+				description:
+					"Given a non-empty array of integers nums, every element appears three times except for one, which appears exactly once. Find that single one.",
 				title: "Single Number II",
 				difficulty: "MEDIUM",
 				inputs: ["2 2 3 2", "0 1 0 1 0 1 99"],
@@ -169,7 +179,8 @@ async function main() {
 			},
 			{
 				contestId: contest2.id,
-				description: `Given a linked list, remove the n-th node from the end of list and return its head.`,
+				description:
+					"Given a linked list, remove the n-th node from the end of list and return its head.",
 				title: "Remove Nth Node From End of List",
 				difficulty: "MEDIUM",
 				inputs: ["1 2 3 4 5\n2", "1\n1", "1 2\n1"],
@@ -192,7 +203,8 @@ async function main() {
 		data: [
 			{
 				contestId: contest3.id,
-				description: `Given a non-empty array of integers nums, every element appears twice except for one. Find that single one.`,
+				description:
+					"Given a non-empty array of integers nums, every element appears twice except for one. Find that single one.",
 				title: "Single Number",
 				difficulty: "EASY",
 				inputs: ["2 2 1", "4 1 2 1 2"],
@@ -200,7 +212,8 @@ async function main() {
 			},
 			{
 				contestId: contest3.id,
-				description: `Given an array of integers, find if the array contains any duplicates.`,
+				description:
+					"Given an array of integers, find if the array contains any duplicates.",
 				title: "Contains Duplicate",
 				difficulty: "EASY",
 				inputs: ["1 2 3 1", "1 2 3 4", "1 1 1 3 3 4 3 2 4 2"],
