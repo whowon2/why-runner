@@ -2,7 +2,7 @@ import { BreadCrumbs } from "@/components/breadcrumbs";
 import { JoinButton } from "@/components/contests/join";
 import { Leaderboard } from "@/components/contests/leaderboard";
 import { DescriptionTab } from "@/components/contests/tabs/description";
-import { SelectProblem } from "@/components/contests/tabs/problem/problem";
+import { SelectProblem } from "@/components/contests/tabs/problem";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auth } from "@/server/auth";
