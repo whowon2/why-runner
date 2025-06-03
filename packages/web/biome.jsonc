@@ -5,7 +5,7 @@
 		"clientKind": "git",
 		"useIgnoreFile": true
 	},
-	"files": { "ignoreUnknown": false, "ignore": [".next"] },
+	"files": { "ignoreUnknown": false, "ignore": [] },
 	"formatter": { "enabled": true },
 	"organizeImports": { "enabled": true },
 	"linter": {
