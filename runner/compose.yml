@@ -1,0 +1,10 @@
+services:
+  cpp:
+    build:
+      context: ./cpp
+      dockerfile: Dockerfile
+
+  rust:
+    build:
+      context: ./rust
+      dockerfile: Dockerfile
