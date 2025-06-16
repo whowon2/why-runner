@@ -26,11 +26,13 @@ services:
     restart: always
 
   cpp:
+    container_name: runner-cpp
     build:
       context: ./packages/runner/cpp
       dockerfile: Dockerfile
 
   rust:
+    container_name: runner-rust
     build:
       context: ./packages/runner/rust
       dockerfile: Dockerfile

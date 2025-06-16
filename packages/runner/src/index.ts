@@ -2,7 +2,19 @@ import { Worker } from "bullmq";
 import Redis from "ioredis";
 import { z } from "zod";
 import { cppJudge } from "../cpp";
+import { rustJudge } from "../rust";
 import { getProblem, getSubmission, updateSubmission } from "./queries";
+
+function getRunner(language: "cpp" | "rust") {
+	switch (language) {
+		case "cpp":
+			return cppJudge;
+		case "rust":
+			return rustJudge;
+		default:
+			throw new Error("Invalid Language");
+	}
+}
 
 const connection = new Redis({
 	maxRetriesPerRequest: 0,
@@ -15,7 +27,7 @@ const jobSchema = z.object({
 new Worker(
 	"submissions",
 	async (job) => {
-		console.log(job.id);
+		console.log(job.data);
 		const parseResult = jobSchema.safeParse(job.data);
 
 		if (!parseResult.success) {
@@ -39,7 +51,9 @@ new Worker(
 
 			await updateSubmission(submissionId, "RUNNING");
 
-			const res = await cppJudge(problem, submission);
+			const runner = getRunner(submission.language);
+
+			const res = await runner(problem, submission);
 
 			await updateSubmission(
 				submissionId,

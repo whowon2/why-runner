@@ -83,15 +83,15 @@ export function SelectProblem({
 			</RadioGroup.Root>
 			{problem && (
 				<ResizablePanelGroup direction="horizontal">
-					<ResizablePanel>
+					<ResizablePanel className="p-2">
 						<ProblemDescription problem={problem} />
 					</ResizablePanel>
 					<ResizableHandle withHandle />
-					<ResizablePanel>
+					<ResizablePanel className="p-2">
 						<SubmissionList problem={problem} />
 					</ResizablePanel>
 					<ResizableHandle withHandle />
-					<ResizablePanel>
+					<ResizablePanel className="p-2">
 						<UploadCode problem={problem} />
 					</ResizablePanel>
 				</ResizablePanelGroup>

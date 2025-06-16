@@ -14,6 +14,7 @@ export const submissionSchema = z.object({
 	id: z.string().uuid(),
 	code: z.string(),
 	problemId: z.string().uuid(),
+	language: z.enum(["rust", "cpp"]),
 });
 
 export type Submission = z.infer<typeof submissionSchema>;

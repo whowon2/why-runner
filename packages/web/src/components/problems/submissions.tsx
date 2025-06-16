@@ -11,7 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/react";
 import type { Problem, SubmissionStatus } from "@prisma/client";
-import { RefreshCcw } from "lucide-react";
+import { Brain, RefreshCcw } from "lucide-react";
+import { AIDialog } from "./ai/dialog";
 
 const color = (status: SubmissionStatus) => {
 	switch (status) {
@@ -74,10 +75,11 @@ export function SubmissionList({ problem }: { problem: Problem }) {
 									{submission.status ?? "Processing..."}
 								</p>
 							</AccordionTrigger>
-							<AccordionContent>
+							<AccordionContent className="flex justify-between">
 								{submission.output && (
 									<SubmissionDetails output={submission.output} />
 								)}
+								<AIDialog submission={submission} problem={problem} />
 							</AccordionContent>
 						</AccordionItem>
 					))}
