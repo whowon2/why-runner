@@ -205,7 +205,7 @@ export function UploadCode({ problem }: { problem: Problem }) {
 					className="rounded"
 					language={language || ""}
 					value={code}
-					theme={theme === "dark" ? "vs-dark" : "vs"}
+					theme={"vs-dark"}
 					onChange={(c) => {
 						if (c) {
 							setCode(c);

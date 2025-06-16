@@ -1,6 +1,6 @@
-import { removeDir } from "../src/utils/remove-dir";
 import { mkdir } from "node:fs/promises";
-import { submissionSchema, type Problem, type Submission } from "../types";
+import { removeDir } from "../src/utils/remove-dir";
+import { type Problem, type Submission, submissionSchema } from "../types";
 
 async function run(testDir: string) {
 	const command = [
@@ -9,7 +9,7 @@ async function run(testDir: string) {
 		"--rm",
 		"-v",
 		`${testDir}:/app/data`,
-		"runner-cpp",
+		"why-runner-cpp",
 	];
 
 	try {
