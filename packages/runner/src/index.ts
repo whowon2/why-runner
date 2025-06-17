@@ -16,8 +16,8 @@ function getRunner(language: "cpp" | "rust") {
 	}
 }
 
-const connection = new Redis({
-	maxRetriesPerRequest: 0,
+const connection = new Redis(process.env.REDIS_URL, {
+  maxRetriesPerRequest: 0
 });
 
 const jobSchema = z.object({

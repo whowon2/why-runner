@@ -1,5 +1,8 @@
 "use client";
 
+import type { Problem, Submission } from "@prisma/client";
+import { Brain } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -11,14 +14,14 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { api } from "@/trpc/react";
-import type { Problem, Submission } from "@prisma/client";
-import { Brain } from "lucide-react";
-import { useState } from "react";
 
 export function AIDialog({
 	submission,
 	problem,
-}: { submission: Submission; problem: Problem }) {
+}: {
+	submission: Submission;
+	problem: Problem;
+}) {
 	const { mutate } = api.submission.getAiHelp.useMutation();
 	const [help, setHelp] = useState("");
 
@@ -28,7 +31,7 @@ export function AIDialog({
 			{
 				onSuccess: (data) => {
 					console.log("success", data);
-					setHelp(data);
+					setHelp(data ?? "No response!");
 				},
 				onError: (e) => {
 					console.log("error", e);
