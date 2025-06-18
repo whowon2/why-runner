@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Prisma } from '@prisma/client';
+import { Loader } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -75,7 +76,7 @@ export function EditContestForm({
 					)}
 				/>
 				<Button disabled={isPending || !form.formState.isDirty} type="submit">
-					{isPending ? 'Saving changes...' : 'Save'}
+					{isPending ? <Loader className="animate-spin" /> : 'Save'}
 				</Button>
 			</form>
 		</Form>
