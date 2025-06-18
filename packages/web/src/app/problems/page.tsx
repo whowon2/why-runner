@@ -1,14 +1,14 @@
-import { BreadCrumbs } from "@/components/breadcrumbs";
-import { auth } from "@/server/auth";
-import { HydrateClient, api } from "@/trpc/server";
-import { redirect } from "next/navigation";
-import { ProblemsList } from "../../components/problems/list";
+import { redirect } from 'next/navigation';
+import { BreadCrumbs } from '@/components/breadcrumbs';
+import { auth } from '@/server/auth';
+import { api, HydrateClient } from '@/trpc/server';
+import { ProblemsList } from '../../components/problems/list';
 
 export default async function ProblemsPage() {
 	const session = await auth();
 
 	if (!session) {
-		redirect("/api/auth/signin");
+		redirect('/api/auth/signin');
 	}
 
 	void api.problem.getAll.prefetch({});

@@ -1,47 +1,47 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import Editor from '@monaco-editor/react';
+import type { Language, Problem } from '@prisma/client';
+import { FilePlus2, Save, Upload } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { api } from "@/trpc/react";
-import Editor from "@monaco-editor/react";
-import type { Language, Problem } from "@prisma/client";
-import { FilePlus2, Save, Upload } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+} from '@/components/ui/tooltip';
+import { api } from '@/trpc/react';
 
 export function UploadCode({ problem }: { problem: Problem }) {
 	const fileRef = useRef<HTMLInputElement | null>(null);
-	const [code, setCode] = useState("");
+	const [code, setCode] = useState('');
 	const [language, setLanguage] = useState<Language | null>(null);
 	const { mutate, isPending } = api.submission.create.useMutation();
 	const { theme } = useTheme();
 	const utils = api.useUtils();
 
 	const extensions = {
-		rust: ["rs"],
-		python: ["py"],
-		cpp: ["cpp", "cc", "cxx", "c++"],
-		java: ["java"],
+		cpp: ['cpp', 'cc', 'cxx', 'c++'],
+		java: ['java'],
+		python: ['py'],
+		rust: ['rs'],
 	};
 
 	function handleUpload() {
 		if (!language) {
-			toast.warning("Please select a language");
+			toast.warning('Please select a language');
 			return;
 		}
 
@@ -59,12 +59,12 @@ export function UploadCode({ problem }: { problem: Problem }) {
 				problemId: problem.id,
 			},
 			{
-				onSuccess: () => {
-					toast.success("Code Submitted");
-					utils.submission.find.invalidate({ problemId: problem.id });
-				},
 				onError: (error) => {
-					toast.error("Failed to submit code", { description: error.message });
+					toast.error('Failed to submit code', { description: error.message });
+				},
+				onSuccess: () => {
+					toast.success('Code Submitted');
+					utils.submission.find.invalidate({ problemId: problem.id });
 				},
 			},
 		);
@@ -75,18 +75,18 @@ export function UploadCode({ problem }: { problem: Problem }) {
 
 		if (!language || !file) return;
 
-		const extension = file.name.split(".").pop();
+		const extension = file.name.split('.').pop();
 
 		if (
 			!extension ||
 			!extensions[language as keyof typeof extensions]?.includes(extension)
 		) {
-			toast.warning("Invalid file extension", {
-				description: `Expected: ${extensions[language as keyof typeof extensions].join(", ")}`,
+			toast.warning('Invalid file extension', {
+				description: `Expected: ${extensions[language as keyof typeof extensions].join(', ')}`,
 			});
 
 			if (fileRef.current) {
-				fileRef.current.value = "";
+				fileRef.current.value = '';
 			}
 
 			return;
@@ -107,9 +107,9 @@ export function UploadCode({ problem }: { problem: Problem }) {
 		if (code) {
 			localStorage.setItem(`code-${problem.id}-${language}`, code);
 
-			toast.success("Code saved successfully!");
+			toast.success('Code saved successfully!');
 		} else {
-			toast.warning("No code to save!");
+			toast.warning('No code to save!');
 		}
 	}
 
@@ -121,16 +121,16 @@ export function UploadCode({ problem }: { problem: Problem }) {
 				);
 
 				if (savedCode) {
-					toast("Do you want to load the saved code?", {
+					toast('Do you want to load the saved code?', {
 						action: {
-							label: "Load",
+							label: 'Load',
 							onClick: () => setCode(savedCode),
 						},
-						duration: 100000,
 						cancel: {
-							label: "Cancel",
+							label: 'Cancel',
 							onClick: () => {},
 						},
+						duration: 100000,
 					});
 				}
 			}
@@ -155,21 +155,20 @@ export function UploadCode({ problem }: { problem: Problem }) {
 						</Select>
 
 						<Input
-							id="picture"
-							type="file"
 							className="hidden w-full"
 							onChange={handleFileChange}
 							ref={fileRef}
+							type="file"
 						/>
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<Button
-										variant={"outline"}
 										disabled={!language}
 										onClick={() => {
 											fileRef.current?.click();
 										}}
+										variant={'outline'}
 									>
 										<FilePlus2 />
 									</Button>
@@ -181,7 +180,7 @@ export function UploadCode({ problem }: { problem: Problem }) {
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger asChild>
-									<Button variant={"outline"} onClick={handleSaveCode}>
+									<Button onClick={handleSaveCode} variant={'outline'}>
 										<Save />
 									</Button>
 								</TooltipTrigger>
@@ -203,16 +202,16 @@ export function UploadCode({ problem }: { problem: Problem }) {
 				</div>
 				<Editor
 					className="rounded"
-					language={language || ""}
-					value={code}
-					theme={"vs-dark"}
+					height={'100%'}
+					language={language || ''}
 					onChange={(c) => {
 						if (c) {
 							setCode(c);
 						}
 					}}
-					height={"100%"}
-					width={"100%"}
+					theme={'vs-dark'}
+					value={code}
+					width={'100%'}
 				/>
 			</CardContent>
 		</Card>

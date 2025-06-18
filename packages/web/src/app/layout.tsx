@@ -1,37 +1,36 @@
-import "@/styles/globals.css";
+import '@/styles/globals.css';
 
-import type { Metadata } from "next";
-import { Geist } from "next/font/google";
-
-import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
-import { Toaster } from "@/components/ui/sonner";
-import { TRPCReactProvider } from "@/trpc/react";
-import { ThemeProvider } from "next-themes";
+import type { Metadata } from 'next';
+import { Geist } from 'next/font/google';
+import { ThemeProvider } from 'next-themes';
+import { Footer } from '@/components/footer';
+import { Header } from '@/components/header';
+import { Toaster } from '@/components/ui/sonner';
+import { TRPCReactProvider } from '@/trpc/react';
 
 export const metadata: Metadata = {
-	title: "Why Runner",
-	description: "",
-	icons: [{ rel: "icon", url: "/favicon.ico" }],
+	description: '',
+	icons: [{ rel: 'icon', url: '/favicon.ico' }],
+	title: 'Why Runner',
 };
 
 const geist = Geist({
-	subsets: ["latin"],
-	variable: "--font-geist-sans",
+	subsets: ['latin'],
+	variable: '--font-geist-sans',
 });
 
 export default function RootLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
+		<html className={`${geist.variable}`} lang="en" suppressHydrationWarning>
 			<body className="flex min-h-screen flex-col justify-between">
 				<TRPCReactProvider>
 					<ThemeProvider
 						attribute="class"
 						defaultTheme="system"
-						enableSystem
 						disableTransitionOnChange
+						enableSystem
 					>
 						<Header />
 						{children}

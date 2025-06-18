@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { api } from "@/trpc/react";
-import { ContestCard } from "./card";
-import { CreateContestDialog } from "./create/dialog";
+import { api } from '@/trpc/react';
+import { ContestCard } from './card';
+import { CreateContestDialog } from './create/dialog';
 
 export function ContestList() {
 	const [contests] = api.contest.findAll.useSuspenseQuery();
@@ -22,7 +22,7 @@ export function ContestList() {
 
 			<div className="flex flex-col gap-4 py-4">
 				{contests.map((contest) => (
-					<ContestCard key={contest.id} contest={contest} />
+					<ContestCard contest={contest} key={contest.id} />
 				))}
 			</div>
 		</div>

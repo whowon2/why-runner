@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
 	return (
@@ -11,12 +11,12 @@ export default function Home() {
 			</div>
 			<div className="flex gap-4">
 				<Link href="contests">
-					<Button className="cursor-pointer" variant={"outline"}>
+					<Button className="cursor-pointer" variant={'outline'}>
 						Contests
 					</Button>
 				</Link>
 				<Link href="problems">
-					<Button className="cursor-pointer" variant={"outline"}>
+					<Button className="cursor-pointer" variant={'outline'}>
 						Problems
 					</Button>
 				</Link>

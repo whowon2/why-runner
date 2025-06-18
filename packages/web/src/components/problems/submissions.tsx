@@ -1,31 +1,31 @@
-"use client";
+'use client';
 
+import type { Problem, SubmissionStatus } from '@prisma/client';
+import { Brain, RefreshCcw } from 'lucide-react';
 import {
 	Accordion,
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/trpc/react";
-import type { Problem, SubmissionStatus } from "@prisma/client";
-import { Brain, RefreshCcw } from "lucide-react";
-import { AIDialog } from "./ai/dialog";
+} from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { api } from '@/trpc/react';
+import { AIDialog } from './ai/dialog';
 
 const color = (status: SubmissionStatus) => {
 	switch (status) {
-		case "ERROR":
-			return "border-destructive";
-		case "FAILED":
-			return "border-destructive";
-		case "PASSED":
-			return "border-green-400";
-		case "RUNNING":
-			return "border-blue-400";
+		case 'ERROR':
+			return 'border-destructive';
+		case 'FAILED':
+			return 'border-destructive';
+		case 'PASSED':
+			return 'border-green-400';
+		case 'RUNNING':
+			return 'border-blue-400';
 		default:
-			return "border-card-400";
+			return 'border-card-400';
 	}
 };
 
@@ -60,26 +60,26 @@ export function SubmissionList({ problem }: { problem: Problem }) {
 				</CardTitle>
 			</CardHeader>
 			<CardContent className="">
-				<Accordion type="single" collapsible className="w-full space-y-2">
+				<Accordion className="w-full space-y-2" collapsible type="single">
 					{submissions.map((submission) => (
 						<AccordionItem
-							value={`item-${submission.id}`}
-							key={submission.id}
 							className={`rounded-md border px-4 last:border ${color(submission.status)}`}
+							key={submission.id}
+							value={`item-${submission.id}`}
 						>
 							<AccordionTrigger>
 								<p className="w-full text-gray-500 text-sm">
 									{submission.createdAt.toLocaleTimeString()}:
 								</p>
 								<p className="text-xs">
-									{submission.status ?? "Processing..."}
+									{submission.status ?? 'Processing...'}
 								</p>
 							</AccordionTrigger>
 							<AccordionContent className="flex justify-between">
 								{submission.output && (
 									<SubmissionDetails output={submission.output} />
 								)}
-								<AIDialog submission={submission} problem={problem} />
+								<AIDialog problem={problem} submission={submission} />
 							</AccordionContent>
 						</AccordionItem>
 					))}

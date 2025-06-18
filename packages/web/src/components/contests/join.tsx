@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { api } from "@/trpc/react";
-import type { Prisma } from "@prisma/client";
-import type { Session } from "next-auth";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { toast } from "sonner";
+import type { Prisma } from '@prisma/client';
+import { useRouter } from 'next/navigation';
+import type { Session } from 'next-auth';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { api } from '@/trpc/react';
 
 export function JoinButton({
 	contest,
@@ -32,14 +32,9 @@ export function JoinButton({
 		return null;
 	}
 
-	useEffect(() => {
-		console.log("fodase");
-	}, []);
-
 	if (isUserInContest) {
 		return (
 			<Button
-				variant={"destructive"}
 				disabled={isLeavePending}
 				onClick={() => {
 					if (!session) {
@@ -51,11 +46,12 @@ export function JoinButton({
 						{
 							onSuccess: () => {
 								router.refresh();
-								toast("You have left the contest.");
+								toast('You have left the contest.');
 							},
 						},
 					);
 				}}
+				variant={'destructive'}
 			>
 				Leave
 			</Button>
@@ -64,7 +60,6 @@ export function JoinButton({
 
 	return (
 		<Button
-			variant={"outline"}
 			disabled={isJoinPending}
 			onClick={() => {
 				if (!session) {
@@ -75,12 +70,13 @@ export function JoinButton({
 					{ contestId: contest.id },
 					{
 						onSuccess: () => {
-							toast("You have joined the contest.");
+							toast('You have joined the contest.');
 							router.refresh();
 						},
 					},
 				);
 			}}
+			variant={'outline'}
 		>
 			Join
 		</Button>

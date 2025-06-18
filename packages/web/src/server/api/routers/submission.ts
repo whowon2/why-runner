@@ -1,24 +1,24 @@
-import { env } from "@/env";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { GoogleGenAI } from "@google/genai";
-import { Queue } from "bullmq";
-import Redis from "ioredis";
-import { z } from "zod";
+import { GoogleGenAI } from '@google/genai';
+import { Queue } from 'bullmq';
+import Redis from 'ioredis';
+import { z } from 'zod';
+import { env } from '@/env';
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 
 const createSubmissionInput = z.object({
 	code: z.string(),
-	language: z.enum(["c", "cpp", "java", "python", "rust"]),
+	language: z.enum(['c', 'cpp', 'java', 'python', 'rust']),
 	problemId: z.string().uuid(),
 });
 
 const redis = new Redis(env.REDIS_URL);
 
-const queue = new Queue("submissions", {
+const queue = new Queue('submissions', {
 	connection: redis,
 	defaultJobOptions: {
 		backoff: {
-			type: "exponential",
 			delay: 1000,
+			type: 'exponential',
 		},
 	},
 });
@@ -29,11 +29,11 @@ export const submissionRouter = createTRPCRouter({
 		.mutation(async ({ ctx, input }) => {
 			const submission = await ctx.db.submission.create({ data: input });
 
-			const item = await queue.add("processSubmission", {
+			const item = await queue.add('processSubmission', {
 				submissionId: submission.id,
 			});
 
-			console.log("queue item", item);
+			console.log('queue item', item);
 
 			return submission;
 		}),
@@ -46,11 +46,11 @@ export const submissionRouter = createTRPCRouter({
 		)
 		.query(({ ctx, input }) => {
 			return ctx.db.submission.findMany({
+				orderBy: {
+					createdAt: 'desc',
+				},
 				where: {
 					problemId: input.problemId,
-				},
-				orderBy: {
-					createdAt: "desc",
 				},
 			});
 		}),
@@ -67,16 +67,16 @@ export const submissionRouter = createTRPCRouter({
 		.input(
 			z.object({
 				problem: z.object({
-					id: z.string().uuid(),
-					title: z.string(),
 					description: z.string(),
+					id: z.string().uuid(),
 					inputs: z.array(z.string()),
 					outputs: z.array(z.string()),
+					title: z.string(),
 				}),
 				submission: z.object({
+					code: z.string(),
 					id: z.string().uuid(),
 					language: z.string(),
-					code: z.string(),
 					output: z.string().nullish(),
 					status: z.string(),
 				}),
@@ -93,10 +93,10 @@ ${input.problem.title}
 ${input.problem.description}
 
 Inputs:
-${input.problem.inputs.join("\n")}
+${input.problem.inputs.join('\n')}
 
 Expected Outputs:
-${input.problem.outputs.join("\n")}
+${input.problem.outputs.join('\n')}
 
 Student Code in ${input.submission.language}:
 ${input.submission.code}
@@ -112,8 +112,8 @@ ${input.submission.output}
 			const ai = new GoogleGenAI({ apiKey: env.GEMINI_KEY });
 
 			const response = await ai.models.generateContent({
-				model: "gemini-2.0-flash",
 				contents: prompt,
+				model: 'gemini-2.0-flash',
 			});
 
 			return response.text;

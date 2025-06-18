@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/ui/badge';
 
 export function DifficultyBadge({ difficulty }: { difficulty: string }) {
 	return <Badge className={getColor(difficulty)}>{difficulty}</Badge>;
@@ -6,13 +6,13 @@ export function DifficultyBadge({ difficulty }: { difficulty: string }) {
 
 function getColor(difficulty: string) {
 	switch (difficulty.toLocaleLowerCase()) {
-		case "easy":
-			return "bg-green-400";
-		case "medium":
-			return "bg-orange-400";
-		case "hard":
-			return "bg-red-400";
+		case 'easy':
+			return 'bg-green-400';
+		case 'medium':
+			return 'bg-orange-400';
+		case 'hard':
+			return 'bg-red-400';
 		default:
-			return "bg-gray-400";
+			return 'bg-gray-400';
 	}
 }

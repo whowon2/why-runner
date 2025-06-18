@@ -1,13 +1,13 @@
-import { Worker } from "bullmq";
-import Redis from "ioredis";
-import { z } from "zod";
-import { getProblem, getSubmission, updateSubmission } from "./queries";
-import { judge } from "./runner";
+import { Worker } from 'bullmq';
+import Redis from 'ioredis';
+import { z } from 'zod';
+import { getProblem, getSubmission, updateSubmission } from './queries';
+import { judge } from './runner';
 
-console.log(process.env)
+console.log(process.env);
 
 const connection = new Redis(process.env.REDIS_URL, {
-  maxRetriesPerRequest: 0
+	maxRetriesPerRequest: 0,
 });
 
 const jobSchema = z.object({
@@ -15,13 +15,13 @@ const jobSchema = z.object({
 });
 
 new Worker(
-	"submissions",
+	'submissions',
 	async (job) => {
 		console.log(job.data);
 		const parseResult = jobSchema.safeParse(job.data);
 
 		if (!parseResult.success) {
-			throw new Error("Parse Fail");
+			throw new Error('Parse Fail');
 		}
 
 		const { submissionId } = parseResult.data;
@@ -39,19 +39,19 @@ new Worker(
 				throw new Error(`Problem ${submission.problemId} not found`);
 			}
 
-			await updateSubmission(submissionId, "RUNNING");
+			await updateSubmission(submissionId, 'RUNNING');
 
 			const res = await judge(problem, submission);
 
 			await updateSubmission(
 				submissionId,
-				res.passed ? "PASSED" : "FAILED",
-				JSON.stringify(res ?? ""),
+				res.passed ? 'PASSED' : 'FAILED',
+				JSON.stringify(res ?? ''),
 			);
 		} catch (err) {
 			console.error(err);
 			try {
-				await updateSubmission(submissionId, "ERROR");
+				await updateSubmission(submissionId, 'ERROR');
 			} catch (err) {
 				console.error(err);
 			}
@@ -60,4 +60,4 @@ new Worker(
 	{ connection },
 );
 
-console.log("waiting for submissions...");
+console.log('waiting for submissions...');

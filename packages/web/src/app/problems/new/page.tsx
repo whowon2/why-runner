@@ -1,6 +1,13 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Delete } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
 import {
 	Form,
 	FormControl,
@@ -8,56 +15,49 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { api } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Delete } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { api } from '@/trpc/react';
 
 const formSchema = z.object({
-	title: z.string().min(1),
 	description: z.string().min(1),
-	difficulty: z.enum(["EASY", "MEDIUM", "HARD"]),
+	difficulty: z.enum(['EASY', 'MEDIUM', 'HARD']),
 	inputs: z.array(z.string().min(1)).min(1),
 	outputs: z.array(z.string().min(1)).min(1),
+	title: z.string().min(1),
 });
 
 export default function NewProblem() {
 	const utils = api.useUtils();
 	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
 		defaultValues: {
-			title: "Weird Algorithm",
 			description:
-				"Consider an algorithm that takes as input a positive integer n. If n is even, the algorithm divides it by two, and if n is odd, the algorithm multiplies it by three and adds one. The algorithm repeats this, until n is one. For example, the sequence for n=3 is as follows:",
+				'Consider an algorithm that takes as input a positive integer n. If n is even, the algorithm divides it by two, and if n is odd, the algorithm multiplies it by three and adds one. The algorithm repeats this, until n is one. For example, the sequence for n=3 is as follows:',
 			inputs: [],
 			outputs: [],
+			title: 'Weird Algorithm',
 		},
+		resolver: zodResolver(formSchema),
 		shouldFocusError: false,
 	});
 
 	// Using useFieldArray to handle dynamic input and output fields
 	const inputs = useFieldArray({
 		control: form.control,
-		name: "inputs" as never,
+		name: 'inputs' as never,
 	});
 
 	const outputs = useFieldArray({
 		control: form.control,
-		name: "outputs" as never,
+		name: 'outputs' as never,
 	});
 
 	const router = useRouter();
@@ -65,22 +65,22 @@ export default function NewProblem() {
 	const { mutate: createProblem, isPending } = api.problem.create.useMutation();
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		console.log("submited", values);
+		console.log('submited', values);
 
 		createProblem(values, {
-			onSuccess() {
-				toast("Problem added");
-				router.back();
-			},
 			onError(error) {
 				console.error(error);
-				toast.error("An error occurred", {
+				toast.error('An error occurred', {
 					description: error.message,
 				});
 			},
 			onSettled() {
 				utils.problem.getAll.invalidate();
 				utils.contest.findById.invalidate();
+			},
+			onSuccess() {
+				toast('Problem added');
+				router.back();
 			},
 		});
 	}
@@ -93,17 +93,17 @@ export default function NewProblem() {
 			form.formState.errors.inputs === undefined &&
 			form.formState.errors.outputs === undefined
 		) {
-			inputs.append("");
-			outputs.append("");
+			inputs.append('');
+			outputs.append('');
 		}
 	}
 
 	useEffect(() => {
 		if (inputs.fields.length === 0) {
-			inputs.append("");
+			inputs.append('');
 		}
 		if (outputs.fields.length === 0) {
-			outputs.append("");
+			outputs.append('');
 		}
 	}, [inputs, outputs]);
 
@@ -118,8 +118,8 @@ export default function NewProblem() {
 			</div>
 			<Form {...form}>
 				<form
-					onSubmit={form.handleSubmit(onSubmit)}
 					className="flex flex-col space-y-8"
+					onSubmit={form.handleSubmit(onSubmit)}
 				>
 					<FormField
 						control={form.control}
@@ -158,8 +158,8 @@ export default function NewProblem() {
 							<FormItem>
 								<FormLabel>Difficulty</FormLabel>
 								<Select
-									onValueChange={field.onChange}
 									defaultValue={field.value}
+									onValueChange={field.onChange}
 								>
 									<FormControl>
 										<SelectTrigger>
@@ -186,7 +186,7 @@ export default function NewProblem() {
 					<div className="flex gap-4">
 						<div className="flex w-full flex-col">
 							{inputs.fields.map((input, index) => (
-								<div key={input.id} className="flex justify-between gap-4">
+								<div className="flex justify-between gap-4" key={input.id}>
 									<FormField
 										control={form.control}
 										name={`inputs.${index}`}
@@ -206,7 +206,7 @@ export default function NewProblem() {
 
 						<div className="flex w-full flex-col">
 							{outputs.fields.map((input, index) => (
-								<div key={input.id} className="flex justify-between gap-4">
+								<div className="flex justify-between gap-4" key={input.id}>
 									<FormField
 										control={form.control}
 										name={`outputs.${index}`}
@@ -221,12 +221,12 @@ export default function NewProblem() {
 										)}
 									/>
 									<Button
-										type="button"
+										className="mt-7 max-w-min"
 										onClick={() => {
 											inputs.remove(index);
 											outputs.remove(index);
 										}}
-										className="mt-7 max-w-min"
+										type="button"
 									>
 										<Delete />
 									</Button>
@@ -234,12 +234,12 @@ export default function NewProblem() {
 							))}
 						</div>
 					</div>
-					<Button type="button" className="max-w-min" onClick={addInput}>
+					<Button className="max-w-min" onClick={addInput} type="button">
 						Add Input/Output
 					</Button>
 
 					<Button disabled={isPending} type="submit">
-						{isPending ? "Submitting..." : "Submit"}
+						{isPending ? 'Submitting...' : 'Submit'}
 					</Button>
 				</form>
 			</Form>

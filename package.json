@@ -1,11 +1,13 @@
 {
-	"name": "why",
 	"dependencies": {
 		"@nx/js": "^21.1.2",
 		"nx": "^21.1.2"
 	},
-	"workspaces": ["packages/*"],
 	"devDependencies": {
 		"@nx/workspace": "21.1.2"
-	}
+	},
+	"name": "why",
+	"workspaces": [
+		"packages/*"
+	]
 }

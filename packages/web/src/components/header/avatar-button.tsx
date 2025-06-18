@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
 	Cloud,
@@ -10,9 +10,10 @@ import {
 	Trophy,
 	User,
 	Users,
-} from "lucide-react";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+} from 'lucide-react';
+import Link from 'next/link';
+import type { Session } from 'next-auth';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -22,22 +23,20 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuShortcut,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { api } from "@/trpc/react";
-import type { Session } from "next-auth";
-import Link from "next/link";
+} from '@/components/ui/dropdown-menu';
+import { api } from '@/trpc/react';
 
 export function AvatarButton({ session }: { session: Session }) {
-	const initials = (session.user.name ?? "")
-		.split(" ")
+	const initials = (session.user.name ?? '')
+		.split(' ')
 		.map((name) => name[0])
-		.join("");
+		.join('');
 
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild={true}>
 				<Avatar className="cursor-pointer">
-					<AvatarImage src={session.user?.image ?? ""} />
+					<AvatarImage src={session.user?.image ?? ''} />
 					<AvatarFallback>{initials}</AvatarFallback>
 				</Avatar>
 			</DropdownMenuTrigger>
@@ -45,14 +44,14 @@ export function AvatarButton({ session }: { session: Session }) {
 				<DropdownMenuLabel>My Account</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup>
-					<Link href={"/profile"}>
+					<Link href={'/profile'}>
 						<DropdownMenuItem>
 							<User />
 							<span>Profile</span>
 							<DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
 						</DropdownMenuItem>
 					</Link>
-					<Link href={"/settings"}>
+					<Link href={'/settings'}>
 						<DropdownMenuItem>
 							<Settings />
 							<span>Settings</span>
@@ -67,13 +66,13 @@ export function AvatarButton({ session }: { session: Session }) {
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup>
-					<Link href={"/teams"}>
+					<Link href={'/teams'}>
 						<DropdownMenuItem>
 							<Users />
 							<span>Teams</span>
 						</DropdownMenuItem>
 					</Link>
-					<Link href={"/contests"}>
+					<Link href={'/contests'}>
 						<DropdownMenuItem>
 							<Trophy />
 							<span>Contests</span>
@@ -82,9 +81,9 @@ export function AvatarButton({ session }: { session: Session }) {
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
 				<Link
-					target="_blank"
-					rel="noopener"
 					href="https://github.com/JuanIWK3/why-runner"
+					rel="noopener"
+					target="_blank"
 				>
 					<DropdownMenuItem>
 						<Github />

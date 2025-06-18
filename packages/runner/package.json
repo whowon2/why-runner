@@ -1,8 +1,4 @@
 {
-	"name": "runner",
-	"scripts": {
-		"dev": "bun run --hot src/index.ts"
-	},
 	"dependencies": {
 		"bullmq": "^5.53.0",
 		"hono": "^4.7.10",
@@ -11,5 +7,9 @@
 	},
 	"devDependencies": {
 		"@types/bun": "latest"
+	},
+	"name": "runner",
+	"scripts": {
+		"dev": "bun run --hot src/index.ts"
 	}
 }

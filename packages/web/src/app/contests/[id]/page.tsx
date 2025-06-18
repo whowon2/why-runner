@@ -1,14 +1,14 @@
-import { BreadCrumbs } from "@/components/breadcrumbs";
-import { JoinButton } from "@/components/contests/join";
-import { Leaderboard } from "@/components/contests/leaderboard";
-import { DescriptionTab } from "@/components/contests/tabs/description";
-import { SelectProblem } from "@/components/contests/tabs/problem";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { auth } from "@/server/auth";
-import { api } from "@/trpc/server";
-import { Pencil } from "lucide-react";
-import Link from "next/link";
+import { Pencil } from 'lucide-react';
+import Link from 'next/link';
+import { BreadCrumbs } from '@/components/breadcrumbs';
+import { JoinButton } from '@/components/contests/join';
+import { Leaderboard } from '@/components/contests/leaderboard';
+import { DescriptionTab } from '@/components/contests/tabs/description';
+import { SelectProblem } from '@/components/contests/tabs/problem';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { auth } from '@/server/auth';
+import { api } from '@/trpc/server';
 
 export default async function Page({
 	params,
@@ -45,14 +45,14 @@ export default async function Page({
 				</div>
 				<JoinButton
 					contest={contest}
-					session={session}
 					isCreatedByUser={isCreatedByUser}
+					session={session}
 				/>
 			</div>
 
 			<Card className="w-full">
 				<CardContent>
-					<Tabs defaultValue="problems" className="w-full">
+					<Tabs className="w-full" defaultValue="problems">
 						<TabsList className="w-full justify-start rounded-none border-b bg-background p-0">
 							<TabsTrigger
 								className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
@@ -74,7 +74,7 @@ export default async function Page({
 							</TabsTrigger>
 						</TabsList>
 
-						<TabsContent value="problems" className="flex w-full gap-4">
+						<TabsContent className="flex w-full gap-4" value="problems">
 							<SelectProblem contest={contest} />
 						</TabsContent>
 						<TabsContent value="leaderboard">

@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/trpc/react";
-import type { Session } from "next-auth";
-import { signOut } from "next-auth/react";
-import { UpdateForm } from "./form";
+import type { Session } from 'next-auth';
+import { signOut } from 'next-auth/react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { api } from '@/trpc/react';
+import { UpdateForm } from './form';
 
 export default function Profile({ session }: { session: Session }) {
 	const { data, isPending } = api.user.get.useQuery();

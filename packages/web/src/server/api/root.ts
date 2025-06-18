@@ -1,8 +1,8 @@
-import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
-import { contestRouter } from "./routers/contest";
-import { problemRouter } from "./routers/problem";
-import { submissionRouter } from "./routers/submission";
-import { userRouter } from "./routers/user";
+import { createCallerFactory, createTRPCRouter } from '@/server/api/trpc';
+import { contestRouter } from './routers/contest';
+import { problemRouter } from './routers/problem';
+import { submissionRouter } from './routers/submission';
+import { userRouter } from './routers/user';
 
 /**
  * This is the primary router for your server.

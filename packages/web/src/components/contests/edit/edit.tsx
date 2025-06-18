@@ -1,8 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Prisma } from "@prisma/client";
-import type { Session } from "next-auth";
-import { EditContestForm } from "./form";
-import { EditContestProblems } from "./problems/edit";
+import type { Prisma } from '@prisma/client';
+import type { Session } from 'next-auth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { EditContestForm } from './form';
+import { EditContestProblems } from './problems/edit';
 
 export function EditContest({
 	contest,

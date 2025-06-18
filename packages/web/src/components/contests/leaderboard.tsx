@@ -1,3 +1,4 @@
+import type { Contest } from '@prisma/client';
 import {
 	Table,
 	TableBody,
@@ -6,8 +7,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table";
-import type { Contest } from "@prisma/client";
+} from '@/components/ui/table';
 
 export function Leaderboard({ contest }: { contest: Contest }) {
 	return (
