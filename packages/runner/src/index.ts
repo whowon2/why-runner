@@ -1,20 +1,10 @@
 import { Worker } from "bullmq";
 import Redis from "ioredis";
 import { z } from "zod";
-import { cppJudge } from "../cpp";
-import { rustJudge } from "../rust";
 import { getProblem, getSubmission, updateSubmission } from "./queries";
+import { judge } from "./runner";
 
-function getRunner(language: "cpp" | "rust") {
-	switch (language) {
-		case "cpp":
-			return cppJudge;
-		case "rust":
-			return rustJudge;
-		default:
-			throw new Error("Invalid Language");
-	}
-}
+console.log(process.env)
 
 const connection = new Redis(process.env.REDIS_URL, {
   maxRetriesPerRequest: 0
@@ -51,9 +41,7 @@ new Worker(
 
 			await updateSubmission(submissionId, "RUNNING");
 
-			const runner = getRunner(submission.language);
-
-			const res = await runner(problem, submission);
+			const res = await judge(problem, submission);
 
 			await updateSubmission(
 				submissionId,

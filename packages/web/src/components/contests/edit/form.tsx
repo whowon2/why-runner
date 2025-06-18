@@ -1,5 +1,10 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { Prisma } from "@prisma/client";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import {
@@ -12,11 +17,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { api } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { Prisma } from "@prisma/client";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
 
 const formSchema = z.object({
 	name: z.string().min(2).max(50),
@@ -75,8 +75,8 @@ export function EditContestForm({
 						</FormItem>
 					)}
 				/>
-				<Button disabled={isPending} type="submit">
-					{isPending ? "Saving changes..." : "Edit"}
+				<Button disabled={isPending || !form.formState.isDirty} type="submit">
+					{isPending ? "Saving changes..." : "Save"}
 				</Button>
 			</form>
 		</Form>

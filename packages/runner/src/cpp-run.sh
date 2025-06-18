@@ -1,6 +1,13 @@
 #!/bin/bash
 
-cd data
+dir="$1"
+
+if [ -z "$dir" ]; then
+  echo "Directory argument missing" >&2
+  exit 1
+fi
+
+cd "$dir" || { echo "Failed to cd into $dir"; exit 1; }
 
 # Read code and testcases from /app
 if [ ! -f code.cpp ]; then
