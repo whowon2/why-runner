@@ -1,19 +1,11 @@
 import { mkdir } from "node:fs/promises";
-import { removeDir } from "../src/utils/remove-dir";
 import { type Problem, type Submission, submissionSchema } from "../types";
+import { removeDir } from "./utils/remove-dir";
 
-async function run(testDir: string) {
-	const command = [
-		"docker",
-		"run",
-		"--rm",
-		"-v",
-		`${testDir}:/app/data`,
-		"why-runner-cpp",
-	];
+async function run(dir: string, language: "rust" | "cpp") {
+	const command = [`./src/${language}-run.sh`, dir];
 
-	try {
-	} catch (e) {}
+	console.log({command})
 
 	const child = Bun.spawn(command, { stdout: "pipe", stderr: "pipe" });
 
@@ -21,10 +13,6 @@ async function run(testDir: string) {
 	const error = await new Response(child.stderr).text();
 
 	if (error) {
-		if (error.includes("Unable to find image")) {
-			throw new Error("CPP runner container is down");
-		}
-
 		console.error(error);
 		return error;
 	}
@@ -32,7 +20,12 @@ async function run(testDir: string) {
 	return text;
 }
 
-export async function cppJudge(problem: Problem, submission: Submission) {
+export async function judge(problem: Problem, submission: Submission) {
+  const extensions = {
+    "rust": "rs",
+    "cpp": "cpp"
+  }
+
 	const { code } = submissionSchema.parse(submission);
 
 	const result: {
@@ -43,18 +36,19 @@ export async function cppJudge(problem: Problem, submission: Submission) {
 		tests: [],
 	};
 
+	const extension = extensions[submission.language]
+
 	for (let i = 0; i < problem.inputs.length; i++) {
-		const dir = `/tmp/judge-cpp-${submission.id}-${i}`;
+		const dir = `./src/judge-${submission.language}-${submission.id}-${i}`;
 
 		await removeDir(dir);
-
 		await mkdir(dir);
 
-		await Bun.write(`${dir}/code.cpp`, code);
+		await Bun.write(`${dir}/code.${extension}`, code);
 		await Bun.write(`${dir}/input.txt`, problem.inputs[i]);
 		await Bun.write(`${dir}/output.txt`, `${problem.outputs[i]}\n`);
 
-		const res = await run(dir);
+		const res = await run(dir, submission.language);
 
 		result.tests.push(res.trim());
 
