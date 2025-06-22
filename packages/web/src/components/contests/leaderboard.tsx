@@ -4,7 +4,6 @@ import type { Contest } from '@prisma/client';
 import {
 	Table,
 	TableBody,
-	TableCaption,
 	TableCell,
 	TableHead,
 	TableHeader,
@@ -13,16 +12,22 @@ import {
 import { api } from '@/trpc/react';
 
 export function Leaderboard({ contest }: { contest: Contest }) {
-	const { data: leaderboard } = api.contest.getLeaderboard.useQuery({
-		contestId: contest.id,
-	});
+	const { data: leaderboard } = api.contest.getLeaderboard.useQuery(
+		{
+			contestId: contest.id,
+		},
+		{
+			refetchInterval: 10000,
+			// refetchOnMount: true,
+		},
+	);
 
 	return (
 		<div>
 			<Table>
 				<TableHeader>
 					<TableRow>
-						<TableHead className="w-[100px]">User</TableHead>
+						<TableHead className="w-[100px]">Name</TableHead>
 						<TableHead className="text-center">Correct</TableHead>
 						<TableHead className="text-right">Score</TableHead>
 					</TableRow>
@@ -33,7 +38,7 @@ export function Leaderboard({ contest }: { contest: Contest }) {
 							<TableCell className="font-medium">{user.user.name}</TableCell>
 							<TableCell className="font-medium text-center">
 								{user.answers?.map((question, idx) => (
-									<div key={idx}>question</div>
+									<div key={idx}>{question}</div>
 								))}
 							</TableCell>
 							<TableCell className="text-right">{user.score}</TableCell>

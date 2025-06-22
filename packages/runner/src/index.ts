@@ -14,6 +14,7 @@ const connection = new Redis(process.env.REDIS_URL, {
 });
 
 const jobSchema = z.object({
+	questionLetter: z.string(),
 	submissionId: z.string(),
 });
 
@@ -27,7 +28,7 @@ new Worker(
 			throw new Error('Parse Fail');
 		}
 
-		const { submissionId } = parseResult.data;
+		const { submissionId, questionLetter } = parseResult.data;
 
 		try {
 			const submission = await getSubmission(submissionId);
@@ -44,7 +45,7 @@ new Worker(
 
 			await updateSubmission(submissionId, 'RUNNING');
 
-			console.log({submission})
+			console.log({ submission });
 
 			const res = await judge(problem, submission);
 
@@ -54,7 +55,7 @@ new Worker(
 				JSON.stringify(res ?? ''),
 			);
 
-			await updateLeaderboard(submission);
+			await updateLeaderboard(submission, questionLetter);
 		} catch (err) {
 			console.error(err);
 			try {

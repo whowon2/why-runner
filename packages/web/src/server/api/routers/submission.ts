@@ -10,6 +10,7 @@ const createSubmissionInput = z.object({
 	contestId: z.string().uuid(),
 	language: z.enum(['c', 'cpp', 'java', 'python', 'rust']),
 	problemId: z.string().uuid(),
+	questionLetter: z.string(),
 });
 
 const redis = new Redis(env.REDIS_URL);
@@ -29,10 +30,17 @@ export const submissionRouter = createTRPCRouter({
 		.input(createSubmissionInput)
 		.mutation(async ({ ctx, input }) => {
 			const submission = await ctx.db.submission.create({
-				data: { ...input, userId: ctx.session.user.id },
+				data: {
+					code: input.code,
+					contestId: input.contestId,
+					language: input.language,
+					problemId: input.problemId,
+					userId: ctx.session.user.id,
+				},
 			});
 
 			const item = await queue.add('processSubmission', {
+				questionLetter: input.questionLetter,
 				submissionId: submission.id,
 			});
 

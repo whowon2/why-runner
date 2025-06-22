@@ -1,7 +1,7 @@
 'use client';
 
 import type { Problem, SubmissionStatus } from '@prisma/client';
-import { Brain, RefreshCcw } from 'lucide-react';
+import { RefreshCcw } from 'lucide-react';
 import {
 	Accordion,
 	AccordionContent,
@@ -34,9 +34,12 @@ export function SubmissionList({ problem }: { problem: Problem }) {
 		data: submissions,
 		isPending,
 		refetch: refetchSubmissions,
-	} = api.submission.find.useQuery({
-		problemId: problem.id,
-	});
+	} = api.submission.find.useQuery(
+		{
+			problemId: problem.id,
+		},
+		{ refetchInterval: 5000 },
+	);
 
 	if (isPending) {
 		return <Skeleton className="h-20 w-full" />;
