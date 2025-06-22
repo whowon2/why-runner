@@ -50,7 +50,7 @@ export function SubmissionList({ problem }: { problem: Problem }) {
 	}
 
 	return (
-		<Card className="max-h-screen w-full overflow-auto">
+		<Card className="max-h-screen w-full overflow-auto border-none bg-transparent shadow-none">
 			<CardHeader>
 				<CardTitle
 					className="flex justify-between"

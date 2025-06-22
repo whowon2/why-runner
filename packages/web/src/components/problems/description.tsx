@@ -11,7 +11,7 @@ export function ProblemDescription({ problem }: { problem: Problem }) {
 				<DifficultyBadge difficulty={problem.difficulty} />
 			</div>
 
-			<Card>
+			<Card className="border-none bg-transparent shadow-none">
 				<CardHeader>
 					<CardTitle className="font-semibold text-xl">Description</CardTitle>
 				</CardHeader>

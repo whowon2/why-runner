@@ -1,5 +1,6 @@
 import { Pencil } from 'lucide-react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { BreadCrumbs } from '@/components/breadcrumbs';
 import { JoinButton } from '@/components/contests/join';
 import { Leaderboard } from '@/components/contests/leaderboard';
@@ -20,7 +21,7 @@ export default async function Page({
 	const session = await auth();
 
 	if (!session) {
-		return <div>Unauthorized</div>;
+	redirect('/api/auth/signin');
 	}
 
 	const contest = await api.contest.findById(id);
@@ -50,7 +51,7 @@ export default async function Page({
 				/>
 			</div>
 
-			<Card className="w-full">
+			<Card className="w-full h-full bg-red-transparent border-none shadow-none">
 				<CardContent>
 					<Tabs className="w-full" defaultValue="problems">
 						<TabsList className="w-full justify-start rounded-none border-b bg-background p-0">

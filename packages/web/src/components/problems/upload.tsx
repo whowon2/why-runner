@@ -148,7 +148,7 @@ export function UploadCode({
 	}, [code, problem.id, language]);
 
 	return (
-		<Card className="h-full max-h-screen w-full">
+		<Card className="h-full max-h-screen w-full bg-transparent border-none shadow-none">
 			<CardContent className="flex h-full w-full flex-col gap-4">
 				<div className="grid w-full items-center gap-1.5">
 					<div className="flex justify-between gap-2">

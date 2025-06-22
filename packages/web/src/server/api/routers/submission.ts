@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+import { TRPCError } from '@trpc/server';
 import { Queue } from 'bullmq';
 import Redis from 'ioredis';
 import { z } from 'zod';
@@ -29,6 +30,23 @@ export const submissionRouter = createTRPCRouter({
 	create: protectedProcedure
 		.input(createSubmissionInput)
 		.mutation(async ({ ctx, input }) => {
+			const answered = await ctx.db.userOnContest.findFirst({
+				where: {
+					answers: {
+						has: input.questionLetter,
+					},
+					contestId: input.contestId,
+					userId: ctx.session.user.id,
+				},
+			});
+
+			if (answered) {
+				throw new TRPCError({
+					code: 'NOT_FOUND',
+					message: 'You have already answered this question',
+				});
+			}
+
 			const submission = await ctx.db.submission.create({
 				data: {
 					code: input.code,
