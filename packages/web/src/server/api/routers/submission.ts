@@ -30,15 +30,21 @@ export const submissionRouter = createTRPCRouter({
 	create: protectedProcedure
 		.input(createSubmissionInput)
 		.mutation(async ({ ctx, input }) => {
-			const answered = await ctx.db.userOnContest.findFirst({
+			const isUserOnContest = await ctx.db.userOnContest.findFirst({
 				where: {
-					answers: {
-						has: input.questionLetter,
-					},
-					contestId: input.contestId,
 					userId: ctx.session.user.id,
+					contestId: input.contestId,
 				},
 			});
+
+			if (!isUserOnContest) {
+				throw new TRPCError({
+					code: 'NOT_FOUND',
+					message: 'You are not on this contest',
+				});
+			}
+
+			const answered = isUserOnContest.answers.some(answer => answer === input.questionLetter);
 
 			if (answered) {
 				throw new TRPCError({
