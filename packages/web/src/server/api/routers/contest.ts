@@ -95,6 +95,22 @@ export const contestRouter = createTRPCRouter({
 			return contest;
 		}),
 
+	getLeaderboard: protectedProcedure
+		.input(z.object({ contestId: z.string() }))
+		.query(({ ctx, input }) => {
+			return ctx.db.userOnContest.findMany({
+				include: {
+					user: true,
+				},
+				orderBy: {
+					score: 'desc',
+				},
+				where: {
+					contestId: input.contestId,
+				},
+			});
+		}),
+
 	join: protectedProcedure
 		.input(z.object({ contestId: z.string() }))
 		.mutation(({ ctx, input }) => {

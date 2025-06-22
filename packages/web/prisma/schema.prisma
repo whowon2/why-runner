@@ -114,10 +114,11 @@ model Contest {
 }
 
 model UserOnContest {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   userId    String
   contestId String
-  score     Int    @default(0)
+  score     Int      @default(0)
+  answers   String[] @default([])
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)

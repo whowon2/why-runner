@@ -3,7 +3,6 @@
 import type { Prisma } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import type { Session } from 'next-auth';
-import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { api } from '@/trpc/react';
@@ -23,6 +22,7 @@ export function JoinButton({
 		api.contest.leave.useMutation();
 
 	const router = useRouter();
+	const utils = api.useUtils();
 
 	const isUserInContest = contest.userOnContest.some(
 		(user) => user.userId === session?.user.id,
@@ -45,8 +45,9 @@ export function JoinButton({
 						{ contestId: contest.id },
 						{
 							onSuccess: () => {
-								router.refresh();
 								toast('You have left the contest.');
+								router.refresh();
+								utils.contest.getLeaderboard.invalidate();
 							},
 						},
 					);
@@ -72,6 +73,7 @@ export function JoinButton({
 						onSuccess: () => {
 							toast('You have joined the contest.');
 							router.refresh();
+							utils.contest.getLeaderboard.invalidate();
 						},
 					},
 				);

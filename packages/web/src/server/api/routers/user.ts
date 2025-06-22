@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import { env } from '@/env';
-import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const updateProfileSchema = z.object({
 	image: z.union([z.string().url(), z.literal('')]),
