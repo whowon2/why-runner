@@ -44,7 +44,9 @@ export const submissionRouter = createTRPCRouter({
 				});
 			}
 
-			const answered = isUserOnContest.answers.some(answer => answer === input.questionLetter);
+			const answered = isUserOnContest.answers.some(
+				(answer) => answer === input.questionLetter,
+			);
 
 			if (answered) {
 				throw new TRPCError({

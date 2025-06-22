@@ -1,5 +1,5 @@
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 
 const ContestStatus = z.enum([
@@ -113,7 +113,34 @@ export const contestRouter = createTRPCRouter({
 
 	join: protectedProcedure
 		.input(z.object({ contestId: z.string() }))
-		.mutation(({ ctx, input }) => {
+		.mutation(async ({ ctx, input }) => {
+			const isUserOnContest = await ctx.db.userOnContest.findFirst({
+				where: {
+					contestId: input.contestId,
+					userId: ctx.session.user.id,
+				},
+			});
+
+			if (isUserOnContest) {
+				throw new TRPCError({
+					code: 'CONFLICT',
+					message: 'User is already on the contest',
+				});
+			}
+
+			const contest = await ctx.db.contest.findUnique({
+				where: {
+					id: input.contestId,
+				},
+			});
+
+			if (!contest || contest.start < new Date()) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'Contest has not started yet',
+				});
+			}
+
 			return ctx.db.userOnContest.create({
 				data: {
 					contestId: input.contestId,
