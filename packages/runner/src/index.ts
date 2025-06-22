@@ -1,10 +1,13 @@
 import { Worker } from 'bullmq';
 import Redis from 'ioredis';
 import { z } from 'zod';
-import { getProblem, getSubmission, updateSubmission } from './queries';
+import {
+	getProblem,
+	getSubmission,
+	updateLeaderboard,
+	updateSubmission,
+} from './queries';
 import { judge } from './runner';
-
-console.log(process.env);
 
 const connection = new Redis(process.env.REDIS_URL, {
 	maxRetriesPerRequest: 0,
@@ -41,6 +44,8 @@ new Worker(
 
 			await updateSubmission(submissionId, 'RUNNING');
 
+			console.log({submission})
+
 			const res = await judge(problem, submission);
 
 			await updateSubmission(
@@ -48,6 +53,8 @@ new Worker(
 				res.passed ? 'PASSED' : 'FAILED',
 				JSON.stringify(res ?? ''),
 			);
+
+			await updateLeaderboard(submission);
 		} catch (err) {
 			console.error(err);
 			try {

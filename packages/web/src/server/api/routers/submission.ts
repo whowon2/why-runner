@@ -7,6 +7,7 @@ import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 
 const createSubmissionInput = z.object({
 	code: z.string(),
+	contestId: z.string().uuid(),
 	language: z.enum(['c', 'cpp', 'java', 'python', 'rust']),
 	problemId: z.string().uuid(),
 });
@@ -27,7 +28,9 @@ export const submissionRouter = createTRPCRouter({
 	create: protectedProcedure
 		.input(createSubmissionInput)
 		.mutation(async ({ ctx, input }) => {
-			const submission = await ctx.db.submission.create({ data: input });
+			const submission = await ctx.db.submission.create({
+				data: { ...input, userId: ctx.session.user.id },
+			});
 
 			const item = await queue.add('processSubmission', {
 				submissionId: submission.id,

@@ -1,35 +1,35 @@
 'use client';
 
-import Editor from '@monaco-editor/react';
-import type { Language, Problem } from '@prisma/client';
-import { FilePlus2, Save, Upload } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { api } from '@/trpc/react';
+import Editor from '@monaco-editor/react';
+import type { Contest, Language, Problem } from '@prisma/client';
+import { FilePlus2, Save, Upload } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
-export function UploadCode({ problem }: { problem: Problem }) {
+export function UploadCode({ problem, contest }: { problem: Problem, contest: Contest }) {
 	const fileRef = useRef<HTMLInputElement | null>(null);
 	const [code, setCode] = useState('');
 	const [language, setLanguage] = useState<Language | null>(null);
 	const { mutate, isPending } = api.submission.create.useMutation();
-	const { theme } = useTheme();
+	const { theme, systemTheme } = useTheme();
 	const utils = api.useUtils();
 
 	const extensions = {
@@ -55,6 +55,7 @@ export function UploadCode({ problem }: { problem: Problem }) {
 		mutate(
 			{
 				code,
+				contestId: contest.id,
 				language,
 				problemId: problem.id,
 			},
@@ -209,7 +210,7 @@ export function UploadCode({ problem }: { problem: Problem }) {
 							setCode(c);
 						}
 					}}
-					theme={'vs-dark'}
+					theme={theme === "system" ? systemTheme === 'dark' ? 'vs-dark' : 'light' : theme === 'dark' ? 'vs-dark' : 'light'}
 					value={code}
 					width={'100%'}
 				/>

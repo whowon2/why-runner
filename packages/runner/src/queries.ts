@@ -29,3 +29,12 @@ export async function updateSubmission(
     WHERE id = ${id}
     `;
 }
+
+export async function updateLeaderboard(submission: Submission) {
+	await sql`
+    UPDATE "UserOnContest"
+    SET score = score + 1
+    WHERE "contestId" = ${submission.contestId}
+    AND "userId" = ${submission.userId}
+    `;
+}

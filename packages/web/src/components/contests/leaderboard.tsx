@@ -31,7 +31,11 @@ export function Leaderboard({ contest }: { contest: Contest }) {
 					{leaderboard?.map((user) => (
 						<TableRow key={user.id}>
 							<TableCell className="font-medium">{user.user.name}</TableCell>
-							<TableCell className="font-medium text-center">{user.answers?.map((question, idx) => <div key={idx}>question</div>)}</TableCell>
+							<TableCell className="font-medium text-center">
+								{user.answers?.map((question, idx) => (
+									<div key={idx}>question</div>
+								))}
+							</TableCell>
 							<TableCell className="text-right">{user.score}</TableCell>
 						</TableRow>
 					))}

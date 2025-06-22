@@ -1,16 +1,16 @@
 'use client';
 
-import type { Prisma, Problem } from '@prisma/client';
-import * as RadioGroup from '@radix-ui/react-radio-group';
-import { useState } from 'react';
 import { ProblemDescription } from '@/components/problems/description';
 import { SubmissionList } from '@/components/problems/submissions';
 import { UploadCode } from '@/components/problems/upload';
 import {
-	ResizableHandle,
-	ResizablePanel,
-	ResizablePanelGroup,
+    ResizableHandle,
+    ResizablePanel,
+    ResizablePanelGroup,
 } from '@/components/ui/resizable';
+import type { Prisma, Problem } from '@prisma/client';
+import * as RadioGroup from '@radix-ui/react-radio-group';
+import { useState } from 'react';
 
 const letters = [
 	'A',
@@ -92,7 +92,7 @@ export function SelectProblem({
 					</ResizablePanel>
 					<ResizableHandle withHandle />
 					<ResizablePanel className="p-2">
-						<UploadCode problem={problem} />
+						<UploadCode problem={problem} contest={contest} />
 					</ResizablePanel>
 				</ResizablePanelGroup>
 			)}

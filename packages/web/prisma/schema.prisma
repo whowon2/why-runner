@@ -66,6 +66,7 @@ model User {
   problem       Problem[]
   userOnContest UserOnContest[]
   Post          Post[]
+  Submission    Submission[]
 }
 
 model Problem {
@@ -94,6 +95,10 @@ model Submission {
   updatedAt DateTime @updatedAt
   problem   Problem  @relation(fields: [problemId], references: [id])
   problemId String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  contest   Contest  @relation(fields: [contestId], references: [id])
+  contestId String
 }
 
 model Contest {
@@ -109,6 +114,7 @@ model Contest {
   problems Problem[]
 
   userOnContest UserOnContest[]
+  Submission    Submission[]
 
   @@index([name])
 }
