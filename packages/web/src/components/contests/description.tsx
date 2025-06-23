@@ -1,6 +1,6 @@
 import type { Prisma } from '@prisma/client';
 
-export function DescriptionTab({
+export function ContestDescription({
 	contest,
 }: {
 	contest: Prisma.ContestGetPayload<{

@@ -2,12 +2,7 @@
 	"$schema": "https://biomejs.dev/schemas/2.0.4/schema.json",
 	"assist": {
 		"actions": {
-			"source": {
-				"organizeImports": "on",
-				"useSortedAttributes": "on",
-				"useSortedKeys": "on",
-				"useSortedProperties": "on"
-			}
+			"source": {}
 		},
 		"enabled": true
 	},

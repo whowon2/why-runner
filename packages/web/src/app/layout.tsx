@@ -24,7 +24,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html className={`${geist.variable}`} lang="en" suppressHydrationWarning>
-			<body className="flex min-h-screen flex-col justify-between">
+			<body>
 				<TRPCReactProvider>
 					<ThemeProvider
 						attribute="class"
@@ -35,7 +35,7 @@ export default function RootLayout({
 						<Header />
 						{children}
 						<Toaster />
-						<Footer />
+						{/* <Footer /> */}
 					</ThemeProvider>
 				</TRPCReactProvider>
 			</body>

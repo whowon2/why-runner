@@ -32,6 +32,10 @@ export function JoinButton({
 		return null;
 	}
 
+	if (contest.start < new Date()) {
+		return null;
+	}
+
 	if (isUserInContest) {
 		return (
 			<Button

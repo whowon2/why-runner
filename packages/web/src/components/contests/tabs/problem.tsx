@@ -1,9 +1,5 @@
 'use client';
 
-import type { Prisma, Problem } from '@prisma/client';
-import * as RadioGroup from '@radix-ui/react-radio-group';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { ProblemDescription } from '@/components/problems/description';
 import { SubmissionList } from '@/components/problems/submissions';
 import { UploadCode } from '@/components/problems/upload';
@@ -13,10 +9,17 @@ import {
 	ResizablePanelGroup,
 } from '@/components/ui/resizable';
 import { letters } from '@/lib/letters';
+import type { Prisma, Problem } from '@prisma/client';
+import * as RadioGroup from '@radix-ui/react-radio-group';
+import type { Session } from 'next-auth';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-export function SelectProblem({
+export function ProblemTab({
+	session,
 	contest,
 }: {
+	session: Session;
 	contest: Prisma.ContestGetPayload<{
 		include: {
 			problems: true;
@@ -28,6 +31,12 @@ export function SelectProblem({
 	const searchParams = useSearchParams();
 
 	const [problem, setProblem] = useState<Problem | null>();
+
+	function isUserOnContest() {
+		return contest.userOnContest.some(
+			(userOnContest) => userOnContest.userId === session.user.id,
+		);
+	}
 
 	function handleSelectProblem(value: string) {
 		const prob = contest.problems.find((p) => p.id === value);
@@ -55,6 +64,22 @@ export function SelectProblem({
 		}
 	}, [searchParams, contest.problems]);
 
+	if (contest.start > new Date()) {
+		return (
+			<div className="w-full flex items-center justify-center mt-10 font-bold text-xl">
+				You cannot see the problems yet
+			</div>
+		);
+	}
+
+	if (contest.end > new Date()) {
+		return (
+			<div className="w-full flex items-center justify-center mt-10 font-bold text-xl">
+				You will be able to see the contest problems after it finishes.
+			</div>
+		);
+	}
+
 	return (
 		<div className="flex flex-col w-full gap-4">
 			<RadioGroup.Root
@@ -77,22 +102,26 @@ export function SelectProblem({
 					<ResizablePanel className="p-2">
 						<ProblemDescription problem={problem} />
 					</ResizablePanel>
-					<ResizableHandle withHandle />
-					<ResizablePanel className="p-2">
-						<SubmissionList problem={problem} />
-					</ResizablePanel>
-					<ResizableHandle withHandle />
-					<ResizablePanel className="p-2">
-						<UploadCode
-							contest={contest}
-							problem={problem}
-							problemLetter={
-								letters[
-									contest.problems.findIndex((p) => p.id === problem.id)
-								] ?? ''
-							}
-						/>
-					</ResizablePanel>
+					{isUserOnContest() && (
+						<>
+							<ResizableHandle withHandle />
+							<ResizablePanel className="p-2">
+								<SubmissionList problem={problem} />
+							</ResizablePanel>
+							<ResizableHandle withHandle />
+							<ResizablePanel className="p-2">
+								<UploadCode
+									contest={contest}
+									problem={problem}
+									problemLetter={
+										letters[
+											contest.problems.findIndex((p) => p.id === problem.id)
+										] ?? ''
+									}
+								/>
+							</ResizablePanel>
+						</>
+					)}
 				</ResizablePanelGroup>
 			)}
 		</div>
