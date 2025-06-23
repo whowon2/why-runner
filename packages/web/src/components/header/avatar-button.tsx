@@ -24,7 +24,6 @@ import {
 	DropdownMenuShortcut,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { api } from '@/trpc/react';
 
 export function AvatarButton({ session }: { session: Session }) {
 	const initials = (session.user.name ?? '')

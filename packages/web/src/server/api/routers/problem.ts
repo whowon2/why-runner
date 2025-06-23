@@ -31,7 +31,7 @@ export const problemRouter = createTRPCRouter({
 			where: { id: input },
 		});
 	}),
-	getAll: protectedProcedure.input(findProblemInput).query(({ ctx, input }) => {
+	getAll: protectedProcedure.input(findProblemInput).query(({ ctx }) => {
 		return ctx.db.problem.findMany({});
 	}),
 });

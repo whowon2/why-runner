@@ -73,7 +73,7 @@ export const contestRouter = createTRPCRouter({
 			});
 		}),
 
-	findAll: protectedProcedure.query(({ ctx, input }) => {
+	findAll: protectedProcedure.query(({ ctx }) => {
 		return ctx.db.contest.findMany({
 			include: { userOnContest: true },
 		});
@@ -134,10 +134,17 @@ export const contestRouter = createTRPCRouter({
 				},
 			});
 
-			if (!contest || contest.start < new Date()) {
+			if (!contest) {
 				throw new TRPCError({
 					code: 'BAD_REQUEST',
-					message: 'Contest has not started yet',
+					message: 'Contest not found!',
+				});
+			}
+
+			if (contest.start < new Date()) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'Contest has already started!',
 				});
 			}
 
@@ -151,7 +158,21 @@ export const contestRouter = createTRPCRouter({
 
 	leave: protectedProcedure
 		.input(z.object({ contestId: z.string() }))
-		.mutation(({ ctx, input }) => {
+		.mutation(async ({ ctx, input }) => {
+			const isUserOnContest = await ctx.db.userOnContest.findFirst({
+				where: {
+					contestId: input.contestId,
+					userId: ctx.session.user.id,
+				},
+			});
+
+			if (!isUserOnContest) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'User is not on the contest',
+				});
+			}
+
 			return ctx.db.userOnContest.delete({
 				where: {
 					userId_contestId: {

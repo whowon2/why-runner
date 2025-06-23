@@ -44,6 +44,11 @@ export function JoinButton({
 					leaveContest(
 						{ contestId: contest.id },
 						{
+							onError: (error) => {
+								toast.error('Failed to leave the contest.', {
+									description: error.message,
+								});
+							},
 							onSuccess: () => {
 								toast('You have left the contest.');
 								router.refresh();
@@ -70,6 +75,11 @@ export function JoinButton({
 				joinContest(
 					{ contestId: contest.id },
 					{
+						onError: (error) => {
+							toast.error('Failed to leave the contest.', {
+								description: error.message,
+							});
+						},
 						onSuccess: () => {
 							toast('You have joined the contest.');
 							router.refresh();

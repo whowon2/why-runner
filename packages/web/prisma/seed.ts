@@ -17,7 +17,7 @@ async function main() {
 	const contest1 = await db.contest.create({
 		data: {
 			createdById: user.id,
-			end: new Date(new Date().getTime() + 123456 * 10),
+			end: new Date(Date.now() + 123456 * 10),
 			name: 'Do you have brio 2025', // Longer duration
 			start: new Date(),
 		},
@@ -161,9 +161,9 @@ Note that you must do this in-place without making a copy of the array.`,
 	const contest2 = await db.contest.create({
 		data: {
 			createdById: user.id,
-			end: new Date(new Date().getTime() + 86400000 * 14), // Starts in 7 days
+			end: new Date(Date.now() + 86400000 * 14), // Starts in 7 days
 			name: 'Algorithmic Challenges May 2025', // Ends in 14 days
-			start: new Date(new Date().getTime() + 86400000 * 7),
+			start: new Date(Date.now() + 86400000 * 7),
 		},
 	});
 
@@ -193,9 +193,9 @@ Note that you must do this in-place without making a copy of the array.`,
 	const contest3 = await db.contest.create({
 		data: {
 			createdById: user.id,
-			end: new Date(new Date().getTime() + 86400000 * 45), // Starts in 30 days
+			end: new Date(Date.now() + 86400000 * 45), // Starts in 30 days
 			name: 'Data Structures Tournament June 2025', // Ends in 45 days
-			start: new Date(new Date().getTime() + 86400000 * 30),
+			start: new Date(Date.now() + 86400000 * 30),
 		},
 	});
 
