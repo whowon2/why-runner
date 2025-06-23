@@ -1,11 +1,6 @@
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
-const findProblemInput = z.object({
-	sortBy: z.enum(['name', 'difficulty', 'created']).optional(),
-	sortOrder: z.enum(['asc', 'desc']).optional(),
-});
-
 const createProblemInput = z.object({
 	description: z.string(),
 	difficulty: z.enum(['EASY', 'MEDIUM', 'HARD']),
@@ -31,7 +26,19 @@ export const problemRouter = createTRPCRouter({
 			where: { id: input },
 		});
 	}),
-	getAll: protectedProcedure.input(findProblemInput).query(({ ctx }) => {
-		return ctx.db.problem.findMany({});
+
+	getAll: protectedProcedure.query(({ ctx }) => {
+		return ctx.db.problem.findMany({
+			where: {
+				OR: [
+					{
+						userId: ctx.session.user.id,
+					},
+					{
+						public: true,
+					},
+				],
+			},
+		});
 	}),
 });

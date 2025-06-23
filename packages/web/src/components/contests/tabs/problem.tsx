@@ -1,5 +1,10 @@
 'use client';
 
+import type { Prisma, Problem } from '@prisma/client';
+import * as RadioGroup from '@radix-ui/react-radio-group';
+import { useRouter, useSearchParams } from 'next/navigation';
+import type { Session } from 'next-auth';
+import { useEffect, useState } from 'react';
 import { ProblemDescription } from '@/components/problems/description';
 import { SubmissionList } from '@/components/problems/submissions';
 import { UploadCode } from '@/components/problems/upload';
@@ -9,11 +14,6 @@ import {
 	ResizablePanelGroup,
 } from '@/components/ui/resizable';
 import { letters } from '@/lib/letters';
-import type { Prisma, Problem } from '@prisma/client';
-import * as RadioGroup from '@radix-ui/react-radio-group';
-import type { Session } from 'next-auth';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 export function ProblemTab({
 	session,

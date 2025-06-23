@@ -80,8 +80,9 @@ model Problem {
   submissions Submission[]
   contest     Contest?     @relation(fields: [contestId], references: [id])
   contestId   String?
-  user        User?        @relation(fields: [userId], references: [id])
-  userId      String?
+  user        User         @relation(fields: [userId], references: [id])
+  userId      String
+  public      Boolean      @default(false)
 }
 
 model Submission {
