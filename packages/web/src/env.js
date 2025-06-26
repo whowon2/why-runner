@@ -1,5 +1,5 @@
-import { createEnv } from '@t3-oss/env-nextjs';
-import { z } from 'zod';
+import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
 
 export const env = createEnv({
 	/**
@@ -41,14 +41,14 @@ export const env = createEnv({
 		AUTH_GOOGLE_ID: z.string(),
 		AUTH_GOOGLE_SECRET: z.string(),
 		AUTH_SECRET:
-			process.env.NODE_ENV === 'production'
+			process.env.NODE_ENV === "production"
 				? z.string()
 				: z.string().optional(),
 		DATABASE_URL: z.string().url(),
 		GEMINI_KEY: z.string(),
 		NODE_ENV: z
-			.enum(['development', 'test', 'production'])
-			.default('development'),
+			.enum(["development", "test", "production"])
+			.default("development"),
 		REDIS_URL: z.string().url(),
 	},
 	/**
