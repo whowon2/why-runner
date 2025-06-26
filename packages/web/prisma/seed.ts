@@ -19,7 +19,7 @@ async function main() {
 			createdById: user.id,
 			end: new Date(Date.now() + 123456 * 10),
 			name: 'Do you have brio 2025', // Longer duration
-			start: new Date(),
+			start: new Date(Date.now() + 100000),
 		},
 	});
 

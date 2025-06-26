@@ -32,11 +32,9 @@ export function ProblemTab({
 
 	const [problem, setProblem] = useState<Problem | null>();
 
-	function isUserOnContest() {
-		return contest.userOnContest.some(
-			(userOnContest) => userOnContest.userId === session.user.id,
-		);
-	}
+	const isUserOnContest = contest.userOnContest.some(
+		(userOnContest) => userOnContest.userId === session.user.id,
+	);
 
 	function handleSelectProblem(value: string) {
 		const prob = contest.problems.find((p) => p.id === value);
@@ -72,7 +70,7 @@ export function ProblemTab({
 		);
 	}
 
-	if (contest.end > new Date()) {
+	if (contest.end > new Date() && !isUserOnContest) {
 		return (
 			<div className="w-full flex items-center justify-center mt-10 font-bold text-xl">
 				You will be able to see the contest problems after it finishes.
@@ -102,7 +100,7 @@ export function ProblemTab({
 					<ResizablePanel className="p-2">
 						<ProblemDescription problem={problem} />
 					</ResizablePanel>
-					{isUserOnContest() && (
+					{isUserOnContest && (
 						<>
 							<ResizableHandle withHandle />
 							<ResizablePanel className="p-2">

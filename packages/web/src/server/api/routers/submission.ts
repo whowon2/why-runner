@@ -1,18 +1,15 @@
-import {
-	DeleteMessageCommand,
-	ReceiveMessageCommand,
-	SendMessageCommand,
-	SQSClient,
-} from "@aws-sdk/client-sqs";
-import { GoogleGenAI } from "@google/genai";
-import { z } from "zod";
-import { env } from "@/env";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { env } from '@/env';
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
+import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
+import { GoogleGenAI } from '@google/genai';
+import { z } from 'zod';
 
 const createSubmissionInput = z.object({
 	code: z.string(),
-	language: z.enum(["c", "cpp", "java", "python", "rust"]),
+	contestId: z.string().uuid(),
+	language: z.enum(['c', 'cpp', 'java', 'python', 'rust']),
 	problemId: z.string().uuid(),
+	questionLetter: z.string(),
 });
 
 const sqs = new SQSClient({
@@ -27,10 +24,19 @@ export const submissionRouter = createTRPCRouter({
 	create: protectedProcedure
 		.input(createSubmissionInput)
 		.mutation(async ({ ctx, input }) => {
-			const submission = await ctx.db.submission.create({ data: input });
+			const submission = await ctx.db.submission.create({
+				data: {
+					code: input.code,
+					problemId: input.problemId,
+					language: input.language,
+					contestId: input.contestId,
+					userId: ctx.session.user.id,
+				},
+			});
 
 			const message = {
 				submissionId: submission.id,
+				questionLetter: input.questionLetter
 			};
 
 			await sqs.send(
@@ -40,7 +46,7 @@ export const submissionRouter = createTRPCRouter({
 				}),
 			);
 
-			console.log("queue item", message);
+			console.log('queue item', message);
 
 			return submission;
 		}),
@@ -57,7 +63,7 @@ export const submissionRouter = createTRPCRouter({
 					problemId: input.problemId,
 				},
 				orderBy: {
-					createdAt: "desc",
+					createdAt: 'desc',
 				},
 			});
 		}),
@@ -100,10 +106,10 @@ ${input.problem.title}
 ${input.problem.description}
 
 Inputs:
-${input.problem.inputs.join("\n")}
+${input.problem.inputs.join('\n')}
 
 Expected Outputs:
-${input.problem.outputs.join("\n")}
+${input.problem.outputs.join('\n')}
 
 Student Code in ${input.submission.language}:
 ${input.submission.code}
@@ -119,7 +125,7 @@ ${input.submission.output}
 			const ai = new GoogleGenAI({ apiKey: env.GEMINI_KEY });
 
 			const response = await ai.models.generateContent({
-				model: "gemini-2.0-flash",
+				model: 'gemini-2.0-flash',
 				contents: prompt,
 			});
 
