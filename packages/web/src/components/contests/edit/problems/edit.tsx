@@ -25,7 +25,8 @@ export function EditContestProblems({
 		};
 	}>;
 }) {
-	const { data: problems } = api.problem.getAll.useQuery({});
+	const { data: problems } = api.problem.getAll.useQuery();
+
 	const { mutate: addProblem, isPending: isAddPending } =
 		api.contest.addProblems.useMutation();
 

@@ -15,7 +15,7 @@ export default async function ProfilePage() {
 		<HydrateClient>
 			<div className="flex w-full flex-col items-center justify-center p-4">
 				<BreadCrumbs />
-				<Profile session={session} />
+				<Profile />
 			</div>
 		</HydrateClient>
 	);

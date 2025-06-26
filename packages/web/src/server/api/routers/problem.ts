@@ -14,7 +14,7 @@ export const problemRouter = createTRPCRouter({
 		.input(createProblemInput)
 		.mutation(({ ctx, input }) => {
 			return ctx.db.problem.create({
-				data: input,
+				data: { ...input, userId: ctx.session.user.id },
 			});
 		}),
 

@@ -26,7 +26,7 @@ export default async function Page({
 	return (
 		<div className="flex flex-col items-center justify-center">
 			<BreadCrumbs />
-			<EditContest contest={contest} session={session} />
+			<EditContest contest={contest} />
 		</div>
 	);
 }
