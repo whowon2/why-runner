@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import type { Problem, Submission } from "@prisma/client";
-import { Brain } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import type { Problem, Submission } from '@prisma/client';
+import { Brain } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
 	Dialog,
 	DialogClose,
@@ -12,8 +12,8 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from "@/components/ui/dialog";
-import { api } from "@/trpc/react";
+} from '@/components/ui/dialog';
+import { api } from '@/trpc/react';
 
 export function AIDialog({
 	submission,
@@ -23,18 +23,18 @@ export function AIDialog({
 	problem: Problem;
 }) {
 	const { mutate } = api.submission.getAiHelp.useMutation();
-	const [help, setHelp] = useState("");
+	const [help, setHelp] = useState('');
 
 	function handle() {
 		mutate(
 			{ problem, submission },
 			{
-				onSuccess: (data) => {
-					console.log("success", data);
-					setHelp(data ?? "No response!");
-				},
 				onError: (e) => {
-					console.log("error", e);
+					console.log('error', e);
+				},
+				onSuccess: (data) => {
+					console.log('success', data);
+					setHelp(data ?? 'No response!');
 				},
 			},
 		);
@@ -44,7 +44,7 @@ export function AIDialog({
 		<Dialog>
 			<form>
 				<DialogTrigger asChild>
-					<Button variant={"outline"}>
+					<Button variant={'outline'}>
 						<Brain />
 					</Button>
 				</DialogTrigger>

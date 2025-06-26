@@ -1,7 +1,11 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { DialogFooter } from "@/components/ui/dialog";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { DialogFooter } from '@/components/ui/dialog';
 import {
 	Form,
 	FormControl,
@@ -9,15 +13,12 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { api } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { api } from '@/trpc/react';
 
 const formSchema = z.object({
+	duration: z.coerce.number().min(15),
 	name: z.string().min(2).max(50),
 	startDate: z.string().refine(
 		(dateStr) => {
@@ -25,10 +26,9 @@ const formSchema = z.object({
 			return !Number.isNaN(date.getTime()) && date > new Date();
 		},
 		{
-			message: "Start Date must be in the future",
+			message: 'Start Date must be in the future',
 		},
 	),
-	duration: z.coerce.number().min(15),
 });
 
 export function CreateContestForm({
@@ -39,12 +39,12 @@ export function CreateContestForm({
 	const { mutate: createContest, isPending } = api.contest.create.useMutation();
 
 	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
 		defaultValues: {
-			name: "",
 			duration: 15,
-			startDate: "",
+			name: '',
+			startDate: '',
 		},
+		resolver: zodResolver(formSchema),
 	});
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
@@ -55,27 +55,27 @@ export function CreateContestForm({
 
 		createContest(
 			{
+				endDate,
 				name: values.name,
 				startDate,
-				endDate,
 			},
 			{
-				onSuccess: () => {
-					toast.success("Contest Created");
-				},
 				onError: (error) => {
-					toast.error("Failed to create contest", {
+					toast.error('Failed to create contest', {
 						description: error.message,
 					});
 				},
 				onSettled: () => onSuccessAction(),
+				onSuccess: () => {
+					toast.success('Contest Created');
+				},
 			},
 		);
 	}
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+			<form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
 				<FormField
 					control={form.control}
 					name="name"
@@ -98,8 +98,8 @@ export function CreateContestForm({
 							<FormLabel>Date and Time</FormLabel>
 							<FormControl>
 								<Input
-									type="datetime-local"
 									placeholder="Do You Have Brio 2024"
+									type="datetime-local"
 									{...field}
 								/>
 							</FormControl>
@@ -115,7 +115,7 @@ export function CreateContestForm({
 						<FormItem>
 							<FormLabel>Duration</FormLabel>
 							<FormControl>
-								<Input type="number" placeholder="15" {...field} />
+								<Input placeholder="15" type="number" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -124,7 +124,7 @@ export function CreateContestForm({
 
 				<DialogFooter>
 					<Button disabled={isPending} type="submit">
-						{isPending ? "Creating..." : "Create"}
+						{isPending ? 'Creating...' : 'Create'}
 					</Button>
 				</DialogFooter>
 			</form>

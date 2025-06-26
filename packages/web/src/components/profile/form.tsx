@@ -1,7 +1,13 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Save } from 'lucide-react';
+import type { User } from 'next-auth';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
 	Form,
 	FormControl,
@@ -10,34 +16,28 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { api } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Save } from "lucide-react";
-import type { User } from "next-auth";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+} from '@/components/ui/tooltip';
+import { api } from '@/trpc/react';
 
 const updateProfileSchema = z.object({
+	image: z.union([z.string().url(), z.literal('')]),
 	name: z.string(),
-	image: z.union([z.string().url(), z.literal("")]),
 });
 
 export function UpdateForm({ user }: { user: User }) {
 	const form = useForm<z.infer<typeof updateProfileSchema>>({
-		resolver: zodResolver(updateProfileSchema),
 		defaultValues: {
-			name: user.name ?? "",
-			image: user.image ?? "",
+			image: user.image ?? '',
+			name: user.name ?? '',
 		},
+		resolver: zodResolver(updateProfileSchema),
 	});
 
 	const utils = api.useUtils();
@@ -46,13 +46,13 @@ export function UpdateForm({ user }: { user: User }) {
 
 	async function onSubmit(values: z.infer<typeof updateProfileSchema>) {
 		updateUser(values, {
+			onError() {
+				toast('Failed to update profile');
+			},
 			async onSuccess() {
 				utils.user.invalidate();
 
-				toast("Profile updated");
-			},
-			onError() {
-				toast("Failed to update profile");
+				toast('Profile updated');
 			},
 		});
 	}
@@ -63,7 +63,7 @@ export function UpdateForm({ user }: { user: User }) {
 			</CardHeader>
 			<CardContent>
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+					<form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
 						<FormField
 							control={form.control}
 							name="name"
@@ -101,9 +101,9 @@ export function UpdateForm({ user }: { user: User }) {
 							<Tooltip>
 								<TooltipTrigger asChild={true}>
 									<Button
-										type="submit"
 										disabled={!form.formState.isDirty}
-										variant={"default"}
+										type="submit"
+										variant={'default'}
 									>
 										<Save />
 									</Button>

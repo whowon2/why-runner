@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import type { Prisma } from "@prisma/client";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import type { Prisma } from '@prisma/client';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export function ContestCard({
 	contest,
@@ -29,7 +29,7 @@ export function ContestCard({
 			return `Ends in: ${formatDuration(diffMs)}`;
 		}
 
-		return "FINISHED";
+		return 'FINISHED';
 	}
 
 	function formatDuration(ms: number) {
@@ -43,8 +43,8 @@ export function ContestCard({
 
 	return (
 		<div
-			key={contest.id}
 			className="flex justify-between rounded-lg border p-4"
+			key={contest.id}
 		>
 			<Link href={`/contests/${contest.id}`}>
 				<h3 className="font-bold hover:underline">{contest.name}</h3>

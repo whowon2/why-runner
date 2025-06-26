@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { Prisma } from "@prisma/client";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { DialogFooter } from "@/components/ui/dialog";
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { Prisma } from '@prisma/client';
+import { Loader } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
 import {
 	Form,
 	FormControl,
@@ -14,9 +14,9 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { api } from "@/trpc/react";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { api } from '@/trpc/react';
 
 const formSchema = z.object({
 	name: z.string().min(2).max(50),
@@ -34,10 +34,10 @@ export function EditContestForm({
 	const { mutate: updateContest, isPending } = api.contest.update.useMutation();
 
 	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
 		defaultValues: {
 			name: contest.name,
 		},
+		resolver: zodResolver(formSchema),
 	});
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
@@ -49,11 +49,11 @@ export function EditContestForm({
 				name: values.name,
 			},
 			{
-				onSuccess: () => {
-					toast.success("Updated");
-				},
 				onError: (error) => {
-					toast.error("Fail to update", { description: error.message });
+					toast.error('Fail to update', { description: error.message });
+				},
+				onSuccess: () => {
+					toast.success('Updated');
 				},
 			},
 		);
@@ -61,7 +61,7 @@ export function EditContestForm({
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+			<form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
 				<FormField
 					control={form.control}
 					name="name"
@@ -76,7 +76,7 @@ export function EditContestForm({
 					)}
 				/>
 				<Button disabled={isPending || !form.formState.isDirty} type="submit">
-					{isPending ? "Saving changes..." : "Save"}
+					{isPending ? <Loader className="animate-spin" /> : 'Save'}
 				</Button>
 			</form>
 		</Form>

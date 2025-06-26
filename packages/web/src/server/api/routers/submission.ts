@@ -1,25 +1,22 @@
-import { env } from "@/env";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { GoogleGenAI } from "@google/genai";
-import { Queue } from "bullmq";
-import Redis from "ioredis";
-import { z } from "zod";
+import { env } from '@/env';
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
+import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
+import { GoogleGenAI } from '@google/genai';
+import { z } from 'zod';
 
 const createSubmissionInput = z.object({
 	code: z.string(),
-	language: z.enum(["c", "cpp", "java", "python", "rust"]),
+	contestId: z.string().uuid(),
+	language: z.enum(['c', 'cpp', 'java', 'python', 'rust']),
 	problemId: z.string().uuid(),
+	questionLetter: z.string(),
 });
 
-const redis = new Redis(env.REDIS_URL);
-
-const queue = new Queue("submissions", {
-	connection: redis,
-	defaultJobOptions: {
-		backoff: {
-			type: "exponential",
-			delay: 1000,
-		},
+const sqs = new SQSClient({
+	region: env.AWS_REGION,
+	credentials: {
+		accessKeyId: env.AWS_ACCESS_KEY_ID,
+		secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
 	},
 });
 
@@ -27,13 +24,29 @@ export const submissionRouter = createTRPCRouter({
 	create: protectedProcedure
 		.input(createSubmissionInput)
 		.mutation(async ({ ctx, input }) => {
-			const submission = await ctx.db.submission.create({ data: input });
-
-			const item = await queue.add("processSubmission", {
-				submissionId: submission.id,
+			const submission = await ctx.db.submission.create({
+				data: {
+					code: input.code,
+					problemId: input.problemId,
+					language: input.language,
+					contestId: input.contestId,
+					userId: ctx.session.user.id,
+				},
 			});
 
-			console.log("queue item", item);
+			const message = {
+				submissionId: submission.id,
+				questionLetter: input.questionLetter
+			};
+
+			await sqs.send(
+				new SendMessageCommand({
+					QueueUrl: env.SQS_QUEUE_URL,
+					MessageBody: JSON.stringify(message),
+				}),
+			);
+
+			console.log('queue item', message);
 
 			return submission;
 		}),
@@ -50,7 +63,7 @@ export const submissionRouter = createTRPCRouter({
 					problemId: input.problemId,
 				},
 				orderBy: {
-					createdAt: "desc",
+					createdAt: 'desc',
 				},
 			});
 		}),
@@ -93,10 +106,10 @@ ${input.problem.title}
 ${input.problem.description}
 
 Inputs:
-${input.problem.inputs.join("\n")}
+${input.problem.inputs.join('\n')}
 
 Expected Outputs:
-${input.problem.outputs.join("\n")}
+${input.problem.outputs.join('\n')}
 
 Student Code in ${input.submission.language}:
 ${input.submission.code}
@@ -112,7 +125,7 @@ ${input.submission.output}
 			const ai = new GoogleGenAI({ apiKey: env.GEMINI_KEY });
 
 			const response = await ai.models.generateContent({
-				model: "gemini-2.0-flash",
+				model: 'gemini-2.0-flash',
 				contents: prompt,
 			});
 

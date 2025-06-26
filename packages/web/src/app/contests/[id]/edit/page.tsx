@@ -1,18 +1,20 @@
-import { BreadCrumbs } from "@/components/breadcrumbs";
-import { EditContest } from "@/components/contests/edit/edit";
-import { auth } from "@/server/auth";
-import { api } from "@/trpc/server";
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
+import { BreadCrumbs } from '@/components/breadcrumbs';
+import { EditContest } from '@/components/contests/edit/edit';
+import { auth } from '@/server/auth';
+import { api } from '@/trpc/server';
 
 export default async function Page({
 	params,
-}: { params: Promise<{ id: string }> }) {
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id } = await params;
 
 	const session = await auth();
 
 	if (!session) {
-		redirect("/api/auth/signin");
+		redirect('/api/auth/signin');
 	}
 
 	const contest = await api.contest.findById(id);
@@ -24,7 +26,7 @@ export default async function Page({
 	return (
 		<div className="flex flex-col items-center justify-center">
 			<BreadCrumbs />
-			<EditContest contest={contest} session={session} />
+			<EditContest contest={contest} />
 		</div>
 	);
 }

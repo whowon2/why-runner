@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export type SubmissionStatus = "RUNNING" | "FAILED" | "PASSED" | "ERROR";
+export type SubmissionStatus = 'RUNNING' | 'FAILED' | 'PASSED' | 'ERROR';
 
 const problemSchema = z.object({
 	id: z.string().uuid(),
@@ -11,10 +11,12 @@ const problemSchema = z.object({
 export type Problem = z.infer<typeof problemSchema>;
 
 export const submissionSchema = z.object({
-	id: z.string().uuid(),
 	code: z.string(),
+	contestId: z.string().uuid(),
+	id: z.string().uuid(),
+	language: z.enum(['rust', 'cpp']),
 	problemId: z.string().uuid(),
-	language: z.enum(["rust", "cpp"]),
+	userId: z.string(),
 });
 
 export type Submission = z.infer<typeof submissionSchema>;

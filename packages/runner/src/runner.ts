@@ -1,13 +1,13 @@
-import { mkdir } from "node:fs/promises";
-import { type Problem, type Submission, submissionSchema } from "../types";
-import { removeDir } from "./utils/remove-dir";
+import { mkdir } from 'node:fs/promises';
+import { type Problem, type Submission, submissionSchema } from '../types';
+import { removeDir } from './utils/remove-dir';
 
-async function run(dir: string, language: "rust" | "cpp") {
+async function run(dir: string, language: 'rust' | 'cpp') {
 	const command = [`./src/${language}-run.sh`, dir];
 
-	console.log({command})
+	console.log({ command });
 
-	const child = Bun.spawn(command, { stdout: "pipe", stderr: "pipe" });
+	const child = Bun.spawn(command, { stderr: 'pipe', stdout: 'pipe' });
 
 	const text = await new Response(child.stdout).text();
 	const error = await new Response(child.stderr).text();
@@ -21,10 +21,10 @@ async function run(dir: string, language: "rust" | "cpp") {
 }
 
 export async function judge(problem: Problem, submission: Submission) {
-  const extensions = {
-    "rust": "rs",
-    "cpp": "cpp"
-  }
+	const extensions = {
+		cpp: 'cpp',
+		rust: 'rs',
+	};
 
 	const { code } = submissionSchema.parse(submission);
 
@@ -36,7 +36,7 @@ export async function judge(problem: Problem, submission: Submission) {
 		tests: [],
 	};
 
-	const extension = extensions[submission.language]
+	const extension = extensions[submission.language];
 
 	for (let i = 0; i < problem.inputs.length; i++) {
 		const dir = `./src/judge-${submission.language}-${submission.id}-${i}`;
@@ -52,7 +52,7 @@ export async function judge(problem: Problem, submission: Submission) {
 
 		result.tests.push(res.trim());
 
-		if (res.trim() !== "pass") {
+		if (res.trim() !== 'pass') {
 			// console.log(res);
 			result.passed = false;
 			break;

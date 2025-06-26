@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Problem } from "@prisma/client";
-import { DifficultyBadge } from "./badge";
-import { ProblemExamples } from "./examples";
+import type { Problem } from '@prisma/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DifficultyBadge } from './badge';
+import { ProblemExamples } from './examples';
 
 export function ProblemDescription({ problem }: { problem: Problem }) {
 	return (
@@ -11,7 +11,7 @@ export function ProblemDescription({ problem }: { problem: Problem }) {
 				<DifficultyBadge difficulty={problem.difficulty} />
 			</div>
 
-			<Card>
+			<Card className="border-none bg-transparent shadow-none">
 				<CardHeader>
 					<CardTitle className="font-semibold text-xl">Description</CardTitle>
 				</CardHeader>

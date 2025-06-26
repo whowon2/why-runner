@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import type { Contest, Prisma, Problem } from '@prisma/client';
+import { TRPCClientError } from '@trpc/client';
+import { Loader, X } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
-import { api } from "@/trpc/react";
-import type { Prisma } from "@prisma/client";
-import { TRPCClientError } from "@trpc/client";
-import { X } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { toast } from "sonner";
+} from '@/components/ui/select';
+import { api } from '@/trpc/react';
 
 export function EditContestProblems({
 	contest,
@@ -25,9 +25,10 @@ export function EditContestProblems({
 		};
 	}>;
 }) {
-	const { data: problems, refetch } = api.problem.getAll.useQuery({});
-	const { mutate: addProblem } = api.contest.addProblems.useMutation();
-	const { mutate: removeProblem } = api.contest.removeProblem.useMutation();
+	const { data: problems } = api.problem.getAll.useQuery();
+
+	const { mutate: addProblem, isPending: isAddPending } =
+		api.contest.addProblems.useMutation();
 
 	const router = useRouter();
 	const pathname = usePathname();
@@ -36,43 +37,20 @@ export function EditContestProblems({
 		addProblem(
 			{ contestId: contest.id, problemId: id },
 			{
-				onSuccess() {
-					toast.success("Problem added");
-					router.refresh();
-				},
 				onError(error) {
 					if (error instanceof TRPCClientError) {
-						toast.error("Failed to add problem", {
+						toast.error('Failed to add problem', {
 							description: error.message,
 						});
 					} else {
-						toast.error("Unexpected error", {
-							description: "Something went wrong.",
+						toast.error('Unexpected error', {
+							description: 'Something went wrong.',
 						});
 					}
 				},
-			},
-		);
-	}
-
-	function handleRemoveProblem(id: string) {
-		removeProblem(
-			{ contestId: contest.id, problemId: id },
-			{
 				onSuccess() {
-					toast.success("Problem removed");
+					toast.success('Problem added');
 					router.refresh();
-				},
-				onError(error) {
-					if (error instanceof TRPCClientError) {
-						toast.error("Failed to remove problem", {
-							description: error.message,
-						});
-					} else {
-						toast.error("Unexpected error", {
-							description: "Something went wrong.",
-						});
-					}
 				},
 			},
 		);
@@ -81,7 +59,11 @@ export function EditContestProblems({
 	return (
 		<div className="flex flex-col gap-2">
 			<div className="flex w-full gap-2">
-				<Select value={""} onValueChange={handleProblemSelect}>
+				<Select
+					disabled={isAddPending}
+					onValueChange={handleProblemSelect}
+					value={''}
+				>
 					<SelectTrigger className="w-full">
 						<SelectValue placeholder="Problem" />
 					</SelectTrigger>
@@ -104,19 +86,59 @@ export function EditContestProblems({
 			<div className="flex flex-col gap-2">
 				{contest.problems.map((p) => (
 					<div
-						key={p.id}
 						className="flex items-center justify-between rounded border p-2"
+						key={p.id}
 					>
 						<p>{p.title}</p>
-						<Button
-							variant={"outline"}
-							onClick={() => handleRemoveProblem(p.id)}
-						>
-							<X />
-						</Button>
+						<RemoveProblemButton contest={contest} problem={p} />
 					</div>
 				))}
 			</div>
 		</div>
+	);
+}
+
+function RemoveProblemButton({
+	problem,
+	contest,
+}: {
+	problem: Problem;
+	contest: Contest;
+}) {
+	const { mutate: removeProblem, isPending: isRemovePending } =
+		api.contest.removeProblem.useMutation();
+	const router = useRouter();
+
+	function handleRemoveProblem(id: string) {
+		removeProblem(
+			{ contestId: contest.id, problemId: id },
+			{
+				onError(error) {
+					if (error instanceof TRPCClientError) {
+						toast.error('Failed to remove problem', {
+							description: error.message,
+						});
+					} else {
+						toast.error('Unexpected error', {
+							description: 'Something went wrong.',
+						});
+					}
+				},
+				onSuccess() {
+					toast.success('Problem removed');
+					router.refresh();
+				},
+			},
+		);
+	}
+
+	return (
+		<Button
+			disabled={isRemovePending}
+			onClick={() => handleRemoveProblem(problem.id)}
+			variant={'outline'}
+		>
+			{isRemovePending ? <Loader className="animate-spin" /> : <X />}
+		</Button>
 	);
 }

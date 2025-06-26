@@ -1,14 +1,14 @@
-import { BreadCrumbs } from "@/components/breadcrumbs";
-import { ContestList } from "@/components/contests/list";
-import { auth } from "@/server/auth";
-import { HydrateClient, api } from "@/trpc/server";
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
+import { BreadCrumbs } from '@/components/breadcrumbs';
+import { ContestList } from '@/components/contests/list';
+import { auth } from '@/server/auth';
+import { api, HydrateClient } from '@/trpc/server';
 
 export default async function ContestsPage() {
 	const session = await auth();
 
 	if (!session) {
-		redirect("/api/auth/signin");
+		redirect('/api/auth/signin');
 	}
 
 	void api.contest.findAll.prefetch();

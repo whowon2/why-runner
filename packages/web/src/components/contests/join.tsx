@@ -1,12 +1,11 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { api } from "@/trpc/react";
-import type { Prisma } from "@prisma/client";
-import type { Session } from "next-auth";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { toast } from "sonner";
+import type { Prisma } from '@prisma/client';
+import { useRouter } from 'next/navigation';
+import type { Session } from 'next-auth';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { api } from '@/trpc/react';
 
 export function JoinButton({
 	contest,
@@ -23,6 +22,7 @@ export function JoinButton({
 		api.contest.leave.useMutation();
 
 	const router = useRouter();
+	const utils = api.useUtils();
 
 	const isUserInContest = contest.userOnContest.some(
 		(user) => user.userId === session?.user.id,
@@ -32,14 +32,13 @@ export function JoinButton({
 		return null;
 	}
 
-	useEffect(() => {
-		console.log("fodase");
-	}, []);
+	if (contest.start < new Date()) {
+		return null;
+	}
 
 	if (isUserInContest) {
 		return (
 			<Button
-				variant={"destructive"}
 				disabled={isLeavePending}
 				onClick={() => {
 					if (!session) {
@@ -49,13 +48,20 @@ export function JoinButton({
 					leaveContest(
 						{ contestId: contest.id },
 						{
+							onError: (error) => {
+								toast.error('Failed to leave the contest.', {
+									description: error.message,
+								});
+							},
 							onSuccess: () => {
+								toast('You have left the contest.');
 								router.refresh();
-								toast("You have left the contest.");
+								utils.contest.getLeaderboard.invalidate();
 							},
 						},
 					);
 				}}
+				variant={'destructive'}
 			>
 				Leave
 			</Button>
@@ -64,7 +70,6 @@ export function JoinButton({
 
 	return (
 		<Button
-			variant={"outline"}
 			disabled={isJoinPending}
 			onClick={() => {
 				if (!session) {
@@ -74,13 +79,20 @@ export function JoinButton({
 				joinContest(
 					{ contestId: contest.id },
 					{
+						onError: (error) => {
+							toast.error('Failed to leave the contest.', {
+								description: error.message,
+							});
+						},
 						onSuccess: () => {
-							toast("You have joined the contest.");
+							toast('You have joined the contest.');
 							router.refresh();
+							utils.contest.getLeaderboard.invalidate();
 						},
 					},
 				);
 			}}
+			variant={'outline'}
 		>
 			Join
 		</Button>

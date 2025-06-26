@@ -1,5 +1,5 @@
-import { sql } from "bun";
-import type { Problem, Submission, SubmissionStatus } from "../types";
+import { sql } from 'bun';
+import type { Problem, Submission, SubmissionStatus } from '../types';
 
 export async function getSubmission(id: string) {
 	const [submission] = await sql`
@@ -20,7 +20,7 @@ export async function getProblem(id: string) {
 export async function updateSubmission(
 	id: string,
 	status: SubmissionStatus,
-	output = "",
+	output = '',
 ) {
 	await sql`
     UPDATE "Submission"
@@ -28,4 +28,17 @@ export async function updateSubmission(
     output = ${output}
     WHERE id = ${id}
     `;
+}
+
+export async function updateLeaderboard(
+	submission: Submission,
+	questionLetter: string,
+) {
+	await sql`
+    UPDATE "UserOnContest"
+    SET score = score + 1,
+    answers = array_append(answers, ${questionLetter})
+    WHERE "contestId" = ${submission.contestId}
+    AND "userId" = ${submission.userId}
+  `;
 }
