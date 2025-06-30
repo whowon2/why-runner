@@ -1,0 +1,40 @@
+{
+  "HomePage": {
+    "buttons": {
+      "contests": "Contests",
+      "problems": "Problems"
+    }
+  },
+  "ContestsPage": {
+    "title": "Contests",
+    "notFound": "No contest found",
+    "createDialog": {
+      "button": "Create Contest",
+      "title": "Create Contest",
+      "name": "Name",
+      "date": "Date and Time",
+      "duration": "Duration"
+    },
+    "card": {
+      "starts": "Starts in",
+      "ends": "Ends in",
+      "finished": "FINISHED",
+      "participants": "Participants"
+    }
+  },
+  "Languages": {
+    "placeholder": "Language",
+    "portuguese": "Portuguese",
+    "english": "English"
+  },
+  "Themes": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "AvatarButton": {
+    "profile": "Profile",
+    "problems": "Problems",
+    "contests": "Contests"
+  }
+}

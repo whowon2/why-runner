@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Delete } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -26,6 +25,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/trpc/react';
+import { useRouter } from '@/i18n/navigation';
 
 const formSchema = z.object({
 	description: z.string().min(1),

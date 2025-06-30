@@ -27,8 +27,8 @@ export const problemRouter = createTRPCRouter({
 		});
 	}),
 
-	getAll: protectedProcedure.query(({ ctx }) => {
-		return ctx.db.problem.findMany({
+	getAll: protectedProcedure.query(async ({ ctx }) => {
+		return await ctx.db.problem.findMany({
 			where: {
 				OR: [
 					{

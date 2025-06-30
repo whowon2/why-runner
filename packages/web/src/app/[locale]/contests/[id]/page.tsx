@@ -1,5 +1,4 @@
 import { Pencil, Trophy } from 'lucide-react';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { BreadCrumbs } from '@/components/breadcrumbs';
 import { ContestDescription } from '@/components/contests/description';
@@ -10,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { auth } from '@/server/auth';
 import { api } from '@/trpc/server';
+import { Link } from '@/i18n/navigation';
 
 export default async function Page({
 	params,

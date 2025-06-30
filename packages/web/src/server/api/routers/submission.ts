@@ -1,8 +1,8 @@
-import { env } from '@/env';
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { GoogleGenAI } from '@google/genai';
 import { z } from 'zod';
+import { env } from '@/env';
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 
 const createSubmissionInput = z.object({
 	code: z.string(),
@@ -36,7 +36,7 @@ export const submissionRouter = createTRPCRouter({
 
 			const message = {
 				submissionId: submission.id,
-				questionLetter: input.questionLetter
+				questionLetter: input.questionLetter,
 			};
 
 			await sqs.send(

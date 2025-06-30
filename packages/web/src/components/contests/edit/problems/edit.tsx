@@ -3,8 +3,6 @@
 import type { Contest, Prisma, Problem } from '@prisma/client';
 import { TRPCClientError } from '@trpc/client';
 import { Loader, X } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,6 +12,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { api } from '@/trpc/react';
 
 export function EditContestProblems({

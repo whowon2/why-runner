@@ -1,16 +1,15 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { api } from '@/trpc/react';
-import type { Difficulty, Problem } from '@prisma/client';
+import type { Difficulty } from '@prisma/client';
 import { Loader } from 'lucide-react';
-import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import type { Session } from 'next-auth';
 import { useMemo } from 'react';
+import { Button } from '@/components/ui/button';
+import { Link, useRouter } from '@/i18n/navigation';
+import { api } from '@/trpc/react';
 import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
-import { DifficultyBadge } from './badge';
-import type { Session } from 'next-auth';
-import { useRouter, useSearchParams } from 'next/navigation';
 import {
 	Select,
 	SelectContent,
@@ -18,6 +17,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '../ui/select';
+import { DifficultyBadge } from './badge';
 
 interface ProblemFilters {
 	my: boolean;
@@ -70,14 +70,6 @@ export function ProblemsList({ session }: { session: Session }) {
 		});
 	}, [problems, filters.difficulty, filters.my, session.user.id]);
 
-	if (isPending) {
-		return <Loader className="animate-spin" />;
-	}
-
-	if (!problems) {
-		return null;
-	}
-
 	return (
 		<div className="w-full max-w-7xl">
 			<div className="flex justify-between">
@@ -117,16 +109,20 @@ export function ProblemsList({ session }: { session: Session }) {
 			</div>
 
 			{/* Filtered Problem List */}
-			<div>
-				{filteredProblems.map((problem) => (
-					<Link href={`/problems/${problem.id}`} key={problem.id}>
-						<div className="my-2 flex justify-between rounded-lg border p-4">
-							<h3 className="font-bold">{problem.title}</h3>
-							<DifficultyBadge difficulty={problem.difficulty} />
-						</div>
-					</Link>
-				))}
-			</div>
+			{isPending ? (
+				<Loader className="animate-spin w-full mt-8" />
+			) : (
+				<div>
+					{filteredProblems.map((problem) => (
+						<Link href={`/problems/${problem.id}`} key={problem.id}>
+							<div className="my-2 flex justify-between rounded-lg border p-4">
+								<h3 className="font-bold">{problem.title}</h3>
+								<DifficultyBadge difficulty={problem.difficulty} />
+							</div>
+						</Link>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }

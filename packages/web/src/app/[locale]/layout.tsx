@@ -7,6 +7,9 @@ import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
 import { Toaster } from '@/components/ui/sonner';
 import { TRPCReactProvider } from '@/trpc/react';
+import { notFound } from 'next/navigation';
+import { routing } from '@/i18n/routing';
+import { hasLocale, NextIntlClientProvider } from 'next-intl';
 
 export const metadata: Metadata = {
 	description: '',
@@ -19,9 +22,16 @@ const geist = Geist({
 	variable: '--font-geist-sans',
 });
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
-}: Readonly<{ children: React.ReactNode }>) {
+	params
+}: Readonly<{ children: React.ReactNode, params: Promise<{locale: string}>}>) {
+  const { locale } = await params;
+
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
 	return (
 		<html className={`${geist.variable}`} lang="en" suppressHydrationWarning>
 			<body>
@@ -32,10 +42,13 @@ export default function RootLayout({
 						disableTransitionOnChange
 						enableSystem
 					>
+					<NextIntlClientProvider>
+
 						<Header />
 						{children}
 						<Toaster />
 						{/* <Footer /> */}
+					</NextIntlClientProvider>
 					</ThemeProvider>
 				</TRPCReactProvider>
 			</body>

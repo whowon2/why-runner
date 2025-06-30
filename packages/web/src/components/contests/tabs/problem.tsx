@@ -2,7 +2,7 @@
 
 import type { Prisma, Problem } from '@prisma/client';
 import * as RadioGroup from '@radix-ui/react-radio-group';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import type { Session } from 'next-auth';
 import { useEffect, useState } from 'react';
 import { ProblemDescription } from '@/components/problems/description';
@@ -13,6 +13,7 @@ import {
 	ResizablePanel,
 	ResizablePanelGroup,
 } from '@/components/ui/resizable';
+import { useRouter } from '@/i18n/navigation';
 import { letters } from '@/lib/letters';
 
 export function ProblemTab({
@@ -87,7 +88,7 @@ export function ProblemTab({
 			>
 				{options.map((option) => (
 					<RadioGroup.Item
-						className="cursor-pointer rounded px-4 py-2 ring-[1px] ring-border transition-all duration-200 hover:bg-blue-600 data-[state=checked]:ring-2 data-[state=checked]:ring-blue-500"
+						className="cursor-pointer rounded px-4 py-2 ring-[1px] ring-border transition-all duration-200 hover:bg-secondary data-[state=checked]:ring-2 data-[state=checked]:ring-secondary"
 						key={option.value}
 						value={option.value}
 					>

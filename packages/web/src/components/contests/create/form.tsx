@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -36,6 +37,7 @@ export function CreateContestForm({
 }: {
 	onSuccessAction: () => void;
 }) {
+	const t = useTranslations('ContestsPage.createDialog');
 	const { mutate: createContest, isPending } = api.contest.create.useMutation();
 
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -81,7 +83,7 @@ export function CreateContestForm({
 					name="name"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Name</FormLabel>
+							<FormLabel>{t('name')}</FormLabel>
 							<FormControl>
 								<Input placeholder="Do You Have Brio 2024" {...field} />
 							</FormControl>
@@ -95,7 +97,7 @@ export function CreateContestForm({
 					name="startDate"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Date and Time</FormLabel>
+							<FormLabel>{t('date')}</FormLabel>
 							<FormControl>
 								<Input
 									placeholder="Do You Have Brio 2024"
@@ -113,7 +115,7 @@ export function CreateContestForm({
 					name="duration"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Duration</FormLabel>
+							<FormLabel>{t('duration')}</FormLabel>
 							<FormControl>
 								<Input placeholder="15" type="number" {...field} />
 							</FormControl>
