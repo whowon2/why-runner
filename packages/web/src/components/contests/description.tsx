@@ -1,4 +1,5 @@
 import type { Prisma } from '@prisma/client';
+import { useTranslations } from 'next-intl';
 
 export function ContestDescription({
 	contest,
@@ -10,24 +11,29 @@ export function ContestDescription({
 		};
 	}>;
 }) {
+	const t = useTranslations('ContestsPage.Tabs.Description');
 	return (
 		<div>
 			<div className="flex gap-2">
-				<p>Starts at: </p>
+				<p>{t('starts')}: </p>
 				{new Intl.DateTimeFormat('en-US', {
 					dateStyle: 'medium',
 					timeStyle: 'short',
 				}).format(contest.start)}
 			</div>
 			<div className="flex gap-2">
-				<p>Ends at: </p>
+				<p>{t('ends')}: </p>
 				{new Intl.DateTimeFormat('en-US', {
 					dateStyle: 'medium',
 					timeStyle: 'short',
 				}).format(contest.end)}
 			</div>
-			<div>Participants: {contest.userOnContest.length}</div>
-			<div>Problems: {contest.problems.length}</div>
+			<div>
+				{t('participants')}: {contest.userOnContest.length}
+			</div>
+			<div>
+				{t('problems')}: {contest.problems.length}
+			</div>
 		</div>
 	);
 }

@@ -94,7 +94,7 @@ export function AvatarButton({ session }: { session: Session }) {
 				<DropdownMenuSub>
 					<DropdownMenuSubTrigger className="gap-2">
 						<Palette size={18} color={'gray'} />
-						<span>Theme</span>
+						<span>{t('AvatarButton.theme')}</span>
 					</DropdownMenuSubTrigger>
 					<DropdownMenuPortal>
 						<DropdownMenuSubContent>

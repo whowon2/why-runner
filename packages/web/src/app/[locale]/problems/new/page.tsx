@@ -24,8 +24,8 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { api } from '@/trpc/react';
 import { useRouter } from '@/i18n/navigation';
+import { api } from '@/trpc/react';
 
 const formSchema = z.object({
 	description: z.string().min(1),

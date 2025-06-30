@@ -1,9 +1,9 @@
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
-import { useTranslations } from 'next-intl';
 
 export default function Home() {
-  const t = useTranslations("HomePage")
+	const t = useTranslations('HomePage');
 
 	return (
 		<main className="flex flex-col items-center justify-center">
@@ -15,12 +15,12 @@ export default function Home() {
 			<div className="flex gap-4">
 				<Link href="contests">
 					<Button className="cursor-pointer" variant={'outline'}>
-            {t('buttons.contests')}
+						{t('buttons.contests')}
 					</Button>
 				</Link>
 				<Link href="problems">
 					<Button className="cursor-pointer" variant={'outline'}>
-  					Problems
+						{t('buttons.problems')}
 					</Button>
 				</Link>
 			</div>

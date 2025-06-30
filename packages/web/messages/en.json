@@ -1,40 +1,90 @@
 {
-  "HomePage": {
-    "buttons": {
-      "contests": "Contests",
-      "problems": "Problems"
-    }
-  },
-  "ContestsPage": {
-    "title": "Contests",
-    "notFound": "No contest found",
-    "createDialog": {
-      "button": "Create Contest",
-      "title": "Create Contest",
-      "name": "Name",
-      "date": "Date and Time",
-      "duration": "Duration"
-    },
-    "card": {
-      "starts": "Starts in",
-      "ends": "Ends in",
-      "finished": "FINISHED",
-      "participants": "Participants"
-    }
-  },
-  "Languages": {
-    "placeholder": "Language",
-    "portuguese": "Portuguese",
-    "english": "English"
-  },
-  "Themes": {
-    "light": "Light",
-    "dark": "Dark",
-    "system": "System"
-  },
-  "AvatarButton": {
-    "profile": "Profile",
-    "problems": "Problems",
-    "contests": "Contests"
-  }
+	"HomePage": {
+		"buttons": {
+			"contests": "Contests",
+			"problems": "Problems"
+		}
+	},
+	"ProblemsPage": {
+		"Create": {
+			"button": "New Problem"
+		},
+		"Filters": {
+			"my": "My",
+			"difficulty": "Difficulty",
+			"Difficults": {
+				"HARD": "HARD",
+				"MEDIUM": "MEDIUM",
+				"EASY": "EASY",
+				"none": "",
+				"ALL": "ALL",
+				"undefined": "ALL",
+				"null": "ALL"
+			}
+		}
+	},
+	"ContestsPage": {
+		"title": "Contests",
+		"notFound": "No contest found",
+		"createDialog": {
+			"button": "Create Contest",
+			"title": "Create Contest",
+			"name": "Name",
+			"date": "Date and Time",
+			"duration": "Duration"
+		},
+		"card": {
+			"starts": "Starts in",
+			"ends": "Ends in",
+			"finished": "FINISHED",
+			"participants": "Participants"
+		},
+		"Tabs": {
+			"problems": "Problems",
+			"leaderboard": "Leaderboard",
+			"description": "Description",
+			"Problem": {
+				"description": "Description",
+				"Examples": {
+					"title": "Examples",
+					"input": "Input",
+					"output": "Output"
+				}
+			},
+			"Leaderboard": {
+				"name": "Name",
+				"correct": "Correct",
+				"score": "Score"
+			},
+			"Description": {
+				"starts": "Starts in",
+				"ends": "Ends in",
+				"finished": "FINISHED",
+				"participants": "Participants",
+				"problems": "Problems"
+			}
+		}
+	},
+	"Difficults": {
+		"HARD": "HARD",
+		"MEDIUM": "MEDIUM",
+		"EASY": "EASY",
+		"none": ""
+	},
+	"Languages": {
+		"placeholder": "Language",
+		"portuguese": "Portuguese",
+		"english": "English"
+	},
+	"Themes": {
+		"light": "Light",
+		"dark": "Dark",
+		"system": "System"
+	},
+	"AvatarButton": {
+		"profile": "Profile",
+		"problems": "Problems",
+		"contests": "Contests",
+		"theme": "Theme"
+	}
 }

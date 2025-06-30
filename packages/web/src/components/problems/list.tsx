@@ -4,6 +4,7 @@ import type { Difficulty } from '@prisma/client';
 import { Loader } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import type { Session } from 'next-auth';
+import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -27,6 +28,7 @@ interface ProblemFilters {
 const difficultyOptions: Difficulty[] = ['EASY', 'MEDIUM', 'HARD'];
 
 export function ProblemsList({ session }: { session: Session }) {
+	const t = useTranslations('ProblemsPage');
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
@@ -49,7 +51,7 @@ export function ProblemsList({ session }: { session: Session }) {
 			value === undefined ||
 			value === false ||
 			value === '' ||
-			value === 'all'
+			value === 'ALL'
 		) {
 			newParams.delete(key);
 		} else {
@@ -75,7 +77,7 @@ export function ProblemsList({ session }: { session: Session }) {
 			<div className="flex justify-between">
 				<h1 className="font-bold text-2xl">Problems</h1>
 				<Link href={'/problems/new'}>
-					<Button variant={'outline'}>New Problem</Button>
+					<Button variant={'outline'}>{t('Create.button')}</Button>
 				</Link>
 			</div>
 
@@ -87,20 +89,25 @@ export function ProblemsList({ session }: { session: Session }) {
 						checked={filters.my}
 						onCheckedChange={(v) => updateFilter('my', !!v)}
 					/>
-					<Label htmlFor="my">My</Label>
+					<Label htmlFor="my">{t('Filters.my')}</Label>
 				</div>
 
 				<div className="flex items-center gap-2">
-					<Label htmlFor="difficulty">Difficulty:</Label>
-					<Select onValueChange={(e) => updateFilter('difficulty', e)}>
+					<Label htmlFor="difficulty">{t('Filters.difficulty')}</Label>
+					<Select
+						value={filters.difficulty}
+						onValueChange={(e) => updateFilter('difficulty', e)}
+					>
 						<SelectTrigger>
-							<SelectValue placeholder="All">All</SelectValue>
+							<SelectValue placeholder={t('Filters.Difficults.ALL')}>
+								{t(`Filters.Difficults.${filters.difficulty}`)}
+							</SelectValue>
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="all">All</SelectItem>
-							{difficultyOptions.map((d) => (
-								<SelectItem key={d} value={d}>
-									{d}
+							<SelectItem value="ALL">{t('Filters.Difficults.ALL')}</SelectItem>
+							{difficultyOptions.map((difficulty) => (
+								<SelectItem key={difficulty} value={difficulty}>
+									{t(`Filters.Difficults.${difficulty}`)}
 								</SelectItem>
 							))}
 						</SelectContent>

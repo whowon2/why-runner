@@ -2,14 +2,14 @@ import '@/styles/globals.css';
 
 import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
+import { notFound } from 'next/navigation';
+import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { ThemeProvider } from 'next-themes';
 import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
 import { Toaster } from '@/components/ui/sonner';
-import { TRPCReactProvider } from '@/trpc/react';
-import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
-import { hasLocale, NextIntlClientProvider } from 'next-intl';
+import { TRPCReactProvider } from '@/trpc/react';
 
 export const metadata: Metadata = {
 	description: '',
@@ -24,13 +24,16 @@ const geist = Geist({
 
 export default async function RootLayout({
 	children,
-	params
-}: Readonly<{ children: React.ReactNode, params: Promise<{locale: string}>}>) {
-  const { locale } = await params;
+	params,
+}: Readonly<{
+	children: React.ReactNode;
+	params: Promise<{ locale: string }>;
+}>) {
+	const { locale } = await params;
 
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
+	if (!hasLocale(routing.locales, locale)) {
+		notFound();
+	}
 
 	return (
 		<html className={`${geist.variable}`} lang="en" suppressHydrationWarning>
@@ -42,13 +45,12 @@ export default async function RootLayout({
 						disableTransitionOnChange
 						enableSystem
 					>
-					<NextIntlClientProvider>
-
-						<Header />
-						{children}
-						<Toaster />
-						{/* <Footer /> */}
-					</NextIntlClientProvider>
+						<NextIntlClientProvider>
+							<Header />
+							{children}
+							<Toaster />
+							{/* <Footer /> */}
+						</NextIntlClientProvider>
 					</ThemeProvider>
 				</TRPCReactProvider>
 			</body>
