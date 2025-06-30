@@ -1,0 +1,40 @@
+{
+  "HomePage": {
+    "buttons": {
+      "contests": "Torneios",
+      "problems": "Problemas"
+    }
+  },
+  "ContestsPage": {
+    "title": "Torneios",
+    "notFound": "Nenhum torneio encontrado",
+    "createDialog": {
+      "button": "Criar Torneio",
+      "title": "Criar Torneio",
+      "name": "Nome",
+      "date": "Data e Hora",
+      "duration": "Duração"
+    },
+    "card": {
+      "starts": "Começa em",
+      "ends": "Termina em",
+      "finished": "FINALIZADO",
+      "participants": "Participantes"
+    }
+  },
+  "Languages": {
+    "placeholder": "Idioma",
+    "portuguese": "Português",
+    "english": "Inglês"
+  },
+  "Themes": {
+    "light": "Claro",
+    "dark": "Escuro",
+    "system": "Sistema"
+  },
+  "AvatarButton": {
+    "profile": "Perfil",
+    "problems": "Problemas",
+    "contests": "Torneios"
+  }
+}

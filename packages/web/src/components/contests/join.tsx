@@ -1,10 +1,10 @@
 'use client';
 
 import type { Prisma } from '@prisma/client';
-import { useRouter } from 'next/navigation';
 import type { Session } from 'next-auth';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { useRouter } from '@/i18n/navigation';
 import { api } from '@/trpc/react';
 
 export function JoinButton({

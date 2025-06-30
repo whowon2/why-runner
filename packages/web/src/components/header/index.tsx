@@ -1,22 +1,27 @@
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Link } from '@/i18n/navigation';
 import { auth } from '@/server/auth';
 import { AvatarButton } from './avatar-button';
-import { ModeToggle } from './theme';
 
 export async function Header() {
 	const session = await auth();
 
 	return (
 		<div className="sticky flex items-center justify-between border-b p-4">
-			{session ? (
-				<AvatarButton session={session} />
-			) : (
-				<Link href={'/api/auth/signin'}>
-					<Button>Login</Button>
+			<div className="flex gap-2">
+				<Link href={'/'}>
+					<span className="font-bold">WhyRunner</span>
 				</Link>
-			)}
-			<ModeToggle />
+			</div>
+			<div>
+				{session ? (
+					<AvatarButton session={session} />
+				) : (
+					<Link href={'/api/auth/signin'}>
+						<Button>Login</Button>
+					</Link>
+				)}
+			</div>
 		</div>
 	);
 }

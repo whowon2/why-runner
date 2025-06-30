@@ -14,7 +14,7 @@ export default async function Page({
 	const session = await auth();
 
 	if (!session) {
-		redirect('/api/auth/signin');
+		redirect('en/api/auth/signin');
 	}
 
 	const contest = await api.contest.findById(id);
