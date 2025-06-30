@@ -13,7 +13,7 @@ export function LanguageSelect() {
 	return (
 		<Select>
 			<SelectTrigger className="border-none">
-				SelectValue placeholder={t('placeholder')} />
+				<SelectValue placeholder={t('placeholder')} />
 			</SelectTrigger>
 			<SelectContent>
 				<SelectItem value="br">{t('portuguese')}</SelectItem>
