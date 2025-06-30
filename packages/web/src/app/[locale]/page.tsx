@@ -20,7 +20,7 @@ export default function Home() {
 				</Link>
 				<Link href="problems">
 					<Button className="cursor-pointer" variant={'outline'}>
-  					Problems
+					{t('buttons.problems')}
 					</Button>
 				</Link>
 			</div>

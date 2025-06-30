@@ -1,6 +1,7 @@
 'use client';
 
 import type { Contest } from '@prisma/client';
+import { useTranslations } from 'next-intl';
 import {
 	Table,
 	TableBody,
@@ -12,6 +13,7 @@ import {
 import { api } from '@/trpc/react';
 
 export function Leaderboard({ contest }: { contest: Contest }) {
+	const t = useTranslations('ContestsPage.Tabs.Leaderboard');
 	const { data: leaderboard } = api.contest.getLeaderboard.useQuery(
 		{
 			contestId: contest.id,
@@ -27,9 +29,9 @@ export function Leaderboard({ contest }: { contest: Contest }) {
 			<Table>
 				<TableHeader>
 					<TableRow>
-						<TableHead className="w-[100px]">Name</TableHead>
-						<TableHead className="text-center">Correct</TableHead>
-						<TableHead className="text-right">Score</TableHead>
+						<TableHead className="w-[100px]">{t('name')}</TableHead>
+						<TableHead className="text-center">{t('correct')}</TableHead>
+						<TableHead className="text-right">{t('score')}</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>

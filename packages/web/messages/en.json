@@ -20,6 +20,31 @@
       "ends": "Ends in",
       "finished": "FINISHED",
       "participants": "Participants"
+    },
+    "Tabs": {
+      "problems": "Problems",
+      "leaderboard": "Leaderboard",
+      "description": "Description",
+      "Problem": {
+        "description": "Description",
+        "Examples": {
+          "title": "Examples",
+          "input": "Input",
+          "output": "Output"
+        }
+      },
+      "Leaderboard": {
+        "name": "Name",
+        "correct": "Correct",
+        "score": "Score"
+      },
+      "Description": {
+        "starts": "Starts in",
+        "ends": "Ends in",
+        "finished": "FINISHED",
+        "participants": "Participants",
+        "problems": "Problems"
+      }
     }
   },
   "Languages": {
@@ -35,6 +60,7 @@
   "AvatarButton": {
     "profile": "Profile",
     "problems": "Problems",
-    "contests": "Contests"
+    "contests": "Contests",
+    "theme": "Theme"
   }
 }

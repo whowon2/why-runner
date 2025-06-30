@@ -20,6 +20,31 @@
       "ends": "Termina em",
       "finished": "FINALIZADO",
       "participants": "Participantes"
+    },
+    "Tabs": {
+      "problems": "Problemas",
+      "leaderboard": "Placar",
+      "description": "Descrição",
+      "Problem": {
+        "description": "Descrição",
+        "Examples": {
+          "title": "Exemplos",
+          "input": "Entrada",
+          "output": "Saída"
+        }
+      },
+      "Leaderboard": {
+        "name": "Nome",
+        "correct": "Acertos",
+        "score": "Pontuação"
+      },
+      "Description": {
+        "starts": "Começa em",
+        "ends": "Termina em",
+        "finished": "FINALIZADO",
+        "participants": "Participantes",
+        "problems": "Problemas"
+      }
     }
   },
   "Languages": {
@@ -35,6 +60,7 @@
   "AvatarButton": {
     "profile": "Perfil",
     "problems": "Problemas",
-    "contests": "Torneios"
+    "contests": "Torneios",
+    "theme": "Tema"
   }
 }
