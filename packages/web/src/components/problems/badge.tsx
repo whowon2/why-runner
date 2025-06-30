@@ -2,7 +2,11 @@ import type { Difficulty } from '@prisma/client';
 import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 
-export function DifficultyBadge({ difficulty }: { difficulty: Difficulty }) {
+export function DifficultyBadge({
+	difficulty,
+}: {
+	difficulty: Difficulty | 'none';
+}) {
 	const t = useTranslations();
 
 	return (
