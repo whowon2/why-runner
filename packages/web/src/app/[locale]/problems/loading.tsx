@@ -1,7 +1,7 @@
 import { BreadCrumbs } from '@/components/breadcrumbs';
+import { DifficultyBadge } from '@/components/problems/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DifficultyBadge } from '@/components/problems/badge';
 import { Link } from '@/i18n/navigation';
 
 export default async function Loading() {

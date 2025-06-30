@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { BreadCrumbs } from '@/components/breadcrumbs';
-import { auth } from '@/server/auth';
 import { ProblemsList } from '@/components/problems/list';
+import { auth } from '@/server/auth';
 
 export default async function ProblemsPage() {
 	const session = await auth();

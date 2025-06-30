@@ -1,90 +1,90 @@
 {
-  "HomePage": {
-    "buttons": {
-      "contests": "Torneios",
-      "problems": "Problemas"
-    }
-  },
-  "ProblemsPage": {
-    "Create": {
-      "button": "Novo Problema"
-    },
-    "Filters": {
-      "my": "Meus",
-      "difficulty": "Dificuldade",
-      "Difficults": {
-        "HARD": "DIFÍCIL",
-        "MEDIUM": "MÉDIO",
-        "EASY": "FÁCIL",
-        "none": "",
-        "ALL": "Todas",
-        "undefined": "Todas",
-        "null": "Todas"
-      }
-    }
-  },
-  "ContestsPage": {
-    "title": "Torneios",
-    "notFound": "Nenhum torneio encontrado",
-    "createDialog": {
-      "button": "Criar Torneio",
-      "title": "Criar Torneio",
-      "name": "Nome",
-      "date": "Data e Hora",
-      "duration": "Duração"
-    },
-    "card": {
-      "starts": "Começa em",
-      "ends": "Termina em",
-      "finished": "FINALIZADO",
-      "participants": "Participantes"
-    },
-    "Tabs": {
-      "problems": "Problemas",
-      "leaderboard": "Placar",
-      "description": "Descrição",
-      "Problem": {
-        "description": "Descrição",
-        "Examples": {
-          "title": "Exemplos",
-          "input": "Entrada",
-          "output": "Saída"
-        }
-      },
-      "Leaderboard": {
-        "name": "Nome",
-        "correct": "Acertos",
-        "score": "Pontuação"
-      },
-      "Description": {
-        "starts": "Começa em",
-        "ends": "Termina em",
-        "finished": "FINALIZADO",
-        "participants": "Participantes",
-        "problems": "Problemas"
-      }
-    }
-  },
-  "Difficults": {
-    "HARD": "DIFÍCIL",
-    "MEDIUM": "MÉDIO",
-    "EASY": "FÁCIL",
-    "none": ""
-  },
-  "Languages": {
-    "placeholder": "Idioma",
-    "portuguese": "Português",
-    "english": "Inglês"
-  },
-  "Themes": {
-    "light": "Claro",
-    "dark": "Escuro",
-    "system": "Sistema"
-  },
-  "AvatarButton": {
-    "profile": "Perfil",
-    "problems": "Problemas",
-    "contests": "Torneios",
-    "theme": "Tema"
-  }
+	"HomePage": {
+		"buttons": {
+			"contests": "Torneios",
+			"problems": "Problemas"
+		}
+	},
+	"ProblemsPage": {
+		"Create": {
+			"button": "Novo Problema"
+		},
+		"Filters": {
+			"my": "Meus",
+			"difficulty": "Dificuldade",
+			"Difficults": {
+				"HARD": "DIFÍCIL",
+				"MEDIUM": "MÉDIO",
+				"EASY": "FÁCIL",
+				"none": "",
+				"ALL": "Todas",
+				"undefined": "Todas",
+				"null": "Todas"
+			}
+		}
+	},
+	"ContestsPage": {
+		"title": "Torneios",
+		"notFound": "Nenhum torneio encontrado",
+		"createDialog": {
+			"button": "Criar Torneio",
+			"title": "Criar Torneio",
+			"name": "Nome",
+			"date": "Data e Hora",
+			"duration": "Duração"
+		},
+		"card": {
+			"starts": "Começa em",
+			"ends": "Termina em",
+			"finished": "FINALIZADO",
+			"participants": "Participantes"
+		},
+		"Tabs": {
+			"problems": "Problemas",
+			"leaderboard": "Placar",
+			"description": "Descrição",
+			"Problem": {
+				"description": "Descrição",
+				"Examples": {
+					"title": "Exemplos",
+					"input": "Entrada",
+					"output": "Saída"
+				}
+			},
+			"Leaderboard": {
+				"name": "Nome",
+				"correct": "Acertos",
+				"score": "Pontuação"
+			},
+			"Description": {
+				"starts": "Começa em",
+				"ends": "Termina em",
+				"finished": "FINALIZADO",
+				"participants": "Participantes",
+				"problems": "Problemas"
+			}
+		}
+	},
+	"Difficults": {
+		"HARD": "DIFÍCIL",
+		"MEDIUM": "MÉDIO",
+		"EASY": "FÁCIL",
+		"none": ""
+	},
+	"Languages": {
+		"placeholder": "Idioma",
+		"portuguese": "Português",
+		"english": "Inglês"
+	},
+	"Themes": {
+		"light": "Claro",
+		"dark": "Escuro",
+		"system": "Sistema"
+	},
+	"AvatarButton": {
+		"profile": "Perfil",
+		"problems": "Problemas",
+		"contests": "Torneios",
+		"theme": "Tema"
+	}
 }

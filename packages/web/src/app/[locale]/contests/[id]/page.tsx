@@ -1,5 +1,7 @@
 import { Pencil, Trophy } from 'lucide-react';
 import { redirect } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { BreadCrumbs } from '@/components/breadcrumbs';
 import { ContestDescription } from '@/components/contests/description';
 import { JoinButton } from '@/components/contests/join';
@@ -7,11 +9,9 @@ import { Leaderboard } from '@/components/contests/leaderboard';
 import { ProblemTab } from '@/components/contests/tabs/problem';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Link } from '@/i18n/navigation';
 import { auth } from '@/server/auth';
 import { api } from '@/trpc/server';
-import { Link } from '@/i18n/navigation';
-import { useTranslations } from 'next-intl';
-import { getTranslations } from 'next-intl/server';
 
 export default async function Page({
 	params,
@@ -19,7 +19,7 @@ export default async function Page({
 	params: Promise<{ id: string }>;
 }) {
 	const { id } = await params;
-	const t = await getTranslations("ContestsPage")
+	const t = await getTranslations('ContestsPage');
 
 	const session = await auth();
 
@@ -62,20 +62,20 @@ export default async function Page({
 								className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
 								value="problems"
 							>
-								{t("Tabs.problems")}
+								{t('Tabs.problems')}
 							</TabsTrigger>
 							<TabsTrigger
 								className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
 								value="leaderboard"
 							>
-							{t("Tabs.leaderboard")}
+								{t('Tabs.leaderboard')}
 								<Trophy />
 							</TabsTrigger>
 							<TabsTrigger
 								className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
 								value="description"
 							>
-							{t("Tabs.description")}
+								{t('Tabs.description')}
 							</TabsTrigger>
 						</TabsList>
 
