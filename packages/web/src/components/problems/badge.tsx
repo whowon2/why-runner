@@ -1,7 +1,15 @@
+import type { Difficulty } from '@prisma/client';
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 
-export function DifficultyBadge({ difficulty }: { difficulty: string }) {
-	return <Badge className={getColor(difficulty)}>{difficulty}</Badge>;
+export function DifficultyBadge({ difficulty }: { difficulty: Difficulty }) {
+	const t = useTranslations();
+
+	return (
+		<Badge className={getColor(difficulty)}>
+			{t(`Difficults.${difficulty}`)}
+		</Badge>
+	);
 }
 
 function getColor(difficulty: string) {

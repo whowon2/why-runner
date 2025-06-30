@@ -5,6 +5,24 @@
       "problems": "Problemas"
     }
   },
+  "ProblemsPage": {
+    "Create": {
+      "button": "Novo Problema"
+    },
+    "Filters": {
+      "my": "Meus",
+      "difficulty": "Dificuldade",
+      "Difficults": {
+        "HARD": "DIFÍCIL",
+        "MEDIUM": "MÉDIO",
+        "EASY": "FÁCIL",
+        "none": "",
+        "ALL": "Todas",
+        "undefined": "Todas",
+        "null": "Todas"
+      }
+    }
+  },
   "ContestsPage": {
     "title": "Torneios",
     "notFound": "Nenhum torneio encontrado",
@@ -46,6 +64,12 @@
         "problems": "Problemas"
       }
     }
+  },
+  "Difficults": {
+    "HARD": "DIFÍCIL",
+    "MEDIUM": "MÉDIO",
+    "EASY": "FÁCIL",
+    "none": ""
   },
   "Languages": {
     "placeholder": "Idioma",
