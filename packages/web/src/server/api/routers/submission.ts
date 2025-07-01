@@ -66,6 +66,7 @@ export const submissionRouter = createTRPCRouter({
 				new SendMessageCommand({
 					QueueUrl: env.SQS_QUEUE_URL,
 					MessageBody: JSON.stringify(message),
+					DelaySeconds: 10,
 				}),
 			);
 
