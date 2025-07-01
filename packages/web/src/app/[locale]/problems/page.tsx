@@ -7,7 +7,7 @@ export default async function ProblemsPage() {
 	const session = await auth();
 
 	if (!session) {
-		redirect('api/auth/signin');
+		redirect('/api/auth/signin');
 	}
 
 	return (
