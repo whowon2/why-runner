@@ -5,7 +5,12 @@ import {
 } from '@aws-sdk/client-sqs';
 import { z } from 'zod';
 import { env } from './env';
-import { getProblem, getSubmission, updateSubmission } from './queries';
+import {
+	getProblem,
+	getSubmission,
+	updateLeaderboard,
+	updateSubmission,
+} from './queries';
 import { judge } from './runner';
 
 const jobSchema = z.object({
@@ -45,7 +50,7 @@ async function pollQueue() {
 					continue;
 				}
 
-				const { submissionId } = parseResult.data;
+				const { submissionId, questionLetter } = parseResult.data;
 
 				const submission = await getSubmission(submissionId);
 				if (!submission)
@@ -64,6 +69,8 @@ async function pollQueue() {
 					res.passed ? 'PASSED' : 'FAILED',
 					JSON.stringify(res ?? ''),
 				);
+
+				await updateLeaderboard(submission, questionLetter);
 
 				// ✅ delete message from queue
 				await sqs.send(

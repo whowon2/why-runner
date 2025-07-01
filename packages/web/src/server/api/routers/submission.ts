@@ -1,5 +1,6 @@
 import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { GoogleGenAI } from '@google/genai';
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { env } from '@/env';
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
@@ -24,6 +25,29 @@ export const submissionRouter = createTRPCRouter({
 	create: protectedProcedure
 		.input(createSubmissionInput)
 		.mutation(async ({ ctx, input }) => {
+			// check if the user already submitted a valid solution
+			const uoc = await ctx.db.userOnContest.findFirst({
+				where: {
+					userId: ctx.session.user.id,
+					contestId: input.contestId,
+				},
+			});
+
+			if (!uoc) {
+				throw new TRPCError({
+					code: 'UNAUTHORIZED',
+					message: 'User is not registered for this contest',
+				});
+			}
+
+			if (uoc.answers.includes(input.questionLetter)) {
+				console.log('User has already submitted a valid solution');
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'User has already submitted a valid solution',
+				});
+			}
+
 			const submission = await ctx.db.submission.create({
 				data: {
 					code: input.code,
