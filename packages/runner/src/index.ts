@@ -57,6 +57,7 @@ async function pollQueue() {
 					throw new Error(`Submission ${submissionId} not found`);
 
 				const problem = await getProblem(submission.problemId);
+
 				if (!problem)
 					throw new Error(`Problem ${submission.problemId} not found`);
 
@@ -70,7 +71,9 @@ async function pollQueue() {
 					JSON.stringify(res ?? ''),
 				);
 
-				await updateLeaderboard(submission, questionLetter);
+				if (res.passed) {
+					await updateLeaderboard(submission, questionLetter, 1);
+				}
 
 				// ✅ delete message from queue
 				await sqs.send(

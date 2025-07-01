@@ -1,27 +1,19 @@
-FROM debian:bullseye-slim
-
-# Install required packages (only essentials)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    ca-certificates \
-    unzip \
-    g++ \
-    rustc \
-    openjdk-17-jdk-headless \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Bun
-RUN curl -fsSL https://bun.sh/install | bash && \
-    ln -s /root/.bun/bin/bun /usr/local/bin/bun
+FROM oven/bun:latest
 
 WORKDIR /app
 
-# Copy only needed files
-COPY package.json ./
+# Instalar g++, rustc e openjdk
+RUN apt-get update && \
+    apt-get install -y g++ rustc openjdk-17-jdk && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
+# Instalar dependências do Node/Bun
+COPY package.json ./
 RUN bun install
 
+# Copiar o restante da aplicação
 COPY . .
 
+# Comando para iniciar
 CMD ["bun", "dev"]
