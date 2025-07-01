@@ -24,62 +24,67 @@ const QUEUE_URL = env.SQS_QUEUE_URL;
 async function pollQueue() {
 	console.log('Polling SQS...');
 
-	const response = await sqs.send(
-		new ReceiveMessageCommand({
-			QueueUrl: QUEUE_URL,
-			MaxNumberOfMessages: 1,
-			WaitTimeSeconds: 20,
-		}),
-	);
+	while (true) {
+		const response = await sqs.send(
+			new ReceiveMessageCommand({
+				QueueUrl: QUEUE_URL,
+				MaxNumberOfMessages: 1,
+				WaitTimeSeconds: 20,
+			}),
+		);
 
-	const messages = response.Messages ?? [];
+		const messages = response.Messages ?? [];
 
-	for (const msg of messages) {
-		if (!msg.Body || !msg.ReceiptHandle) continue;
+		for (const msg of messages) {
+			if (!msg.Body || !msg.ReceiptHandle) continue;
 
-		try {
-			console.log(msg.Body);
-			const parsed = JSON.parse(msg.Body);
-			const parseResult = jobSchema.safeParse(parsed);
+			console.log('new message', msg.Body);
 
-			if (!parseResult.success) {
-				console.error('Parse failed', parseResult.error);
-				continue;
+			try {
+				console.log(msg.Body);
+				const parsed = JSON.parse(msg.Body);
+				const parseResult = jobSchema.safeParse(parsed);
+
+				if (!parseResult.success) {
+					console.error('Parse failed', parseResult.error);
+					continue;
+				}
+
+				const { submissionId, questionLetter } = parseResult.data;
+
+				const submission = await getSubmission(submissionId);
+				if (!submission)
+					throw new Error(`Submission ${submissionId} not found`);
+
+				const problem = await getProblem(submission.problemId);
+
+				if (!problem)
+					throw new Error(`Problem ${submission.problemId} not found`);
+
+				await updateSubmission(submissionId, 'RUNNING');
+
+				const res = await judge(problem, submission);
+
+				await updateSubmission(
+					submissionId,
+					res.passed ? 'PASSED' : 'FAILED',
+					JSON.stringify(res ?? ''),
+				);
+
+				if (res.passed) {
+					await updateLeaderboard(submission, questionLetter, 1);
+				}
+
+				// ✅ delete message from queue
+				await sqs.send(
+					new DeleteMessageCommand({
+						QueueUrl: QUEUE_URL,
+						ReceiptHandle: msg.ReceiptHandle,
+					}),
+				);
+			} catch (err) {
+				console.error('Error processing job:', err);
 			}
-
-			const { submissionId, questionLetter } = parseResult.data;
-
-			const submission = await getSubmission(submissionId);
-			if (!submission) throw new Error(`Submission ${submissionId} not found`);
-
-			const problem = await getProblem(submission.problemId);
-
-			if (!problem)
-				throw new Error(`Problem ${submission.problemId} not found`);
-
-			await updateSubmission(submissionId, 'RUNNING');
-
-			const res = await judge(problem, submission);
-
-			await updateSubmission(
-				submissionId,
-				res.passed ? 'PASSED' : 'FAILED',
-				JSON.stringify(res ?? ''),
-			);
-
-			if (res.passed) {
-				await updateLeaderboard(submission, questionLetter, 1);
-			}
-
-			// ✅ delete message from queue
-			await sqs.send(
-				new DeleteMessageCommand({
-					QueueUrl: QUEUE_URL,
-					ReceiptHandle: msg.ReceiptHandle,
-				}),
-			);
-		} catch (err) {
-			console.error('Error processing job:', err);
 		}
 	}
 }
