@@ -41,10 +41,9 @@ export const submissionRouter = createTRPCRouter({
 			}
 
 			if (uoc.answers.includes(input.questionLetter)) {
-				console.log('User has already submitted a valid solution');
 				throw new TRPCError({
 					code: 'BAD_REQUEST',
-					message: 'User has already submitted a valid solution',
+					message: 'Você já enviou uma solução válida para esta questão',
 				});
 			}
 
