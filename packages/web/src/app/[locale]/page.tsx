@@ -14,12 +14,12 @@ export default function Home() {
 			</div>
 			<div className="flex gap-4">
 				<Link href="contests">
-					<Button className="cursor-pointer" variant={'outline'}>
+					<Button variant={'outline'}>
 						{t('buttons.contests')}
 					</Button>
 				</Link>
 				<Link href="problems">
-					<Button className="cursor-pointer" variant={'outline'}>
+					<Button variant={'outline'}>
 						{t('buttons.problems')}
 					</Button>
 				</Link>

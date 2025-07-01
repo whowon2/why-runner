@@ -77,9 +77,7 @@ export function EditContestProblems({
 					</SelectContent>
 				</Select>
 				<Link href={`/problems/new?callback=${pathname}`}>
-					<Button className="cursor-pointer" type="button">
-						Create
-					</Button>
+					<Button type="button">Create</Button>
 				</Link>
 			</div>
 			<div className="flex flex-col gap-2">

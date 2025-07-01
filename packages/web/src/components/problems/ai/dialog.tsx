@@ -16,6 +16,11 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { api } from '@/trpc/react';
 
 export function AIDialog({
@@ -70,11 +75,15 @@ export function AIDialog({
 
 	return (
 		<Dialog>
-			<DialogTrigger asChild>
-				<Button variant="outline">
-					<Brain className="h-4 w-4 mr-1" />
-					{t('help')}
-				</Button>
+			<DialogTrigger>
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button variant="outline">
+							<Brain className="h-4 w-4 mr-1" />
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent>{t('help')}</TooltipContent>
+				</Tooltip>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>

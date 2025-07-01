@@ -51,15 +51,17 @@
 					"output": "Saída"
 				},
 				"Submissions": {
-          "AI": {
-            "title": "Explicação",
-            "description": "Esta explicação foi gerada por uma IA para te ajudar a entender seu código.",
-            "help": "Ajuda",
-            "loading": "Carregando...",
-            "cancel": "Cancelar",
-            "request": "Solicitar"
-          }
-        }
+					"AI": {
+						"title": "Assistente de IA",
+						"description": "Receba ajuda da nossa IA para entender por que sua solução pode estar falhando ou no que melhorar. A IA analisará seu código com base no problema e na sua solução e fornecerá sugestões.",
+						"help": "Ajuda com IA",
+						"loading": "Analisando seu código, por favor, aguarde...",
+						"cancel": "Cancelar",
+						"request": "Solicitar Ajuda",
+						"error": "Ocorreu um erro ao tentar obter ajuda da IA. Por favor, tente novamente mais tarde.",
+						"noResponse": "A IA não forneceu uma resposta. Por favor, tente novamente."
+					}
+				}
 			},
 			"Leaderboard": {
 				"name": "Nome",
