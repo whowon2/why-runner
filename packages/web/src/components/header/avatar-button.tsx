@@ -15,6 +15,7 @@ import {
 	Users,
 } from 'lucide-react';
 import type { Session } from 'next-auth';
+import { signOut } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -136,12 +137,10 @@ export function AvatarButton({ session }: { session: Session }) {
 					<span>API</span>
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
-				<Link href="api/auth/signout">
-					<DropdownMenuItem>
-						<LogOut />
-						<span>Log out</span>
-					</DropdownMenuItem>
-				</Link>
+				<DropdownMenuItem onClick={() => signOut()}>
+					<LogOut />
+					<span>Log out</span>
+				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

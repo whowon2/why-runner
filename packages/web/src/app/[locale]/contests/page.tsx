@@ -8,7 +8,7 @@ export default async function ContestsPage() {
 	const session = await auth();
 
 	if (!session) {
-		redirect('api/auth/signin');
+		redirect('/api/auth/signin');
 	}
 
 	void api.contest.findAll.prefetch();
