@@ -17,7 +17,7 @@ export async function Header() {
 				{session ? (
 					<AvatarButton session={session} />
 				) : (
-					<Link href={'/api/auth/signin'}>
+					<Link href={'api/auth/signin'}>
 						<Button>Login</Button>
 					</Link>
 				)}
