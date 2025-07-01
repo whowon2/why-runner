@@ -2,12 +2,15 @@
 
 import type { Problem, Submission } from '@prisma/client';
 import { Brain } from 'lucide-react';
-import { useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
 	DialogClose,
 	DialogContent,
+	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
@@ -22,19 +25,44 @@ export function AIDialog({
 	submission: Submission;
 	problem: Problem;
 }) {
-	const { mutate } = api.submission.getAiHelp.useMutation();
-	const [help, setHelp] = useState('');
+	const { mutate, isPending } = api.submission.getAiHelp.useMutation();
+	// Initialize state with a function to read from localStorage immediately
+	const [help, setHelp] = useState(() => {
+		if (typeof window !== 'undefined') {
+			return window.localStorage.getItem(`ai-help-${submission.id}`) ?? '';
+		}
+		return '';
+	});
+	const locale = useLocale();
+	const t = useTranslations('ContestsPage.Tabs.Problem.Submissions.AI');
+
+	// This effect will sync the state if localStorage changes from another tab,
+	// though its primary role here is to load data on mount on the client-side.
+	useEffect(() => {
+		const savedHelp = window.localStorage.getItem(`ai-help-${submission.id}`);
+		if (savedHelp) {
+			setHelp(savedHelp);
+		}
+	}, [submission.id]);
 
 	function handle() {
+		// Prevent new requests if help already exists
+		if (help) return;
+
 		mutate(
-			{ problem, submission },
+			{ problem, submission, locale },
 			{
 				onError: (e) => {
-					console.log('error', e);
+					console.error('error', e);
+					// Optional: Display an error message to the user
+					setHelp(t('error'));
 				},
 				onSuccess: (data) => {
+					const helpText = data ?? t('noResponse'); // Use a translation for empty response
 					console.log('success', data);
-					setHelp(data ?? 'No response!');
+					setHelp(helpText);
+					// Save the successful response to localStorage
+					window.localStorage.setItem(`ai-help-${submission.id}`, helpText);
 				},
 			},
 		);
@@ -42,27 +70,30 @@ export function AIDialog({
 
 	return (
 		<Dialog>
-			<form>
-				<DialogTrigger asChild>
-					<Button variant={'outline'}>
-						<Brain />
+			<DialogTrigger asChild>
+				<Button variant="outline">
+					<Brain className="h-4 w-4 mr-1" />
+					{t('help')}
+				</Button>
+			</DialogTrigger>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>{t('title')}</DialogTitle>
+					<DialogDescription>{t('description')}</DialogDescription>
+				</DialogHeader>
+				<div className="text-sm py-4 whitespace-pre-wrap">
+					{isPending ? t('loading') : <ReactMarkdown>{help}</ReactMarkdown>}
+				</div>
+				<DialogFooter>
+					<DialogClose asChild>
+						<Button variant="outline">{t('cancel')}</Button>
+					</DialogClose>
+					{/* Disable button if a request is pending OR if help text already exists */}
+					<Button onClick={handle} disabled={isPending || !!help}>
+						{t('request')}
 					</Button>
-				</DialogTrigger>
-				<DialogContent className="">
-					<DialogHeader>
-						<DialogTitle>Get AI Help</DialogTitle>
-					</DialogHeader>
-					{help}
-					<DialogFooter>
-						<DialogClose asChild>
-							<Button variant="outline">Cancel</Button>
-						</DialogClose>
-						<Button onClick={handle} type="submit">
-							Request
-						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</form>
+				</DialogFooter>
+			</DialogContent>
 		</Dialog>
 	);
 }

@@ -14,7 +14,7 @@ export const submissionSchema = z.object({
 	code: z.string(),
 	contestId: z.string().uuid(),
 	id: z.string().uuid(),
-	language: z.enum(['rust', 'cpp']),
+	language: z.enum(['rust', 'cpp', 'java']),
 	problemId: z.string().uuid(),
 	userId: z.string(),
 });

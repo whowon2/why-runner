@@ -49,7 +49,17 @@
 					"title": "Exemplos",
 					"input": "Entrada",
 					"output": "Saída"
-				}
+				},
+				"Submissions": {
+          "AI": {
+            "title": "Explicação",
+            "description": "Esta explicação foi gerada por uma IA para te ajudar a entender seu código.",
+            "help": "Ajuda",
+            "loading": "Carregando...",
+            "cancel": "Cancelar",
+            "request": "Solicitar"
+          }
+        }
 			},
 			"Leaderboard": {
 				"name": "Nome",
