@@ -40,12 +40,12 @@ export const submissionRouter = createTRPCRouter({
 				});
 			}
 
-			if (uoc.answers.includes(input.questionLetter)) {
-				throw new TRPCError({
-					code: 'BAD_REQUEST',
-					message: 'Você já enviou uma solução válida para esta questão',
-				});
-			}
+			// if (uoc.answers.includes(input.questionLetter)) {
+			// 	throw new TRPCError({
+			// 		code: 'BAD_REQUEST',
+			// 		message: 'Você já enviou uma solução válida para esta questão',
+			// 	});
+			// }
 
 			const submission = await ctx.db.submission.create({
 				data: {

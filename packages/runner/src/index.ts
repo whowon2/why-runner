@@ -29,16 +29,16 @@ async function pollQueue() {
 			new ReceiveMessageCommand({
 				QueueUrl: QUEUE_URL,
 				MaxNumberOfMessages: 1,
-				WaitTimeSeconds: 20, // long polling
+				WaitTimeSeconds: 20,
 			}),
 		);
-
-		console.log('Received messages:', response.Messages?.length);
 
 		const messages = response.Messages ?? [];
 
 		for (const msg of messages) {
 			if (!msg.Body || !msg.ReceiptHandle) continue;
+
+			console.log('new message', msg.Body);
 
 			try {
 				console.log(msg.Body);
