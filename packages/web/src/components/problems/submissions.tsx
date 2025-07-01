@@ -2,6 +2,7 @@
 
 import type { Problem, SubmissionStatus } from '@prisma/client';
 import { RefreshCcw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import {
 	Accordion,
 	AccordionContent,
@@ -30,6 +31,7 @@ const color = (status: SubmissionStatus) => {
 };
 
 export function SubmissionList({ problem }: { problem: Problem }) {
+	const t = useTranslations('ContestsPage.Tabs.Problem.Submissions');
 	const {
 		data: submissions,
 		isPending,
@@ -56,7 +58,7 @@ export function SubmissionList({ problem }: { problem: Problem }) {
 					className="flex justify-between"
 					onClick={() => refetchSubmissions()}
 				>
-					<h1>Submissions</h1>
+					<h1>{t('title')}</h1>
 					<Button>
 						<RefreshCcw />
 					</Button>

@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Link } from '@/i18n/navigation';
 import { auth } from '@/server/auth';
 import { api } from '@/trpc/server';
+import { ContestStatus } from '@/components/contests/status';
 
 export default async function Page({
 	params,
@@ -30,7 +31,7 @@ export default async function Page({
 	const contest = await api.contest.findById(id);
 
 	if (!contest) {
-		return <div>Contest not found</div>;
+		return <div className='flex justify-center items-center min-h-screen'>Torneio não encontrado</div>;
 	}
 
 	const isCreatedByUser = contest.createdById === session.user.id;
@@ -54,43 +55,41 @@ export default async function Page({
 				/>
 			</div>
 
-			<Card className="w-full h-full bg-red-transparent border-none shadow-none">
-				<CardContent>
-					<Tabs className="w-full" defaultValue="problems">
-						<TabsList className="w-full justify-start rounded-none border-b bg-background p-0">
-							<TabsTrigger
-								className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
-								value="problems"
-							>
-								{t('Tabs.problems')}
-							</TabsTrigger>
-							<TabsTrigger
-								className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
-								value="leaderboard"
-							>
-								{t('Tabs.leaderboard')}
-								<Trophy />
-							</TabsTrigger>
-							<TabsTrigger
-								className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
-								value="description"
-							>
-								{t('Tabs.description')}
-							</TabsTrigger>
-						</TabsList>
+      <ContestStatus contest={contest} />
 
-						<TabsContent className="flex w-full gap-4" value="problems">
-							<ProblemTab contest={contest} session={session} />
-						</TabsContent>
-						<TabsContent value="leaderboard">
-							<Leaderboard contest={contest} />
-						</TabsContent>
-						<TabsContent value="description">
-							<ContestDescription contest={contest} />
-						</TabsContent>
-					</Tabs>
-				</CardContent>
-			</Card>
+			<Tabs className="w-full" defaultValue="problems">
+				<TabsList className="w-full justify-start rounded-none border-b bg-background p-0">
+					<TabsTrigger
+						className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
+						value="problems"
+					>
+						{t('Tabs.problems')}
+					</TabsTrigger>
+					<TabsTrigger
+						className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
+						value="leaderboard"
+					>
+						{t('Tabs.leaderboard')}
+						<Trophy />
+					</TabsTrigger>
+					<TabsTrigger
+						className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
+						value="description"
+					>
+						{t('Tabs.description')}
+					</TabsTrigger>
+				</TabsList>
+
+				<TabsContent className="flex w-full gap-4" value="problems">
+					<ProblemTab contest={contest} session={session} />
+				</TabsContent>
+				<TabsContent value="leaderboard">
+					<Leaderboard contest={contest} />
+				</TabsContent>
+				<TabsContent value="description">
+					<ContestDescription contest={contest} />
+				</TabsContent>
+			</Tabs>
 		</div>
 	);
 }

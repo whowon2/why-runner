@@ -20,7 +20,7 @@ export default async function Page({
 	const contest = await api.contest.findById(id);
 
 	if (!contest) {
-		return <div>Contest Not Found</div>;
+		return <div>Torneio não encontrado</div>;
 	}
 
 	return (

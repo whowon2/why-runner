@@ -13,7 +13,7 @@ export default async function ProblemPage({
 	const problem = await api.problem.findOne(id);
 
 	if (!problem) {
-		return <div>Problem not found</div>;
+		return <div>Problem não encontrado</div>;
 	}
 
 	return (
@@ -26,7 +26,7 @@ export default async function ProblemPage({
 
 				<Card>
 					<CardHeader>
-						<CardTitle className="font-semibold text-xl">Description</CardTitle>
+						<CardTitle className="font-semibold text-xl">Descrição</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<pre className="whitespace-pre-wrap rounded-md ">
@@ -37,7 +37,7 @@ export default async function ProblemPage({
 
 				<Card>
 					<CardHeader>
-						<CardTitle className="font-semibold text-xl">Examples</CardTitle>
+						<CardTitle className="font-semibold text-xl">Exemplos</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<ProblemDescription problem={problem} />

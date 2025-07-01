@@ -114,7 +114,7 @@ export default function NewProblem() {
 	return (
 		<div className="flex flex-col p-8">
 			<div className="flex justify-between">
-				<h1 className="font-bold text-2xl">Create Problem</h1>
+				<h1 className="font-bold text-2xl">Criar Problem</h1>
 			</div>
 			<Form {...form}>
 				<form
@@ -168,13 +168,13 @@ export default function NewProblem() {
 									</FormControl>
 									<SelectContent>
 										<SelectItem className="text-green-400" value="EASY">
-											Easy
+											Fácil
 										</SelectItem>
 										<SelectItem className="text-orange-400" value="MEDIUM">
-											Medium
+											Médio
 										</SelectItem>
 										<SelectItem className="text-red-400" value="HARD">
-											Hard
+											Difícil
 										</SelectItem>
 									</SelectContent>
 								</Select>
@@ -235,11 +235,11 @@ export default function NewProblem() {
 						</div>
 					</div>
 					<Button className="max-w-min" onClick={addInput} type="button">
-						Add Input/Output
+						Adicionar Entrada / Saída
 					</Button>
 
 					<Button disabled={isPending} type="submit">
-						{isPending ? 'Submitting...' : 'Submit'}
+						{isPending ? 'Criando...' : 'Criar'}
 					</Button>
 				</form>
 			</Form>

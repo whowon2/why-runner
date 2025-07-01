@@ -1,19 +1,21 @@
-FROM oven/bun:latest
+FROM debian:bullseye-slim
 
-WORKDIR /app
-
-# Instalar apenas g++ e rustc (sem cargo, via apt)
+# Install deps (no recommended packages, to reduce size)
 RUN apt-get update && \
-    apt-get install -y g++ rustc && \
+    apt-get install -y --no-install-recommends \
+    curl ca-certificates g++ rustc openjdk-17-jdk-headless && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Instalar dependências do Node/Bun
+# Install Bun manually
+RUN curl -fsSL https://bun.sh/install | bash && \
+    ln -s /root/.bun/bin/bun /usr/local/bin/bun
+
+WORKDIR /app
+
 COPY package.json ./
 RUN bun install
 
-# Copiar o restante da aplicação
 COPY . .
 
-# Comando para iniciar
 CMD ["bun", "dev"]

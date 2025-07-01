@@ -1,4 +1,9 @@
 {
+  "ToolTips": {
+    "open-file": "Abrir Arquivo",
+    "save": "Salvar no navegador",
+    "upload": "Enviar Submissão"
+  },
 	"HomePage": {
 		"buttons": {
 			"contests": "Torneios",
@@ -33,6 +38,18 @@
 			"date": "Data e Hora",
 			"duration": "Duração"
 		},
+		"JoinButton": {
+  		"Join": {
+    		"button": "Participar",
+  			"success": "Você entrou no torneio com sucesso!",
+  			"error": "Ocorreu um erro ao tentar participar do torneio. Por favor, tente novamente mais tarde."
+  		},
+      "Leave": {
+        "button": "Sair",
+        "success": "Você saiu do torneio com sucesso!",
+        "error": "Ocorreu um erro ao tentar sair do torneio. Por favor, tente novamente mais tarde."
+      }
+		},
 		"card": {
 			"starts": "Começa em",
 			"ends": "Termina em",
@@ -51,6 +68,7 @@
 					"output": "Saída"
 				},
 				"Submissions": {
+					"title": "Submissões",
 					"AI": {
 						"title": "Assistente de IA",
 						"description": "Receba ajuda da nossa IA para entender por que sua solução pode estar falhando ou no que melhorar. A IA analisará seu código com base no problema e na sua solução e fornecerá sugestões.",
