@@ -32,6 +32,10 @@ export function ProblemTab({
 	const searchParams = useSearchParams();
 
 	const [problem, setProblem] = useState<Problem | null>();
+	// 1. Add state to track if the contest has started
+	const [isContestStarted, setIsContestStarted] = useState(
+		() => new Date() >= contest.start,
+	);
 
 	const isUserOnContest = contest.userOnContest.some(
 		(userOnContest) => userOnContest.userId === session.user.id,
@@ -63,10 +67,27 @@ export function ProblemTab({
 		}
 	}, [searchParams, contest.problems]);
 
-	if (contest.start > new Date()) {
+	// 2. This effect checks the time and updates the state to trigger a re-render
+	useEffect(() => {
+		if (isContestStarted) {
+			return;
+		}
+
+		const interval = setInterval(() => {
+			if (new Date() >= contest.start) {
+				setIsContestStarted(true);
+				clearInterval(interval); // 5. Cleanup the interval
+			}
+		}, 1000);
+
+		return () => clearInterval(interval); // Cleanup on unmount
+	}, [isContestStarted, contest.start]);
+
+	// 3. Use the state for conditional rendering
+	if (!isContestStarted) {
 		return (
 			<div className="w-full flex items-center justify-center mt-10 font-bold text-xl">
-				You cannot see the problems yet
+				Você ainda não pode ver os problemas.
 			</div>
 		);
 	}
@@ -74,7 +95,7 @@ export function ProblemTab({
 	if (contest.end > new Date() && !isUserOnContest) {
 		return (
 			<div className="w-full flex items-center justify-center mt-10 font-bold text-xl">
-				You will be able to see the contest problems after it finishes.
+				Você poderá ver os problemas após o término do torneio.
 			</div>
 		);
 	}

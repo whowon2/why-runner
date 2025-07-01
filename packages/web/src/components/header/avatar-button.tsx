@@ -59,7 +59,7 @@ export function AvatarButton({ session }: { session: Session }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className="w-56">
 				<DropdownMenuGroup>
-					<Link href={'/profile'}>
+					<Link href={'/user'}>
 						<DropdownMenuItem>
 							<User />
 							<span>{t('AvatarButton.profile')}</span>

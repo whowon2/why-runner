@@ -10,9 +10,9 @@ export default async function Loading() {
 			<BreadCrumbs />
 			<div className="w-full max-w-7xl">
 				<div className="flex justify-between">
-					<h1 className="font-bold text-2xl">Problems</h1>
+					<h1 className="font-bold text-2xl">Problemas</h1>
 					<Link href={'/problems/new'}>
-						<Button variant={'outline'}>New Problem</Button>
+						<Button variant={'outline'}>Novo Problema</Button>
 					</Link>
 				</div>
 				<div>

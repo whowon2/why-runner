@@ -2,6 +2,7 @@
 
 import type { Prisma } from '@prisma/client';
 import type { Session } from 'next-auth';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useRouter } from '@/i18n/navigation';
@@ -16,6 +17,7 @@ export function JoinButton({
 	session: Session;
 	isCreatedByUser: boolean;
 }) {
+	const t = useTranslations('ContestsPage.JoinButton');
 	const { mutate: joinContest, isPending: isJoinPending } =
 		api.contest.join.useMutation();
 	const { mutate: leaveContest, isPending: isLeavePending } =
@@ -49,12 +51,12 @@ export function JoinButton({
 						{ contestId: contest.id },
 						{
 							onError: (error) => {
-								toast.error('Failed to leave the contest.', {
+								toast.error(t('Leave.error'), {
 									description: error.message,
 								});
 							},
 							onSuccess: () => {
-								toast('You have left the contest.');
+								toast(t('Leave.success'));
 								router.refresh();
 								utils.contest.getLeaderboard.invalidate();
 							},
@@ -63,7 +65,7 @@ export function JoinButton({
 				}}
 				variant={'destructive'}
 			>
-				Leave
+				Sair
 			</Button>
 		);
 	}
@@ -80,12 +82,12 @@ export function JoinButton({
 					{ contestId: contest.id },
 					{
 						onError: (error) => {
-							toast.error('Failed to leave the contest.', {
+							toast.error(t('Join.error'), {
 								description: error.message,
 							});
 						},
 						onSuccess: () => {
-							toast('You have joined the contest.');
+							toast(t('Join.success'));
 							router.refresh();
 							utils.contest.getLeaderboard.invalidate();
 						},
@@ -94,7 +96,7 @@ export function JoinButton({
 			}}
 			variant={'outline'}
 		>
-			Join
+			Entrar
 		</Button>
 	);
 }

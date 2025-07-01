@@ -17,9 +17,9 @@ async function main() {
 	const contest1 = await db.contest.create({
 		data: {
 			createdById: user.id,
-			end: new Date(Date.now() + 123456 * 10),
-			name: 'Do you have brio 2025', // Longer duration
-			start: new Date(Date.now() + 100000),
+			end: new Date(Date.now() + 60 * 1000 * 60), // 60 minutes of duration
+			name: 'Maraton 2023', // Longer duration
+			start: new Date(Date.now() + 60 * 1000 * 0.5), // 10 minutes from now
 		},
 	});
 

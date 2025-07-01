@@ -3,6 +3,7 @@
 import Editor from '@monaco-editor/react';
 import type { Contest, Language, Problem } from '@prisma/client';
 import { FilePlus2, Save, Upload } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -39,6 +40,7 @@ export function UploadCode({
 	const { mutate, isPending } = api.submission.create.useMutation();
 	const { theme, systemTheme } = useTheme();
 	const utils = api.useUtils();
+	const t = useTranslations();
 
 	const extensions = {
 		cpp: ['cpp', 'cc', 'cxx', 'c++'],
@@ -181,7 +183,7 @@ export function UploadCode({
 										<FilePlus2 />
 									</Button>
 								</TooltipTrigger>
-								<TooltipContent>Open file</TooltipContent>
+								<TooltipContent>{t('ToolTips.open-file')}</TooltipContent>
 							</Tooltip>
 						</TooltipProvider>
 
@@ -192,7 +194,7 @@ export function UploadCode({
 										<Save />
 									</Button>
 								</TooltipTrigger>
-								<TooltipContent>Save</TooltipContent>
+								<TooltipContent>{t('ToolTips.save')}</TooltipContent>
 							</Tooltip>
 						</TooltipProvider>
 
@@ -203,7 +205,7 @@ export function UploadCode({
 										<Upload />
 									</Button>
 								</TooltipTrigger>
-								<TooltipContent>Upload</TooltipContent>
+								<TooltipContent>{t('ToolTips.upload')}</TooltipContent>
 							</Tooltip>
 						</TooltipProvider>
 					</div>

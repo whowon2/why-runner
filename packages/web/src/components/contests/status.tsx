@@ -1,18 +1,12 @@
 'use client';
 
-import type { Prisma } from '@prisma/client';
+import type { Contest } from '@prisma/client';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
-import { Link } from '@/i18n/navigation';
 import { formatDuration } from '@/lib/format-duration';
 
-export function ContestCard({
-	contest,
-}: {
-	contest: Prisma.ContestGetPayload<{ include: { userOnContest: true } }>;
-}) {
+export function ContestStatus({ contest }: { contest: Contest }) {
 	const [now, setNow] = useState(new Date());
-	const t = useTranslations('ContestsPage');
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -21,6 +15,7 @@ export function ContestCard({
 		return () => clearInterval(interval);
 	}, []);
 
+	const t = useTranslations('ContestsPage');
 	function getStatus(start: Date, end: Date) {
 		if (now < start) {
 			const diffMs = start.getTime() - now.getTime();
@@ -34,21 +29,9 @@ export function ContestCard({
 
 		return t('card.finished');
 	}
-
 	return (
-		<div
-			className="flex justify-between rounded-lg border p-4"
-			key={contest.id}
-		>
-			<Link href={`/contests/${contest.id}`}>
-				<h3 className="font-bold hover:underline">{contest.name}</h3>
-				<p className="text-secondary text-sm">
-					{getStatus(contest.start, contest.end)}
-				</p>
-				<p>
-					{t('card.participants')}: {contest.userOnContest.length}
-				</p>
-			</Link>
+		<div className="flex flex-col items-center justify-center">
+			{getStatus(contest.start, contest.end)}
 		</div>
 	);
 }

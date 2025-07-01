@@ -9,7 +9,7 @@ export default async function Loading() {
 
 			<div className="flex w-full max-w-7xl flex-col gap-4">
 				<div className="flex justify-between">
-					<h1 className="font-bold text-2xl">Contests</h1>
+					<h1 className="font-bold text-2xl">Torneios</h1>
 					<CreateContestDialog />
 				</div>
 
