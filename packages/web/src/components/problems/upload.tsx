@@ -43,7 +43,6 @@ export function UploadCode({
 	const extensions = {
 		cpp: ['cpp', 'cc', 'cxx', 'c++'],
 		java: ['java'],
-		python: ['py'],
 		rust: ['rs'],
 	};
 
@@ -160,7 +159,6 @@ export function UploadCode({
 								<SelectItem value="rust">rust</SelectItem>
 								<SelectItem value="cpp">cpp</SelectItem>
 								<SelectItem value="java">java</SelectItem>
-								<SelectItem value="python">python</SelectItem>
 							</SelectContent>
 						</Select>
 

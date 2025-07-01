@@ -14,7 +14,7 @@ const jobSchema = z.object({
 });
 
 const sqs = new SQSClient({ region: env.AWS_REGION });
-const QUEUE_URL = env.SQS_QUEUE_URL!;
+const QUEUE_URL = env.SQS_QUEUE_URL;
 
 async function pollQueue() {
 	console.log('Polling SQS...');
@@ -27,6 +27,8 @@ async function pollQueue() {
 				WaitTimeSeconds: 20, // long polling
 			}),
 		);
+
+		console.log('Received messages:', response.Messages?.length);
 
 		const messages = response.Messages ?? [];
 

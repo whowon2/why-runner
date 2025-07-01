@@ -39,6 +39,7 @@ jobs:
         env:
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
           BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           AUTH_GITHUB_ID: ${{ secrets.AUTH_GITHUB_ID }}
           AUTH_GITHUB_SECRET: ${{ secrets.AUTH_GITHUB_SECRET }}
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}

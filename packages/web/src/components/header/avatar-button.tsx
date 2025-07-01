@@ -136,7 +136,7 @@ export function AvatarButton({ session }: { session: Session }) {
 					<span>API</span>
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
-				<Link href="/api/auth/signout">
+				<Link href="api/auth/signout">
 					<DropdownMenuItem>
 						<LogOut />
 						<span>Log out</span>
