@@ -1,6 +1,7 @@
 'use client';
 
-import type { Contest } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
+import { Award } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
 	Table,
@@ -10,9 +11,38 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import { letters } from '@/lib/letters';
 import { api } from '@/trpc/react';
 
-export function Leaderboard({ contest }: { contest: Contest }) {
+function getAwardColor(idx: number) {
+	const colors = [
+		'green',
+		'blue',
+		'purple',
+		'orange',
+		'pink',
+		'cyan',
+		'magenta',
+		'lime',
+		'teal',
+		'indigo',
+		'violet',
+		'gray',
+		'yellow',
+		'red',
+	];
+	return colors[idx % colors.length];
+}
+
+export function Leaderboard({
+	contest,
+}: {
+	contest: Prisma.ContestGetPayload<{
+		include: {
+			problems: true;
+		};
+	}>;
+}) {
 	const t = useTranslations('ContestsPage.Tabs.Leaderboard');
 	const { data: leaderboard } = api.contest.getLeaderboard.useQuery(
 		{
@@ -20,9 +50,12 @@ export function Leaderboard({ contest }: { contest: Contest }) {
 		},
 		{
 			refetchInterval: 10000,
-			// refetchOnMount: true,
 		},
 	);
+
+	if (!leaderboard) return null;
+
+	leaderboard.sort((a, b) => b.score - a.score);
 
 	return (
 		<div>
@@ -30,7 +63,11 @@ export function Leaderboard({ contest }: { contest: Contest }) {
 				<TableHeader>
 					<TableRow>
 						<TableHead className="w-[100px]">{t('name')}</TableHead>
-						<TableHead className="text-center">{t('correct')}</TableHead>
+						{contest.problems.map((problem, idx) => (
+							<TableHead key={problem.id} className="text-center">
+								{letters[idx]}
+							</TableHead>
+						))}
 						<TableHead className="text-right">{t('score')}</TableHead>
 					</TableRow>
 				</TableHeader>
@@ -38,11 +75,19 @@ export function Leaderboard({ contest }: { contest: Contest }) {
 					{leaderboard?.map((user) => (
 						<TableRow key={user.id}>
 							<TableCell className="font-medium">{user.user.name}</TableCell>
-							<TableCell className="font-medium text-center">
-								{user.answers?.map((question, idx) => (
-									<div key={idx}>{question}</div>
-								))}
-							</TableCell>
+							{user.answers.map((question, idx) => (
+								<TableCell key={idx} className="text-center">
+									<div className="flex justify-center">
+										<Award color={getAwardColor(idx)} />
+									</div>
+								</TableCell>
+							))}
+							{Array.from(
+								{ length: contest.problems.length - user.answers.length },
+								(_, idx) => (
+									<TableCell key={idx}></TableCell>
+								),
+							)}
 							<TableCell className="text-right">{user.score}</TableCell>
 						</TableRow>
 					))}

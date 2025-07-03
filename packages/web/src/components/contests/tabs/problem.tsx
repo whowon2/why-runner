@@ -105,7 +105,6 @@ export function ProblemTab({
 
 	return (
 		<div className="flex flex-col w-full gap-4">
-			{JSON.stringify(questionsAnswered)}
 			<RadioGroup.Root
 				className="flex flex-wrap gap-2"
 				onValueChange={handleSelectProblem}

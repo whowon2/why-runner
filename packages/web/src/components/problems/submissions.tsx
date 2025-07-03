@@ -57,10 +57,12 @@ export function SubmissionList({ problem }: { problem: Problem }) {
 		<Card className="max-h-screen w-full overflow-auto border-none bg-transparent shadow-none">
 			<CardHeader>
 				<CardTitle
-					className="flex justify-between"
+					className="flex justify-between flex-wrap gap-2"
 					onClick={() => refetchSubmissions()}
 				>
-					<h1>{t('title')}</h1>
+					<h1>
+						{t('title')} ({submissions.length})
+					</h1>
 					<Button>
 						<RefreshCcw />
 					</Button>
@@ -70,12 +72,12 @@ export function SubmissionList({ problem }: { problem: Problem }) {
 				<Accordion className="w-full space-y-2" collapsible type="single">
 					{submissions.map((submission) => (
 						<AccordionItem
-							className={`rounded-md border px-4 last:border ${color(submission.status)}`}
+							className={`rounded-md border px-4 last:border flex-wrap ${color(submission.status)}`}
 							key={submission.id}
 							value={`item-${submission.id}`}
 						>
-							<AccordionTrigger>
-								<p className="w-full text-gray-500 text-sm">
+							<AccordionTrigger className="flex-wrap overflow-hidden">
+								<p className="flex-1 text-gray-500 text-sm">
 									{submission.createdAt.toLocaleTimeString()}:
 								</p>
 								<p className="text-xs">

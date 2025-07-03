@@ -1,17 +1,31 @@
 import { db } from '@/server/db';
 
 async function main() {
-	const user = await db.user.upsert({
-		create: {
+	await db.contest.deleteMany();
+	await db.problem.deleteMany();
+	await db.user.deleteMany({
+		where: {
+			email: {
+				contains: 'user',
+			},
+		},
+	});
+	await db.submission.deleteMany();
+	await db.userOnContest.deleteMany();
+
+	const user = await db.user.create({
+		data: {
 			email: 'user@email.com',
 			name: 'User Test',
 		},
-		update: {},
-		where: { email: 'user@email.com', name: 'User Test' },
 	});
 
-	await db.contest.deleteMany();
-	await db.problem.deleteMany();
+	const user2 = await db.user.create({
+		data: {
+			email: 'user2@email.com',
+			name: 'Super User',
+		},
+	});
 
 	// Contest 1
 	const contest1 = await db.contest.create({
@@ -183,6 +197,37 @@ Note that you must do this in-place without making a copy of the array.`,
 				public: true,
 			},
 		],
+	});
+
+	await db.userOnContest.create({
+		data: {
+			contestId: contest1.id,
+			userId: user.id,
+			answers: [
+				'A',
+				'B',
+				'C',
+				'D',
+				'E',
+				'F',
+				'G',
+				'H',
+				'I',
+				'J',
+				'K',
+				'L',
+				'M',
+				'N',
+			],
+		},
+	});
+
+	await db.userOnContest.create({
+		data: {
+			contestId: contest1.id,
+			userId: user2.id,
+			answers: ['A', 'B', 'C', 'I', 'J', 'L', 'M', 'N'],
+		},
 	});
 
 	// Contest 2
