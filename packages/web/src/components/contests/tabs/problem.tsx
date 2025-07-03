@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/resizable';
 import { useRouter } from '@/i18n/navigation';
 import { letters } from '@/lib/letters';
+import { cn } from '@/lib/utils';
 
 export function ProblemTab({
 	session,
@@ -37,9 +38,11 @@ export function ProblemTab({
 		() => new Date() >= contest.start,
 	);
 
-	const isUserOnContest = contest.userOnContest.some(
+	const isUserOnContest = contest.userOnContest.find(
 		(userOnContest) => userOnContest.userId === session.user.id,
 	);
+
+	const questionsAnswered = isUserOnContest?.answers ?? [];
 
 	function handleSelectProblem(value: string) {
 		const prob = contest.problems.find((p) => p.id === value);
@@ -102,6 +105,7 @@ export function ProblemTab({
 
 	return (
 		<div className="flex flex-col w-full gap-4">
+			{JSON.stringify(questionsAnswered)}
 			<RadioGroup.Root
 				className="flex flex-wrap gap-2"
 				onValueChange={handleSelectProblem}
@@ -109,7 +113,14 @@ export function ProblemTab({
 			>
 				{options.map((option) => (
 					<RadioGroup.Item
-						className="cursor-pointer rounded px-4 py-2 ring-[1px] ring-border transition-all duration-200 hover:bg-secondary data-[state=checked]:ring-2 data-[state=checked]:ring-secondary"
+						className={cn(
+							'cursor-pointer rounded px-4 py-2 ring-[1px] ring-border transition-all duration-200 hover:bg-secondary data-[state=checked]:ring-2 data-[state=checked]:ring-secondary',
+							{
+								'bg-green-500 text-primary-foreground': questionsAnswered.some(
+									(answer) => answer === option.label,
+								),
+							},
+						)}
 						key={option.value}
 						value={option.value}
 					>

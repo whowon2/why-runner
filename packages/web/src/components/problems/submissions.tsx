@@ -3,6 +3,7 @@
 import type { Problem, SubmissionStatus } from '@prisma/client';
 import { RefreshCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
 import {
 	Accordion,
 	AccordionContent,
@@ -12,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useRouter } from '@/i18n/navigation';
 import { api } from '@/trpc/react';
 import { AIDialog } from './ai/dialog';
 

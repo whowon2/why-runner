@@ -41,7 +41,7 @@ public class FestivalDeInverno {
         for (int i = 1; i < n; i++) {
             if (eventos[i].inicio >= ultimoHorarioDeTermino) {
                 contadorDeEventos++;
-                ultimoHorarioDeTermino = eventos[i].fim; // Atualiza o último horário de término
+                ultimoHorarioDeTermino = eventos[i].fim;
             }
         }
 
