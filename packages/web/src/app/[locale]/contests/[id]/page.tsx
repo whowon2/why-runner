@@ -6,13 +6,13 @@ import { BreadCrumbs } from '@/components/breadcrumbs';
 import { ContestDescription } from '@/components/contests/description';
 import { JoinButton } from '@/components/contests/join';
 import { Leaderboard } from '@/components/contests/leaderboard';
+import { ContestStatus } from '@/components/contests/status';
 import { ProblemTab } from '@/components/contests/tabs/problem';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Link } from '@/i18n/navigation';
 import { auth } from '@/server/auth';
 import { api } from '@/trpc/server';
-import { ContestStatus } from '@/components/contests/status';
 
 export default async function Page({
 	params,
@@ -31,7 +31,11 @@ export default async function Page({
 	const contest = await api.contest.findById(id);
 
 	if (!contest) {
-		return <div className='flex justify-center items-center min-h-screen'>Torneio não encontrado</div>;
+		return (
+			<div className="flex justify-center items-center min-h-screen">
+				Torneio não encontrado
+			</div>
+		);
 	}
 
 	const isCreatedByUser = contest.createdById === session.user.id;
@@ -55,7 +59,7 @@ export default async function Page({
 				/>
 			</div>
 
-      <ContestStatus contest={contest} />
+			<ContestStatus contest={contest} />
 
 			<Tabs className="w-full" defaultValue="problems">
 				<TabsList className="w-full justify-start rounded-none border-b bg-background p-0">

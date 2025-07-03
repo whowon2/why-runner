@@ -17,7 +17,6 @@ import {
 import type { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useTheme } from 'next-themes';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
 	DropdownMenu,
@@ -33,8 +32,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 
-export function AvatarButton({ session }: { session: Session }) {
-	const { setTheme } = useTheme();
+export function AvatarButton({ session }: { session: Session | null }) {
 	const t = useTranslations();
 	const router = useRouter();
 	const pathname = usePathname();
@@ -44,7 +42,7 @@ export function AvatarButton({ session }: { session: Session }) {
 		router.replace(pathname, { locale });
 	}
 
-	const initials = (session.user.name ?? '')
+	const initials = (session?.user.name ?? '')
 		.split(' ')
 		.map((name) => name[0])
 		.join('');
@@ -53,7 +51,7 @@ export function AvatarButton({ session }: { session: Session }) {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild={true}>
 				<Avatar className="cursor-pointer">
-					<AvatarImage src={session.user?.image ?? ''} />
+					<AvatarImage src={session?.user?.image ?? ''} />
 					<AvatarFallback>{initials}</AvatarFallback>
 				</Avatar>
 			</DropdownMenuTrigger>
@@ -67,53 +65,6 @@ export function AvatarButton({ session }: { session: Session }) {
 					</Link>
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
-				<DropdownMenuGroup>
-					<Link href={'/teams'}>
-						<DropdownMenuItem>
-							<Users />
-							<span>{t('AvatarButton.problems')}</span>
-						</DropdownMenuItem>
-					</Link>
-					<Link href={'/contests'}>
-						<DropdownMenuItem>
-							<Trophy />
-							<span>{t('AvatarButton.contests')}</span>
-						</DropdownMenuItem>
-					</Link>
-				</DropdownMenuGroup>
-				<DropdownMenuSeparator />
-				<Link
-					href="https://github.com/whowon2/why-runner"
-					rel="noopener"
-					target="_blank"
-				>
-					<DropdownMenuItem>
-						<Github />
-						<span>GitHub</span>
-					</DropdownMenuItem>
-				</Link>
-				<DropdownMenuSub>
-					<DropdownMenuSubTrigger className="gap-2">
-						<Palette size={18} color={'gray'} />
-						<span>{t('AvatarButton.theme')}</span>
-					</DropdownMenuSubTrigger>
-					<DropdownMenuPortal>
-						<DropdownMenuSubContent>
-							<DropdownMenuItem onClick={() => setTheme('light')}>
-								<Sun />
-								{t('Themes.light')}
-							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setTheme('dark')}>
-								<Moon />
-								{t('Themes.dark')}
-							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setTheme('system')}>
-								<Cog />
-								{t('Themes.system')}
-							</DropdownMenuItem>
-						</DropdownMenuSubContent>
-					</DropdownMenuPortal>
-				</DropdownMenuSub>
 				<DropdownMenuSub>
 					<DropdownMenuSubTrigger className="gap-2">
 						<Globe size={18} color={'gray'} />
@@ -132,10 +83,6 @@ export function AvatarButton({ session }: { session: Session }) {
 						</DropdownMenuSubContent>
 					</DropdownMenuPortal>
 				</DropdownMenuSub>
-				<DropdownMenuItem disabled={true}>
-					<Cloud />
-					<span>API</span>
-				</DropdownMenuItem>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem onClick={() => signOut()}>
 					<LogOut />

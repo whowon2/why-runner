@@ -1,9 +1,14 @@
 {
-  "ToolTips": {
-    "open-file": "Open File",
-    "save": "Save on browser",
-    "upload": "Submit"
-  },
+	"ToolTips": {
+		"open-file": "Open File",
+		"save": "Save on browser",
+		"upload": "Submit"
+	},
+	"Dock": {
+		"home": "Home",
+		"problems": "Problems",
+		"contests": "Contests"
+	},
 	"HomePage": {
 		"buttons": {
 			"contests": "Contests",
@@ -39,16 +44,16 @@
 			"duration": "Duration"
 		},
 		"JoinButton": {
-  		"Join": {
-    		"button": "Join",
-  			"success": "Joined Successfully",
-  			"error": "An error occurred while trying to join the contest. Please try again later."
-  		},
-      "Leave": {
-        "button": "Leave",
-        "success": "Left Successfully",
-        "error": "An error occurred while trying to leave the contest. Please try again later."
-      }
+			"Join": {
+				"button": "Join",
+				"success": "Joined Successfully",
+				"error": "An error occurred while trying to join the contest. Please try again later."
+			},
+			"Leave": {
+				"button": "Leave",
+				"success": "Left Successfully",
+				"error": "An error occurred while trying to leave the contest. Please try again later."
+			}
 		},
 		"card": {
 			"starts": "Starts in",

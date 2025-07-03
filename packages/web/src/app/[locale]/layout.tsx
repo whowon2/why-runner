@@ -5,10 +5,13 @@ import { Geist } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { ThemeProvider } from 'next-themes';
+import { DockDemo } from '@/components/dock';
 import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
+import { Dock } from '@/components/magicui/dock';
 import { Toaster } from '@/components/ui/sonner';
 import { routing } from '@/i18n/routing';
+import { auth } from '@/server/auth';
 import { TRPCReactProvider } from '@/trpc/react';
 
 export const metadata: Metadata = {
@@ -35,23 +38,23 @@ export default async function RootLayout({
 		notFound();
 	}
 
+	const session = await auth();
+
 	return (
 		<html className={`${geist.variable}`} lang="en" suppressHydrationWarning>
-			<body>
+			<body className="flex flex-col min-h-screen">
 				<TRPCReactProvider>
-					<ThemeProvider
-						attribute="class"
-						defaultTheme="system"
-						disableTransitionOnChange
-						enableSystem
-					>
-						<NextIntlClientProvider>
-							<Header />
+					<NextIntlClientProvider>
+						<ThemeProvider
+							attribute="class"
+							defaultTheme="dark"
+						>
+
 							{children}
 							<Toaster />
-							{/* <Footer /> */}
-						</NextIntlClientProvider>
-					</ThemeProvider>
+							<DockDemo session={session} />
+						</ThemeProvider>
+					</NextIntlClientProvider>
 				</TRPCReactProvider>
 			</body>
 		</html>

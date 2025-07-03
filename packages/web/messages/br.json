@@ -1,9 +1,14 @@
 {
-  "ToolTips": {
-    "open-file": "Abrir Arquivo",
-    "save": "Salvar no navegador",
-    "upload": "Enviar Submissão"
-  },
+	"ToolTips": {
+		"open-file": "Abrir Arquivo",
+		"save": "Salvar no navegador",
+		"upload": "Enviar Submissão"
+	},
+	"Dock": {
+		"home": "Página Inicial",
+		"problems": "Problemas",
+		"contests": "Torneios"
+	},
 	"HomePage": {
 		"buttons": {
 			"contests": "Torneios",
@@ -39,16 +44,16 @@
 			"duration": "Duração"
 		},
 		"JoinButton": {
-  		"Join": {
-    		"button": "Participar",
-  			"success": "Você entrou no torneio com sucesso!",
-  			"error": "Ocorreu um erro ao tentar participar do torneio. Por favor, tente novamente mais tarde."
-  		},
-      "Leave": {
-        "button": "Sair",
-        "success": "Você saiu do torneio com sucesso!",
-        "error": "Ocorreu um erro ao tentar sair do torneio. Por favor, tente novamente mais tarde."
-      }
+			"Join": {
+				"button": "Participar",
+				"success": "Você entrou no torneio com sucesso!",
+				"error": "Ocorreu um erro ao tentar participar do torneio. Por favor, tente novamente mais tarde."
+			},
+			"Leave": {
+				"button": "Sair",
+				"success": "Você saiu do torneio com sucesso!",
+				"error": "Ocorreu um erro ao tentar sair do torneio. Por favor, tente novamente mais tarde."
+			}
 		},
 		"card": {
 			"starts": "Começa em",
