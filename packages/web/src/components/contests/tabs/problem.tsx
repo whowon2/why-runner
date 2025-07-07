@@ -138,6 +138,7 @@ export function ProblemTab({
 							<ResizablePanel className="p-2">
 								<SubmissionList problem={problem} />
 							</ResizablePanel>
+							{contest.end < new Date() && <div>Contest has ended.</div>}
 							<ResizableHandle withHandle />
 							<ResizablePanel className="p-2">
 								<UploadCode

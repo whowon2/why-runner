@@ -88,7 +88,9 @@ export function SubmissionList({ problem }: { problem: Problem }) {
 								{submission.output && (
 									<SubmissionDetails output={submission.output} />
 								)}
-								<AIDialog problem={problem} submission={submission} />
+								{['PASSED', 'FAILED', 'ERROR'].includes(submission.status) && (
+									<AIDialog problem={problem} submission={submission} />
+								)}
 							</AccordionContent>
 						</AccordionItem>
 					))}
@@ -99,11 +101,13 @@ export function SubmissionList({ problem }: { problem: Problem }) {
 }
 
 function SubmissionDetails({ output }: { output: string }) {
+	console.log(output);
 	console.log(JSON.parse(output));
 
 	const details: {
 		passed: boolean;
 		tests: string[];
+		error: string;
 	} = JSON.parse(output);
 
 	return (
@@ -113,6 +117,7 @@ function SubmissionDetails({ output }: { output: string }) {
 					Test {idx}: {t}
 				</div>
 			))}
+			{details.error}
 		</div>
 	);
 }

@@ -78,9 +78,9 @@ export function AIDialog({
 			<DialogTrigger>
 				<Tooltip>
 					<TooltipTrigger asChild>
-						<Button variant="outline">
-							<Brain className="h-4 w-4 mr-1" />
-						</Button>
+						<div className="border cursor-pointer hover:bg-secondary px-2 py-2 rounded">
+							<Brain className="h-4 w-4" />
+						</div>
 					</TooltipTrigger>
 					<TooltipContent>{t('help')}</TooltipContent>
 				</Tooltip>

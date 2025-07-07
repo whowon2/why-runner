@@ -1,12 +1,14 @@
 import { mkdir } from 'node:fs/promises';
 import { type Problem, type Submission, submissionSchema } from '../types';
+import { logger } from './utils/logger';
 import { removeDir } from './utils/remove-dir';
 
 async function run(
 	dir: string,
 	language: 'rust' | 'cpp' | 'java',
 	className?: string,
-) {
+	timeoutMs = 2000,
+): Promise<string> {
 	const args = [dir];
 	if (language === 'java' && className) args.push(className);
 
@@ -14,18 +16,33 @@ async function run(
 
 	const child = Bun.spawn(command, { stderr: 'pipe', stdout: 'pipe' });
 
-	const text = await new Response(child.stdout).text();
-	const error = await new Response(child.stderr).text();
+	// Promise that resolves when the process finishes successfully
+	const executionPromise = (async () => {
+		const text = await new Response(child.stdout).text();
+		const error = await new Response(child.stderr).text();
 
-	if (error) {
-		console.error(error);
-		return error;
-	}
+		if (error.trim()) {
+			throw new Error(`Runtime error: ${error.trim()}`);
+		}
 
-	return text;
+		return text;
+	})();
+
+	// Promise that rejects when the timeout is reached
+	const timeoutPromise = new Promise((_, reject) => {
+		setTimeout(() => {
+			child.kill(); // Ensure the process is killed on timeout
+			reject(new Error('Execution timed out'));
+		}, timeoutMs);
+	});
+
+	// Race the two promises
+	return Promise.race([executionPromise, timeoutPromise]) as Promise<string>;
 }
 
 export async function judge(problem: Problem, submission: Submission) {
+	logger.info(`Judging submission ${submission.id} for problem ${problem.id}`);
+
 	const extensions = {
 		cpp: 'cpp',
 		rust: 'rs',
@@ -35,7 +52,8 @@ export async function judge(problem: Problem, submission: Submission) {
 	const { code } = submissionSchema.parse(submission);
 	const extension = extensions[submission.language];
 
-	// Detect Java class name if needed
+	logger.info(`Submission ${submission.id} has extension ${extension}`);
+
 	let javaClassName = 'Main';
 	if (submission.language === 'java') {
 		const match = code.match(/public\s+class\s+([A-Za-z_][A-Za-z0-9_]*)/);
@@ -45,35 +63,56 @@ export async function judge(problem: Problem, submission: Submission) {
 	const result: {
 		passed: boolean;
 		tests: string[];
+		error?: string;
 	} = {
 		passed: true,
 		tests: [],
 	};
 
-	for (let i = 0; i < problem.inputs.length; i++) {
-		const dir = `./src/judge-${submission.language}-${submission.id}-${i}`;
-		await removeDir(dir);
-		await mkdir(dir);
+	const outDir = `./src/judge-${submission.language}-${submission.id}`;
 
-		const filename =
-			submission.language === 'java'
-				? `${javaClassName}.java`
-				: `code.${extension}`;
+	try {
+		for (let i = 0; i < problem.inputs.length; i++) {
+			const dir = `${outDir}-${i}`;
+			await removeDir(dir);
+			await mkdir(dir);
 
-		await Bun.write(`${dir}/${filename}`, code);
-		await Bun.write(`${dir}/input.txt`, problem.inputs[i]);
-		await Bun.write(`${dir}/output.txt`, `${problem.outputs[i]}\n`);
+			const filename =
+				submission.language === 'java'
+					? `${javaClassName}.java`
+					: `code.${extension}`;
 
-		const res = await run(dir, submission.language, javaClassName);
+			await Bun.write(`${dir}/${filename}`, code);
+			await Bun.write(`${dir}/input.txt`, problem.inputs[i]);
+			await Bun.write(`${dir}/output.txt`, `${problem.outputs[i]}\n`);
 
-		result.tests.push(res.trim());
+			logger.info(`Running test ${i + 1} for submission ${submission.id}`);
 
-		if (res.trim() !== 'pass') {
-			result.passed = false;
-			break;
+			const res: string = await run(dir, submission.language, javaClassName);
+
+			logger.debug(`Test ${i + 1} result: ${res}`);
+
+			result.tests.push(res.trim());
+
+			if (res.trim() !== 'pass') {
+				result.passed = false;
+				break;
+			}
+
+			await removeDir(dir);
 		}
+	} catch (err: any) {
+		await removeDir(outDir);
+		const errorMessage = err instanceof Error ? err.message : String(err);
+		const errorStack = err instanceof Error ? err.stack : undefined;
 
-		await removeDir(dir);
+		logger.error(`Judge error: ${errorMessage}`, {
+			submissionId: submission.id,
+			stack: errorStack,
+		});
+
+		result.passed = false;
+		result.error = errorMessage;
 	}
 
 	return result;

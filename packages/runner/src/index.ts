@@ -12,6 +12,7 @@ import {
 	updateSubmission,
 } from './queries';
 import { judge } from './runner';
+import { logger } from './utils/logger';
 
 const jobSchema = z.object({
 	questionLetter: z.string(),
@@ -22,7 +23,7 @@ const sqs = new SQSClient({ region: env.AWS_REGION });
 const QUEUE_URL = env.SQS_QUEUE_URL;
 
 async function pollQueue() {
-	console.log('Polling SQS...');
+	logger.info('Polling SQS...');
 
 	while (true) {
 		const response = await sqs.send(
@@ -38,10 +39,9 @@ async function pollQueue() {
 		for (const msg of messages) {
 			if (!msg.Body || !msg.ReceiptHandle) continue;
 
-			console.log('new message', msg.Body);
+			logger.info('New message', msg.Body);
 
 			try {
-				console.log(msg.Body);
 				const parsed = JSON.parse(msg.Body);
 				const parseResult = jobSchema.safeParse(parsed);
 
@@ -65,14 +65,18 @@ async function pollQueue() {
 
 				const res = await judge(problem, submission);
 
-				await updateSubmission(
-					submissionId,
-					res.passed ? 'PASSED' : 'FAILED',
-					JSON.stringify(res ?? ''),
-				);
+				if (res.error) {
+					await updateSubmission(submissionId, 'ERROR', JSON.stringify(res));
+				} else {
+					await updateSubmission(
+						submissionId,
+						res.passed ? 'PASSED' : 'FAILED',
+						JSON.stringify(res),
+					);
 
-				if (res.passed) {
-					await updateLeaderboard(submission, questionLetter, 1);
+					if (res.passed) {
+						await updateLeaderboard(submission, questionLetter, 1);
+					}
 				}
 
 				// ✅ delete message from queue
