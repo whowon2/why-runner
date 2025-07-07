@@ -103,13 +103,13 @@ export function ProblemTab({
 		);
 	}
 
-	if (!problem) {
-		return (
-			<div className="w-full flex items-center justify-center mt-10 font-bold text-xl">
-				Você ainda não pode ver os problemas.
-			</div>
-		);
-	}
+	// if (!problem) {
+	// 	return (
+	// 		<div className="w-full flex items-center justify-center mt-10 font-bold text-xl">
+	// 			Você ainda não pode ver os problemas.
+	// 		</div>
+	// 	);
+	// }
 
 	return (
 		<div className="flex flex-col w-full gap-4">
@@ -135,35 +135,37 @@ export function ProblemTab({
 					</RadioGroup.Item>
 				))}
 			</RadioGroup.Root>
-			<ResizablePanelGroup direction="horizontal">
-				<ResizablePanel className="p-2">
-					<ProblemDescription problem={problem} />
-				</ResizablePanel>
-				{isUserOnContest && (
-					<>
-						<ResizableHandle withHandle />
-						<ResizablePanel className="p-2">
-							<SubmissionList problem={problem} />
-						</ResizablePanel>
-						{contest.end > new Date() && (
-							<Fragment>
-								<ResizableHandle withHandle />
-								<ResizablePanel className="p-2">
-									<UploadCode
-										contest={contest}
-										problem={problem}
-										problemLetter={
-											letters[
-												contest.problems.findIndex((p) => p.id === problem.id)
-											] ?? ''
-										}
-									/>
-								</ResizablePanel>
-							</Fragment>
-						)}
-					</>
-				)}
-			</ResizablePanelGroup>
+			{problem && (
+				<ResizablePanelGroup direction="horizontal">
+					<ResizablePanel className="p-2">
+						<ProblemDescription problem={problem} />
+					</ResizablePanel>
+					{isUserOnContest && (
+						<>
+							<ResizableHandle withHandle />
+							<ResizablePanel className="p-2">
+								<SubmissionList problem={problem} />
+							</ResizablePanel>
+							{contest.end > new Date() && (
+								<Fragment>
+									<ResizableHandle withHandle />
+									<ResizablePanel className="p-2">
+										<UploadCode
+											contest={contest}
+											problem={problem}
+											problemLetter={
+												letters[
+													contest.problems.findIndex((p) => p.id === problem.id)
+												] ?? ''
+											}
+										/>
+									</ResizablePanel>
+								</Fragment>
+							)}
+						</>
+					)}
+				</ResizablePanelGroup>
+			)}
 		</div>
 	);
 }
