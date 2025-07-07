@@ -1,6 +1,6 @@
 import { constants } from 'node:fs';
 import { access, rm } from 'node:fs/promises';
-import { logger } from 'nx/src/devkit-exports';
+import { logger } from './logger';
 
 export async function removeDir(dir: string) {
 	logger.info(`Removing directory ${dir}`);

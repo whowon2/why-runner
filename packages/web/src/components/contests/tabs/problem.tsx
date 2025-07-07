@@ -4,7 +4,7 @@ import type { Prisma, Problem } from '@prisma/client';
 import * as RadioGroup from '@radix-ui/react-radio-group';
 import { useSearchParams } from 'next/navigation';
 import type { Session } from 'next-auth';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { ProblemDescription } from '@/components/problems/description';
 import { SubmissionList } from '@/components/problems/submissions';
 import { UploadCode } from '@/components/problems/upload';
@@ -138,19 +138,22 @@ export function ProblemTab({
 							<ResizablePanel className="p-2">
 								<SubmissionList problem={problem} />
 							</ResizablePanel>
-							{contest.end < new Date() && <div>Contest has ended.</div>}
-							<ResizableHandle withHandle />
-							<ResizablePanel className="p-2">
-								<UploadCode
-									contest={contest}
-									problem={problem}
-									problemLetter={
-										letters[
-											contest.problems.findIndex((p) => p.id === problem.id)
-										] ?? ''
-									}
-								/>
-							</ResizablePanel>
+							{contest.end > new Date() && (
+								<Fragment>
+									<ResizableHandle withHandle />
+									<ResizablePanel className="p-2">
+										<UploadCode
+											contest={contest}
+											problem={problem}
+											problemLetter={
+												letters[
+													contest.problems.findIndex((p) => p.id === problem.id)
+												] ?? ''
+											}
+										/>
+									</ResizablePanel>
+								</Fragment>
+							)}
 						</>
 					)}
 				</ResizablePanelGroup>
