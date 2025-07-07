@@ -69,12 +69,14 @@ export async function judge(problem: Problem, submission: Submission) {
 		tests: [],
 	};
 
-	const outDir = `./src/judge-${submission.language}-${submission.id}`;
+	const outDir = './src/runs';
+	await mkdir('./src/runs');
 
 	try {
 		for (let i = 0; i < problem.inputs.length; i++) {
 			const dir = `${outDir}-${i}`;
 			await removeDir(dir);
+
 			await mkdir(dir);
 
 			const filename =
@@ -102,7 +104,6 @@ export async function judge(problem: Problem, submission: Submission) {
 			await removeDir(dir);
 		}
 	} catch (err: any) {
-		await removeDir(outDir);
 		const errorMessage = err instanceof Error ? err.message : String(err);
 		const errorStack = err instanceof Error ? err.stack : undefined;
 
@@ -114,6 +115,8 @@ export async function judge(problem: Problem, submission: Submission) {
 		result.passed = false;
 		result.error = errorMessage;
 	}
+
+	removeDir('./src/runs');
 
 	return result;
 }
