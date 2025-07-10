@@ -75,7 +75,7 @@ async function pollQueue() {
 					);
 
 					if (res.passed) {
-						await updateLeaderboard(submission, questionLetter, 1);
+						await updateLeaderboard(submission, questionLetter);
 					}
 				}
 

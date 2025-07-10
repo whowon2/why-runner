@@ -59,6 +59,11 @@ export function Leaderboard({
 
 	return (
 		<div>
+			<div className="flex flex-col">
+				<p>{JSON.stringify(leaderboard[0]?.answers)}</p>
+				<p>{leaderboard[0]?.answers.length} answers</p>
+				<p>{contest.problems.length} problems</p>
+			</div>
 			<Table>
 				<TableHeader>
 					<TableRow>
@@ -75,20 +80,21 @@ export function Leaderboard({
 					{leaderboard?.map((user) => (
 						<TableRow key={user.id}>
 							<TableCell className="font-medium">{user.user.name}</TableCell>
-							{user.answers.map((question, idx) => (
+							{/* {JSON.stringify(user.answers)}
+							{user.answers.length}
+							{contest.problems.length} */}
+							{contest.problems.map((question, idx) => (
 								<TableCell key={idx} className="text-center">
 									<div className="flex justify-center">
-										<Award color={getAwardColor(idx)} />
+										{user.answers.includes(letters[idx] ?? '') && (
+											<Award color={getAwardColor(idx)} />
+										)}
 									</div>
 								</TableCell>
 							))}
-							{Array.from(
-								{ length: contest.problems.length - user.answers.length },
-								(_, idx) => (
-									<TableCell key={idx}></TableCell>
-								),
-							)}
-							<TableCell className="text-right">{user.score}</TableCell>
+							<TableCell className="text-right">
+								{new Set(user.answers).size}
+							</TableCell>
 						</TableRow>
 					))}
 				</TableBody>

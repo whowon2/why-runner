@@ -37,12 +37,10 @@ export async function updateSubmission(
 export async function updateLeaderboard(
 	submission: Submission,
 	questionLetter: string,
-	score: number,
 ) {
 	await sql`
     UPDATE "UserOnContest"
-    SET score = score + ${score},
-    answers = array_append(answers, ${questionLetter})
+    SET answers = array_append(answers, ${questionLetter})
     WHERE "contestId" = ${submission.contestId}
     AND "userId" = ${submission.userId}
   `;
