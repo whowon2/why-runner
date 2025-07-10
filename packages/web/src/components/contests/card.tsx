@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import { formatDuration } from '@/lib/format-duration';
+import { cn } from '@/lib/utils';
 
 export function ContestCard({
 	contest,
@@ -42,7 +43,12 @@ export function ContestCard({
 		>
 			<Link href={`/contests/${contest.id}`}>
 				<h3 className="font-bold hover:underline">{contest.name}</h3>
-				<p className="text-secondary text-sm">
+				<p
+					className={cn('text-secondary text-sm', {
+						'text-green-500': now < contest.start,
+						'text-red-500': contest.start <= now && now <= contest.end,
+					})}
+				>
 					{getStatus(contest.start, contest.end)}
 				</p>
 				<p>

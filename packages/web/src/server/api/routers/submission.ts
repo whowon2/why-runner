@@ -92,6 +92,27 @@ export const submissionRouter = createTRPCRouter({
 			});
 		}),
 
+	findByContest: protectedProcedure
+		.input(
+			z.object({
+				contestId: z.string(),
+			}),
+		)
+		.query(({ ctx, input }) => {
+			return ctx.db.submission.findMany({
+				where: {
+					contestId: input.contestId,
+				},
+				include: {
+					user: true,
+					problem: true,
+				},
+				orderBy: {
+					createdAt: 'desc',
+				},
+			});
+		}),
+
 	findOne: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
 		return ctx.db.submission.findUnique({
 			where: {

@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Link } from '@/i18n/navigation';
 import { auth } from '@/server/auth';
 import { api } from '@/trpc/server';
+import { ContestManagement } from '@/components/contests/managment';
 
 export default async function Page({
 	params,
@@ -80,6 +81,14 @@ export default async function Page({
 					>
 						{t('Tabs.description')}
 					</TabsTrigger>
+					{contest.createdById === session?.user.id && (
+						<TabsTrigger
+							className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
+							value="manage"
+						>
+							{t('Tabs.manage')}
+						</TabsTrigger>
+					)}
 				</TabsList>
 
 				<TabsContent className="flex w-full gap-4" value="problems">
@@ -91,6 +100,11 @@ export default async function Page({
 				<TabsContent value="description">
 					<ContestDescription contest={contest} />
 				</TabsContent>
+          {contest.createdById === session?.user.id && (
+						<TabsContent value="manage">
+							<ContestManagement contest={contest} />
+						</TabsContent>
+					)}
 			</Tabs>
 		</div>
 	);

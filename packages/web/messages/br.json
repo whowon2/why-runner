@@ -120,6 +120,7 @@
 			"problems": "Problemas",
 			"leaderboard": "Placar",
 			"description": "Descrição",
+			"manage": "Gerenciar",
 			"Problem": {
 				"description": "Descrição",
 				"Examples": {
@@ -152,6 +153,9 @@
 				"finished": "FINALIZADO",
 				"participants": "Participantes",
 				"problems": "Problemas"
+			},
+			"Management": {
+			  "id_copied": "ID copiado para o clipboard!"
 			}
 		}
 	},
