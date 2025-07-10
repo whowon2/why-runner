@@ -1,19 +1,6 @@
 'use client';
 
-import {
-	Check,
-	Cloud,
-	Cog,
-	Github,
-	Globe,
-	LogOut,
-	Moon,
-	Palette,
-	Sun,
-	Trophy,
-	User,
-	Users,
-} from 'lucide-react';
+import { Check, Globe, LogOut, User } from 'lucide-react';
 import type { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';

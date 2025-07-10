@@ -1,6 +1,5 @@
 import { Pencil, Trophy } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { BreadCrumbs } from '@/components/breadcrumbs';
 import { ContestDescription } from '@/components/contests/description';
@@ -8,7 +7,6 @@ import { JoinButton } from '@/components/contests/join';
 import { Leaderboard } from '@/components/contests/leaderboard';
 import { ContestStatus } from '@/components/contests/status';
 import { ProblemTab } from '@/components/contests/tabs/problem';
-import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Link } from '@/i18n/navigation';
 import { auth } from '@/server/auth';

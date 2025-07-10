@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
-import React, { useEffect, useId, useState } from 'react';
+import React, { useCallback, useEffect, useId, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface ContainerTextFlipProps {
@@ -29,19 +29,19 @@ export function ContainerTextFlip({
 	const [width, setWidth] = useState(100);
 	const textRef = React.useRef(null);
 
-	const updateWidthForWord = () => {
+	const updateWidthForWord = useCallback(() => {
 		if (textRef.current) {
 			// Add some padding to the text width (30px on each side)
 			// @ts-ignore
 			const textWidth = textRef.current.scrollWidth + 30;
 			setWidth(textWidth);
 		}
-	};
+	}, []);
 
 	useEffect(() => {
 		// Update width whenever the word changes
 		updateWidthForWord();
-	}, [currentWordIndex]);
+	}, [updateWidthForWord]);
 
 	useEffect(() => {
 		const intervalId = setInterval(() => {

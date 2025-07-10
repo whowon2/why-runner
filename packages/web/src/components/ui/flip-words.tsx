@@ -1,6 +1,6 @@
 'use client';
-import { AnimatePresence, LayoutGroup, motion } from 'motion/react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { useCallback, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 export const FlipWords = ({

@@ -34,7 +34,7 @@ const Icons = {
 };
 
 export function UserDock({ session }: { session: Session | null }) {
-	const { setTheme, theme, themes } = useTheme();
+	const { setTheme, theme } = useTheme();
 	const [mounted, setMounted] = useState(false);
 	const t = useTranslations();
 

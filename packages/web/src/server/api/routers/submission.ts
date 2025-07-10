@@ -120,7 +120,7 @@ export const submissionRouter = createTRPCRouter({
 				}),
 			}),
 		)
-		.mutation(async ({ ctx, input }) => {
+		.mutation(async ({ input }) => {
 			const prompt = `
 You are a programming assistant that helps students learn what went wrong in the submission of a competitive programming problem.
 If the submission failed, help the student understand why their output is wrong without giving the direct answer, be vague. Give hints or explain mistakes. Make it in the least amount of words as possible.
