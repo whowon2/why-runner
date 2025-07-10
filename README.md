@@ -158,7 +158,7 @@ services:
 ## 📖 Future Improvements
 
 * [ ] WebSocket for live execution updates
-* [ ] Multi-language support (Rust, Python, Java)
+* [x] Multi-language support (Rust, Python, Java)
 * [ ] Admin panel to manage users/problems
 * [ ] Advanced security sandbox (e.g., seccomp, firejail)
 
