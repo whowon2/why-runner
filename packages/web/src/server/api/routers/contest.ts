@@ -114,6 +114,19 @@ export const contestRouter = createTRPCRouter({
 	join: protectedProcedure
 		.input(z.object({ contestId: z.string() }))
 		.mutation(async ({ ctx, input }) => {
+			const contest = await ctx.db.contest.findUnique({
+				where: {
+					id: input.contestId,
+				},
+			});
+
+			if (!contest) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'Contest not found!',
+				});
+			}
+
 			const isUserOnContest = await ctx.db.userOnContest.findFirst({
 				where: {
 					contestId: input.contestId,
@@ -128,16 +141,10 @@ export const contestRouter = createTRPCRouter({
 				});
 			}
 
-			const contest = await ctx.db.contest.findUnique({
-				where: {
-					id: input.contestId,
-				},
-			});
-
-			if (!contest) {
+			if (ctx.session.user.id === contest?.createdById) {
 				throw new TRPCError({
 					code: 'BAD_REQUEST',
-					message: 'Contest not found!',
+					message: 'You cannot join your own contest',
 				});
 			}
 

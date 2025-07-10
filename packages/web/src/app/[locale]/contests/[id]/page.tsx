@@ -43,8 +43,8 @@ export default async function Page({
 			<BreadCrumbs />
 			<div className="flex flex-col items-center">
 				<div className="flex gap-2">
-					<h1 className="font-bold text-3xl">{contest.name}</h1>
-					{isCreatedByUser && (
+					<h1 className="font-bold text-3xl text-secondary">{contest.name}</h1>
+					{isCreatedByUser && contest.start > new Date() && (
 						<Link href={`${contest.id}/edit`}>
 							<Pencil size={18} />
 						</Link>
