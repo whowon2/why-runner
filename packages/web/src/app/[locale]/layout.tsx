@@ -45,11 +45,7 @@ export default async function RootLayout({
 			<body className="flex flex-col min-h-screen">
 				<TRPCReactProvider>
 					<NextIntlClientProvider>
-						<ThemeProvider
-							attribute="class"
-							defaultTheme="dark"
-						>
-
+						<ThemeProvider attribute="class" defaultTheme="dark">
 							{children}
 							<Toaster />
 							<DockDemo session={session} />
