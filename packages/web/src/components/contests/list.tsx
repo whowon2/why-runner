@@ -11,7 +11,7 @@ export function ContestList() {
 	const t = useTranslations('ContestsPage');
 
 	return (
-		<div className="w-full max-w-7xl">
+		<div className="w-full max-w-7xl flex-1">
 			<div className="flex justify-between">
 				<h1 className="font-bold text-2xl">{t('title')}</h1>
 				<CreateContestDialog />

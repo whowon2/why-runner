@@ -73,7 +73,7 @@ export function ProblemsList({ session }: { session: Session }) {
 	}, [problems, filters.difficulty, filters.my, session.user.id]);
 
 	return (
-		<div className="w-full max-w-7xl">
+		<div className="w-full max-w-7xl flex-1">
 			<div className="flex justify-between">
 				<h1 className="font-bold text-2xl">Problems</h1>
 				<Link href={'/problems/new'}>

@@ -15,7 +15,7 @@ export default async function ContestsPage() {
 
 	return (
 		<HydrateClient>
-			<div className="flex w-full flex-col items-center justify-center gap-4 p-4">
+			<div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">
 				<BreadCrumbs />
 				<ContestList />
 			</div>

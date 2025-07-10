@@ -39,7 +39,7 @@ export default async function Page({
 	const isCreatedByUser = contest.createdById === session.user.id;
 
 	return (
-		<div className="flex w-full flex-col items-center justify-center gap-4 p-4">
+		<div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">
 			<BreadCrumbs />
 			<div className="flex flex-col items-center">
 				<div className="flex gap-2">
@@ -59,7 +59,7 @@ export default async function Page({
 
 			<ContestStatus contest={contest} />
 
-			<Tabs className="w-full" defaultValue="problems">
+			<Tabs className="w-full flex-1" defaultValue="problems">
 				<TabsList className="w-full justify-start rounded-none border-b bg-background p-0">
 					<TabsTrigger
 						className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"

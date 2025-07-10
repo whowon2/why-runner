@@ -40,7 +40,7 @@ export default async function RootLayout({
 
 	return (
 		<html className={`${geist.variable}`} lang="en" suppressHydrationWarning>
-			<body className="flex flex-col min-h-screen justify-between">
+			<body className="flex flex-col min-h-screen justify-between scroll-smooth">
 				<TRPCReactProvider>
 					<NextIntlClientProvider>
 						<ThemeProvider attribute="class" defaultTheme="dark">
