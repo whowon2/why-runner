@@ -13,24 +13,25 @@ export default function Home() {
 		<main className="flex flex-col items-center justify-center flex-1 p-8 gap-12">
 			{/* Hero */}
 			<div className="flex flex-col items-center justify-center px-4 h-screen">
-				<div className="flex font-extrabold text-5xl tracking-tight sm:text-[5rem]">
+				<div className="flex font-extrabold text-6xl tracking-tight sm:text-[5rem]">
 					<FlipWords words={['Uai', 'Why']} /> <br />
 					<span className="text-secondary">Runner</span>
 				</div>
+
+				{/* Navigation Buttons */}
+				<div className="flex gap-4 mb-24 mt-12">
+					<Link href="contests">
+						<Button variant={'outline'}>{t('buttons.contests')}</Button>
+					</Link>
+					<Link href="problems">
+						<Button variant={'outline'}>{t('buttons.problems')}</Button>
+					</Link>
+				</div>
 			</div>
 
-			{/* Navigation Buttons */}
-			<div className="flex gap-4 mb-24">
-				<Link href="contests">
-					<Button variant={'outline'}>{t('buttons.contests')}</Button>
-				</Link>
-				<Link href="problems">
-					<Button variant={'outline'}>{t('buttons.problems')}</Button>
-				</Link>
-			</div>
 
 			{/* Safari Preview */}
-			<section className="max-w-4xl text-center mt-32 space-y-4">
+			<section className="max-w-4xl text-center mt-32 space-y-4 h-[60vh]">
 				<h2 className="text-3xl font-bold tracking-tight">
 					Live Submission Interface
 				</h2>
@@ -52,7 +53,7 @@ export default function Home() {
 
 
 			{/* Features */}
-			<section className="max-w-4xl text-center mt-32 space-y-12">
+			<section className="max-w-4xl text-center my-32 space-y-12">
 				<h2 className="text-3xl font-bold tracking-tight">
 					What makes it different?
 				</h2>
@@ -80,7 +81,7 @@ export default function Home() {
 			</section>
 
 			{/* How It Works */}
-			<section className="max-w-4xl text-center mt-32 space-y-12">
+			<section className="max-w-4xl text-center my-32 space-y-12">
 				<h2 className="text-3xl font-bold tracking-tight">How it works</h2>
 				<div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-left">
 					<div className="p-4 rounded-xl border">
@@ -108,7 +109,7 @@ export default function Home() {
 			</section>
 
 			{/* Use Cases */}
-			<section className="max-w-4xl text-center mt-32 space-y-12">
+			<section className="max-w-4xl text-center my-32 space-y-12">
 				<h2 className="text-3xl font-bold tracking-tight">
 					Designed for real classrooms
 				</h2>
@@ -136,7 +137,7 @@ export default function Home() {
 			</section>
 
 			{/* Tech Stack */}
-			<section className="max-w-4xl text-center mt-32 mb-40 space-y-6">
+			<section className="max-w-4xl text-center my-32 mb-40 space-y-6">
 				<h2 className="text-3xl font-bold tracking-tight">
 					Built with modern tools
 				</h2>
