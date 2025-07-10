@@ -1,16 +1,16 @@
 import '@/styles/globals.css';
 
+import type { Metadata } from 'next';
+import { Geist } from 'next/font/google';
+import { notFound } from 'next/navigation';
+import { hasLocale, NextIntlClientProvider } from 'next-intl';
+import { ThemeProvider } from 'next-themes';
 import { UserDock } from '@/components/dock';
+import { Footer } from '@/components/footer';
 import { Toaster } from '@/components/ui/sonner';
 import { routing } from '@/i18n/routing';
 import { auth } from '@/server/auth';
 import { TRPCReactProvider } from '@/trpc/react';
-import type { Metadata } from 'next';
-import { hasLocale, NextIntlClientProvider } from 'next-intl';
-import { ThemeProvider } from 'next-themes';
-import { Geist } from 'next/font/google';
-import { notFound } from 'next/navigation';
-import { Footer } from '@/components/footer';
 
 export const metadata: Metadata = {
 	description: '',
@@ -47,7 +47,7 @@ export default async function RootLayout({
 							{children}
 							<Toaster />
 							<UserDock session={session} />
-							<Footer/>
+							<Footer />
 						</ThemeProvider>
 					</NextIntlClientProvider>
 				</TRPCReactProvider>
