@@ -5,6 +5,7 @@ import { Safari } from '@/components/magicui/safari';
 import { Button } from '@/components/ui/button';
 import { FlipWords } from '@/components/ui/flip-words';
 import { Link } from '@/i18n/navigation';
+import { Separator } from '@/components/ui/separator';
 
 export default function Home() {
 	const t = useTranslations('HomePage');
@@ -52,8 +53,11 @@ export default function Home() {
 			</section>
 
 
+			<Separator/>
+
+
 			{/* Features */}
-			<section className="max-w-4xl text-center my-32 space-y-12">
+		<section className="max-w-4xl text-center my-32 space-y-12">
 				<h2 className="text-3xl font-bold tracking-tight">
 					What makes it different?
 				</h2>
@@ -80,8 +84,10 @@ export default function Home() {
 				</div>
 			</section>
 
+			<Separator/>
+
 			{/* How It Works */}
-			<section className="max-w-4xl text-center my-32 space-y-12">
+			<section className="max-w-4xl text-center my-32 space-y-12 bg-">
 				<h2 className="text-3xl font-bold tracking-tight">How it works</h2>
 				<div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-left">
 					<div className="p-4 rounded-xl border">
@@ -107,6 +113,8 @@ export default function Home() {
 					</div>
 				</div>
 			</section>
+
+			<Separator/>
 
 			{/* Use Cases */}
 			<section className="max-w-4xl text-center my-32 space-y-12">
@@ -135,6 +143,8 @@ export default function Home() {
 					</div>
 				</div>
 			</section>
+
+			<Separator/>
 
 			{/* Tech Stack */}
 			<section className="max-w-4xl text-center my-32 mb-40 space-y-6">

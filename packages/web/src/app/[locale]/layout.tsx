@@ -1,18 +1,16 @@
 import '@/styles/globals.css';
 
-import type { Metadata } from 'next';
-import { Geist } from 'next/font/google';
-import { notFound } from 'next/navigation';
-import { hasLocale, NextIntlClientProvider } from 'next-intl';
-import { ThemeProvider } from 'next-themes';
-import { DockDemo } from '@/components/dock';
-import { Footer } from '@/components/footer';
-import { Header } from '@/components/header';
-import { Dock } from '@/components/magicui/dock';
+import { UserDock } from '@/components/dock';
 import { Toaster } from '@/components/ui/sonner';
 import { routing } from '@/i18n/routing';
 import { auth } from '@/server/auth';
 import { TRPCReactProvider } from '@/trpc/react';
+import type { Metadata } from 'next';
+import { hasLocale, NextIntlClientProvider } from 'next-intl';
+import { ThemeProvider } from 'next-themes';
+import { Geist } from 'next/font/google';
+import { notFound } from 'next/navigation';
+import { Footer } from '@/components/footer';
 
 export const metadata: Metadata = {
 	description: '',
@@ -42,13 +40,14 @@ export default async function RootLayout({
 
 	return (
 		<html className={`${geist.variable}`} lang="en" suppressHydrationWarning>
-			<body className="flex flex-col min-h-screen">
+			<body className="flex flex-col min-h-screen justify-between">
 				<TRPCReactProvider>
 					<NextIntlClientProvider>
 						<ThemeProvider attribute="class" defaultTheme="dark">
 							{children}
 							<Toaster />
-							<DockDemo session={session} />
+							<UserDock session={session} />
+							<Footer/>
 						</ThemeProvider>
 					</NextIntlClientProvider>
 				</TRPCReactProvider>

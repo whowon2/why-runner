@@ -33,7 +33,7 @@ const Icons = {
 	),
 };
 
-export function DockDemo({ session }: { session: Session | null }) {
+export function UserDock({ session }: { session: Session | null }) {
 	const { setTheme, theme, themes } = useTheme();
 	const [mounted, setMounted] = useState(false);
 	const t = useTranslations();
@@ -68,7 +68,7 @@ export function DockDemo({ session }: { session: Session | null }) {
 	if (!mounted) return null;
 
 	return (
-		<div className="flex flex-col items-center justify-center fixed bottom-8 left-1/2 -translate-x-1/2">
+		<div className="flex flex-col items-center justify-center sticky bottom-4 mb-4">
 			<TooltipProvider>
 				<Dock direction="middle" iconMagnification={45}>
 					{DATA.navbar.map((item) => (
