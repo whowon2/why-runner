@@ -168,7 +168,7 @@ services:
 
 **Juan Israel** – *Computer Engineering Student*
 TCC Advisor: *Prof. \[Your Advisor’s Name]*
-Institution: *\[Your University Name]*
+Institution: *\[IFMG]*
 
 ---
 
