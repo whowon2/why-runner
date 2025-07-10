@@ -2,7 +2,7 @@
 
 This is a TCC (Trabalho de Conclusão de Curso) project designed to support the execution and evaluation of code submissions in multiple programming languages inside isolated environments (containers). It includes a web interface, API, and infrastructure to run, test, and manage code for contests and problem solving.
 
-<img width="1234" height="778" alt="image" src="https://github.com/user-attachments/assets/bd86410e-279e-4534-8246-8f2762bcb78d" />
+<img width="1250" height="792" alt="2025-07-10-130229_hyprshot" src="https://github.com/user-attachments/assets/bcbeea88-9a0a-40a7-bdea-9d1872cc5b82" />
 
 ## 📦 Monorepo Stack
 
