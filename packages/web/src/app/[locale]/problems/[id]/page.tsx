@@ -1,3 +1,4 @@
+import { BreadCrumbs } from '@/components/breadcrumbs';
 import { DifficultyBadge } from '@/components/problems/badge';
 import { ProblemDescription } from '@/components/problems/description';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,32 +18,10 @@ export default async function ProblemPage({
 	}
 
 	return (
-		<div className="flex w-full flex-col justify-center gap-8 p-8">
-			<div className="flex flex-1/2 flex-col gap-8">
-				<div className="flex items-center justify-between">
-					<h1 className="mb-2 font-bold text-3xl">{problem.title}</h1>
-					<DifficultyBadge difficulty={problem.difficulty} />
-				</div>
-
-				<Card>
-					<CardHeader>
-						<CardTitle className="font-semibold text-xl">Descrição</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<pre className="whitespace-pre-wrap rounded-md ">
-							{problem.description}
-						</pre>
-					</CardContent>
-				</Card>
-
-				<Card>
-					<CardHeader>
-						<CardTitle className="font-semibold text-xl">Exemplos</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<ProblemDescription problem={problem} />
-					</CardContent>
-				</Card>
+		<div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">
+  		<BreadCrumbs />
+			<div className="flex flex-1 flex-col gap-8">
+  			<ProblemDescription problem={problem} />
 			</div>
 		</div>
 	);

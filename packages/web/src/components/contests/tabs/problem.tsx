@@ -103,14 +103,6 @@ export function ProblemTab({
 		);
 	}
 
-	// if (!problem) {
-	// 	return (
-	// 		<div className="w-full flex items-center justify-center mt-10 font-bold text-xl">
-	// 			Você ainda não pode ver os problemas.
-	// 		</div>
-	// 	);
-	// }
-
 	return (
 		<div className="flex flex-col w-full gap-4">
 			<RadioGroup.Root
@@ -139,30 +131,23 @@ export function ProblemTab({
 				<ResizablePanelGroup direction="horizontal">
 					<ResizablePanel className="p-2">
 						<ProblemDescription problem={problem} />
+						{isUserOnContest && <SubmissionList problem={problem} />}
 					</ResizablePanel>
-					{isUserOnContest && (
-						<>
+					{isUserOnContest && contest.end > new Date() && (
+						<Fragment>
 							<ResizableHandle withHandle />
 							<ResizablePanel className="p-2">
-								<SubmissionList problem={problem} />
+								<UploadCode
+									contest={contest}
+									problem={problem}
+									problemLetter={
+										letters[
+											contest.problems.findIndex((p) => p.id === problem.id)
+										] ?? ''
+									}
+								/>
 							</ResizablePanel>
-							{contest.end > new Date() && (
-								<Fragment>
-									<ResizableHandle withHandle />
-									<ResizablePanel className="p-2">
-										<UploadCode
-											contest={contest}
-											problem={problem}
-											problemLetter={
-												letters[
-													contest.problems.findIndex((p) => p.id === problem.id)
-												] ?? ''
-											}
-										/>
-									</ResizablePanel>
-								</Fragment>
-							)}
-						</>
+						</Fragment>
 					)}
 				</ResizablePanelGroup>
 			)}

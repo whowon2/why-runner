@@ -9,15 +9,11 @@ export function ProblemDescription({ problem }: { problem: Problem }) {
 
 	return (
 		<div className="flex w-full flex-col gap-4">
-			<div className="flex items-center gap-2 p-4">
-				<h1 className="font-bold text-3xl">{problem.title}</h1>
-				<DifficultyBadge difficulty={problem.difficulty} />
-			</div>
-
-			<Card className="border-none bg-transparent shadow-none">
+			<Card className="bg-transparent shadow-none">
 				<CardHeader>
 					<CardTitle className="font-semibold text-xl">
-						{t('Tabs.Problem.description')}
+						<h1 className="font-bold text-3xl">{problem.title}</h1>
+						<DifficultyBadge difficulty={problem.difficulty} />
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
