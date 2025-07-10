@@ -58,47 +58,37 @@ export function Leaderboard({
 	leaderboard.sort((a, b) => b.score - a.score);
 
 	return (
-		<div>
-			<div className="flex flex-col">
-				<p>{JSON.stringify(leaderboard[0]?.answers)}</p>
-				<p>{leaderboard[0]?.answers.length} answers</p>
-				<p>{contest.problems.length} problems</p>
-			</div>
-			<Table>
-				<TableHeader>
-					<TableRow>
-						<TableHead className="w-[100px]">{t('name')}</TableHead>
-						{contest.problems.map((problem, idx) => (
-							<TableHead key={problem.id} className="text-center">
-								{letters[idx]}
-							</TableHead>
-						))}
-						<TableHead className="text-right">{t('score')}</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{leaderboard?.map((user) => (
-						<TableRow key={user.id}>
-							<TableCell className="font-medium">{user.user.name}</TableCell>
-							{/* {JSON.stringify(user.answers)}
-							{user.answers.length}
-							{contest.problems.length} */}
-							{contest.problems.map((question, idx) => (
-								<TableCell key={idx} className="text-center">
-									<div className="flex justify-center">
-										{user.answers.includes(letters[idx] ?? '') && (
-											<Award color={getAwardColor(idx)} />
-										)}
-									</div>
-								</TableCell>
-							))}
-							<TableCell className="text-right">
-								{new Set(user.answers).size}
-							</TableCell>
-						</TableRow>
+		<Table>
+			<TableHeader>
+				<TableRow>
+					<TableHead className="w-[100px]">{t('name')}</TableHead>
+					{contest.problems.map((problem, idx) => (
+						<TableHead key={problem.id} className="text-center">
+							{letters[idx]}
+						</TableHead>
 					))}
-				</TableBody>
-			</Table>
-		</div>
+					<TableHead className="text-right">{t('score')}</TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+				{leaderboard?.map((user) => (
+					<TableRow key={user.id}>
+						<TableCell className="font-medium">{user.user.name}</TableCell>
+						{contest.problems.map((_question, idx) => (
+							<TableCell key={idx} className="text-center">
+								<div className="flex justify-center">
+									{user.answers.includes(letters[idx] ?? '') && (
+										<Award color={getAwardColor(idx)} />
+									)}
+								</div>
+							</TableCell>
+						))}
+						<TableCell className="text-right">
+							{new Set(user.answers).size}
+						</TableCell>
+					</TableRow>
+				))}
+			</TableBody>
+		</Table>
 	);
 }
