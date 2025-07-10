@@ -12,23 +12,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 import { api } from '@/trpc/react';
 import { AIDialog } from './ai/dialog';
-
-const color = (status: SubmissionStatus) => {
-	switch (status) {
-		case 'ERROR':
-			return 'border-destructive';
-		case 'FAILED':
-			return 'border-destructive';
-		case 'PASSED':
-			return 'border-green-400';
-		case 'RUNNING':
-			return 'border-blue-400';
-		default:
-			return 'border-card-400';
-	}
-};
 
 export function SubmissionList({ problem }: { problem: Problem }) {
 	const t = useTranslations('ContestsPage.Tabs.Problem.Submissions');
@@ -52,7 +38,7 @@ export function SubmissionList({ problem }: { problem: Problem }) {
 	}
 
 	return (
-		<Card className="max-h-screen w-full overflow-auto border-none bg-transparent shadow-none">
+		<Card className="max-h-screen w-full overflow-auto bg-transparent shadow-none">
 			<CardHeader>
 				<CardTitle
 					className="flex justify-between flex-wrap gap-2"
@@ -70,7 +56,17 @@ export function SubmissionList({ problem }: { problem: Problem }) {
 				<Accordion className="w-full space-y-2" collapsible type="single">
 					{submissions.map((submission) => (
 						<AccordionItem
-							className={`rounded-md border px-4 last:border flex-wrap ${color(submission.status)}`}
+							className={cn('rounded-md border px-4 last:border flex-wrap', {
+								'text-green-500 border-green-500':
+									submission.status === 'PASSED',
+								'text-red-500 border-red-500': submission.status === 'FAILED',
+								'text-orange-500 border-orange-500':
+									submission.status === 'ERROR',
+								'text-gray-500 border-gray-500':
+									submission.status === 'PENDING',
+								'text-blue-500 border-blue-500':
+									submission.status === 'RUNNING',
+							})}
 							key={submission.id}
 							value={`item-${submission.id}`}
 						>

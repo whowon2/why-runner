@@ -129,14 +129,14 @@ export function ProblemTab({
 			</RadioGroup.Root>
 			{problem && (
 				<ResizablePanelGroup direction="horizontal">
-					<ResizablePanel className="pr-4">
+					<ResizablePanel className="pr-4 gap-4 flex flex-col">
 						<ProblemDescription problem={problem} />
 						{isUserOnContest && <SubmissionList problem={problem} />}
 					</ResizablePanel>
 					{isUserOnContest && contest.end > new Date() && (
 						<Fragment>
 							<ResizableHandle withHandle />
-							<ResizablePanel className="p-2">
+							<ResizablePanel className="pl-4">
 								<UploadCode
 									contest={contest}
 									problem={problem}

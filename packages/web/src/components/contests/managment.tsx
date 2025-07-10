@@ -13,6 +13,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 import { api } from '@/trpc/react';
 
 export function ContestManagement({ contest }: { contest: Contest }) {
@@ -22,7 +23,7 @@ export function ContestManagement({ contest }: { contest: Contest }) {
 			contestId: contest.id,
 		},
 		{
-			refetchInterval: 5000,
+			refetchInterval: 1000,
 		},
 	);
 
@@ -58,7 +59,17 @@ export function ContestManagement({ contest }: { contest: Contest }) {
 										/>
 									</TableCell>
 									<TableCell>{submission.user.name}</TableCell>
-									<TableCell>{submission.status}</TableCell>
+									<TableCell
+										className={cn({
+											'text-green-500': submission.status === 'PASSED',
+											'text-red-500': submission.status === 'FAILED',
+											'text-orange-500': submission.status === 'ERROR',
+											'text-gray-500': submission.status === 'PENDING',
+											'text-blue-500': submission.status === 'RUNNING',
+										})}
+									>
+										{submission.status}
+									</TableCell>
 									<TableCell>
 										{new Date(submission.createdAt).toLocaleTimeString()}
 									</TableCell>

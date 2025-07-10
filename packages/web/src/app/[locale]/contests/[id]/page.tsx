@@ -100,11 +100,11 @@ export default async function Page({
 				<TabsContent value="description">
 					<ContestDescription contest={contest} />
 				</TabsContent>
-          {contest.createdById === session?.user.id && (
-						<TabsContent value="manage">
-							<ContestManagement contest={contest} />
-						</TabsContent>
-					)}
+        {contest.createdById === session?.user.id && (
+					<TabsContent value="manage">
+						<ContestManagement contest={contest} />
+					</TabsContent>
+				)}
 			</Tabs>
 		</div>
 	);
