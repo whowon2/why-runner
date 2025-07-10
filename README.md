@@ -1,13 +1,8 @@
-<img width="278" height="412" alt="image" src="https://github.com/user-attachments/assets/942e1674-d478-45a9-acc7-f9e9150d0aa4" />You're right — here's the full `README.md` **as plain Markdown**, so you can copy and paste it directly into your project without escaping:
-
----
-
 # 🏃‍♂️ Runner: Code Execution Platform
 
 This is a TCC (Trabalho de Conclusão de Curso) project designed to support the execution and evaluation of code submissions in multiple programming languages inside isolated environments (containers). It includes a web interface, API, and infrastructure to run, test, and manage code for contests and problem solving.
 
 <img width="1234" height="778" alt="image" src="https://github.com/user-attachments/assets/bd86410e-279e-4534-8246-8f2762bcb78d" />
-
 
 ## 📦 Monorepo Stack
 
