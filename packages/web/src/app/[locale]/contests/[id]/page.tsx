@@ -1,17 +1,18 @@
-import { Pencil, Trophy } from 'lucide-react';
+import { ArrowLeft, Pencil, Trophy } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { BreadCrumbs } from '@/components/breadcrumbs';
 import { ContestDescription } from '@/components/contests/description';
 import { JoinButton } from '@/components/contests/join';
 import { Leaderboard } from '@/components/contests/leaderboard';
+import { ContestManagement } from '@/components/contests/managment';
 import { ContestStatus } from '@/components/contests/status';
 import { ProblemTab } from '@/components/contests/tabs/problem';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Link } from '@/i18n/navigation';
 import { auth } from '@/server/auth';
 import { api } from '@/trpc/server';
-import { ContestManagement } from '@/components/contests/managment';
 
 export default async function Page({
 	params,
@@ -31,8 +32,14 @@ export default async function Page({
 
 	if (!contest) {
 		return (
-			<div className="flex justify-center items-center min-h-screen">
-				Torneio não encontrado
+			<div className="flex gap-4 flex-col justify-center items-center min-h-screen">
+				{t('notFound')}
+				<Link href={'/contests'}>
+					<Button className="font-bold">
+						<ArrowLeft />
+						{t('backToList')}
+					</Button>
+				</Link>
 			</div>
 		);
 	}
@@ -100,7 +107,7 @@ export default async function Page({
 				<TabsContent value="description">
 					<ContestDescription contest={contest} />
 				</TabsContent>
-        {contest.createdById === session?.user.id && (
+				{contest.createdById === session?.user.id && (
 					<TabsContent value="manage">
 						<ContestManagement contest={contest} />
 					</TabsContent>

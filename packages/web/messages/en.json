@@ -91,6 +91,7 @@
 	"ContestsPage": {
 		"title": "Contests",
 		"notFound": "No contest found",
+		"backToList": "Go back to contests list",
 		"createDialog": {
 			"button": "Create Contest",
 			"title": "Create Contest",
@@ -155,7 +156,7 @@
 				"problems": "Problems"
 			},
 			"Management": {
-			  "id_copied": "ID copied to clipboard!"
+				"id_copied": "ID copied to clipboard!"
 			}
 		}
 	},

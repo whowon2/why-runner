@@ -19,9 +19,9 @@ export default async function ProblemPage({
 
 	return (
 		<div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">
-  		<BreadCrumbs />
+			<BreadCrumbs />
 			<div className="flex flex-1 flex-col gap-8">
-  			<ProblemDescription problem={problem} />
+				<ProblemDescription problem={problem} />
 			</div>
 		</div>
 	);

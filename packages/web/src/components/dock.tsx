@@ -16,6 +16,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { usePathname } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { AvatarButton } from './header/avatar-button';
 
@@ -37,6 +38,7 @@ export function UserDock({ session }: { session: Session | null }) {
 	const { setTheme, theme } = useTheme();
 	const [mounted, setMounted] = useState(false);
 	const t = useTranslations();
+	const pathname = usePathname();
 
 	const DATA = {
 		navbar: [
@@ -68,7 +70,7 @@ export function UserDock({ session }: { session: Session | null }) {
 	if (!mounted) return null;
 
 	return (
-		<div className="flex flex-col items-center justify-center sticky bottom-4 mb-4">
+		<div className="flex flex-col items-center justify-center sticky bottom-4 mb-4 select-none">
 			<TooltipProvider>
 				<Dock direction="middle" iconMagnification={45}>
 					{DATA.navbar.map((item) => (
@@ -81,6 +83,9 @@ export function UserDock({ session }: { session: Session | null }) {
 										className={cn(
 											buttonVariants({ variant: 'ghost', size: 'icon' }),
 											'size-12 rounded-full',
+											{
+												'text-secondary': pathname === item.href,
+											},
 										)}
 									>
 										<item.icon className="size-4" />
@@ -100,6 +105,8 @@ export function UserDock({ session }: { session: Session | null }) {
 									<Link
 										href={social.url}
 										aria-label={social.name}
+										target="_blank"
+										referrerPolicy="no-referrer"
 										className={cn(
 											buttonVariants({ variant: 'ghost', size: 'icon' }),
 											'size-12 rounded-full',

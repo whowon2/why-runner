@@ -1,11 +1,11 @@
 'use client';
 
+import { ArrowDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Safari } from '@/components/magicui/safari';
 import { Button } from '@/components/ui/button';
 import { FlipWords } from '@/components/ui/flip-words';
 import { Link } from '@/i18n/navigation';
-import { ArrowDown } from 'lucide-react';
 
 export default function Home() {
 	const t = useTranslations('HomePage');
@@ -30,7 +30,7 @@ export default function Home() {
 			</div>
 
 			<a href="#example">
-  			<ArrowDown className='animate-bounce mb-40'/>
+				<ArrowDown className="animate-bounce mb-40" />
 			</a>
 
 			{/* Safari Preview */}

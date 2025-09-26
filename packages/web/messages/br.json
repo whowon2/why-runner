@@ -10,66 +10,66 @@
 		"contests": "Torneios"
 	},
 	"HomePage": {
-    "buttons": {
-      "contests": "Torneios",
-      "problems": "Problemas"
-    },
-    "landing": {
-      "submission": {
-        "title": "Interface de Submissão ao Vivo",
-        "description": "Um ambiente em tempo real para resolver problemas, enviar códigos e receber feedback."
-      },
-      "features": {
-        "title": "O que torna isso diferente?",
-        "safe": {
-          "title": "Execução Segura",
-          "description": "As submissões são executadas em ambientes isolados com limites de tempo e memória."
-        },
-        "ai": {
-          "title": "Feedback com IA",
-          "description": "Submissões com erro recebem dicas vagas e naturais, geradas pela Gemini."
-        },
-        "realtime": {
-          "title": "Torneios em Tempo Real",
-          "description": "Placar ao vivo, anúncios de problemas e análises dos alunos."
-        }
-      },
-      "how": {
-        "title": "Como funciona",
-        "step1": {
-          "title": "Enviar Código",
-          "description": "Alunos resolvem problemas e enviam código diretamente pela interface web."
-        },
-        "step2": {
-          "title": "Execução Isolada",
-          "description": "O código é executado dentro de um contêiner com scripts específicos por linguagem e verificações de segurança."
-        },
-        "step3": {
-          "title": "Resultados + Dicas da IA",
-          "description": "Os resultados são exibidos instantaneamente, com dicas opcionais da IA para depuração e melhorias."
-        }
-      },
-      "usecases": {
-        "title": "Feito para salas de aula reais",
-        "instructors": {
-          "title": "Instrutores",
-          "description": "Crie torneios, gerencie problemas e acompanhe o progresso dos alunos."
-        },
-        "students": {
-          "title": "Alunos",
-          "description": "Pratique problemas, participe de torneios e receba feedback inteligente."
-        },
-        "contests": {
-          "title": "Torneios",
-          "description": "Placar ao vivo, limites de tempo e suporte a problemas multilíngues."
-        }
-      },
-      "stack": {
-        "title": "Construído com ferramentas modernas",
-        "description": "A arquitetura combina desempenho, segurança e uma boa experiência para desenvolvedores."
-      }
-    }
-  },
+		"buttons": {
+			"contests": "Torneios",
+			"problems": "Problemas"
+		},
+		"landing": {
+			"submission": {
+				"title": "Interface de Submissão ao Vivo",
+				"description": "Um ambiente em tempo real para resolver problemas, enviar códigos e receber feedback."
+			},
+			"features": {
+				"title": "O que torna isso diferente?",
+				"safe": {
+					"title": "Execução Segura",
+					"description": "As submissões são executadas em ambientes isolados com limites de tempo e memória."
+				},
+				"ai": {
+					"title": "Feedback com IA",
+					"description": "Submissões com erro recebem dicas vagas e naturais, geradas pela Gemini."
+				},
+				"realtime": {
+					"title": "Torneios em Tempo Real",
+					"description": "Placar ao vivo, anúncios de problemas e análises dos alunos."
+				}
+			},
+			"how": {
+				"title": "Como funciona",
+				"step1": {
+					"title": "Enviar Código",
+					"description": "Alunos resolvem problemas e enviam código diretamente pela interface web."
+				},
+				"step2": {
+					"title": "Execução Isolada",
+					"description": "O código é executado dentro de um contêiner com scripts específicos por linguagem e verificações de segurança."
+				},
+				"step3": {
+					"title": "Resultados + Dicas da IA",
+					"description": "Os resultados são exibidos instantaneamente, com dicas opcionais da IA para depuração e melhorias."
+				}
+			},
+			"usecases": {
+				"title": "Feito para salas de aula reais",
+				"instructors": {
+					"title": "Instrutores",
+					"description": "Crie torneios, gerencie problemas e acompanhe o progresso dos alunos."
+				},
+				"students": {
+					"title": "Alunos",
+					"description": "Pratique problemas, participe de torneios e receba feedback inteligente."
+				},
+				"contests": {
+					"title": "Torneios",
+					"description": "Placar ao vivo, limites de tempo e suporte a problemas multilíngues."
+				}
+			},
+			"stack": {
+				"title": "Construído com ferramentas modernas",
+				"description": "A arquitetura combina desempenho, segurança e uma boa experiência para desenvolvedores."
+			}
+		}
+	},
 	"ProblemsPage": {
 		"Create": {
 			"button": "Novo Problema"
@@ -91,6 +91,7 @@
 	"ContestsPage": {
 		"title": "Torneios",
 		"notFound": "Nenhum torneio encontrado",
+		"backToList": "Voltar para a lista de torneios",
 		"createDialog": {
 			"button": "Criar Torneio",
 			"title": "Criar Torneio",
@@ -155,7 +156,7 @@
 				"problems": "Problemas"
 			},
 			"Management": {
-			  "id_copied": "ID copiado para o clipboard!"
+				"id_copied": "ID copiado para o clipboard!"
 			}
 		}
 	},
