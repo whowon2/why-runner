@@ -14,4 +14,5 @@ export const useProblemSubmissions = (input: GetUserSubmissionsOnContest) =>
       console.log("Fetching submissions");
       return await getContestSubmissions(input);
     },
+    refetchInterval: 1000,
   });

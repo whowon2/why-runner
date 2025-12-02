@@ -1,29 +1,57 @@
-import type { Problem, Submission } from "./db/schema";
+import { Problem, Submission } from "./db/schema";
 
 export const getPrompt = (input: {
   submission: Submission;
   problem: Problem;
   locale: string;
-}) => `
-You are a programming assistant that helps students learn what went wrong in the submission of a competitive programming problem.
-If the submission failed, help the student understand why their output is wrong without giving the direct answer, be vague. Give hints or explain mistakes. Make it in the least amount of words as possible.
-If success, help on how to improve the code, suggest different data structures, algorithms, etc.
-Return in the language of the locale: ${input.locale}.
+}) => {
+  // 1. Parse the JSON output we saved from Rust
+  let details = "";
+  try {
+    const report = JSON.parse(input.submission.output || "{}");
+
+    if (report.passed) {
+      details = "The code passed all tests. Focus on optimization suggestions.";
+    } else if (report.failure_details) {
+      const f = report.failure_details;
+      // This gives the AI the specific context of the failure
+      details = `
+The submission FAILED on Test Case #${f.index}.
+Input:
+${f.input}
+
+Expected Output:
+${f.expected}
+
+Actual Student Output:
+${f.actual}
+
+Error Message (Stderr):
+${f.error || "None"}
+`;
+    }
+  } catch (e) {
+    // Fallback if output isn't JSON yet
+    details = `Raw Output: ${input.submission.output}`;
+  }
+
+  // 2. Construct the final Prompt
+  return `
+You are a programming assistant helping a student with a failed competitive programming submission.
+Be helpful but vague. Do not give the exact code fix. Explain the logic error.
 
 Problem:
 ${input.problem.title}
 ${input.problem.description}
 
-Inputs:
-${input.problem.inputs.join("\n")}
-
-Expected Outputs:
-${input.problem.outputs.join("\n")}
-
-Student Code in ${input.submission.language}:
+Student Code (${input.submission.language}):
 ${input.submission.code}
-${input.submission.status}
 
-The student code produces this output:
-${input.submission.output}
+JUDGE RESULT:
+${details}
+
+If there is a logic error, explain why the Input leads to the Expected Output, and why the Student Output is wrong.
+If there is a Runtime Error (Traceback), explain what that error means in this context.
+Return response in: ${input.locale}
 `;
+};
