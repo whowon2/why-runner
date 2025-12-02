@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import type { Session } from "better-auth";
 import { Delete } from "lucide-react";
 import { useEffect } from "react";
@@ -27,7 +28,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateProblem } from "@/hooks/use-create-problem";
 import { useRouter } from "@/i18n/navigation";
-import { QueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   description: z.string().min(1),
@@ -68,13 +68,16 @@ export function NewProblem({ session }: { session: Session }) {
   const { mutate: createProblem, isPending } = useCreateProblem();
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const queryClient = new QueryClient();
+    const queryClient = useQueryClient();
 
     createProblem(
       {
         createdBy: session.userId,
         title: values.title,
         difficulty: values.difficulty,
+        description: values.description,
+        inputs: values.inputs,
+        outputs: values.outputs,
       },
       {
         onError(error) {

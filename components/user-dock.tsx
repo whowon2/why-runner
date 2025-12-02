@@ -36,7 +36,6 @@ const Icons = {
 
 export function UserDock() {
   const { data: session } = authClient.useSession();
-  console.log(session);
   const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const t = useTranslations();

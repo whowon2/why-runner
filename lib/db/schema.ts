@@ -119,8 +119,11 @@ export const ProblemDifficulty = pgEnum("problem_difficulty", [
 export const problem = pgTable("problem", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
+  description: text("description").notNull(),
   difficulty: ProblemDifficulty(),
   createdBy: text("created_by").notNull(),
+  inputs: text("inputs").array().notNull(),
+  outputs: text("outputs").array().notNull(),
 });
 
 export const submission = pgTable("submission", {

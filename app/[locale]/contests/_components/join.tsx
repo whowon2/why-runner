@@ -1,6 +1,6 @@
 "use client";
 
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import type { Session } from "better-auth";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -26,7 +26,7 @@ export function JoinButton({
   const { mutate: leaveContest, isPending: isLeavePending } = useLeaveContest();
 
   const router = useRouter();
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
 
   const isUserInContest = contest.users.some(
     (user) => user.userId === session?.userId,

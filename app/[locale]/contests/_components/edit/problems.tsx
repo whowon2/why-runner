@@ -1,7 +1,5 @@
 "use client";
 
-import { Loader, X } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -13,8 +11,11 @@ import {
 import { useAddProblemToContest } from "@/hooks/use-add-problem";
 import { useProblems } from "@/hooks/use-problems";
 import { useRemoveProblemToContest as useRemoveProblemFromContest } from "@/hooks/use-remove-problem";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import type { Contest, Problem, ProblemOnContest } from "@/lib/db/schema";
+import { useQueryClient } from "@tanstack/react-query";
+import { Loader, X } from "lucide-react";
+import { toast } from "sonner";
 
 export function EditContestProblems({
   contest,
@@ -23,12 +24,14 @@ export function EditContestProblems({
     problems: ProblemOnContest[];
   };
 }) {
+  console.log("mount");
   const { data: problems } = useProblems();
 
   const { mutate: addProblem, isPending: isAddPending } =
     useAddProblemToContest();
 
-  const router = useRouter();
+  const queryClient = useQueryClient();
+  console.log("client", queryClient);
   const pathname = usePathname();
 
   function handleProblemSelect(id: string) {
@@ -42,7 +45,9 @@ export function EditContestProblems({
         },
         onSuccess() {
           toast.success("Problem added");
-          router.refresh();
+          queryClient.invalidateQueries({
+            queryKey: ["contest", String(contest.id)],
+          });
         },
       },
     );
@@ -105,7 +110,7 @@ function RemoveProblemButton({
 }) {
   const { mutate: removeProblem, isPending: isRemovePending } =
     useRemoveProblemFromContest();
-  const router = useRouter();
+  const queryClient = useQueryClient();
 
   function handleRemoveProblem(id: number) {
     removeProblem(
@@ -118,7 +123,9 @@ function RemoveProblemButton({
         },
         onSuccess() {
           toast.success("Problem removed");
-          router.refresh();
+          queryClient.invalidateQueries({
+            queryKey: ["contest", String(contest.id)],
+          });
         },
       },
     );

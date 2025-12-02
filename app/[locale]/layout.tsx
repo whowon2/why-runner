@@ -1,11 +1,10 @@
-import type { Metadata } from "next";
-import "../globals.css";
-import { QueryClient } from "@tanstack/react-query";
-import { NextIntlClientProvider } from "next-intl";
 import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/ui/sonner";
 import { UserDock } from "@/components/user-dock";
 import { Providers } from "@/providers";
+import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import "../globals.css";
 
 export const metadata: Metadata = {
   description: "",
@@ -18,8 +17,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const _client = new QueryClient();
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="flex flex-col min-h-screen justify-between scroll-smooth">
