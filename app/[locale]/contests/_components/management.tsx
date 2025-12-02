@@ -12,13 +12,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useSubmissions } from "@/hooks/use-submissions";
+import { useContestSubmissions } from "@/hooks/use-contest-submissions";
 import type { Contest } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
 
 export function ContestManagement({ contest }: { contest: Contest }) {
   const t = useTranslations("ContestsPage.Tabs.Management");
-  const { data: submissions } = useSubmissions(contest.id);
+  const { data: submissions } = useContestSubmissions({
+    contestId: contest.id,
+  });
 
   return (
     <div className="flex flex-col gap-4">

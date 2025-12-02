@@ -1,6 +1,6 @@
 "use client";
 
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import type { Session } from "better-auth";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -32,9 +32,9 @@ export function JoinButton({
     (user) => user.userId === session?.userId,
   );
 
-  if (isCreatedByUser) {
-    return null;
-  }
+  // if (isCreatedByUser) {
+  //   return null;
+  // }
 
   if (contest.startDate < new Date()) {
     return null;
@@ -61,7 +61,10 @@ export function JoinButton({
                 toast(t("Leave.success"));
                 router.refresh();
                 queryClient.invalidateQueries({
-                  queryKey: ["contest", contest.id],
+                  queryKey: ["contest", String(contest.id)],
+                });
+                queryClient.invalidateQueries({
+                  queryKey: ["contests", String(contest.id)],
                 });
               },
             },
@@ -94,7 +97,10 @@ export function JoinButton({
               toast(t("Join.success"));
               router.refresh();
               queryClient.invalidateQueries({
-                queryKey: ["contest", contest.id],
+                queryKey: ["contest", String(contest.id)],
+              });
+              queryClient.invalidateQueries({
+                queryKey: ["contests", String(contest.id)],
               });
             },
           },

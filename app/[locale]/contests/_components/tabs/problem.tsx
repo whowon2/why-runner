@@ -4,6 +4,9 @@ import * as RadioGroup from "@radix-ui/react-radio-group";
 import type { Session } from "better-auth";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
+import { ProblemDescription } from "@/app/[locale]/problems/_components/description";
+import { SubmissionList } from "@/components/submissions/list";
+import { UploadCode } from "@/components/submissions/upload";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -129,19 +132,22 @@ export function ProblemTab({
       {problem && (
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel className="pr-4 gap-4 flex flex-col">
-            <ProblemDescription problem={problem} />
+            <ProblemDescription problemId={problem.id} />
             {isUserOnContest && <SubmissionList problem={problem} />}
           </ResizablePanel>
-          {isUserOnContest && contest.end > new Date() && (
+          {isUserOnContest && contest.endDate > new Date() && (
             <Fragment>
               <ResizableHandle withHandle />
               <ResizablePanel className="pl-4">
                 <UploadCode
+                  session={session}
                   contest={contest}
                   problem={problem}
                   problemLetter={
                     letters[
-                      contest.problems.findIndex((p) => p.id === problem.id)
+                      contest.problems.findIndex(
+                        (p) => p.problemId === problem.id,
+                      )
                     ] ?? ""
                   }
                 />

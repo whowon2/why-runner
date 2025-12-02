@@ -128,12 +128,7 @@ export function CreateContestForm({
             <FormItem>
               <FormLabel>{t("duration")}</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="15"
-                  type="number"
-                  {...field}
-                  onChange={(e) => field.onChange(Number(e.target))}
-                />
+                <Input placeholder="15" type="number" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

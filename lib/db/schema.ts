@@ -108,12 +108,21 @@ export const contest = pgTable("contest", {
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
   createdBy: text("created_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const ProblemDifficulty = pgEnum("problem_difficulty", [
   "easy",
   "medium",
   "hard",
+]);
+
+export const Language = pgEnum("language", [
+  "c",
+  "cpp",
+  "java",
+  "python",
+  "rust",
 ]);
 
 export const problem = pgTable("problem", {
@@ -124,19 +133,31 @@ export const problem = pgTable("problem", {
   createdBy: text("created_by").notNull(),
   inputs: text("inputs").array().notNull(),
   outputs: text("outputs").array().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
 });
 
 export const submission = pgTable("submission", {
   id: serial("id").primaryKey(),
-  status: text("status").notNull(),
+  status: text("status").default("pending").notNull(),
   userId: text("user_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),
   problemId: serial("problem_id")
     .notNull()
     .references(() => problem.id, { onDelete: "cascade" }),
+  code: text("code").notNull(),
+  language: Language(),
+  questionLetter: text("question_letter").notNull(),
   contestId: serial("contest_id").notNull(),
-  createdAt: timestamp("created_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
 });
 
 export const submissionRelations = relations(submission, ({ one }) => ({
@@ -158,8 +179,8 @@ export const userOnContest = pgTable("user_on_contest", {
       onDelete: "cascade",
       onUpdate: "cascade",
     }),
-  score: integer("score").notNull(),
-  answered: text("answered").array().notNull(),
+  score: integer("score").notNull().default(0),
+  answered: text("answered").array().notNull().default([]),
 });
 
 export const problemOnContest = pgTable("problem_on_contest", {
@@ -217,7 +238,9 @@ export const problemOnContestRelations = relations(
 
 export type Contest = typeof contest.$inferSelect;
 export type Problem = typeof problem.$inferSelect;
+export type Submission = typeof submission.$inferSelect;
 export type ProblemDifficulty = (typeof ProblemDifficulty.enumValues)[number];
+export type Language = (typeof Language.enumValues)[number];
 
 export type UserOnContest = typeof userOnContest.$inferSelect;
 export type ProblemOnContest = typeof problemOnContest.$inferSelect & {
@@ -225,3 +248,4 @@ export type ProblemOnContest = typeof problemOnContest.$inferSelect & {
 };
 
 export type CreateProblemInput = typeof problem.$inferInsert;
+export type CreateSubmissionInput = typeof submission.$inferInsert;

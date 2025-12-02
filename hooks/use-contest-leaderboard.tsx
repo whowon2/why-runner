@@ -3,7 +3,7 @@ import { getContestLeaderboard } from "@/lib/actions/contest/get-contest-leaderb
 
 export const useContestLeaderboard = (contestId: number) =>
   useQuery({
-    queryKey: ["contests", contestId],
+    queryKey: ["contests", String(contestId)],
     queryFn: async () => {
       return await getContestLeaderboard(contestId);
     },

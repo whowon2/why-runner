@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useContest } from "@/hooks/use-contest";
 import { Link } from "@/i18n/navigation";
 import { ContestDescription } from "../description";
-import { JoinButton } from "../join";
+import { JoinButton } from "../join-and-leave";
 import { Leaderboard } from "../leaderboard";
 import { ContestManagement } from "../management";
 import { ContestStatus } from "../status";

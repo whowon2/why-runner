@@ -1,5 +1,8 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
+import { Loader, X } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -13,9 +16,6 @@ import { useProblems } from "@/hooks/use-problems";
 import { useRemoveProblemToContest as useRemoveProblemFromContest } from "@/hooks/use-remove-problem";
 import { Link, usePathname } from "@/i18n/navigation";
 import type { Contest, Problem, ProblemOnContest } from "@/lib/db/schema";
-import { useQueryClient } from "@tanstack/react-query";
-import { Loader, X } from "lucide-react";
-import { toast } from "sonner";
 
 export function EditContestProblems({
   contest,

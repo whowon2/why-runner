@@ -1,9 +1,9 @@
+import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
 import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/ui/sonner";
 import { UserDock } from "@/components/user-dock";
 import { Providers } from "@/providers";
-import type { Metadata } from "next";
-import { NextIntlClientProvider } from "next-intl";
 import "../globals.css";
 
 export const metadata: Metadata = {
