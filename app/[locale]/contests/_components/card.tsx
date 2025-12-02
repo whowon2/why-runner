@@ -3,11 +3,15 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
-import type { Contest } from "@/lib/db/schema";
+import type { Contest, UserOnContest } from "@/lib/db/schema";
 import { formatDuration } from "@/lib/format-duration";
 import { cn } from "@/lib/utils";
 
-export function ContestCard({ contest }: { contest: Contest }) {
+export function ContestCard({
+  contest,
+}: {
+  contest: Contest & { users: UserOnContest[] };
+}) {
   const [now, setNow] = useState(new Date());
   const t = useTranslations("ContestsPage");
 

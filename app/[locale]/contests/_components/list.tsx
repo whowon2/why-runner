@@ -1,18 +1,28 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { Contest } from "@/lib/db/schema";
+import { useContests } from "@/hooks/use-contests";
 import { ContestCard } from "./card";
-import { CreateContestDialog } from "./dialog";
+import { CreateContestDialog } from "./create/dialog";
 
-export function ContestList({ contests }: { contests: Contest[] }) {
+export function ContestList() {
   const t = useTranslations("ContestsPage");
+
+  const { data: contests, isPending, refetch: refetchContests } = useContests();
+
+  if (isPending) {
+    return <div>loading</div>;
+  }
+
+  if (!contests) {
+    return <div>error</div>;
+  }
 
   return (
     <div className="w-full max-w-7xl flex-1">
       <div className="flex justify-between">
         <h1 className="font-bold text-2xl">{t("title")}</h1>
-        <CreateContestDialog />
+        <CreateContestDialog refetchAction={refetchContests} />
       </div>
 
       {contests && contests.length === 0 && (

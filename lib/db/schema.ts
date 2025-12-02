@@ -1,5 +1,13 @@
 import { relations } from "drizzle-orm";
-import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  index,
+  integer,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -93,20 +101,69 @@ export const accountRelations = relations(account, ({ one }) => ({
 }));
 
 export const contest = pgTable("contest", {
-  id: text("id").primaryKey(),
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description").notNull(),
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
+  createdBy: text("created_by").notNull(),
 });
+
+export const problem = pgTable("problem", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+});
+
+export const submission = pgTable("submission", {
+  id: serial("id").primaryKey(),
+  status: text("status").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  problemId: serial("problem_id")
+    .notNull()
+    .references(() => problem.id, { onDelete: "cascade" }),
+  contestId: serial("contest_id").notNull(),
+  createdAt: timestamp("created_at").notNull(),
+});
+
+export const submissionRelations = relations(submission, ({ one }) => ({
+  user: one(user, {
+    fields: [submission.userId],
+    references: [user.id],
+  }),
+  problem: one(problem, {
+    fields: [submission.problemId],
+    references: [problem.id],
+  }),
+}));
 
 export const userOnContest = pgTable("user_on_contest", {
   userId: text("user_id").notNull(),
-  contestId: text("contest_id").notNull(),
+  contestId: serial("contest_id")
+    .notNull()
+    .references(() => contest.id, {
+      onDelete: "cascade",
+    }),
+  score: integer("score").notNull(),
+});
+
+export const problemOnContest = pgTable("problem_on_contest", {
+  problemId: serial("problem_id").notNull(),
+  contestId: serial("contest_id")
+    .notNull()
+    .references(() => contest.id, {
+      onDelete: "cascade",
+    }),
 });
 
 export const contestRelations = relations(contest, ({ many }) => ({
   users: many(userOnContest),
+  problems: many(problemOnContest),
+}));
+
+export const problemRelations = relations(problem, ({ many }) => ({
+  contests: many(problemOnContest),
 }));
 
 export const userOnContestRelations = relations(userOnContest, ({ one }) => ({
@@ -120,8 +177,24 @@ export const userOnContestRelations = relations(userOnContest, ({ one }) => ({
   }),
 }));
 
-export type UserOnContest = typeof userOnContest.$inferSelect;
+export const problemOnContestRelations = relations(
+  problemOnContest,
+  ({ one }) => ({
+    problem: one(problem, {
+      fields: [problemOnContest.problemId],
+      references: [problem.id],
+    }),
+    contest: one(contest, {
+      fields: [problemOnContest.contestId],
+      references: [contest.id],
+    }),
+  }),
+);
 
-export type Contest = typeof contest.$inferSelect & {
-  users: UserOnContest[];
+export type Contest = typeof contest.$inferSelect;
+export type Problem = typeof problem.$inferSelect;
+
+export type UserOnContest = typeof userOnContest.$inferSelect;
+export type ProblemOnContest = typeof problemOnContest.$inferSelect & {
+  problem: Problem;
 };

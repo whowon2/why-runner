@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { Session } from "better-auth";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -16,9 +17,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useCreateContest } from "@/hooks/use-create-contest";
 
 const formSchema = z.object({
-  duration: z.coerce.number().min(15),
   name: z.string().min(2).max(50),
   startDate: z.string().refine(
     (dateStr) => {
@@ -29,36 +30,47 @@ const formSchema = z.object({
       message: "Start Date must be in the future",
     },
   ),
+  duration: z.string(),
 });
 
 export function CreateContestForm({
   onSuccessAction,
+  session,
 }: {
   onSuccessAction: () => void;
+  session: Session;
 }) {
   const t = useTranslations("ContestsPage.createDialog");
-  const { mutate: createContest, isPending } = api.contest.create.useMutation();
+  const { mutate: createContest, isPending } = useCreateContest();
 
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
-      duration: 15,
       name: "",
       startDate: "",
+      duration: "15",
     },
     resolver: zodResolver(formSchema),
   });
+
+  if (!session) {
+    return <div>You must be logged in to create a contest</div>;
+  }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
 
     const startDate = new Date(values.startDate);
-    const endDate = new Date(startDate.getTime() + values.duration * 60 * 1000);
+    const endDate = new Date(
+      startDate.getTime() + Number(values.duration) * 60 * 1000,
+    );
 
     createContest(
       {
-        endDate,
         name: values.name,
-        startDate,
+        description: "",
+        startDate: new Date(values.startDate),
+        endDate: endDate,
+        createdBy: session.userId,
       },
       {
         onError: (error) => {
@@ -116,7 +128,12 @@ export function CreateContestForm({
             <FormItem>
               <FormLabel>{t("duration")}</FormLabel>
               <FormControl>
-                <Input placeholder="15" type="number" {...field} />
+                <Input
+                  placeholder="15"
+                  type="number"
+                  {...field}
+                  onChange={(e) => field.onChange(Number(e.target))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -14,6 +14,14 @@ CREATE TABLE "account" (
 	"updated_at" timestamp NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "contest" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	"description" text NOT NULL,
+	"start_date" timestamp NOT NULL,
+	"end_date" timestamp NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "session" (
 	"id" text PRIMARY KEY NOT NULL,
 	"expires_at" timestamp NOT NULL,
@@ -37,6 +45,11 @@ CREATE TABLE "user" (
 	CONSTRAINT "user_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
+CREATE TABLE "user_on_contest" (
+	"user_id" text NOT NULL,
+	"contest_id" serial NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "verification" (
 	"id" text PRIMARY KEY NOT NULL,
 	"identifier" text NOT NULL,
@@ -48,6 +61,7 @@ CREATE TABLE "verification" (
 --> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_on_contest" ADD CONSTRAINT "user_on_contest_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "public"."contest"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "account_userId_idx" ON "account" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "session_userId_idx" ON "session" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "verification_identifier_idx" ON "verification" USING btree ("identifier");

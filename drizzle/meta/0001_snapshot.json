@@ -1,6 +1,6 @@
 {
-  "id": "1044e637-28f0-4a0e-9d51-a59dd4876d95",
-  "prevId": "643be785-dc8f-4b3c-a9b8-8f3d479a75cd",
+  "id": "78b197a6-4727-43d0-aa3c-0acca07ea36a",
+  "prevId": "6ffd1c57-a27f-4f64-9cb9-8dd20ec2827e",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -128,7 +128,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "serial",
           "primaryKey": true,
           "notNull": true
         },
@@ -155,10 +155,76 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.problem": {
+      "name": "problem",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.problem_on_contest": {
+      "name": "problem_on_contest",
+      "schema": "",
+      "columns": {
+        "problem_id": {
+          "name": "problem_id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contest_id": {
+          "name": "contest_id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "problem_on_contest_contest_id_contest_id_fk": {
+          "name": "problem_on_contest_contest_id_contest_id_fk",
+          "tableFrom": "problem_on_contest",
+          "tableTo": "contest",
+          "columnsFrom": ["contest_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -319,6 +385,47 @@
           "columns": ["email"]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_on_contest": {
+      "name": "user_on_contest",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contest_id": {
+          "name": "contest_id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "score": {
+          "name": "score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_on_contest_contest_id_contest_id_fk": {
+          "name": "user_on_contest_contest_id_contest_id_fk",
+          "tableFrom": "user_on_contest",
+          "tableTo": "contest",
+          "columnsFrom": ["contest_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

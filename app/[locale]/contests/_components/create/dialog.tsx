@@ -10,11 +10,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { CreateContestForm } from "./create/form";
+import { authClient } from "@/lib/auth-client";
+import { CreateContestForm } from "./form";
 
-export function CreateContestDialog() {
+export function CreateContestDialog({
+  refetchAction,
+}: {
+  refetchAction: () => void;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("ContestsPage.createDialog");
+
+  const { data: session } = authClient.useSession();
+
+  if (!session) {
+    return null;
+  }
 
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
@@ -26,9 +37,10 @@ export function CreateContestDialog() {
           <DialogTitle>{t("title")}</DialogTitle>
         </DialogHeader>
         <CreateContestForm
+          session={session.session}
           onSuccessAction={() => {
             setIsOpen(false);
-            // TODO invalidate query
+            refetchAction();
           }}
         />
       </DialogContent>
