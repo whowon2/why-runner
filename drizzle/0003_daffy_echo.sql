@@ -1,0 +1,1 @@
+ALTER TABLE "user_on_contest" ALTER COLUMN "answered" SET DEFAULT '{}';

@@ -1,6 +1,6 @@
 {
-  "id": "22dbb3ba-1cec-4f9c-9418-dab49f16daec",
-  "prevId": "ac0e2e7c-270a-4e8c-9bd1-f5a89357f53d",
+  "id": "aebbb6ff-df5d-4cb7-b88b-c229f1a8d225",
+  "prevId": "30331c60-692d-40ac-8d07-fff182d30925",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -161,6 +161,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -217,6 +224,20 @@
           "type": "text[]",
           "primaryKey": false,
           "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -379,7 +400,8 @@
           "name": "status",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'pending'"
         },
         "user_id": {
           "name": "user_id",
@@ -393,6 +415,25 @@
           "primaryKey": false,
           "notNull": true
         },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "language": {
+          "name": "language",
+          "type": "language",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "question_letter": {
+          "name": "question_letter",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "contest_id": {
           "name": "contest_id",
           "type": "serial",
@@ -403,7 +444,15 @@
           "name": "created_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -415,7 +464,7 @@
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "cascade"
         },
         "submission_problem_id_problem_id_fk": {
           "name": "submission_problem_id_problem_id_fk",
@@ -517,13 +566,15 @@
           "name": "score",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": 0
         },
         "answered": {
           "name": "answered",
           "type": "text[]",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'{}'"
         }
       },
       "indexes": {},
@@ -613,6 +664,11 @@
     }
   },
   "enums": {
+    "public.language": {
+      "name": "language",
+      "schema": "public",
+      "values": ["c", "cpp", "java", "python", "rust"]
+    },
     "public.problem_difficulty": {
       "name": "problem_difficulty",
       "schema": "public",

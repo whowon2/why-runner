@@ -1,6 +1,6 @@
 {
-  "id": "22dbb3ba-1cec-4f9c-9418-dab49f16daec",
-  "prevId": "ac0e2e7c-270a-4e8c-9bd1-f5a89357f53d",
+  "id": "b92f9f21-b7a2-47dc-b2b9-d7ba65d99aac",
+  "prevId": "267519f1-bf1c-4a0a-b138-3ef1186607c0",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -517,13 +517,15 @@
           "name": "score",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": 0
         },
         "answered": {
           "name": "answered",
           "type": "text[]",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'{}'"
         }
       },
       "indexes": {},

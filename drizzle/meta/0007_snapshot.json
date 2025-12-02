@@ -1,6 +1,6 @@
 {
-  "id": "22dbb3ba-1cec-4f9c-9418-dab49f16daec",
-  "prevId": "ac0e2e7c-270a-4e8c-9bd1-f5a89357f53d",
+  "id": "e9865878-f91a-486e-8371-8dc70058aec6",
+  "prevId": "ea1de8ca-9a24-4cff-9853-a2391119f6ce",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -385,11 +385,31 @@
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'anonymous'"
         },
         "problem_id": {
           "name": "problem_id",
           "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "language": {
+          "name": "language",
+          "type": "language",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "question_letter": {
+          "name": "question_letter",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -517,13 +537,15 @@
           "name": "score",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": 0
         },
         "answered": {
           "name": "answered",
           "type": "text[]",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'{}'"
         }
       },
       "indexes": {},
@@ -613,6 +635,11 @@
     }
   },
   "enums": {
+    "public.language": {
+      "name": "language",
+      "schema": "public",
+      "values": ["c", "cpp", "java", "python", "rust"]
+    },
     "public.problem_difficulty": {
       "name": "problem_difficulty",
       "schema": "public",

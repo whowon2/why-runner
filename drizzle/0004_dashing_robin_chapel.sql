@@ -1,0 +1,1 @@
+CREATE TYPE "public"."language" AS ENUM('c', 'cpp', 'java', 'python', 'rust');

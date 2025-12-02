@@ -1,6 +1,6 @@
 {
-  "id": "22dbb3ba-1cec-4f9c-9418-dab49f16daec",
-  "prevId": "ac0e2e7c-270a-4e8c-9bd1-f5a89357f53d",
+  "id": "d94a21a0-1096-44c4-bdcc-a601e02a7e45",
+  "prevId": "5642fd2c-5526-4d07-8d6c-9fbb930f781b",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -385,11 +385,18 @@
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'anonymous'"
         },
         "problem_id": {
           "name": "problem_id",
           "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -517,13 +524,15 @@
           "name": "score",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": 0
         },
         "answered": {
           "name": "answered",
           "type": "text[]",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'{}'"
         }
       },
       "indexes": {},
@@ -613,6 +622,11 @@
     }
   },
   "enums": {
+    "public.language": {
+      "name": "language",
+      "schema": "public",
+      "values": ["c", "cpp", "java", "python", "rust"]
+    },
     "public.problem_difficulty": {
       "name": "problem_difficulty",
       "schema": "public",
