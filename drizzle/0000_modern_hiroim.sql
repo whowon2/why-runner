@@ -1,3 +1,4 @@
+CREATE TYPE "public"."problem_difficulty" AS ENUM('easy', 'medium', 'hard');--> statement-breakpoint
 CREATE TABLE "account" (
 	"id" text PRIMARY KEY NOT NULL,
 	"account_id" text NOT NULL,
@@ -19,7 +20,20 @@ CREATE TABLE "contest" (
 	"name" text NOT NULL,
 	"description" text NOT NULL,
 	"start_date" timestamp NOT NULL,
-	"end_date" timestamp NOT NULL
+	"end_date" timestamp NOT NULL,
+	"created_by" text NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "problem" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"title" text NOT NULL,
+	"difficulty" "problem_difficulty",
+	"created_by" text NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "problem_on_contest" (
+	"problem_id" serial NOT NULL,
+	"contest_id" serial NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "session" (
@@ -32,6 +46,15 @@ CREATE TABLE "session" (
 	"user_agent" text,
 	"user_id" text NOT NULL,
 	CONSTRAINT "session_token_unique" UNIQUE("token")
+);
+--> statement-breakpoint
+CREATE TABLE "submission" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"status" text NOT NULL,
+	"user_id" text NOT NULL,
+	"problem_id" serial NOT NULL,
+	"contest_id" serial NOT NULL,
+	"created_at" timestamp NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "user" (
@@ -47,7 +70,9 @@ CREATE TABLE "user" (
 --> statement-breakpoint
 CREATE TABLE "user_on_contest" (
 	"user_id" text NOT NULL,
-	"contest_id" serial NOT NULL
+	"contest_id" serial NOT NULL,
+	"score" integer NOT NULL,
+	"answered" text[] NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "verification" (
@@ -60,8 +85,12 @@ CREATE TABLE "verification" (
 );
 --> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "problem_on_contest" ADD CONSTRAINT "problem_on_contest_problem_id_problem_id_fk" FOREIGN KEY ("problem_id") REFERENCES "public"."problem"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "problem_on_contest" ADD CONSTRAINT "problem_on_contest_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "public"."contest"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "user_on_contest" ADD CONSTRAINT "user_on_contest_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "public"."contest"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "submission" ADD CONSTRAINT "submission_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "submission" ADD CONSTRAINT "submission_problem_id_problem_id_fk" FOREIGN KEY ("problem_id") REFERENCES "public"."problem"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_on_contest" ADD CONSTRAINT "user_on_contest_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "public"."contest"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 CREATE INDEX "account_userId_idx" ON "account" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "session_userId_idx" ON "session" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "verification_identifier_idx" ON "verification" USING btree ("identifier");

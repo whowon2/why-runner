@@ -3,6 +3,7 @@ import {
   boolean,
   index,
   integer,
+  pgEnum,
   pgTable,
   serial,
   text,
@@ -109,9 +110,17 @@ export const contest = pgTable("contest", {
   createdBy: text("created_by").notNull(),
 });
 
+export const ProblemDifficulty = pgEnum("problem_difficulty", [
+  "easy",
+  "medium",
+  "hard",
+]);
+
 export const problem = pgTable("problem", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
+  difficulty: ProblemDifficulty(),
+  createdBy: text("created_by").notNull(),
 });
 
 export const submission = pgTable("submission", {
@@ -147,10 +156,16 @@ export const userOnContest = pgTable("user_on_contest", {
       onUpdate: "cascade",
     }),
   score: integer("score").notNull(),
+  answered: text("answered").array().notNull(),
 });
 
 export const problemOnContest = pgTable("problem_on_contest", {
-  problemId: serial("problem_id").notNull(),
+  problemId: serial("problem_id")
+    .notNull()
+    .references(() => problem.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
   contestId: serial("contest_id")
     .notNull()
     .references(() => contest.id, {
@@ -164,8 +179,12 @@ export const contestRelations = relations(contest, ({ many }) => ({
   problems: many(problemOnContest),
 }));
 
-export const problemRelations = relations(problem, ({ many }) => ({
+export const problemRelations = relations(problem, ({ many, one }) => ({
   contests: many(problemOnContest),
+  user: one(user, {
+    fields: [problem.createdBy],
+    references: [user.id],
+  }),
 }));
 
 export const userOnContestRelations = relations(userOnContest, ({ one }) => ({
@@ -195,8 +214,11 @@ export const problemOnContestRelations = relations(
 
 export type Contest = typeof contest.$inferSelect;
 export type Problem = typeof problem.$inferSelect;
+export type ProblemDifficulty = (typeof ProblemDifficulty.enumValues)[number];
 
 export type UserOnContest = typeof userOnContest.$inferSelect;
 export type ProblemOnContest = typeof problemOnContest.$inferSelect & {
   problem: Problem;
 };
+
+export type CreateProblemInput = typeof problem.$inferInsert;

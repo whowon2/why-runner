@@ -42,7 +42,7 @@ export function ProblemTab({
     (userOnContest) => userOnContest.userId === session.userId,
   );
 
-  // const questionsAnswered = isUserOnContest?.answers ?? [];
+  const questionsAnswered = isUserOnContest?.answered ?? [];
 
   function handleSelectProblem(value: string) {
     const prob = contest.problems.find((p) => p.problemId === Number(value));
@@ -59,7 +59,6 @@ export function ProblemTab({
     value: p.problemId,
   }));
 
-  // On mount, check if URL has problem selected
   useEffect(() => {
     const problemId = searchParams.get("problem");
     if (problemId) {
@@ -72,7 +71,6 @@ export function ProblemTab({
     }
   }, [searchParams, contest.problems]);
 
-  // 2. This effect checks the time and updates the state to trigger a re-render
   useEffect(() => {
     if (isContestStarted) {
       return;
@@ -81,14 +79,13 @@ export function ProblemTab({
     const interval = setInterval(() => {
       if (new Date() >= contest.startDate) {
         setIsContestStarted(true);
-        clearInterval(interval); // 5. Cleanup the interval
+        clearInterval(interval);
       }
     }, 1000);
 
-    return () => clearInterval(interval); // Cleanup on unmount
+    return () => clearInterval(interval);
   }, [isContestStarted, contest.startDate]);
 
-  // 3. Use the state for conditional rendering
   if (!isContestStarted) {
     return (
       <div className="w-full flex items-center justify-center mt-10 font-bold text-xl">

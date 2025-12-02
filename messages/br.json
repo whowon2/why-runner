@@ -78,13 +78,13 @@
       "my": "Meus",
       "difficulty": "Dificuldade",
       "Difficults": {
-        "HARD": "DIFÍCIL",
-        "MEDIUM": "MÉDIO",
-        "EASY": "FÁCIL",
+        "hard": "difícil",
+        "medium": "médio",
+        "easy": "fácil",
         "none": "",
-        "ALL": "Todas",
-        "undefined": "Todas",
-        "null": "Todas"
+        "all": "todas",
+        "undefined": "todas",
+        "null": "todas"
       }
     }
   },
@@ -161,9 +161,9 @@
     }
   },
   "Difficults": {
-    "HARD": "DIFÍCIL",
-    "MEDIUM": "MÉDIO",
-    "EASY": "FÁCIL",
+    "hard": "difícil",
+    "medium": "médio",
+    "easy": "fácil",
     "none": ""
   },
   "Languages": {

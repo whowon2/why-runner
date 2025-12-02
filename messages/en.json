@@ -78,13 +78,13 @@
       "my": "My",
       "difficulty": "Difficulty",
       "Difficults": {
-        "HARD": "HARD",
-        "MEDIUM": "MEDIUM",
-        "EASY": "EASY",
+        "hard": "hard",
+        "medium": "medium",
+        "easy": "easy",
         "none": "",
-        "ALL": "ALL",
-        "undefined": "ALL",
-        "null": "ALL"
+        "all": "all",
+        "undefined": "all",
+        "null": "all"
       }
     }
   },
@@ -161,9 +161,9 @@
     }
   },
   "Difficults": {
-    "HARD": "HARD",
-    "MEDIUM": "MEDIUM",
-    "EASY": "EASY",
+    "hard": "hard",
+    "medium": "medium",
+    "easy": "easy",
     "none": ""
   },
   "Languages": {

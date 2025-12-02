@@ -1,15 +1,9 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { ContestTabs } from "../_components/tabs/tabs";
+import { NewProblem } from "../_components/create";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: number }>;
-}) {
-  const { id } = await params;
-
+export default async function Page() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -18,5 +12,9 @@ export default async function Page({
     redirect("/auth/signin");
   }
 
-  return <ContestTabs session={session.session} id={id} />;
+  return (
+    <div>
+      <NewProblem session={session.session} />
+    </div>
+  );
 }
