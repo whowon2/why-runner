@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getContests } from "@/lib/actions/get-contests";
+import { getContests } from "@/lib/actions/contest/get-contests";
 
 export const useContests = () =>
   useQuery({

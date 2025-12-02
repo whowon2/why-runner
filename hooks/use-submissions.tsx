@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getSubmissions } from "@/lib/actions/get-submissions";
+import { getSubmissions } from "@/lib/actions/contest/get-submissions";
 
 export const useSubmissions = (contestId: number) =>
   useQuery({

@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { createContest } from "@/lib/actions/create-contest";
+import { createContest } from "@/lib/actions/contest/create-contest";
 import type { contest } from "@/lib/db/schema";
 
 type CreateContestInput = typeof contest.$inferInsert;

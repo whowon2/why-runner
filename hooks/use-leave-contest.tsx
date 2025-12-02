@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { leaveContest } from "@/lib/actions/leave-contest";
+import { leaveContest } from "@/lib/actions/contest/leave-contest";
 
 export type LeaveContestInput = {
   contestId: number;
