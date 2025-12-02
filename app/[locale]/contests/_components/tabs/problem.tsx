@@ -133,7 +133,13 @@ export function ProblemTab({
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel className="pr-4 gap-4 flex flex-col">
             <ProblemDescription problemId={problem.id} />
-            {isUserOnContest && <SubmissionList problem={problem} />}
+            {isUserOnContest && (
+              <SubmissionList
+                problem={problem}
+                contest={contest}
+                session={session}
+              />
+            )}
           </ResizablePanel>
           {isUserOnContest && contest.endDate > new Date() && (
             <Fragment>

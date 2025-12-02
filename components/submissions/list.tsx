@@ -1,7 +1,9 @@
 "use client";
 
+import type { Session } from "better-auth";
 import { RefreshCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { AIDialog } from "@/app/[locale]/contests/_components/ai-dialog";
 import {
   Accordion,
   AccordionContent,
@@ -12,17 +14,28 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProblemSubmissions } from "@/hooks/use-problem-submissions";
-import type { Problem } from "@/lib/db/schema";
+import type { Contest, Problem } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
-import { AIDialog } from "@/app/[locale]/contests/_components/ai-dialog";
 
-export function SubmissionList({ problem }: { problem: Problem }) {
+export function SubmissionList({
+  problem,
+  contest,
+  session,
+}: {
+  problem: Problem;
+  contest: Contest;
+  session: Session;
+}) {
   const t = useTranslations("ContestsPage.Tabs.Problem.Submissions");
   const {
     data: submissions,
     isPending,
     refetch: refetchSubmissions,
-  } = useProblemSubmissions({ problemId: problem.id });
+  } = useProblemSubmissions({
+    problemId: problem.id,
+    contestId: contest.id,
+    userId: session.userId,
+  });
 
   if (isPending) {
     return <Skeleton className="h-20 w-full" />;
@@ -91,22 +104,6 @@ export function SubmissionList({ problem }: { problem: Problem }) {
 
 function SubmissionDetails({ output }: { output: string }) {
   console.log(output);
-  console.log(JSON.parse(output));
 
-  const details: {
-    passed: boolean;
-    tests: string[];
-    error: string;
-  } = JSON.parse(output);
-
-  return (
-    <div>
-      {details.tests?.map((t, idx) => (
-        <div key={idx}>
-          Test {idx}: {t}
-        </div>
-      ))}
-      {details.error}
-    </div>
-  );
+  return <div>{output}</div>;
 }

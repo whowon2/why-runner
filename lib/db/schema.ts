@@ -143,15 +143,16 @@ export const problem = pgTable("problem", {
 export const submission = pgTable("submission", {
   id: serial("id").primaryKey(),
   status: text("status").default("pending").notNull(),
+  code: text("code").notNull(),
+  language: Language(),
+  questionLetter: text("question_letter").notNull(),
+  output: text("output"),
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),
   problemId: serial("problem_id")
     .notNull()
     .references(() => problem.id, { onDelete: "cascade" }),
-  code: text("code").notNull(),
-  language: Language(),
-  questionLetter: text("question_letter").notNull(),
   contestId: serial("contest_id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")

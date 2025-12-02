@@ -20,8 +20,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Problem, Submission } from "@/lib/db/schema";
 import { useAIHelp } from "@/hooks/use-ai-help";
+import type { Problem, Submission } from "@/lib/db/schema";
 
 export function AIDialog({
   submission,

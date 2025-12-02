@@ -31,7 +31,7 @@ export function EditContestProblems({
     useAddProblemToContest();
 
   const queryClient = useQueryClient();
-  console.log("client", queryClient);
+
   const pathname = usePathname();
 
   function handleProblemSelect(id: string) {

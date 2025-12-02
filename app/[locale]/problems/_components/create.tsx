@@ -40,6 +40,8 @@ const formSchema = z.object({
 });
 
 export function NewProblem({ session }: { session: Session }) {
+  const queryClient = useQueryClient();
+
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
       description:
@@ -52,7 +54,6 @@ export function NewProblem({ session }: { session: Session }) {
     shouldFocusError: false,
   });
 
-  // Using useFieldArray to handle dynamic input and output fields
   const inputs = useFieldArray({
     control: form.control,
     name: "inputs" as never,
@@ -68,8 +69,6 @@ export function NewProblem({ session }: { session: Session }) {
   const { mutate: createProblem, isPending } = useCreateProblem();
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const queryClient = useQueryClient();
-
     createProblem(
       {
         createdBy: session.userId,
@@ -87,7 +86,7 @@ export function NewProblem({ session }: { session: Session }) {
           });
         },
         onSettled() {
-          queryClient.invalidateQueries({ queryKey: ["problems", "contests"] });
+          queryClient.invalidateQueries({ queryKey: ["problems"] });
         },
         onSuccess() {
           toast("Problem added");
