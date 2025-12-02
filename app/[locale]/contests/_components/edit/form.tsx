@@ -44,7 +44,7 @@ export function EditContestForm({
     updateContest(
       {
         contestId: contest.id,
-        name: values.name,
+        contest: { ...values },
       },
       {
         onError: (error) => {

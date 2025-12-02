@@ -43,6 +43,13 @@
       "when": 1764686428025,
       "tag": "0005_natural_moondragon",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1764688644231,
+      "tag": "0006_ordinary_infant_terrible",
+      "breakpoints": true
     }
   ]
 }

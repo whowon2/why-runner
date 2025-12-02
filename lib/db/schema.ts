@@ -144,6 +144,7 @@ export const userOnContest = pgTable("user_on_contest", {
     .notNull()
     .references(() => contest.id, {
       onDelete: "cascade",
+      onUpdate: "cascade",
     }),
   score: integer("score").notNull(),
 });
@@ -154,6 +155,7 @@ export const problemOnContest = pgTable("problem_on_contest", {
     .notNull()
     .references(() => contest.id, {
       onDelete: "cascade",
+      onUpdate: "cascade",
     }),
 });
 

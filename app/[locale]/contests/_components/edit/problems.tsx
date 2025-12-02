@@ -10,6 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAddProblemToContest } from "@/hooks/use-add-problem";
+import { useProblems } from "@/hooks/use-problems";
+import { useRemoveProblemToContest as useRemoveProblemFromContest } from "@/hooks/use-remove-problem";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import type { Contest, Problem, ProblemOnContest } from "@/lib/db/schema";
 
@@ -22,25 +25,20 @@ export function EditContestProblems({
 }) {
   const { data: problems } = useProblems();
 
-  const { mutate: addProblem, isPending: isAddPending } = useAddProblem();
+  const { mutate: addProblem, isPending: isAddPending } =
+    useAddProblemToContest();
 
   const router = useRouter();
   const pathname = usePathname();
 
-  function handleProblemSelect(id: number) {
+  function handleProblemSelect(id: string) {
     addProblem(
-      { contestId: contest.id, problemId: id },
+      { contestId: contest.id, problemId: Number(id) },
       {
         onError(error) {
-          if (error instanceof TRPCClientError) {
-            toast.error("Failed to add problem", {
-              description: error.message,
-            });
-          } else {
-            toast.error("Unexpected error", {
-              description: "Something went wrong.",
-            });
-          }
+          toast.error("Failed to add problem", {
+            description: error.message,
+          });
         },
         onSuccess() {
           toast.success("Problem added");
@@ -63,9 +61,14 @@ export function EditContestProblems({
           </SelectTrigger>
           <SelectContent>
             {problems
-              ?.filter((p) => !contest.problems.find((cp) => cp.id === p.id))
+              ?.filter(
+                (p) =>
+                  !contest.problems.find(
+                    (probOnCont) => probOnCont.problemId === p.id,
+                  ),
+              )
               .map((p) => (
-                <SelectItem className="w-full" key={p.id} value={p.id}>
+                <SelectItem className="w-full" key={p.id} value={String(p.id)}>
                   {p.title}
                 </SelectItem>
               ))}
@@ -76,13 +79,16 @@ export function EditContestProblems({
         </Link>
       </div>
       <div className="flex flex-col gap-2">
-        {contest.problems.map((p) => (
+        {contest.problems.map((probOnCont) => (
           <div
             className="flex items-center justify-between rounded border p-2"
-            key={p.id}
+            key={probOnCont.problemId}
           >
-            <p>{p.title}</p>
-            <RemoveProblemButton contest={contest} problem={p} />
+            <p>{probOnCont.problem.title}</p>
+            <RemoveProblemButton
+              contest={contest}
+              problem={probOnCont.problem}
+            />
           </div>
         ))}
       </div>
@@ -98,7 +104,7 @@ function RemoveProblemButton({
   contest: Contest;
 }) {
   const { mutate: removeProblem, isPending: isRemovePending } =
-    useRemoveProblem();
+    useRemoveProblemFromContest();
   const router = useRouter();
 
   function handleRemoveProblem(id: number) {
@@ -106,15 +112,9 @@ function RemoveProblemButton({
       { contestId: contest.id, problemId: id },
       {
         onError(error) {
-          if (error instanceof TRPCClientError) {
-            toast.error("Failed to remove problem", {
-              description: error.message,
-            });
-          } else {
-            toast.error("Unexpected error", {
-              description: "Something went wrong.",
-            });
-          }
+          toast.error("Failed to remove problem", {
+            description: error.message,
+          });
         },
         onSuccess() {
           toast.success("Problem removed");
