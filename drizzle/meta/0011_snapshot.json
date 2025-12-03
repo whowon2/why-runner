@@ -110,12 +110,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -275,12 +271,8 @@
           "name": "problem_on_contest_problem_id_problem_id_fk",
           "tableFrom": "problem_on_contest",
           "tableTo": "problem",
-          "columnsFrom": [
-            "problem_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["problem_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -288,12 +280,8 @@
           "name": "problem_on_contest_contest_id_contest_id_fk",
           "tableFrom": "problem_on_contest",
           "tableTo": "contest",
-          "columnsFrom": [
-            "contest_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["contest_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -380,12 +368,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -395,9 +379,7 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -485,12 +467,8 @@
           "name": "submission_user_id_user_id_fk",
           "tableFrom": "submission",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -498,12 +476,8 @@
           "name": "submission_problem_id_problem_id_fk",
           "tableFrom": "submission",
           "tableTo": "problem",
-          "columnsFrom": [
-            "problem_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["problem_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -571,9 +545,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -617,12 +589,8 @@
           "name": "user_on_contest_contest_id_contest_id_fk",
           "tableFrom": "user_on_contest",
           "tableTo": "contest",
-          "columnsFrom": [
-            "contest_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["contest_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -705,22 +673,12 @@
     "public.language": {
       "name": "language",
       "schema": "public",
-      "values": [
-        "c",
-        "cpp",
-        "java",
-        "python",
-        "rust"
-      ]
+      "values": ["c", "cpp", "java", "python", "rust"]
     },
     "public.problem_difficulty": {
       "name": "problem_difficulty",
       "schema": "public",
-      "values": [
-        "easy",
-        "medium",
-        "hard"
-      ]
+      "values": ["easy", "medium", "hard"]
     }
   },
   "schemas": {},

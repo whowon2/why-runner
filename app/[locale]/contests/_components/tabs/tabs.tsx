@@ -1,6 +1,6 @@
 "use client";
 
-import type { Session } from "better-auth";
+import type { User } from "better-auth";
 import { ArrowLeft, Pencil, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { BreadCrumbs } from "@/components/breadcrumbs";
@@ -15,7 +15,7 @@ import { ContestManagement } from "../management";
 import { ContestStatus } from "../status";
 import { ProblemTab } from "./problem";
 
-export function ContestTabs({ id, session }: { id: number; session: Session }) {
+export function ContestTabs({ id, user }: { id: number; user: User }) {
   const { data: contest } = useContest(id);
   const t = useTranslations("ContestsPage");
 
@@ -33,7 +33,7 @@ export function ContestTabs({ id, session }: { id: number; session: Session }) {
     );
   }
 
-  const isCreatedByUser = contest.createdBy === session.userId;
+  const isCreatedByUser = contest.createdBy === user.id;
 
   return (
     <div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">
@@ -50,7 +50,7 @@ export function ContestTabs({ id, session }: { id: number; session: Session }) {
         <JoinButton
           contest={contest}
           isCreatedByUser={isCreatedByUser}
-          session={session}
+          user={user}
         />
       </div>
 
@@ -77,7 +77,7 @@ export function ContestTabs({ id, session }: { id: number; session: Session }) {
           >
             {t("Tabs.description")}
           </TabsTrigger>
-          {contest.createdBy === session?.userId && (
+          {contest.createdBy === user.id && (
             <TabsTrigger
               className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
               value="manage"
@@ -88,7 +88,7 @@ export function ContestTabs({ id, session }: { id: number; session: Session }) {
         </TabsList>
 
         <TabsContent className="flex w-full gap-4" value="problems">
-          <ProblemTab contest={contest} session={session} />
+          <ProblemTab contest={contest} user={user} />
         </TabsContent>
         <TabsContent value="leaderboard">
           <Leaderboard contest={contest} />
@@ -96,7 +96,7 @@ export function ContestTabs({ id, session }: { id: number; session: Session }) {
         <TabsContent value="description">
           <ContestDescription contest={contest} />
         </TabsContent>
-        {contest.createdBy === session?.userId && (
+        {contest.createdBy === user.id && (
           <TabsContent value="manage">
             <ContestManagement contest={contest} />
           </TabsContent>

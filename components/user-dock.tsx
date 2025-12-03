@@ -15,7 +15,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { usePathname } from "@/i18n/navigation";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { AvatarButton } from "./header/avatar-button";
 import { Dock, DockIcon } from "./ui/dock";
@@ -35,11 +35,11 @@ const Icons = {
 };
 
 export function UserDock() {
-  const { data: session } = authClient.useSession();
   const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const t = useTranslations();
   const pathname = usePathname();
+  const { data: session } = authClient.useSession();
 
   const DATA = {
     navbar: [
@@ -128,7 +128,7 @@ export function UserDock() {
           </DockIcon>
           {session ? (
             <DockIcon>
-              <AvatarButton />
+              <AvatarButton user={session.user} />
             </DockIcon>
           ) : (
             <Link href={"/auth/signin"}>

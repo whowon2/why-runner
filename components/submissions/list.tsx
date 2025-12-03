@@ -1,8 +1,9 @@
 "use client";
 
-import type { Session } from "better-auth";
+import type { User } from "better-auth";
 import { RefreshCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 import { AIDialog } from "@/app/[locale]/contests/_components/ai-dialog";
 import {
   Accordion,
@@ -16,16 +17,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useProblemSubmissions } from "@/hooks/use-problem-submissions";
 import type { Contest, Problem } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
-import { useMemo } from "react";
 
 export function SubmissionList({
   problem,
   contest,
-  session,
+  user,
 }: {
   problem: Problem;
   contest: Contest;
-  session: Session;
+  user: User;
 }) {
   const t = useTranslations("ContestsPage.Tabs.Problem.Submissions");
   const {
@@ -35,7 +35,7 @@ export function SubmissionList({
   } = useProblemSubmissions({
     problemId: problem.id,
     contestId: contest.id,
-    userId: session.userId,
+    userId: user.id,
   });
 
   if (isPending) {
@@ -129,7 +129,7 @@ function SubmissionDetails({ output }: { output: string | null }) {
         return parsed as JudgeReport;
       }
       return null;
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }, [output]);

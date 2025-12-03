@@ -2,7 +2,7 @@
 
 import Editor from "@monaco-editor/react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { Session } from "better-auth";
+import type { User } from "better-auth";
 import { FilePlus2, Save, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -28,12 +28,12 @@ import { useCreateSubmission } from "@/hooks/use-create-submission";
 import type { Contest, Language, Problem } from "@/lib/db/schema";
 
 export function UploadCode({
-  session,
+  user,
   problem,
   contest,
   problemLetter,
 }: {
-  session: Session;
+  user: User;
   problem: Problem;
   contest: Contest;
   problemLetter: string;
@@ -74,7 +74,7 @@ export function UploadCode({
         language,
         problemId: problem.id,
         questionLetter: problemLetter,
-        userId: session.userId,
+        userId: user.id,
       },
       {
         onError: (error) => {

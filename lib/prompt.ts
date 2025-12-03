@@ -1,4 +1,4 @@
-import { Problem, Submission } from "./db/schema";
+import type { Problem, Submission } from "./db/schema";
 
 export const getPrompt = (input: {
   submission: Submission;
@@ -30,7 +30,7 @@ Error Message (Stderr):
 ${f.error || "None"}
 `;
     }
-  } catch (e) {
+  } catch (_e) {
     // Fallback if output isn't JSON yet
     details = `Raw Output: ${input.submission.output}`;
   }

@@ -1,19 +1,10 @@
 "use server";
 
-import { and } from "drizzle-orm";
-import type { GetUserSubmissionsOnContest } from "@/hooks/use-problem-submissions";
 import { db } from "@/lib/db";
 
-export async function getContestSubmissions(
-  input: GetUserSubmissionsOnContest,
-) {
+export async function getContestSubmissions(input: { contestId: number }) {
   const submissions = await db.query.submission.findMany({
-    where: (submissions, { eq }) =>
-      and(
-        eq(submissions.problemId, input.problemId),
-        eq(submissions.contestId, input.contestId),
-        eq(submissions.userId, input.userId),
-      ),
+    where: (submissions, { eq }) => eq(submissions.contestId, input.contestId),
     with: { user: true, problem: true },
   });
 

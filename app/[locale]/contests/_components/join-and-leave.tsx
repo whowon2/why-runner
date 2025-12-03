@@ -1,7 +1,7 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import type { Session } from "better-auth";
+import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -12,13 +12,13 @@ import type { Contest, UserOnContest } from "@/lib/db/schema";
 
 export function JoinButton({
   contest,
-  session,
+  user,
   isCreatedByUser,
 }: {
   contest: Contest & {
     users: UserOnContest[];
   };
-  session: Session;
+  user: User;
   isCreatedByUser: boolean;
 }) {
   const t = useTranslations("ContestsPage.JoinButton");
@@ -28,9 +28,7 @@ export function JoinButton({
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const isUserInContest = contest.users.some(
-    (user) => user.userId === session?.userId,
-  );
+  const isUserInContest = contest.users.some((u) => u.userId === user.id);
 
   // if (isCreatedByUser) {
   //   return null;
@@ -45,12 +43,8 @@ export function JoinButton({
       <Button
         disabled={isLeavePending}
         onClick={() => {
-          if (!session) {
-            return;
-          }
-
           leaveContest(
-            { contestId: contest.id, userId: session.userId },
+            { contestId: contest.id, userId: user.id },
             {
               onError: (error) => {
                 toast.error(t("Leave.error"), {
@@ -81,12 +75,8 @@ export function JoinButton({
     <Button
       disabled={isJoinPending}
       onClick={() => {
-        if (!session) {
-          return;
-        }
-
         joinContest(
-          { contestId: contest.id, userId: session.userId },
+          { contestId: contest.id, userId: user.id },
           {
             onError: (error) => {
               toast.error(t("Join.error"), {

@@ -1,6 +1,7 @@
 "use client";
 
-import { Check, Globe, LogOut, User } from "lucide-react";
+import type { User } from "better-auth";
+import { Check, Globe, LogOut, User as UserIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -16,10 +17,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth/client";
 
-export function AvatarButton() {
-  const { data: session } = authClient.useSession();
+export function AvatarButton({ user }: { user: User }) {
   const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
@@ -29,7 +29,7 @@ export function AvatarButton() {
     router.replace(pathname, { locale });
   }
 
-  const initials = (session?.user.name ?? "")
+  const initials = (user.name ?? "")
     .split(" ")
     .map((name) => name[0])
     .join("");
@@ -38,7 +38,7 @@ export function AvatarButton() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild={true}>
         <Avatar className="cursor-pointer">
-          <AvatarImage src={session?.user?.image ?? ""} />
+          <AvatarImage src={user.image ?? ""} />
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -46,7 +46,7 @@ export function AvatarButton() {
         <DropdownMenuGroup>
           <Link href={"/user"}>
             <DropdownMenuItem>
-              <User />
+              <UserIcon />
               <span>{t("AvatarButton.profile")}</span>
             </DropdownMenuItem>
           </Link>

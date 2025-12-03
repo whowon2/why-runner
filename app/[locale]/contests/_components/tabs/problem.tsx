@@ -1,7 +1,7 @@
 "use client";
 
 import * as RadioGroup from "@radix-ui/react-radio-group";
-import type { Session } from "better-auth";
+import type { User } from "better-auth";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { ProblemDescription } from "@/app/[locale]/problems/_components/description";
@@ -23,10 +23,10 @@ import { letters } from "@/lib/letters";
 import { cn } from "@/lib/utils";
 
 export function ProblemTab({
-  session,
+  user,
   contest,
 }: {
-  session: Session;
+  user: User;
   contest: Contest & {
     problems: ProblemOnContest[];
     users: UserOnContest[];
@@ -42,7 +42,7 @@ export function ProblemTab({
   );
 
   const isUserOnContest = contest.users.find(
-    (userOnContest) => userOnContest.userId === session.userId,
+    (userOnContest) => userOnContest.userId === user.id,
   );
 
   const questionsAnswered = isUserOnContest?.answered ?? [];
@@ -134,11 +134,7 @@ export function ProblemTab({
           <ResizablePanel className="pr-4 gap-4 flex flex-col">
             <ProblemDescription problemId={problem.id} />
             {isUserOnContest && (
-              <SubmissionList
-                problem={problem}
-                contest={contest}
-                session={session}
-              />
+              <SubmissionList problem={problem} contest={contest} user={user} />
             )}
           </ResizablePanel>
           {isUserOnContest && contest.endDate > new Date() && (
@@ -146,7 +142,7 @@ export function ProblemTab({
               <ResizableHandle withHandle />
               <ResizablePanel className="pl-4">
                 <UploadCode
-                  session={session}
+                  user={user}
                   contest={contest}
                   problem={problem}
                   problemLetter={

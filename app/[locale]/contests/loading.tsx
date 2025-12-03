@@ -1,6 +1,5 @@
 import { BreadCrumbs } from "@/components/breadcrumbs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CreateContestDialog } from "./_components/create/dialog";
 
 export default async function Loading() {
   return (
@@ -10,7 +9,6 @@ export default async function Loading() {
       <div className="flex w-full max-w-7xl flex-col gap-4">
         <div className="flex justify-between">
           <h1 className="font-bold text-2xl">Torneios</h1>
-          <CreateContestDialog />
         </div>
 
         <div className="flex flex-col justify-between gap-1 rounded-lg border p-4">
