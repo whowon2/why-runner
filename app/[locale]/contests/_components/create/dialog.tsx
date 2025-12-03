@@ -1,5 +1,6 @@
 "use client";
 
+import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -10,22 +11,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { authClient } from "@/lib/auth/client";
 import { CreateContestForm } from "./form";
 
 export function CreateContestDialog({
+  user,
   refetchAction,
 }: {
+  user: User;
   refetchAction: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("ContestsPage.createDialog");
-
-  const { data: session } = authClient.useSession();
-
-  if (!session) {
-    return null;
-  }
 
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
@@ -37,7 +33,7 @@ export function CreateContestDialog({
           <DialogTitle>{t("title")}</DialogTitle>
         </DialogHeader>
         <CreateContestForm
-          session={session.session}
+          user={user}
           onSuccessAction={() => {
             setIsOpen(false);
             refetchAction();

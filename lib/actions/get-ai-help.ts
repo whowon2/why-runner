@@ -1,6 +1,7 @@
 "use server";
 
 import { GoogleGenAI } from "@google/genai";
+import { env } from "@/env";
 import type { Problem, Submission } from "../db/schema";
 import { getPrompt } from "../prompt";
 
@@ -11,7 +12,7 @@ export async function getAIHelp(
 ) {
   const prompt = getPrompt({ problem, submission, locale });
 
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY });
+  const ai = new GoogleGenAI({ apiKey: env.GEMINI_KEY });
 
   const response = await ai.models.generateContent({
     model: "gemini-2.0-flash",

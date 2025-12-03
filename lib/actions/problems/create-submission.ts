@@ -1,14 +1,15 @@
 "use server";
 
 import { SendMessageCommand, SQSClient } from "@aws-sdk/client-sqs";
+import { env } from "@/env";
 import { db } from "@/lib/db";
 import { type CreateSubmissionInput, submission } from "../../db/schema";
 
 const sqs = new SQSClient({
-  region: process.env.AWS_REGION!,
+  region: env.AWS_REGION,
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    accessKeyId: env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
   },
 });
 
@@ -24,7 +25,7 @@ export async function createSubmission(input: CreateSubmissionInput) {
 
   const result = await sqs.send(
     new SendMessageCommand({
-      QueueUrl: process.env.SQS_QUEUE_URL!,
+      QueueUrl: env.SQS_QUEUE_URL,
       MessageBody: JSON.stringify(message),
     }),
   );

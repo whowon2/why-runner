@@ -76,6 +76,7 @@ export function Safari({
             borderRadius: "0 0 11px 11px",
           }}
         >
+          {/** biome-ignore lint/performance/noImgElement: <ui lib> */}
           <img
             src={imageSrc}
             alt=""

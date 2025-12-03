@@ -16,7 +16,7 @@ export default function Page() {
   }
 
   return (
-    <div>
+    <div className="m-auto flex items-center justify-center">
       <Button onClick={signinWithGithub}>Github</Button>
     </div>
   );

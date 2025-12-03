@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Session } from "better-auth";
+import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -35,10 +35,10 @@ const formSchema = z.object({
 
 export function CreateContestForm({
   onSuccessAction,
-  session,
+  user,
 }: {
   onSuccessAction: () => void;
-  session: Session;
+  user: User;
 }) {
   const t = useTranslations("ContestsPage.createDialog");
   const { mutate: createContest, isPending } = useCreateContest();
@@ -51,10 +51,6 @@ export function CreateContestForm({
     },
     resolver: zodResolver(formSchema),
   });
-
-  if (!session) {
-    return <div>You must be logged in to create a contest</div>;
-  }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
@@ -70,7 +66,7 @@ export function CreateContestForm({
         description: "",
         startDate: new Date(values.startDate),
         endDate: endDate,
-        createdBy: session.userId,
+        createdBy: user.id,
       },
       {
         onError: (error) => {

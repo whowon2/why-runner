@@ -1,11 +1,12 @@
 "use client";
 
+import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
 import { useContests } from "@/hooks/use-contests";
 import { ContestCard } from "./card";
 import { CreateContestDialog } from "./create/dialog";
 
-export function ContestList() {
+export function ContestList({ user }: { user: User }) {
   const t = useTranslations("ContestsPage");
 
   const { data: contests, isPending, refetch: refetchContests } = useContests();
@@ -22,7 +23,7 @@ export function ContestList() {
     <div className="w-full max-w-7xl flex-1">
       <div className="flex justify-between">
         <h1 className="font-bold text-2xl">{t("title")}</h1>
-        <CreateContestDialog refetchAction={refetchContests} />
+        <CreateContestDialog refetchAction={refetchContests} user={user} />
       </div>
 
       {contests && contests.length === 0 && (
