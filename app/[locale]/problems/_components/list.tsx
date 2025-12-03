@@ -1,6 +1,6 @@
 "use client";
 
-import type { Session } from "better-auth";
+import type { Session, User } from "better-auth";
 import { Loader } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -27,7 +27,7 @@ interface ProblemFilters {
 
 const difficultyOptions: ProblemDifficulty[] = ["easy", "medium", "hard"];
 
-export function ProblemsList({ session }: { session: Session }) {
+export function ProblemsList({ user }: { user: User }) {
   const t = useTranslations("ProblemsPage");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -65,12 +65,12 @@ export function ProblemsList({ session }: { session: Session }) {
     if (!problems) return [];
 
     return problems.filter((p) => {
-      if (filters.my && p.createdBy !== session.userId) return false;
+      if (filters.my && p.createdBy !== user.id) return false;
       if (filters.difficulty && p.difficulty !== filters.difficulty)
         return false;
       return true;
     });
-  }, [problems, filters.difficulty, filters.my, session.userId]);
+  }, [problems, filters.difficulty, filters.my, user.id]);
 
   return (
     <div className="w-full max-w-7xl flex-1">

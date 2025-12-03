@@ -1,20 +1,12 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { NewProblem } from "../_components/create";
 
 export default async function Page() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    redirect("/auth/signin");
-  }
+  const user = await getCurrentUser({ redirectTo: "/auth/signin" });
 
   return (
     <div>
-      <NewProblem session={session.session} />
+      <NewProblem user={user} />
     </div>
   );
 }
