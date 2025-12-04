@@ -31,7 +31,7 @@ export default function Profile({ user }: { user: User }) {
             />
             <div className="flex flex-col">
               <div className="font-bold text-xl">{data.name}</div>
-              <div className="">{data.bio}</div>
+              <div className="">{data.bio ?? "Bio:"}</div>
             </div>
           </div>
         </CardContent>
