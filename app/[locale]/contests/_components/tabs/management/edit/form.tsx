@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -17,7 +18,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useUpdateContest } from "@/hooks/use-update-contest";
 import type { Contest, ProblemOnContest } from "@/lib/db/schema";
-import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),

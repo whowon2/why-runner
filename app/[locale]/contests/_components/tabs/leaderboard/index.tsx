@@ -32,8 +32,6 @@ export function Leaderboard({
 
   if (!leaderboard) return null;
 
-  leaderboard.sort((a, b) => b.score - a.score);
-
   return (
     <div className="flex flex-col gap-4">
       <Card className="max-h-[70vh]">
@@ -47,7 +45,7 @@ export function Leaderboard({
                     {letters[idx]}
                   </TableHead>
                 ))}
-                <TableHead className="text-right">{t("score")}</TableHead>
+                {/*<TableHead className="text-right">{t("score")}</TableHead>*/}
               </TableRow>
             </TableHeader>
             <TableBody>

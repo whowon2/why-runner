@@ -1,18 +1,13 @@
 "use client";
 
-import * as RadioGroup from "@radix-ui/react-radio-group";
 import type { User } from "better-auth";
-import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { ProblemDescription } from "@/app/[locale]/problems/_components/description";
-import { SubmissionList } from "@/components/submissions/list";
-import { UploadCode } from "@/components/submissions/upload";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { useRouter } from "@/i18n/navigation";
 import type {
   Contest,
   Problem,
@@ -20,7 +15,9 @@ import type {
   UserOnContest,
 } from "@/lib/db/schema";
 import { letters } from "@/lib/letters";
-import { cn } from "@/lib/utils";
+import { SelectProblem } from "./select-problem";
+import { SubmissionList } from "./submission-list";
+import { UploadCode } from "./upload";
 
 export function ProblemTab({
   user,
@@ -32,11 +29,7 @@ export function ProblemTab({
     users: UserOnContest[];
   };
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
   const [problem, setProblem] = useState<Problem | null>(null);
-  // 1. Add state to track if the contest has started
   const [isContestStarted, setIsContestStarted] = useState(
     () => new Date() >= contest.startDate,
   );
@@ -44,35 +37,6 @@ export function ProblemTab({
   const isUserOnContest = contest.users.find(
     (userOnContest) => userOnContest.userId === user.id,
   );
-
-  const questionsAnswered = isUserOnContest?.answered ?? [];
-
-  function handleSelectProblem(value: string) {
-    const prob = contest.problems.find((p) => p.problemId === Number(value));
-    if (prob) {
-      setProblem(prob.problem);
-      const params = new URLSearchParams(searchParams);
-      params.set("problem", value.toString());
-      router.replace(`?${params.toString()}`, { scroll: false });
-    }
-  }
-
-  const options = contest.problems.map((p, idx) => ({
-    label: letters[idx],
-    value: p.problemId,
-  }));
-
-  useEffect(() => {
-    const problemId = searchParams.get("problem");
-    if (problemId) {
-      const prob = contest.problems.find(
-        (p) => p.problemId === Number(problemId),
-      );
-      if (prob) {
-        setProblem(prob.problem);
-      }
-    }
-  }, [searchParams, contest.problems]);
 
   useEffect(() => {
     if (isContestStarted) {
@@ -107,28 +71,8 @@ export function ProblemTab({
 
   return (
     <div className="flex flex-col w-full gap-4">
-      <RadioGroup.Root
-        className="flex flex-wrap gap-2"
-        onValueChange={handleSelectProblem}
-        value={String(problem?.id) ?? ""}
-      >
-        {options.map((option) => (
-          <RadioGroup.Item
-            className={cn(
-              "cursor-pointer rounded px-4 py-2 ring-[1px] ring-border transition-all duration-200 hover:bg-secondary data-[state=checked]:ring-2 data-[state=checked]:ring-secondary",
-              {
-                "bg-green-500 text-primary-foreground": questionsAnswered.some(
-                  (answer) => answer === option.label,
-                ),
-              },
-            )}
-            key={option.value}
-            value={String(option.value)}
-          >
-            <span className="font-semibold tracking-tight">{option.label}</span>
-          </RadioGroup.Item>
-        ))}
-      </RadioGroup.Root>
+      <SelectProblem contest={contest} setProblem={setProblem} user={user} />
+
       {problem && (
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel className="pr-4 gap-4 flex flex-col">

@@ -2,7 +2,6 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
-  integer,
   pgEnum,
   pgTable,
   serial,
@@ -126,6 +125,12 @@ export const Language = pgEnum("language", [
   "rust",
 ]);
 
+export const SubmissionStatus = pgEnum("submission_status", [
+  "PENDING",
+  "PASSED",
+  "FAILED",
+]);
+
 export const problem = pgTable("problem", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
@@ -143,7 +148,7 @@ export const problem = pgTable("problem", {
 
 export const submission = pgTable("submission", {
   id: serial("id").primaryKey(),
-  status: text("status").default("pending").notNull(),
+  status: SubmissionStatus().default("PENDING").notNull(),
   code: text("code").notNull(),
   language: Language(),
   questionLetter: text("question_letter").notNull(),
@@ -181,7 +186,6 @@ export const userOnContest = pgTable("user_on_contest", {
       onDelete: "cascade",
       onUpdate: "cascade",
     }),
-  score: integer("score").notNull().default(0),
   answered: text("answered").array().notNull().default([]),
 });
 

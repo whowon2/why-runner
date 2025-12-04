@@ -1,7 +1,7 @@
 import { BreadCrumbs } from "@/components/breadcrumbs";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { ContestDescription } from "../_components/description";
-import { ContestTabs } from "../_components/tabs/tabs";
+import { ContestTabs } from "../_components/tabs";
 
 export default async function Page({
   params,

@@ -8,8 +8,6 @@ export async function getContestLeaderboard(contestId: number) {
     with: {
       user: true,
     },
-
-    orderBy: (uOc, { asc }) => [asc(uOc.score)],
   });
 
   return contests;
