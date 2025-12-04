@@ -1,23 +1,18 @@
 "use client";
 
-import type { User } from "better-auth";
-import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useContests } from "@/hooks/use-contests";
 import { Link } from "@/i18n/navigation";
-import { ContestCard } from "./card";
-import { CreateContestDialog } from "./create/dialog";
+import type { User } from "better-auth";
 import { Loader } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { ContestCard } from "./card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function ContestList({ user }: { user: User }) {
   const t = useTranslations("ContestsPage");
 
   const { data: contests, isPending } = useContests();
-
-  if (!contests) {
-    return <div>error</div>;
-  }
 
   return (
     <div className="w-full max-w-7xl flex-1">
@@ -35,10 +30,16 @@ export function ContestList({ user }: { user: User }) {
       )}
 
       {isPending ? (
-        <Loader className="animate-spin w-full mt-8" />
+        <div className="flex flex-col gap-4 py-4">
+          <Skeleton className="h-36 w-full" />
+          <Skeleton className="h-36 w-full" />
+          <Skeleton className="h-36 w-full" />
+          <Skeleton className="h-36 w-full" />
+          <Skeleton className="h-36 w-full" />
+        </div>
       ) : (
         <div className="flex flex-col gap-4 py-4">
-          {contests.map((contest) => (
+          {contests?.map((contest) => (
             <ContestCard contest={contest} key={contest.id} />
           ))}
         </div>
