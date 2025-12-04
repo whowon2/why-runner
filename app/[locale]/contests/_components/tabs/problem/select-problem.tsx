@@ -1,23 +1,23 @@
+import { useRouter } from "@/i18n/navigation";
+import {
+  problem,
+  type Contest,
+  type Problem,
+  type ProblemOnContest,
+  type UserOnContest,
+} from "@/lib/db/schema";
+import { letters } from "@/lib/letters";
+import { cn, isProblemSolved as isProblemSolved } from "@/lib/utils";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import type { User } from "better-auth";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { useContestSubmissions } from "@/hooks/use-contest-submissions";
-import { useRouter } from "@/i18n/navigation";
-import {
-  type Contest,
-  type Problem,
-  type ProblemOnContest,
-  problem,
-  type UserOnContest,
-} from "@/lib/db/schema";
-import { letters } from "@/lib/letters";
-import { cn } from "@/lib/utils";
 
 export function SelectProblem({
   contest,
   setProblem,
   user,
+  solved,
 }: {
   contest: Contest & {
     problems: ProblemOnContest[];
@@ -25,12 +25,10 @@ export function SelectProblem({
   };
   setProblem: (problem: Problem) => void;
   user: User;
+  solved: Problem[];
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { data: submissions } = useContestSubmissions({
-    contestId: contest.id,
-  });
 
   const options = contest.problems.map((p, idx) => ({
     label: letters[idx],
@@ -45,19 +43,6 @@ export function SelectProblem({
       params.set("problem", value.toString());
       router.replace(`?${params.toString()}`, { scroll: false });
     }
-  }
-
-  function isProblemAnswered(problemId: number) {
-    const solution = submissions?.find(
-      (sub) =>
-        sub.status === "PASSED" &&
-        sub.userId === user.id &&
-        sub.problemId === problemId,
-    );
-
-    if (solution) return true;
-
-    return false;
   }
 
   useEffect(() => {
@@ -83,8 +68,9 @@ export function SelectProblem({
           className={cn(
             "cursor-pointer rounded px-4 py-2 ring-[1px] ring-border transition-all duration-200 hover:bg-secondary data-[state=checked]:ring-2 data-[state=checked]:ring-secondary",
             {
-              "bg-green-500 text-primary-foreground": isProblemAnswered(
+              "bg-green-500 text-primary-foreground": isProblemSolved(
                 option.value,
+                solved,
               ),
             },
           )}

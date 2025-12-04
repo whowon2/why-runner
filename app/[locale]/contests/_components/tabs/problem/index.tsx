@@ -18,6 +18,8 @@ import { letters } from "@/lib/letters";
 import { SelectProblem } from "./select-problem";
 import { SubmissionList } from "./submission-list";
 import { UploadCode } from "./upload";
+import { useContestSubmissions } from "@/hooks/use-contest-submissions";
+import { isProblemSolved } from "@/lib/utils";
 
 export function ProblemTab({
   user,
@@ -29,6 +31,9 @@ export function ProblemTab({
     users: UserOnContest[];
   };
 }) {
+  const { data: submissions } = useContestSubmissions({
+    contestId: contest.id,
+  });
   const [problem, setProblem] = useState<Problem | null>(null);
   const [isContestStarted, setIsContestStarted] = useState(
     () => new Date() >= contest.startDate,
@@ -69,9 +74,19 @@ export function ProblemTab({
     );
   }
 
+  const solvedProblems =
+    submissions
+      ?.filter((sub) => sub.status === "PASSED" && sub.userId === user.id)
+      .map((sub) => sub.problem) ?? [];
+
   return (
     <div className="flex flex-col w-full gap-4">
-      <SelectProblem contest={contest} setProblem={setProblem} user={user} />
+      <SelectProblem
+        contest={contest}
+        setProblem={setProblem}
+        user={user}
+        solved={solvedProblems}
+      />
 
       {problem && (
         <ResizablePanelGroup direction="horizontal">
@@ -81,25 +96,27 @@ export function ProblemTab({
               <SubmissionList problem={problem} contest={contest} user={user} />
             )}
           </ResizablePanel>
-          {isUserOnContest && contest.endDate > new Date() && (
-            <Fragment>
-              <ResizableHandle withHandle />
-              <ResizablePanel className="pl-4">
-                <UploadCode
-                  user={user}
-                  contest={contest}
-                  problem={problem}
-                  problemLetter={
-                    letters[
-                      contest.problems.findIndex(
-                        (p) => p.problemId === problem.id,
-                      )
-                    ] ?? ""
-                  }
-                />
-              </ResizablePanel>
-            </Fragment>
-          )}
+          {isUserOnContest &&
+            contest.endDate > new Date() &&
+            !isProblemSolved(problem.id, solvedProblems) && (
+              <Fragment>
+                <ResizableHandle withHandle />
+                <ResizablePanel className="pl-4">
+                  <UploadCode
+                    user={user}
+                    contest={contest}
+                    problem={problem}
+                    problemLetter={
+                      letters[
+                        contest.problems.findIndex(
+                          (p) => p.problemId === problem.id,
+                        )
+                      ] ?? ""
+                    }
+                  />
+                </ResizablePanel>
+              </Fragment>
+            )}
         </ResizablePanelGroup>
       )}
     </div>
