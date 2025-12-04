@@ -8,28 +8,12 @@ import { useContests } from "@/hooks/use-contests";
 import { Link } from "@/i18n/navigation";
 import { ContestCard } from "./card";
 import { CreateContestDialog } from "./create/dialog";
+import { Loader } from "lucide-react";
 
 export function ContestList({ user }: { user: User }) {
   const t = useTranslations("ContestsPage");
 
-  const { data: contests, isPending, refetch: refetchContests } = useContests();
-
-  if (isPending) {
-    return (
-      <div className="w-full max-w-7xl flex-1">
-        <div className="flex justify-between">
-          <h1 className="font-bold text-2xl">{t("title")}</h1>
-          <CreateContestDialog refetchAction={refetchContests} user={user} />
-        </div>
-
-        <div className="flex flex-col gap-4 py-4 w-full">
-          {[1, 2, 3, 4, 5].map((_, index) => (
-            <Skeleton className="h-24 w-full" key={index} />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  const { data: contests, isPending } = useContests();
 
   if (!contests) {
     return <div>error</div>;
@@ -50,11 +34,15 @@ export function ContestList({ user }: { user: User }) {
         </div>
       )}
 
-      <div className="flex flex-col gap-4 py-4">
-        {contests.map((contest) => (
-          <ContestCard contest={contest} key={contest.id} />
-        ))}
-      </div>
+      {isPending ? (
+        <Loader className="animate-spin w-full mt-8" />
+      ) : (
+        <div className="flex flex-col gap-4 py-4">
+          {contests.map((contest) => (
+            <ContestCard contest={contest} key={contest.id} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
