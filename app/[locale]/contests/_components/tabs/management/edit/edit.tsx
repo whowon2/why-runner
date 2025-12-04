@@ -11,7 +11,7 @@ export function EditContest({ contestId }: { contestId: number }) {
   if (!contest) return null;
 
   return (
-    <div className="flex w-full flex-col gap-4 p-4">
+    <div className="flex w-full flex-col gap-4">
       <Card>
         <CardHeader>
           <CardTitle>Contest</CardTitle>

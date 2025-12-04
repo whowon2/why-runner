@@ -118,7 +118,7 @@ interface JudgeReport {
   failure_details?: TestCaseResult;
 }
 
-function SubmissionDetails({ output }: { output: string | null }) {
+export function SubmissionDetails({ output }: { output: string | null }) {
   // 1. Safe JSON Parsing
   const report = useMemo(() => {
     if (!output) return null;

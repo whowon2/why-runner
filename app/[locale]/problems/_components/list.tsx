@@ -1,6 +1,6 @@
 "use client";
 
-import type { Session, User } from "better-auth";
+import type { User } from "better-auth";
 import { Loader } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";

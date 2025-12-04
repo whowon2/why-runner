@@ -1,23 +1,41 @@
 "use client";
 
 import type { User } from "better-auth";
-import { ArrowLeft, Pencil, Trophy } from "lucide-react";
+import { ArrowLeft, Trophy } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { BreadCrumbs } from "@/components/breadcrumbs";
+import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useContest } from "@/hooks/use-contest";
-import { Link } from "@/i18n/navigation";
-import { ContestDescription } from "../description";
-import { JoinButton } from "../join-and-leave";
-import { Leaderboard } from "../leaderboard";
-import { ContestManagement } from "../management";
-import { ContestStatus } from "../status";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { Leaderboard } from "./leaderboard";
+import { ContestManagement } from "./management";
 import { ProblemTab } from "./problem";
 
 export function ContestTabs({ id, user }: { id: number; user: User }) {
   const { data: contest } = useContest(id);
   const t = useTranslations("ContestsPage");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab") || "problems";
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams],
+  );
+
+  const handleTabChange = (value: string) => {
+    router.push(`${pathname}?${createQueryString("tab", value)}`, {
+      scroll: false, // keeps the page from scrolling to top
+    });
+  };
 
   if (!contest) {
     return (
@@ -33,30 +51,13 @@ export function ContestTabs({ id, user }: { id: number; user: User }) {
     );
   }
 
-  const isCreatedByUser = contest.createdBy === user.id;
-
   return (
     <div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">
-      <BreadCrumbs />
-      <div className="flex flex-col items-center">
-        <div className="flex gap-2">
-          <h1 className="font-bold text-3xl text-secondary">{contest.name}</h1>
-          {isCreatedByUser && contest.startDate > new Date() && (
-            <Link href={`${contest.id}/edit`}>
-              <Pencil size={18} />
-            </Link>
-          )}
-        </div>
-        <JoinButton
-          contest={contest}
-          isCreatedByUser={isCreatedByUser}
-          user={user}
-        />
-      </div>
-
-      <ContestStatus contest={contest} />
-
-      <Tabs className="w-full flex-1" defaultValue="problems">
+      <Tabs
+        className="w-full flex-1"
+        defaultValue={tab}
+        onValueChange={handleTabChange}
+      >
         <TabsList className="w-full justify-start rounded-none border-b bg-background p-0">
           <TabsTrigger
             className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
@@ -70,12 +71,6 @@ export function ContestTabs({ id, user }: { id: number; user: User }) {
           >
             {t("Tabs.leaderboard")}
             <Trophy />
-          </TabsTrigger>
-          <TabsTrigger
-            className="h-full rounded-none border border-transparent border-b-[3px] bg-background data-[state=active]:border-primary data-[state=active]:shadow-none"
-            value="description"
-          >
-            {t("Tabs.description")}
           </TabsTrigger>
           {contest.createdBy === user.id && (
             <TabsTrigger
@@ -92,9 +87,6 @@ export function ContestTabs({ id, user }: { id: number; user: User }) {
         </TabsContent>
         <TabsContent value="leaderboard">
           <Leaderboard contest={contest} />
-        </TabsContent>
-        <TabsContent value="description">
-          <ContestDescription contest={contest} />
         </TabsContent>
         {contest.createdBy === user.id && (
           <TabsContent value="manage">

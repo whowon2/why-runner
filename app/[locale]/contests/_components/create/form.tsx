@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "better-auth";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -42,6 +43,7 @@ export function CreateContestForm({
 }) {
   const t = useTranslations("ContestsPage.createDialog");
   const { mutate: createContest, isPending } = useCreateContest();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
@@ -75,8 +77,10 @@ export function CreateContestForm({
           });
         },
         onSettled: () => onSuccessAction(),
-        onSuccess: () => {
+        onSuccess: (data) => {
           toast.success("Contest Created");
+
+          router.push(`/contests/${data.id}`);
         },
       },
     );

@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useUpdateContest } from "@/hooks/use-update-contest";
 import type { Contest, ProblemOnContest } from "@/lib/db/schema";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),
@@ -30,6 +31,7 @@ export function EditContestForm({
   };
 }) {
   const { mutate: updateContest, isPending } = useUpdateContest();
+  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
@@ -52,6 +54,12 @@ export function EditContestForm({
         },
         onSuccess: () => {
           toast.success("Updated");
+
+          form.reset(values);
+
+          queryClient.invalidateQueries({
+            queryKey: ["contest", String(contest.id)],
+          });
         },
       },
     );

@@ -1,38 +1,46 @@
 "use client";
 
-import { CalendarDays, ListOrdered, Users } from "lucide-react";
+import { ListOrdered, Pencil, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { Contest, ProblemOnContest, UserOnContest } from "@/lib/db/schema";
+import { useContest } from "@/hooks/use-contest";
+import { Link } from "@/i18n/navigation";
+import { authClient } from "@/lib/auth/client";
+import { JoinButton } from "./join-and-leave";
+import { ContestStatus } from "./status";
 
-export function ContestDescription({
-  contest,
-}: {
-  contest: Contest & {
-    users: UserOnContest[];
-    problems: ProblemOnContest[];
-  };
-}) {
+export function ContestDescription({ contestId }: { contestId: number }) {
   const t = useTranslations("ContestsPage");
+  const { data: contest } = useContest(contestId);
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
 
-  const formatDate = (date: Date) =>
-    new Intl.DateTimeFormat("en-US", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }).format(new Date(date));
+  if (!user) return null;
+
+  if (!contest) {
+    return null;
+  }
+
+  const isCreatedByUser = contest.createdBy === user.id;
 
   return (
     <div className="flex flex-col items-center justify-center gap-2 mt-8">
-      <div className="flex items-center gap-3">
-        <CalendarDays className="w-4 h-4 text-primary" />
-        <span className="font-medium">{t("Tabs.Description.starts")}:</span>
-        <span>{formatDate(contest.startDate)}</span>
+      <div className="flex flex-col items-center">
+        <div className="flex gap-2">
+          <h1 className="font-bold text-3xl text-secondary">{contest.name}</h1>
+          {isCreatedByUser && contest.startDate > new Date() && (
+            <Link href={`${contest.id}/edit`}>
+              <Pencil size={18} />
+            </Link>
+          )}
+        </div>
+        <JoinButton
+          contest={contest}
+          isCreatedByUser={isCreatedByUser}
+          user={user}
+        />
       </div>
 
-      <div className="flex items-center gap-3">
-        <CalendarDays className="w-4 h-4 text-primary" />
-        <span className="font-medium">{t("Tabs.Description.ends")}:</span>
-        <span>{formatDate(contest.endDate)}</span>
-      </div>
+      <ContestStatus contest={contest} />
 
       <div className="flex items-center gap-3">
         <Users className="w-4 h-4 text-primary" />

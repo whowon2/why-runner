@@ -30,9 +30,9 @@ export function JoinButton({
 
   const isUserInContest = contest.users.some((u) => u.userId === user.id);
 
-  // if (isCreatedByUser) {
-  //   return null;
-  // }
+  if (isCreatedByUser) {
+    return null;
+  }
 
   if (contest.startDate < new Date()) {
     return null;
