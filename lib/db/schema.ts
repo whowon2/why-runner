@@ -129,6 +129,8 @@ export const SubmissionStatus = pgEnum("submission_status", [
   "PENDING",
   "PASSED",
   "FAILED",
+  "ERROR",
+  "RUNNING",
 ]);
 
 export const problem = pgTable("problem", {

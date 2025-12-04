@@ -1,17 +1,17 @@
-import { useRouter } from "@/i18n/navigation";
-import {
-  problem,
-  type Contest,
-  type Problem,
-  type ProblemOnContest,
-  type UserOnContest,
-} from "@/lib/db/schema";
-import { letters } from "@/lib/letters";
-import { cn, isProblemSolved as isProblemSolved } from "@/lib/utils";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import type { User } from "better-auth";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { useRouter } from "@/i18n/navigation";
+import {
+  type Contest,
+  type Problem,
+  type ProblemOnContest,
+  problem,
+  type UserOnContest,
+} from "@/lib/db/schema";
+import { letters } from "@/lib/letters";
+import { cn, isProblemSolved } from "@/lib/utils";
 
 export function SelectProblem({
   contest,

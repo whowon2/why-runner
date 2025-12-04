@@ -8,6 +8,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { useContestSubmissions } from "@/hooks/use-contest-submissions";
 import type {
   Contest,
   Problem,
@@ -15,11 +16,10 @@ import type {
   UserOnContest,
 } from "@/lib/db/schema";
 import { letters } from "@/lib/letters";
+import { isProblemSolved } from "@/lib/utils";
 import { SelectProblem } from "./select-problem";
 import { SubmissionList } from "./submission-list";
 import { UploadCode } from "./upload";
-import { useContestSubmissions } from "@/hooks/use-contest-submissions";
-import { isProblemSolved } from "@/lib/utils";
 
 export function ProblemTab({
   user,
