@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:prod": "drizzle-kit migrate && next build",
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",

@@ -11,7 +11,7 @@ export function DifficultyBadge({
 
   return (
     <Badge className={getColor(difficulty ?? "none")}>
-      {t(`Difficults.${difficulty}`)}
+      {t(`Difficults.${difficulty ?? "none"}`)}
     </Badge>
   );
 }
