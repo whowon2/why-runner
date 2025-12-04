@@ -3,20 +3,15 @@ import Profile from "./_components/profile";
 
 import { ProfileTabs } from "./_components/tabs";
 
-export default async function ProfilePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ tab: string }>;
-}) {
+export default async function ProfilePage() {
   const user = await getCurrentUser({ redirectTo: "/auth/signin" });
-  const { tab } = await searchParams;
 
   return (
-    <div className="flex flex-col p-4 gap-8 container mx-auto">
+    <div className="flex w-full flex-col flex-1 items-center  gap-4 p-4">
       <Profile user={user} />
 
       <div className="flex w-full flex-col gap-6">
-        <ProfileTabs user={user} tab={tab} />
+        <ProfileTabs user={user} />
       </div>
     </div>
   );

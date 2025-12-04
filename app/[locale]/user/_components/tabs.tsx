@@ -11,10 +11,11 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import { ContestsList } from "./contests";
 import { Feed } from "./feed";
 
-export function ProfileTabs({ user, tab }: { user: User; tab: string }) {
+export function ProfileTabs({ user }: { user: User }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const tab = searchParams.get("tab") || "feed";
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
