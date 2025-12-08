@@ -2,7 +2,7 @@ import { relations } from "drizzle-orm";
 import { pgEnum, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { problemOnContest, user } from "./users";
 
-const ProblemDifficulty = pgEnum("problem_difficulty", [
+export const ProblemDifficulty = pgEnum("problem_difficulty", [
   "easy",
   "medium",
   "hard",

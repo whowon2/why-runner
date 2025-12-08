@@ -3,7 +3,13 @@ import { pgEnum, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { problem } from "./problems";
 import { user } from "./users";
 
-const Language = pgEnum("language", ["c", "cpp", "java", "python", "rust"]);
+export const Language = pgEnum("language", [
+  "c",
+  "cpp",
+  "java",
+  "python",
+  "rust",
+]);
 
 export type Language = (typeof Language.enumValues)[number];
 

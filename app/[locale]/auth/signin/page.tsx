@@ -15,12 +15,13 @@ import { authClient } from "@/lib/auth/client";
 import { SignInTab } from "./_components/sign-in-tab";
 import { SignUpTab } from "./_components/sign-up-tab";
 import { SocialAuthButtons } from "./_components/social-auth-buttons";
+import { EmailVerification } from "@/components/auth/email-verification";
 
 type Tab = "signin" | "signup" | "email-verification" | "forgot-password";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [_email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [selectedTab, setSelectedTab] = useState<Tab>("signin");
 
   useEffect(() => {
@@ -89,7 +90,9 @@ export default function LoginPage() {
             <CardHeader className="text-2xl font-bold">
               <CardTitle>Verify Your Email</CardTitle>
             </CardHeader>
-            <CardContent>{/*<EmailVerification email={email} />*/}</CardContent>
+            <CardContent>
+              <EmailVerification email={email} />
+            </CardContent>
           </Card>
         </TabsContent>
 
