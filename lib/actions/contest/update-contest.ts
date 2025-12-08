@@ -1,9 +1,9 @@
 "use server";
 
 import { eq } from "drizzle-orm";
+import { db } from "@/drizzle/db";
+import { contest } from "@/drizzle/schema";
 import type { UpdateContestInput } from "@/hooks/use-update-contest";
-import { db } from "@/lib/db";
-import { contest } from "@/lib/db/schema";
 
 export async function updateContest(input: UpdateContestInput) {
   await db

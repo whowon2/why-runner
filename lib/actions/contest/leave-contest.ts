@@ -1,9 +1,9 @@
 "use server";
 
 import { and, eq } from "drizzle-orm";
+import { db } from "@/drizzle/db";
+import { userOnContest } from "@/drizzle/schema";
 import type { LeaveContestInput } from "@/hooks/use-leave-contest";
-import { db } from "@/lib/db";
-import { userOnContest } from "@/lib/db/schema";
 
 export async function leaveContest(input: LeaveContestInput) {
   await db

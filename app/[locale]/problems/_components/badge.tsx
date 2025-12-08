@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
-import type { ProblemDifficulty } from "@/lib/db/schema";
+import type { ProblemDifficulty } from "@/drizzle/schema";
 
 export function DifficultyBadge({
   difficulty,

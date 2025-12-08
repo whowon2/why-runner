@@ -1,13 +1,12 @@
 "use client";
 
+import type { User } from "better-auth";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useContests } from "@/hooks/use-contests";
 import { Link } from "@/i18n/navigation";
-import type { User } from "better-auth";
-import { Loader } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { ContestCard } from "./card";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export function ContestList({ user }: { user: User }) {
   const t = useTranslations("ContestsPage");

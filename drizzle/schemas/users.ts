@@ -1,13 +1,15 @@
 import { relations } from "drizzle-orm";
+
 import {
   boolean,
   index,
-  pgEnum,
   pgTable,
   serial,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
+import { contest } from "./contests";
+import { type Problem, problem } from "./problems";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -101,85 +103,6 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }));
 
-export const contest = pgTable("contest", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  startDate: timestamp("start_date").notNull(),
-  endDate: timestamp("end_date").notNull(),
-  createdBy: text("created_by").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export const ProblemDifficulty = pgEnum("problem_difficulty", [
-  "easy",
-  "medium",
-  "hard",
-]);
-
-export const Language = pgEnum("language", [
-  "c",
-  "cpp",
-  "java",
-  "python",
-  "rust",
-]);
-
-export const SubmissionStatus = pgEnum("submission_status", [
-  "PENDING",
-  "PASSED",
-  "FAILED",
-  "ERROR",
-  "RUNNING",
-]);
-
-export const problem = pgTable("problem", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  difficulty: ProblemDifficulty(),
-  createdBy: text("created_by").notNull(),
-  inputs: text("inputs").array().notNull(),
-  outputs: text("outputs").array().notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
-
-export const submission = pgTable("submission", {
-  id: serial("id").primaryKey(),
-  status: SubmissionStatus().default("PENDING").notNull(),
-  code: text("code").notNull(),
-  language: Language(),
-  questionLetter: text("question_letter").notNull(),
-  output: text("output"),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),
-  problemId: serial("problem_id")
-    .notNull()
-    .references(() => problem.id, { onDelete: "cascade" }),
-  contestId: serial("contest_id").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
-
-export const submissionRelations = relations(submission, ({ one }) => ({
-  user: one(user, {
-    fields: [submission.userId],
-    references: [user.id],
-  }),
-  problem: one(problem, {
-    fields: [submission.problemId],
-    references: [problem.id],
-  }),
-}));
-
 export const userOnContest = pgTable("user_on_contest", {
   userId: text("user_id").notNull(),
   contestId: serial("contest_id")
@@ -206,19 +129,6 @@ export const problemOnContest = pgTable("problem_on_contest", {
     }),
 });
 
-export const contestRelations = relations(contest, ({ many }) => ({
-  users: many(userOnContest),
-  problems: many(problemOnContest),
-}));
-
-export const problemRelations = relations(problem, ({ many, one }) => ({
-  contests: many(problemOnContest),
-  user: one(user, {
-    fields: [problem.createdBy],
-    references: [user.id],
-  }),
-}));
-
 export const userOnContestRelations = relations(userOnContest, ({ one }) => ({
   user: one(user, {
     fields: [userOnContest.userId],
@@ -244,16 +154,8 @@ export const problemOnContestRelations = relations(
   }),
 );
 
-export type Contest = typeof contest.$inferSelect;
-export type Problem = typeof problem.$inferSelect;
-export type Submission = typeof submission.$inferSelect;
-export type ProblemDifficulty = (typeof ProblemDifficulty.enumValues)[number];
-export type Language = (typeof Language.enumValues)[number];
-
 export type UserOnContest = typeof userOnContest.$inferSelect;
+
 export type ProblemOnContest = typeof problemOnContest.$inferSelect & {
   problem: Problem;
 };
-
-export type CreateProblemInput = typeof problem.$inferInsert;
-export type CreateSubmissionInput = typeof submission.$inferInsert;

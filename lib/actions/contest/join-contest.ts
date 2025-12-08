@@ -1,8 +1,8 @@
 "use server";
 
+import { db } from "@/drizzle/db";
+import { userOnContest } from "@/drizzle/schema";
 import type { JoinContestInput } from "@/hooks/use-join-contest";
-import { db } from "@/lib/db";
-import { userOnContest } from "@/lib/db/schema";
 
 export async function joinContest(input: JoinContestInput) {
   await db

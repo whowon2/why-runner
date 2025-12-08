@@ -1,1 +1,0 @@
-ALTER TABLE "submission" ADD COLUMN "question_letter" text NOT NULL;

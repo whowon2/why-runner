@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/lib/db";
+import { db } from "@/drizzle/db";
 
 export async function getProblem(problemId: number) {
   return await db.query.problem.findFirst({

@@ -5,10 +5,10 @@ import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import type { Contest, UserOnContest } from "@/drizzle/schema";
 import { useJoinContest } from "@/hooks/use-join-contest";
 import { useLeaveContest } from "@/hooks/use-leave-contest";
 import { useRouter } from "@/i18n/navigation";
-import type { Contest, UserOnContest } from "@/lib/db/schema";
 
 export function JoinButton({
   contest,

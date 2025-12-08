@@ -1,1 +1,0 @@
-ALTER TABLE "submission" ALTER COLUMN "status" DROP NOT NULL;

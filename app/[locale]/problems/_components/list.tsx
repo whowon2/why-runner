@@ -15,9 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { ProblemDifficulty } from "@/drizzle/schema";
 import { useProblems } from "@/hooks/use-problems";
 import { Link, useRouter } from "@/i18n/navigation";
-import type { ProblemDifficulty } from "@/lib/db/schema";
 import { DifficultyBadge } from "./badge";
 
 interface ProblemFilters {

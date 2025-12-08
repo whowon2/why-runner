@@ -1,6 +1,6 @@
 "use client";
 
-import type { Contest } from "@/lib/db/schema";
+import type { Contest } from "@/drizzle/schema";
 import { EditContest } from "./edit/edit";
 import { ContestSubmissions } from "./submissions";
 

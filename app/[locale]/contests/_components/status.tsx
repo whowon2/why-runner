@@ -3,7 +3,7 @@
 import { CalendarDays } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import type { Contest } from "@/lib/db/schema";
+import type { Contest } from "@/drizzle/schema";
 import { formatDuration } from "@/lib/format-duration";
 
 export function ContestStatus({ contest }: { contest: Contest }) {

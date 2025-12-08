@@ -1,8 +1,8 @@
 "use server";
 
 import { SendMessageCommand, SQSClient } from "@aws-sdk/client-sqs";
+import { db } from "@/drizzle/db";
 import { env } from "@/env";
-import { db } from "@/lib/db";
 import { type CreateSubmissionInput, submission } from "../../db/schema";
 
 const sqs = new SQSClient({

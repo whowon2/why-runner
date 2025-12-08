@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/lib/db";
+import { db } from "@/drizzle/db";
 
 export async function getProblemSubmissions(problemId: number) {
   const submissions = await db.query.submission.findMany({

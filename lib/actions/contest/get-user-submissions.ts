@@ -1,8 +1,8 @@
 "use server";
 
 import { and } from "drizzle-orm";
+import { db } from "@/drizzle/db";
 import type { GetUserSubmissionsOnContest } from "@/hooks/use-problem-submissions";
-import { db } from "@/lib/db";
 
 export async function getUserContestSubmissions(
   input: GetUserSubmissionsOnContest,

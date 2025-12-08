@@ -11,11 +11,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { Contest, Problem, ProblemOnContest } from "@/drizzle/schema";
 import { useAddProblemToContest } from "@/hooks/use-add-problem";
 import { useProblems } from "@/hooks/use-problems";
 import { useRemoveProblemToContest as useRemoveProblemFromContest } from "@/hooks/use-remove-problem";
 import { Link, usePathname } from "@/i18n/navigation";
-import type { Contest, Problem, ProblemOnContest } from "@/lib/db/schema";
 
 export function EditContestProblems({
   contest,

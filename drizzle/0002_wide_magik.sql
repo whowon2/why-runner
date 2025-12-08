@@ -1,1 +1,0 @@
-ALTER TABLE "user_on_contest" ALTER COLUMN "score" SET DEFAULT 0;

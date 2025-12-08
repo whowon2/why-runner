@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/lib/db";
+import { db } from "@/drizzle/db";
 
 export async function getContest(id: number) {
   return await db.query.contest.findFirst({

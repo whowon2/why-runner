@@ -1,7 +1,7 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { type CreateProblemInput, problem } from "@/lib/db/schema";
+import { db } from "@/drizzle/db";
+import { type CreateProblemInput, problem } from "@/drizzle/schema";
 
 export async function createProblem(input: CreateProblemInput) {
   await db.insert(problem).values(input);

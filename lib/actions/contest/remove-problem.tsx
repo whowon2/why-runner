@@ -1,9 +1,9 @@
 "use server";
 
 import { and, eq } from "drizzle-orm";
+import { db } from "@/drizzle/db";
+import { problemOnContest } from "@/drizzle/schema";
 import type { RemoveProblemFromContestInput } from "@/hooks/use-remove-problem";
-import { db } from "@/lib/db";
-import { problemOnContest } from "@/lib/db/schema";
 
 export async function removeProblemToContest(
   input: RemoveProblemFromContestInput,

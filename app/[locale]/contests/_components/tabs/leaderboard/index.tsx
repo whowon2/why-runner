@@ -11,8 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { Contest, ProblemOnContest } from "@/drizzle/schema";
 import { useContestLeaderboard } from "@/hooks/use-contest-leaderboard";
-import type { Contest, ProblemOnContest } from "@/lib/db/schema";
 import { getAwardColor } from "@/lib/get-award-color";
 import { letters } from "@/lib/letters";
 

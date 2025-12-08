@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/lib/db";
+import { db } from "@/drizzle/db";
 
 export async function getProfile(userId: string) {
   return await db.query.user.findFirst({

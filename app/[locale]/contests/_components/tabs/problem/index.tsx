@@ -8,13 +8,13 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { useContestSubmissions } from "@/hooks/use-contest-submissions";
 import type {
   Contest,
   Problem,
   ProblemOnContest,
   UserOnContest,
-} from "@/lib/db/schema";
+} from "@/drizzle/schema";
+import { useContestSubmissions } from "@/hooks/use-contest-submissions";
 import { letters } from "@/lib/letters";
 import { isProblemSolved } from "@/lib/utils";
 import { SelectProblem } from "./select-problem";

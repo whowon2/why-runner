@@ -10,8 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { Contest } from "@/drizzle/schema";
 import { useContestSubmissions } from "@/hooks/use-contest-submissions";
-import type { Contest } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
 
 export function ContestSubmissions({ contest }: { contest: Contest }) {

@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
+import type { CreateProblemInput } from "@/drizzle/schema";
 import { createProblem } from "@/lib/actions/problems/create-problem";
-import type { CreateProblemInput } from "@/lib/db/schema";
 
 export const useCreateProblem = () =>
   useMutation({

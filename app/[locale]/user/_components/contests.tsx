@@ -10,9 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import type { Contest, UserOnContest } from "@/drizzle/schema";
 import { useContests } from "@/hooks/use-contests";
 import { Link } from "@/i18n/navigation";
-import type { Contest, UserOnContest } from "@/lib/db/schema";
 import { formatDuration } from "@/lib/format-duration";
 import { cn } from "@/lib/utils";
 import { CreateContestDialog } from "../../contests/_components/create/dialog";

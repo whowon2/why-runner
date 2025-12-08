@@ -24,8 +24,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { Contest, Language, Problem } from "@/drizzle/schema";
 import { useCreateSubmission } from "@/hooks/use-create-submission";
-import type { Contest, Language, Problem } from "@/lib/db/schema";
 
 export function UploadCode({
   user,

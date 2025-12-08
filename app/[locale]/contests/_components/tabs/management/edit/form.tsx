@@ -16,8 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import type { Contest, ProblemOnContest } from "@/drizzle/schema";
 import { useUpdateContest } from "@/hooks/use-update-contest";
-import type { Contest, ProblemOnContest } from "@/lib/db/schema";
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),

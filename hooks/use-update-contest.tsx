@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
+import type { Contest } from "@/drizzle/schema";
 import { updateContest } from "@/lib/actions/contest/update-contest";
-import type { Contest } from "@/lib/db/schema";
 
 export type UpdateContestInput = {
   contestId: number;

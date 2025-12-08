@@ -2,14 +2,14 @@ import * as RadioGroup from "@radix-ui/react-radio-group";
 import type { User } from "better-auth";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { useRouter } from "@/i18n/navigation";
 import {
   type Contest,
   type Problem,
   type ProblemOnContest,
   problem,
   type UserOnContest,
-} from "@/lib/db/schema";
+} from "@/drizzle/schema";
+import { useRouter } from "@/i18n/navigation";
 import { letters } from "@/lib/letters";
 import { cn, isProblemSolved } from "@/lib/utils";
 
