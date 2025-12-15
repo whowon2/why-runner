@@ -2,8 +2,8 @@
 
 import { SendMessageCommand, SQSClient } from "@aws-sdk/client-sqs";
 import { db } from "@/drizzle/db";
+import { type CreateSubmissionInput, submission } from "@/drizzle/schema";
 import { env } from "@/env";
-import { type CreateSubmissionInput, submission } from "../../db/schema";
 
 const sqs = new SQSClient({
   region: env.AWS_REGION,

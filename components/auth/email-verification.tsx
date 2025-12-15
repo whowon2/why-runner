@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BetterAuthActionButton } from "./auth-action-button";
 import { authClient } from "@/lib/auth/client";
+import { BetterAuthActionButton } from "./auth-action-button";
 
 export function EmailVerification({ email }: { email: string }) {
   const [timeToNextResend, setTimeToNextResend] = useState(30);

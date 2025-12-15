@@ -75,6 +75,7 @@
       "button": "New Problem"
     },
     "Filters": {
+      "searchPlaceholder": "Search problems...",
       "my": "My",
       "difficulty": "Difficulty",
       "Difficults": {

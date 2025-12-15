@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { EmailVerification } from "@/components/auth/email-verification";
 import {
   Card,
   CardContent,
@@ -15,7 +16,6 @@ import { authClient } from "@/lib/auth/client";
 import { SignInTab } from "./_components/sign-in-tab";
 import { SignUpTab } from "./_components/sign-up-tab";
 import { SocialAuthButtons } from "./_components/social-auth-buttons";
-import { EmailVerification } from "@/components/auth/email-verification";
 
 type Tab = "signin" | "signup" | "email-verification" | "forgot-password";
 
