@@ -1,10 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
-import { getContests } from "@/lib/actions/contest/get-contests";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import {
+  getContests,
+  type GetContestsParams,
+} from "@/lib/actions/contest/get-contests";
 
-export const useContests = () =>
+export const useContests = (params: GetContestsParams) =>
   useQuery({
-    queryKey: ["contests"],
+    queryKey: ["contests", params],
     queryFn: async () => {
-      return await getContests();
+      return await getContests(params);
     },
+    placeholderData: keepPreviousData,
   });

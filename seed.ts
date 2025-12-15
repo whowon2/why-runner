@@ -30,8 +30,13 @@ async function main() {
 
     // 2. Contests
     contest: {
-      count: 10000,
+      count: 10,
       columns: {
+        id: f.int({
+          minValue: 10000,
+          maxValue: 100000,
+          isUnique: true,
+        }),
         name: f.companyName(), // "Acme Corp Contest"
         description: f.loremIpsum({ sentencesCount: 1 }),
         startDate: f.date({ minDate: "2023-01-01", maxDate: "2024-12-31" }),

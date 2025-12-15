@@ -1,17 +1,14 @@
 "use client";
 
-import type { User } from "better-auth";
-import { Plus } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { ContestsList } from "./contests";
+import { useSearchParams } from "next/navigation";
+import { useCallback } from "react";
 import { Feed } from "./feed";
+import { MyContests } from "./my-contests";
+import { MyProblems } from "./my-problems";
 
-export function ProfileTabs({ user }: { user: User }) {
+export function ProfileTabs() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -45,21 +42,10 @@ export function ProfileTabs({ user }: { user: User }) {
         <Feed />
       </TabsContent>
       <TabsContent value="contests">
-        <ContestsList user={user} />
+        <MyContests />
       </TabsContent>
       <TabsContent value="problems">
-        <Card>
-          <CardHeader>
-            <CardTitle className="justify-between flex">
-              My Problems
-              <Button variant={"secondary"}>
-                <Plus />
-                Create Problem
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-6"></CardContent>
-        </Card>
+        <MyProblems />
       </TabsContent>
     </Tabs>
   );

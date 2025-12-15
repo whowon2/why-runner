@@ -1,12 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { User } from "better-auth";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import {
@@ -19,6 +12,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useCreateContest } from "@/hooks/use-create-contest";
+import { authClient } from "@/lib/auth/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),
@@ -36,26 +37,26 @@ const formSchema = z.object({
 
 export function CreateContestForm({
   onSuccessAction,
-  user,
 }: {
   onSuccessAction: () => void;
-  user: User;
 }) {
+  const { data: session } = authClient.useSession();
   const t = useTranslations("ContestsPage.createDialog");
   const { mutate: createContest, isPending } = useCreateContest();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
-      name: "",
-      startDate: "",
+      name: "New Contest",
+      startDate: new Date().toISOString(),
       duration: "15",
     },
     resolver: zodResolver(formSchema),
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    if (!session) return;
 
     const startDate = new Date(values.startDate);
     const endDate = new Date(
@@ -68,7 +69,7 @@ export function CreateContestForm({
         description: "",
         startDate: new Date(values.startDate),
         endDate: endDate,
-        createdBy: user.id,
+        createdBy: session.user.id,
       },
       {
         onError: (error) => {
@@ -80,6 +81,7 @@ export function CreateContestForm({
         onSuccess: (data) => {
           toast.success("Contest Created");
 
+          queryClient.invalidateQueries({ queryKey: ["contests"] });
           router.push(`/contests/${data.id}`);
         },
       },
