@@ -1,101 +1,70 @@
-# 🏃‍♂️ Runner: Code Execution Platform
+# 🏃‍♂️ Runner: Code Execution Platform web client
 
-This is a TCC (Trabalho de Conclusão de Curso) project designed to support the execution and evaluation of code submissions in multiple programming languages inside isolated environments (containers). It includes a web interface, API, and infrastructure to run, test, and manage code for contests and problem solving.
+This is the main web application and API surface for the Runner platform (a TCC - Trabalho de Conclusão de Curso project). It's designed to support code submissions, evaluations, and contests using a modern, scalable web stack.
 
-<img width="1250" height="792" alt="2025-07-10-130229_hyprshot" src="https://github.com/user-attachments/assets/bcbeea88-9a0a-40a7-bdea-9d1872cc5b82" />
+## 📦 Tech Stack
 
-## 📦 Monorepo Stack
-
-* **Runtime:** [Bun](https://bun.sh/) for fast JavaScript/TypeScript execution
-* **Linter/Formatter:** [Biome](https://biomejs.dev/) for code quality
-* **Containers:** Docker + Docker Compose for service orchestration
-* **Database:** PostgreSQL
-* **Cache:** AWS SQS (for job queueing)
-* **Runners:** Language-specific isolated containers (e.g., `cpp`, `python`, `rust`, `java`)
-
----
+- **Framework:** [Next.js](https://nextjs.org/) 16 (App Router) & React 19
+- **Runtime & PM:** [Bun](https://bun.sh/)
+- **Linter/Formatter:** [Biome](https://biomejs.dev/)
+- **Styling:** Tailwind CSS v4, Framer Motion, Radix UI variants
+- **Database & ORM:** PostgreSQL + [Drizzle ORM](https://orm.drizzle.team/)
+- **Authentication:** [Better Auth](https://better-auth.com/)
+- **Queueing:** AWS SQS (To send execution jobs to the Judge worker)
+- **Internationalization:** next-intl
+- **Editor:** Monaco Editor
+- **Validation:** Zod
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-* [Docker](https://www.docker.com/)
-* [Bun](https://bun.sh/)
+- [Docker](https://www.docker.com/) (For PostgreSQL database)
+- [Bun](https://bun.sh/) 
 
 ### Development Setup
 
-```bash
-# Install dependencies
-bun install
+1. **Install dependencies:**
+   ```bash
+   bun install
+   ```
 
-# Start all services
-docker compose up --build
-```
----
+2. **Environment Configuration:**
+   Create a `.env` file based on your local settings (Database, SQS, Auth secrets, etc.).
 
-## 🧪 Features
+3. **Database Setup:**
+   Run the database migrations and optionally seed the database:
+   ```bash
+   bun run db:push
+   # Or using migrations
+   bun run db:generate
+   bun run db:migrate
+   ```
 
-* ✅ Secure code execution with time/resource limits
-* ✅ Isolated runner containers per language
-* ✅ Queue-based task processing (SQS)
-* ✅ API for managing contests, problems, and submissions
-* ✅ Code diffing and test case validation
-* ✅ Realtime feedback for submissions
+4. **Start the Development Server:**
+   ```bash
+   bun run dev
+   ```
 
----
+### Other Commands
 
-## 🧰 Commands
+- `bun run lint` - Lint the codebase using Biome
+- `bun run format` - Format the codebase using Biome
+- `bun run db:studio` - Open Drizzle Studio to inspect the database GUI
 
-### Lint & Format
+## 🧪 System Architecture
 
-```bash
-bun run lint        # via Biome
-bun run format
-```
-
-
-### Web App
-
-```bash
-bun run dev
-```
-
----
-
-
----
-
-## 📚 Technologies
-
-| Tech       | Usage                        |
-| ---------- | ---------------------------- |
-| Bun        | Package manager + runtime    |
-| Biome      | Linting/formatting           |
-| Docker     | Service and runner isolation |
-| PostgreSQL | Persistent database          |
-| SQS        | Queueing                     |
-| tRPC       | Type-safe API (or REST)      |
-
----
-
-## 📖 Future Improvements
-
-* [ ] WebSocket for live execution updates
-* [x] Multi-language support (Rust, Python, Java)
-* [ ] Admin panel to manage users/problems
-* [ ] Advanced security sandbox (e.g., seccomp, firejail, docker)
-
----
+1. **Web Frontend:** Displays problems, contests, leaderboards, and a code editor (Monaco).
+2. **Web API / Actions:** Next.js Server Actions handle user submissions and queue a job payload onto an AWS SQS queue.
+3. **Judge Worker (Rust):** A separate worker process (see the `judge` directory) polls the SQS queue, fetches the code, executes it inside a secure Docker container (`python:3.9-slim`), checks it against test cases, and saves the result to the DB.
+4. **Realtime view:** Users see their submission test results updated in the web application.
 
 ## 🧑‍💻 Author
 
 **Juan Israel** – *Computer Engineering Student*
 
 TCC Advisor: *Prof. Suelen*
-
 Institution: *IFMG*
-
----
 
 ## 📜 License
 
