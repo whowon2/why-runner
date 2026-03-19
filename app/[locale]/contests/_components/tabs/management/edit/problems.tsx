@@ -25,7 +25,10 @@ export function EditContestProblems({
   };
 }) {
   console.log("mount");
-  const { data: problems } = useProblems();
+  const { data: problems } = useProblems({
+    page: 1,
+    pageSize: 10,
+  });
 
   const { mutate: addProblem, isPending: isAddPending } =
     useAddProblemToContest();
@@ -65,7 +68,7 @@ export function EditContestProblems({
             <SelectValue placeholder="Problem" />
           </SelectTrigger>
           <SelectContent>
-            {problems
+            {problems?.data
               ?.filter(
                 (p) =>
                   !contest.problems.find(
@@ -74,7 +77,7 @@ export function EditContestProblems({
               )
               .map((p) => (
                 <SelectItem className="w-full" key={p.id} value={String(p.id)}>
-                  {p.title}
+                  #{p.id} - {p.title}
                 </SelectItem>
               ))}
           </SelectContent>
@@ -89,7 +92,9 @@ export function EditContestProblems({
             className="flex items-center justify-between rounded border p-2"
             key={probOnCont.problemId}
           >
-            <p>{probOnCont.problem.title}</p>
+            <p>
+              #{probOnCont.problem.id} - {probOnCont.problem.title}
+            </p>
             <RemoveProblemButton
               contest={contest}
               problem={probOnCont.problem}

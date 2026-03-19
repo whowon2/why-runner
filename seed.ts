@@ -43,6 +43,7 @@ async function main() {
         // Ensure endDate is handled effectively (random dates usually work, but simple logic is hard in seeders)
         endDate: f.date({ minDate: "2025-01-01", maxDate: "2026-01-01" }),
         createdBy: f.fullName(), // Simple text field in your schema
+        createdAt: f.date({ maxDate: new Date().toISOString() }),
       },
       with: {
         problemOnContest: 5, // Each contest gets ~5 problems

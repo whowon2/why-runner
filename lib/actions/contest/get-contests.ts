@@ -2,7 +2,7 @@
 
 import { db } from "@/drizzle/db";
 import { contest } from "@/drizzle/schema"; // Ensure this imports your contest table definition
-import { and, count, ilike, desc } from "drizzle-orm";
+import { and, count, ilike, desc, asc } from "drizzle-orm";
 
 export interface GetContestsParams {
   page: number;
