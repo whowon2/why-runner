@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgEnum, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 import { problemOnContest, user } from "./users";
 
 export const ProblemDifficulty = pgEnum("problem_difficulty", [
@@ -11,7 +11,7 @@ export const ProblemDifficulty = pgEnum("problem_difficulty", [
 export type ProblemDifficulty = (typeof ProblemDifficulty.enumValues)[number];
 
 export const problem = pgTable("problem", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   title: text("title").notNull(),
   description: text("description").notNull(),
   difficulty: ProblemDifficulty(),

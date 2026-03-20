@@ -4,7 +4,7 @@ import {
   boolean,
   index,
   pgTable,
-  serial,
+  uuid,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
@@ -105,7 +105,7 @@ export const accountRelations = relations(account, ({ one }) => ({
 
 export const userOnContest = pgTable("user_on_contest", {
   userId: text("user_id").notNull(),
-  contestId: serial("contest_id")
+  contestId: uuid("contest_id")
     .notNull()
     .references(() => contest.id, {
       onDelete: "cascade",
@@ -115,13 +115,13 @@ export const userOnContest = pgTable("user_on_contest", {
 });
 
 export const problemOnContest = pgTable("problem_on_contest", {
-  problemId: serial("problem_id")
+  problemId: uuid("problem_id")
     .notNull()
     .references(() => problem.id, {
       onDelete: "cascade",
       onUpdate: "cascade",
     }),
-  contestId: serial("contest_id")
+  contestId: uuid("contest_id")
     .notNull()
     .references(() => contest.id, {
       onDelete: "cascade",

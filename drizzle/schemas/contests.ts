@@ -1,9 +1,9 @@
 import { relations } from "drizzle-orm";
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 import { problemOnContest, userOnContest } from "./users";
 
 export const contest = pgTable("contest", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   description: text("description").notNull(),
   startDate: timestamp("start_date").notNull(),

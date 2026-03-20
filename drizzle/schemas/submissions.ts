@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgEnum, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 import { problem } from "./problems";
 import { user } from "./users";
 
@@ -22,7 +22,7 @@ export const SubmissionStatus = pgEnum("submission_status", [
 ]);
 
 export const submission = pgTable("submission", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   status: SubmissionStatus().default("PENDING").notNull(),
   code: text("code").notNull(),
   language: Language(),
@@ -31,10 +31,10 @@ export const submission = pgTable("submission", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),
-  problemId: serial("problem_id")
+  problemId: uuid("problem_id")
     .notNull()
     .references(() => problem.id, { onDelete: "cascade" }),
-  contestId: serial("contest_id").notNull(),
+  contestId: uuid("contest_id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
