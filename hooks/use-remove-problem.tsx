@@ -2,8 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { removeProblemToContest } from "@/lib/actions/contest/remove-problem";
 
 export type RemoveProblemFromContestInput = {
-  contestId: number;
-  problemId: number;
+  contestId: string;
+  problemId: string;
 };
 
 export const useRemoveProblemToContest = () =>

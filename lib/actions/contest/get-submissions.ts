@@ -2,7 +2,7 @@
 
 import { db } from "@/drizzle/db";
 
-export async function getContestSubmissions(input: { contestId: number }) {
+export async function getContestSubmissions(input: { contestId: string }) {
   const submissions = await db.query.submission.findMany({
     where: (submissions, { eq }) => eq(submissions.contestId, input.contestId),
     with: { user: true, problem: true },

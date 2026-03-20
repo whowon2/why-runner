@@ -13,7 +13,7 @@ import { Leaderboard } from "./leaderboard";
 import { ContestManagement } from "./management";
 import { ProblemTab } from "./problem";
 
-export function ContestTabs({ id, user }: { id: number; user: User }) {
+export function ContestTabs({ id, user }: { id: string; user: User }) {
   const { data: contest } = useContest(id);
   const t = useTranslations("ContestsPage");
   const router = useRouter();

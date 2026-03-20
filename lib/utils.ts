@@ -1,11 +1,11 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { Problem } from "./db/schema";
+import type { Problem } from "@/drizzle/schema";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function isProblemSolved(problemId: number, solved: Problem[]) {
-  return solved.some((p) => p.id === problemId);
+export function isProblemSolved(problemId: string, solved: Problem[]) {
+  return solved.some((p) => String(p.id) === problemId);
 }

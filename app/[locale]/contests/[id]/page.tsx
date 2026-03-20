@@ -6,7 +6,7 @@ import { ContestTabs } from "../_components/tabs";
 export default async function Page({
   params,
 }: {
-  params: Promise<{ id: number }>;
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
 

@@ -4,7 +4,7 @@ import { ProblemDescription } from "../_components/description";
 export default async function ProblemPage({
   params,
 }: {
-  params: Promise<{ id: number }>;
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
 

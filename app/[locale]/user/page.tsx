@@ -11,7 +11,7 @@ export default async function ProfilePage() {
       <Profile user={user} />
 
       <div className="flex w-full flex-col gap-6">
-        <ProfileTabs user={user} />
+        <ProfileTabs />
       </div>
     </div>
   );

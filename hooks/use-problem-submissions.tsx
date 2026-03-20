@@ -3,8 +3,8 @@ import { getContestSubmissions } from "@/lib/actions/contest/get-submissions";
 
 export type GetUserSubmissionsOnContest = {
   userId: string;
-  contestId: number;
-  problemId: number;
+  contestId: string;
+  problemId: string;
 };
 
 export const useProblemSubmissions = (input: GetUserSubmissionsOnContest) =>

@@ -2,7 +2,7 @@
 
 import { GoogleGenAI } from "@google/genai";
 import { env } from "@/env";
-import type { Problem, Submission } from "../db/schema";
+import type { Problem, Submission } from "@/drizzle/schema";
 import { getPrompt } from "../prompt";
 
 export async function getAIHelp(

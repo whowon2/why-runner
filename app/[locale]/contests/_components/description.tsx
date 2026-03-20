@@ -8,7 +8,7 @@ import { authClient } from "@/lib/auth/client";
 import { JoinButton } from "./join-and-leave";
 import { ContestStatus } from "./status";
 
-export function ContestDescription({ contestId }: { contestId: number }) {
+export function ContestDescription({ contestId }: { contestId: string }) {
   const t = useTranslations("ContestsPage");
   const { data: contest } = useContest(contestId);
   const { data: session } = authClient.useSession();

@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { leaveContest } from "@/lib/actions/contest/leave-contest";
 
 export type LeaveContestInput = {
-  contestId: number;
+  contestId: string;
   userId: string;
 };
 

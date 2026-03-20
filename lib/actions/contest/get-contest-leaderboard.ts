@@ -2,7 +2,7 @@
 
 import { db } from "@/drizzle/db";
 
-export async function getContestLeaderboard(contestId: number) {
+export async function getContestLeaderboard(contestId: string) {
   const contests = await db.query.userOnContest.findMany({
     where: (c, { eq }) => eq(c.contestId, contestId),
     with: {

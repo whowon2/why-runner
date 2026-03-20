@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getContestLeaderboard } from "@/lib/actions/contest/get-contest-leaderboard";
 
-export const useContestLeaderboard = (contestId: number) =>
+export const useContestLeaderboard = (contestId: string) =>
   useQuery({
     queryKey: ["contests", String(contestId)],
     queryFn: async () => {

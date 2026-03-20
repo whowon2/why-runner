@@ -1,4 +1,4 @@
-import type { Problem, Submission } from "./db/schema";
+import type { Problem, Submission } from "@/drizzle/schema";
 
 export const getPrompt = (input: {
   submission: Submission;

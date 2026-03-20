@@ -39,7 +39,7 @@ export function EditContestProblems({
 
   function handleProblemSelect(id: string) {
     addProblem(
-      { contestId: contest.id, problemId: Number(id) },
+      { contestId: contest.id, problemId: id },
       {
         onError(error) {
           toast.error("Failed to add problem", {
@@ -117,7 +117,7 @@ function RemoveProblemButton({
     useRemoveProblemFromContest();
   const queryClient = useQueryClient();
 
-  function handleRemoveProblem(id: number) {
+  function handleRemoveProblem(id: string) {
     removeProblem(
       { contestId: contest.id, problemId: id },
       {

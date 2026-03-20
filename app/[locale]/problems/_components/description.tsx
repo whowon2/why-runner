@@ -6,7 +6,7 @@ import { useProblem } from "@/hooks/use-problem";
 import { DifficultyBadge } from "./badge";
 import { ProblemExamples } from "./examples";
 
-export function ProblemDescription({ problemId }: { problemId: number }) {
+export function ProblemDescription({ problemId }: { problemId: string }) {
   const t = useTranslations("ContestsPage");
 
   const { data: problem, isPending } = useProblem(problemId);

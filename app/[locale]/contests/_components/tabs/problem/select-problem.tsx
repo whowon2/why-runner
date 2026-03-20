@@ -36,7 +36,7 @@ export function SelectProblem({
   }));
 
   function handleSelectProblem(value: string) {
-    const prob = contest.problems.find((p) => p.problemId === Number(value));
+    const prob = contest.problems.find((p) => p.problemId === value);
     if (prob) {
       setProblem(prob.problem);
       const params = new URLSearchParams(searchParams);
@@ -49,7 +49,7 @@ export function SelectProblem({
     const problemId = searchParams.get("problem");
     if (problemId) {
       const prob = contest.problems.find(
-        (p) => p.problemId === Number(problemId),
+        (p) => p.problemId === problemId,
       );
       if (prob) {
         setProblem(prob.problem);

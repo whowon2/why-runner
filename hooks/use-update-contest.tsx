@@ -3,7 +3,7 @@ import type { Contest } from "@/drizzle/schema";
 import { updateContest } from "@/lib/actions/contest/update-contest";
 
 export type UpdateContestInput = {
-  contestId: number;
+  contestId: string;
   contest: Partial<Contest>;
 };
 

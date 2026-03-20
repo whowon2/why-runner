@@ -2,8 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { addProblemToContest } from "@/lib/actions/contest/add-problem";
 
 export type AddProblemToContestInput = {
-  contestId: number;
-  problemId: number;
+  contestId: string;
+  problemId: string;
 };
 
 export const useAddProblemToContest = () =>

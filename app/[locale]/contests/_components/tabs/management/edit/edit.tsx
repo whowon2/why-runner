@@ -5,7 +5,7 @@ import { useContest } from "@/hooks/use-contest";
 import { EditContestForm } from "./form";
 import { EditContestProblems } from "./problems";
 
-export function EditContest({ contestId }: { contestId: number }) {
+export function EditContest({ contestId }: { contestId: string }) {
   const { data: contest } = useContest(contestId);
 
   if (!contest) return null;
