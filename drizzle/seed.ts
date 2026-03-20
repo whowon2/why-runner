@@ -1,6 +1,6 @@
 import { reset, seed } from "drizzle-seed";
-import { db } from "./drizzle/db";
-import * as schema from "./drizzle/schema";
+import { db } from "@/drizzle/db";
+import * as schema from "@/drizzle/schema";
 
 async function main() {
   console.log("⏳ Resetting database...");
@@ -32,11 +32,7 @@ async function main() {
     contest: {
       count: 10,
       columns: {
-        id: f.int({
-          minValue: 10000,
-          maxValue: 100000,
-          isUnique: true,
-        }),
+        id: f.uuid(),
         name: f.companyName(), // "Acme Corp Contest"
         description: f.loremIpsum({ sentencesCount: 1 }),
         startDate: f.date({ minDate: "2023-01-01", maxDate: "2024-12-31" }),
@@ -52,7 +48,7 @@ async function main() {
 
     // 3. Problems
     problem: {
-      count: 10000,
+      count: 1,
       columns: {
         title: f.loremIpsum({ sentencesCount: 1 }),
         description: f.loremIpsum({ sentencesCount: 3 }),
@@ -64,9 +60,9 @@ async function main() {
         ]),
         // Handling Arrays
         inputs: f.valuesFromArray({
-          values: [["1 2", "5 10"], ["100"], ["0 0"]],
+          values: [["1 2", "5 10"], ["100"], ["0 0"]] as unknown as string[],
         }),
-        outputs: f.valuesFromArray({ values: [["3", "15"], ["100"], ["0"]] }),
+        outputs: f.valuesFromArray({ values: [["3", "15"], ["100"], ["0"]] as unknown as string[] }),
       },
     },
 
@@ -104,10 +100,39 @@ async function main() {
     // 5. Join Tables (Refining explicit table columns if needed)
     userOnContest: {
       columns: {
-        answered: f.valuesFromArray({ values: [["A", "B"], [], ["C"]] }),
+        answered: f.valuesFromArray({ values: [["A", "B"], [], ["C"]] as unknown as string[] }),
       },
     },
   }));
+
+  console.log("⚡ Creating a specific contest to join in 1 minute...");
+  const now = new Date();
+  const start = new Date(now.getTime() + 60 * 1000); // starts in 1 min
+  const end = new Date(start.getTime() + 60 * 60 * 1000); // ends in 1 hour
+
+  const [specificContest] = await db.insert(schema.contest).values({
+    name: "Quick Join Contest",
+    description: "A contest created just for you to join right now!",
+    startDate: start,
+    endDate: end,
+    createdBy: "Admin",
+    createdAt: now,
+  }).returning();
+
+  console.log("📝 Adding 'Two Sum' problem to the contest...");
+  const [twoSum] = await db.insert(schema.problem).values({
+    title: "Two Sum",
+    description: "Given two integers separated by a space, print their sum.",
+    difficulty: "easy",
+    inputs: ["1 2", "5 10", "100 200", "-5 5"],
+    outputs: ["3", "15", "300", "0"],
+    createdBy: "Admin"
+  }).returning();
+
+  await db.insert(schema.problemOnContest).values({
+    contestId: specificContest.id,
+    problemId: twoSum.id,
+  });
 
   console.log("✅ Seeding finished!");
   process.exit(0);
