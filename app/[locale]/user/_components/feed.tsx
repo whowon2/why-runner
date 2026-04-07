@@ -11,26 +11,16 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getActivities } from "@/lib/actions/activity/get-activities";
 
 export function Feed() {
-  const [activities, setActivities] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchFeed() {
-      try {
-        const data = await getActivities();
-        setActivities(data);
-      } catch (error) {
-        console.error("Failed to fetch feed", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchFeed();
-  }, []);
+  const { data: activities = [], isLoading: loading } = useQuery({
+    queryKey: ["activities"],
+    queryFn: async () => {
+      return await getActivities();
+    },
+  });
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 py-6">

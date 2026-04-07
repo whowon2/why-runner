@@ -117,7 +117,7 @@ function ProblemsStep() {
         <h3 className="font-semibold text-lg leading-none tracking-tight">Select Problems</h3>
         <p className="text-sm text-muted-foreground">Select the problems to include in this contest.</p>
       </div>
-      
+
       {isLoading ? (
         <p className="text-sm text-center py-4">Loading problems...</p>
       ) : (
@@ -127,10 +127,10 @@ function ProblemsStep() {
           )}
           {data?.data?.map((problem) => (
             <div key={problem.id} className="flex flex-row items-center space-x-3 rounded-md border p-3 hover:bg-muted/50 transition-colors">
-              <Checkbox 
+              <Checkbox
                 id={`problem-${problem.id}`}
-                checked={selectedProblems.includes(problem.id)} 
-                onCheckedChange={(checked) => toggleProblem(problem.id, !!checked)} 
+                checked={selectedProblems.includes(problem.id)}
+                onCheckedChange={(checked) => toggleProblem(problem.id, !!checked)}
               />
               <div className="space-y-0.5 leading-none cursor-pointer flex-1" onClick={() => toggleProblem(problem.id, !selectedProblems.includes(problem.id))}>
                 <FormLabel className="cursor-pointer font-medium">{problem.title}</FormLabel>
@@ -149,7 +149,7 @@ function ProblemsStep() {
 function ReviewStep() {
   const { getValues } = useFormContext<FormValues>();
   const values = getValues();
-  
+
   return (
     <div className="space-y-4 pt-2">
       <div className="space-y-1">
@@ -172,7 +172,7 @@ function ReviewStep() {
         </div>
         <div className="flex justify-between items-center">
           <span className="font-medium text-muted-foreground">Questions</span>
-          <span className="font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">{values.problems.length} selected</span>
+          <span className="font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">{values.problems?.length || 0} selected</span>
         </div>
       </div>
     </div>
@@ -203,7 +203,8 @@ export function CreateContestForm({
     mode: "onChange",
   });
 
-  const nextStep = async () => {
+  const nextStep = async (e?: React.MouseEvent) => {
+    e?.preventDefault();
     if (step === 0) {
       const isValid = await form.trigger(["name", "startDate", "duration"]);
       if (isValid) setStep(1);
@@ -245,7 +246,6 @@ export function CreateContestForm({
             description: error.message,
           });
         },
-        onSettled: () => onSuccessAction(),
         onSuccess: (data) => {
           toast.success("Contest Created");
           queryClient.invalidateQueries({ queryKey: ["contests"] });
@@ -270,30 +270,27 @@ export function CreateContestForm({
           {steps.map((s) => (
             <div key={s.id} className="flex flex-col items-center gap-1 w-full relative">
               <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium z-10 transition-colors ${
-                  step === s.id
+                className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium z-10 transition-colors ${step === s.id
                     ? "bg-primary text-primary-foreground border-2 border-primary"
                     : step > s.id
-                    ? "bg-primary/20 text-primary border-2 border-primary/20"
-                    : "bg-muted text-muted-foreground border-2 border-muted"
-                }`}
+                      ? "bg-primary/20 text-primary border-2 border-primary/20"
+                      : "bg-muted text-muted-foreground border-2 border-muted"
+                  }`}
               >
                 {step > s.id ? "✓" : s.id + 1}
               </div>
               <span
-                className={`text-[10px] font-medium uppercase tracking-wider ${
-                  step >= s.id ? "text-foreground" : "text-muted-foreground"
-                }`}
+                className={`text-[10px] font-medium uppercase tracking-wider ${step >= s.id ? "text-foreground" : "text-muted-foreground"
+                  }`}
               >
                 {s.title}
               </span>
-              
+
               {/* Line connector */}
               {s.id !== steps.length - 1 && (
                 <div
-                  className={`absolute top-4 left-[50%] w-full h-[2px] -z-0 ${
-                    step > s.id ? "bg-primary/50" : "bg-muted"
-                  }`}
+                  className={`absolute top-4 left-[50%] w-full h-[2px] -z-0 ${step > s.id ? "bg-primary/50" : "bg-muted"
+                    }`}
                 />
               )}
             </div>
@@ -326,7 +323,7 @@ export function CreateContestForm({
           )}
         </DialogFooter>
       </form>
-      
+
       <ShareToFeedModal
         isOpen={showShareModal}
         onClose={() => {
