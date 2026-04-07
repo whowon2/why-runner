@@ -38,7 +38,7 @@ const formSchema = z.object({
     },
   ),
   duration: z.string().min(1, "Duration must be set"),
-  problems: z.array(z.string()),
+  problems: z.array(z.string()).min(1, "You must select at least one problem"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -99,7 +99,7 @@ function BasicInfoStep() {
 }
 
 function ProblemsStep() {
-  const { watch, setValue } = useFormContext<FormValues>();
+  const { watch, setValue, formState: { errors } } = useFormContext<FormValues>();
   const { data, isLoading } = useProblems({ page: 1, pageSize: 50 });
   const selectedProblems = watch("problems");
 
@@ -116,6 +116,9 @@ function ProblemsStep() {
       <div className="space-y-1">
         <h3 className="font-semibold text-lg leading-none tracking-tight">Select Problems</h3>
         <p className="text-sm text-muted-foreground">Select the problems to include in this contest.</p>
+        {errors.problems && (
+          <p className="text-[0.8rem] font-medium text-destructive">{errors.problems.message}</p>
+        )}
       </div>
 
       {isLoading ? (
@@ -209,7 +212,8 @@ export function CreateContestForm({
       const isValid = await form.trigger(["name", "startDate", "duration"]);
       if (isValid) setStep(1);
     } else if (step === 1) {
-      setStep(2);
+      const isValid = await form.trigger(["problems"]);
+      if (isValid) setStep(2);
     }
   };
 
