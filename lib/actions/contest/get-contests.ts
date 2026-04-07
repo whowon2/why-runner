@@ -2,7 +2,7 @@
 
 import { db } from "@/drizzle/db";
 import { contest } from "@/drizzle/schema"; // Ensure this imports your contest table definition
-import { and, count, ilike, desc, eq } from "drizzle-orm";
+import { and, count, ilike, desc, eq, gt, lt, lte, gte } from "drizzle-orm";
 
 export interface GetContestsParams {
   page: number;
@@ -10,6 +10,7 @@ export interface GetContestsParams {
   search?: string;
   my?: boolean;
   userId?: string;
+  status?: "all" | "upcoming" | "active" | "past";
 }
 
 export async function getContests({
@@ -18,6 +19,7 @@ export async function getContests({
   search,
   my,
   userId,
+  status,
 }: GetContestsParams) {
   const offset = (page - 1) * pageSize;
 
@@ -30,6 +32,17 @@ export async function getContests({
 
   if (my && userId) {
     conditions.push(eq(contest.createdBy, userId));
+  }
+
+  if (status && status !== "all") {
+    const now = new Date();
+    if (status === "upcoming") {
+      conditions.push(gt(contest.startDate, now));
+    } else if (status === "active") {
+      conditions.push(and(lte(contest.startDate, now), gte(contest.endDate, now)));
+    } else if (status === "past") {
+      conditions.push(lt(contest.endDate, now));
+    }
   }
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;

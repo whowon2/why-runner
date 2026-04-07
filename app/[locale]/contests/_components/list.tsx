@@ -9,6 +9,13 @@ import { ChevronLeft, ChevronRight, Search, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ContestCard } from "./card";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -18,6 +25,7 @@ export function ContestList() {
   // 1. Extract State using nuqs
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [search, setSearch] = useQueryState("q", parseAsString.withDefault("").withOptions({ shallow: false }));
+  const [status, setStatus] = useQueryState("status", parseAsString.withDefault("all").withOptions({ shallow: false }));
 
   // 2. Fetch Data
   const {
@@ -28,6 +36,8 @@ export function ContestList() {
     page,
     pageSize: ITEMS_PER_PAGE,
     search,
+    // @ts-ignore - Let backend handle standard "all", "upcoming", "active", "past"
+    status,
   });
 
   const contests = queryData?.data || [];
@@ -56,20 +66,41 @@ export function ContestList() {
         </Button>
       </div>
 
-      {/* Search Bar */}
-      <div className="w-full relative group">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-indigo-500 transition-colors" />
+      {/* Search and Filters Bar */}
+      <div className="w-full flex inset-y-0 gap-3 flex-col sm:flex-row relative group z-20">
+        <div className="relative flex-1">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-indigo-500 transition-colors" />
+          </div>
+          <Input
+            placeholder="Search contests by name..."
+            className="pl-11 h-12 text-base rounded-2xl bg-muted/30 border-muted-foreground/20 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500 shadow-sm transition-all w-full"
+            value={search}
+            onChange={(e) => {
+               setSearch(e.target.value || null);
+               setPage(1);
+            }}
+          />
         </div>
-        <Input
-          placeholder="Search contests by name..."
-          className="pl-11 h-12 text-base rounded-2xl bg-muted/30 border-muted-foreground/20 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500 shadow-sm transition-all w-full max-w-xl"
-          value={search}
-          onChange={(e) => {
-             setSearch(e.target.value || null);
-             setPage(1);
-          }}
-        />
+        <div className="sm:w-[180px] shrink-0">
+          <Select
+            value={status}
+            onValueChange={(val) => {
+              setStatus(val);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-full h-12! rounded-2xl bg-muted/30 border-muted-foreground/20 focus:ring-indigo-500/50">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl border-muted-foreground/20 p-1">
+              <SelectItem value="all" className="rounded-lg">Any Status</SelectItem>
+              <SelectItem value="upcoming" className="rounded-lg text-emerald-600 dark:text-emerald-400">Upcoming</SelectItem>
+              <SelectItem value="active" className="rounded-lg text-amber-600 dark:text-amber-500">Active</SelectItem>
+              <SelectItem value="past" className="rounded-lg text-neutral-500">Past</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Content */}
