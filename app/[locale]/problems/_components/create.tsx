@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import type { User } from "better-auth";
 import { Delete } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -34,7 +34,8 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import { Eye, Pencil } from "lucide-react";
-
+import { ShareToFeedModal } from "@/components/share-to-feed-modal";
+import { createActivity } from "@/lib/actions/activity/create-activity";
 const formSchema = z.object({
   description: z.string().min(1),
   difficulty: z.enum(["easy", "medium", "hard"], {
@@ -75,6 +76,9 @@ export function NewProblem({ user }: { user: User }) {
 
   const { mutate: createProblem, isPending } = useCreateProblem();
 
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [createdProblem, setCreatedProblem] = useState<any>(null);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     createProblem(
       {
@@ -95,9 +99,10 @@ export function NewProblem({ user }: { user: User }) {
         onSettled() {
           queryClient.invalidateQueries({ queryKey: ["problems"] });
         },
-        onSuccess() {
-          toast("Problem added");
-          router.back();
+        onSuccess(data) {
+          toast.success("Problem created successfully!");
+          setCreatedProblem(data);
+          setShowShareModal(true);
         },
       },
     );
@@ -331,6 +336,28 @@ export function NewProblem({ user }: { user: User }) {
           </div>
         </TabsContent>
       </Tabs>
+
+      <ShareToFeedModal
+        isOpen={showShareModal}
+        onClose={() => {
+          setShowShareModal(false);
+          router.back();
+        }}
+        onShare={async (description) => {
+          if (createdProblem) {
+            await createActivity({
+              type: "PROBLEM_CREATED",
+              description,
+              problemId: createdProblem.id,
+            });
+            toast.success("Shared to your activity feed!");
+          }
+          setShowShareModal(false);
+          router.back();
+        }}
+        title="Share your new Problem"
+        descriptionText={`Let your followers know you've created "${createdProblem?.title || 'a new problem'}"!`}
+      />
     </div>
   );
 }

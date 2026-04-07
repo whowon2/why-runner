@@ -23,6 +23,8 @@ import { z } from "zod";
 import { useState } from "react";
 import { useProblems } from "@/hooks/use-problems";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ShareToFeedModal } from "@/components/share-to-feed-modal";
+import { createActivity } from "@/lib/actions/activity/create-activity";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(50),
@@ -187,6 +189,8 @@ export function CreateContestForm({
   const router = useRouter();
   const queryClient = useQueryClient();
   const [step, setStep] = useState(0);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [createdContest, setCreatedContest] = useState<any>(null);
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -245,7 +249,8 @@ export function CreateContestForm({
         onSuccess: (data) => {
           toast.success("Contest Created");
           queryClient.invalidateQueries({ queryKey: ["contests"] });
-          router.push(`/contests/${data.id}`);
+          setCreatedContest(data);
+          setShowShareModal(true);
         },
       },
     );
@@ -321,6 +326,34 @@ export function CreateContestForm({
           )}
         </DialogFooter>
       </form>
+      
+      <ShareToFeedModal
+        isOpen={showShareModal}
+        onClose={() => {
+          setShowShareModal(false);
+          onSuccessAction();
+          if (createdContest?.id) {
+            router.push(`/contests/${createdContest.id}`);
+          }
+        }}
+        onShare={async (description) => {
+          if (createdContest) {
+            await createActivity({
+              type: "CONTEST_CREATED",
+              description,
+              contestId: createdContest.id,
+            });
+            toast.success("Shared to your activity feed!");
+          }
+          setShowShareModal(false);
+          onSuccessAction();
+          if (createdContest?.id) {
+            router.push(`/contests/${createdContest.id}`);
+          }
+        }}
+        title="Share your new Contest"
+        descriptionText={`Let your followers know you've created "${createdContest?.name || 'a new contest'}"!`}
+      />
     </Form>
   );
 }

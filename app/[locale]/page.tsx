@@ -17,7 +17,7 @@ export default function Home() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[40rem] bg-indigo-500/10 blur-[120px] rounded-full mix-blend-multiply pointer-events-none dark:bg-indigo-500/20" />
 
       {/* Hero */}
-      <section className="relative flex flex-col items-center justify-center px-4 h-screen min-h-[800px] w-full z-10 text-center -mt-10">
+      <section className="relative flex flex-col items-center justify-center px-4 h-screen min-h-[800px] w-full  text-center -mt-10">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border/50 text-sm font-medium mb-8 backdrop-blur-md animate-in fade-in slide-in-from-bottom-4 duration-500">
           <Sparkles className="w-4 h-4 text-indigo-500" />
           <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-500 to-cyan-500 font-semibold">The Future of Competitive Programming</span>
@@ -58,7 +58,7 @@ export default function Home() {
       </section>
 
       {/* Safari Preview */}
-      <section className="w-full max-w-6xl px-4 text-center mt-10 space-y-8 relative z-10" id="example">
+      <section className="w-full max-w-6xl px-4 text-center mt-10 space-y-8 relative " id="example">
         <div className="space-y-4 max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
             {t("landing.submission.title")}
@@ -82,7 +82,7 @@ export default function Home() {
       </section>
 
       {/* Features */}
-      <section className="w-full max-w-6xl px-4 text-center mt-40 space-y-16 relative z-10">
+      <section className="w-full max-w-6xl px-4 text-center mt-40 space-y-16 relative ">
         <div className="space-y-4 max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-foreground to-foreground/70">
             {t("landing.features.title")}
@@ -135,7 +135,7 @@ export default function Home() {
       </section>
 
       {/* How It Works */}
-      <section className="w-full max-w-6xl px-4 mt-40 space-y-16 relative z-10">
+      <section className="w-full max-w-6xl px-4 mt-40 space-y-16 relative ">
         <div className="text-center space-y-4 max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
             {t("landing.how.title")}
@@ -144,7 +144,7 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           {/* Connector Line */}
-          <div className="hidden md:block absolute top-[44px] left-[15%] right-[15%] h-0.5 bg-linear-to-r from-transparent via-border to-transparent -z-10" />
+          <div className="hidden md:block absolute top-[44px] left-[15%] right-[15%] h-0.5 bg-linear-to-r from-transparent via-border to-transparent -" />
 
           {[
             { step: 1, title: t("landing.how.step1.title"), desc: t("landing.how.step1.description") },
@@ -152,7 +152,7 @@ export default function Home() {
             { step: 3, title: t("landing.how.step3.title"), desc: t("landing.how.step3.description") }
           ].map((item, idx) => (
             <div key={idx} className="flex flex-col items-center text-center space-y-4 relative bg-background/80 backdrop-blur-sm p-4 rounded-xl">
-              <div className="h-14 w-14 rounded-full bg-background border-4 border-indigo-500 flex items-center justify-center font-bold text-xl shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] z-10">
+              <div className="h-14 w-14 rounded-full bg-background border-4 border-indigo-500 flex items-center justify-center font-bold text-xl shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] ">
                 {item.step}
               </div>
               <h3 className="text-xl font-bold">{item.title}</h3>
@@ -163,7 +163,7 @@ export default function Home() {
       </section>
 
       {/* Use Cases */}
-      <section className="w-full max-w-6xl px-4 mt-40 space-y-16 relative z-10">
+      <section className="w-full max-w-6xl px-4 mt-40 space-y-16 relative ">
         <div className="text-center space-y-4 max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
             {t("landing.usecases.title")}
@@ -204,7 +204,7 @@ export default function Home() {
       </section>
 
       {/* Tech Stack */}
-      <section className="w-full max-w-4xl px-4 text-center mt-40 mb-32 space-y-8 relative z-10">
+      <section className="w-full max-w-4xl px-4 text-center mt-40 mb-32 space-y-8 relative ">
         <h2 className="text-2xl font-bold tracking-tight text-muted-foreground uppercase">
           {t("landing.stack.title")}
         </h2>

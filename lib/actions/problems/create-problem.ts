@@ -4,5 +4,6 @@ import { db } from "@/drizzle/db";
 import { type CreateProblemInput, problem } from "@/drizzle/schema";
 
 export async function createProblem(input: CreateProblemInput) {
-  await db.insert(problem).values(input);
+  const [createdProblem] = await db.insert(problem).values(input).returning();
+  return createdProblem;
 }
