@@ -1,8 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import type { contest } from "@/drizzle/schema";
-import { createContest } from "@/lib/actions/contest/create-contest";
-
-type CreateContestInput = typeof contest.$inferInsert;
+import { createContest, type CreateContestInput } from "@/lib/actions/contest/create-contest";
 
 export const useCreateContest = () =>
   useMutation({

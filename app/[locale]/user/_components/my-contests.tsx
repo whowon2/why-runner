@@ -13,7 +13,7 @@ export function MyContests() {
     <div className="w-full max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 py-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1.5">
-          <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-neutral-900 to-neutral-500 dark:from-neutral-50 dark:to-neutral-400">
+          <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-neutral-900 to-neutral-500 dark:from-neutral-50 dark:to-neutral-400">
             My Contests
           </h1>
           <p className="text-muted-foreground text-lg">
@@ -25,7 +25,7 @@ export function MyContests() {
         </div>
       </div>
 
-      <Separator className="w-full h-[1px] bg-gradient-to-r from-border to-transparent" />
+      <Separator className="w-full h-px bg-linear-to-r from-border to-transparent" />
 
       <Card className="border-dashed shadow-sm bg-muted/20 transition-all hover:bg-muted/30 hover:shadow-md border-2">
         <CardContent className="flex flex-col items-center justify-center p-14 text-center">
@@ -36,9 +36,9 @@ export function MyContests() {
           <CardDescription className="max-w-md mx-auto mb-8 text-base">
             You haven't created any contests yet. Get started by creating your first coding contest to share with your students or peers.
           </CardDescription>
-          
+
           <div className="relative group">
-            <div className="absolute -inset-1 blur-lg bg-gradient-to-r from-indigo-500 to-cyan-500 opacity-20 group-hover:opacity-40 transition duration-500 rounded-lg"></div>
+            <div className="absolute -inset-1 blur-lg bg-linear-to-r from-indigo-500 to-cyan-500 opacity-20 group-hover:opacity-40 transition duration-500 rounded-lg"></div>
             <div className="relative">
               <CreateContestDialog />
             </div>
