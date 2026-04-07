@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { UserDock } from "@/components/user-dock";
 import { Providers } from "@/providers";
 import "../globals.css";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const metadata: Metadata = {
   description: "",
@@ -21,12 +22,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="flex flex-col min-h-screen justify-between scroll-smooth">
         <NextIntlClientProvider>
-          <Providers>
-            {children}
-            <Toaster />
-            <UserDock />
-            <Footer />
-          </Providers>
+          <NuqsAdapter>
+            <Providers>
+              {children}
+              <Toaster />
+              <UserDock />
+              <Footer />
+            </Providers>
+          </NuqsAdapter>
         </NextIntlClientProvider>
       </body>
     </html>

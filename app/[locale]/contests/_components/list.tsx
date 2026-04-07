@@ -4,22 +4,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useContests } from "@/hooks/use-contests";
-import { Link, useRouter } from "@/i18n/navigation";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { ChevronLeft, ChevronRight, Search, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
 import { ContestCard } from "./card";
+import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 
 const ITEMS_PER_PAGE = 5;
 
 export function ContestList() {
   const t = useTranslations("ContestsPage");
-  const router = useRouter();
-  const searchParams = useSearchParams();
 
-  // 1. Extract State
-  const page = Number(searchParams.get("page") || 1);
-  const search = searchParams.get("q") || "";
+  // 1. Extract State using nuqs
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+  const [search, setSearch] = useQueryState("q", parseAsString.withDefault("").withOptions({ shallow: false }));
 
   // 2. Fetch Data
   const {
@@ -36,72 +34,88 @@ export function ContestList() {
   const totalCount = queryData?.total || 0;
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
-  // 3. Update URL Helper
-  const updateFilter = (key: string, value: string | number | undefined) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-
-    if (value === undefined || value === "") {
-      newParams.delete(key);
-    } else {
-      newParams.set(key, String(value));
-    }
-
-    // Reset page to 1 if search changes
-    if (key === "q") {
-      newParams.delete("page");
-    }
-
-    router.replace(`?${newParams.toString()}`);
-  };
-
   return (
-    <div className="w-full max-w-7xl flex-1 flex flex-col gap-6">
-      <div className="flex flex-col gap-4">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <h1 className="font-bold text-2xl">{t("title")}</h1>
-          <Button asChild>
-            <Link href={"/user?tab=contests"}>My Contests</Link>
-          </Button>
+    <div className="w-full max-w-5xl mx-auto flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 py-6">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1.5">
+          <h1 className="text-4xl font-extrabold tracking-tight flex items-center gap-3">
+            <span className="p-2 bg-indigo-500/10 rounded-xl">
+              <Trophy className="w-8 h-8 text-indigo-500" />
+            </span>
+            <span className="bg-clip-text text-transparent bg-linear-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+              {t("title") || "Contests"}
+            </span>
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Find the best contests and test your skills.
+          </p>
         </div>
+        <Button asChild className="shrink-0 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-indigo-500/25 rounded-full px-6 transition-all hover:scale-105 active:scale-95 border-0">
+          <Link href={"/user?tab=contests"}>My Contests</Link>
+        </Button>
+      </div>
 
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search contests..."
-            className="pl-9 max-w-md"
-            defaultValue={search}
-            onBlur={(e) => updateFilter("q", e.target.value)}
-            onKeyDown={(e) =>
-              e.key === "Enter" && updateFilter("q", e.currentTarget.value)
-            }
-          />
+      {/* Search Bar */}
+      <div className="w-full relative group">
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-indigo-500 transition-colors" />
         </div>
+        <Input
+          placeholder="Search contests by name..."
+          className="pl-11 h-12 text-base rounded-2xl bg-muted/30 border-muted-foreground/20 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500 shadow-sm transition-all w-full max-w-xl"
+          value={search}
+          onChange={(e) => {
+             setSearch(e.target.value || null);
+             setPage(1);
+          }}
+        />
       </div>
 
       {/* Content */}
-      <div className="flex-1">
+      <div className="flex-1 min-h-[400px]">
         {isPending ? (
-          <div className="flex flex-col gap-4 py-4">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-36 w-full rounded-xl" />
+          <div className="flex flex-col gap-4">
+            {Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+              <Skeleton key={i} className="h-40 w-full rounded-2xl bg-muted/40" />
             ))}
           </div>
         ) : (
           <div className="flex flex-col gap-4">
             {contests.length === 0 ? (
-              <div className="flex h-48 items-center justify-center border rounded-lg border-dashed">
-                <p className="text-muted-foreground">{t("notFound")}</p>
+              <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-3xl bg-muted/10">
+                <div className="p-4 bg-muted/30 rounded-full mb-4">
+                  <Search className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold mb-1">No contests found</h3>
+                <p className="text-muted-foreground max-w-sm">
+                  {search 
+                    ? `We couldn't find any contests matching "${search}". Try adjusting your search.`
+                    : t("notFound")?.replace("not found", "No contests available yet.") || "No contests available yet."}
+                </p>
+                {search && (
+                  <Button 
+                    variant="outline" 
+                    className="mt-6 rounded-full"
+                    onClick={() => {
+                        setSearch(null);
+                        setPage(1);
+                    }}
+                  >
+                    Clear Search
+                  </Button>
+                )}
               </div>
             ) : (
               <div
-                className={`flex flex-col gap-4 ${
-                  isPlaceholderData ? "opacity-50" : ""
+                className={`flex flex-col gap-4 transition-opacity duration-300 ${
+                  isPlaceholderData ? "opacity-60 saturate-50" : ""
                 }`}
               >
                 {contests.map((contest) => (
-                  <ContestCard contest={contest} key={contest.id} />
+                  <div key={contest.id} className="transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/5 rounded-2xl">
+                    <ContestCard contest={contest} />
+                  </div>
                 ))}
               </div>
             )}
@@ -111,31 +125,33 @@ export function ContestList() {
 
       {/* Pagination Controls */}
       {!isPending && totalCount > 0 && (
-        <div className="flex items-center justify-between py-4 border-t">
-          <div className="text-sm text-muted-foreground">
-            Showing <strong>{(page - 1) * ITEMS_PER_PAGE + 1}</strong>-
-            <strong>{Math.min(page * ITEMS_PER_PAGE, totalCount)}</strong> of{" "}
-            <strong>{totalCount}</strong>
+        <div className="flex flex-col sm:flex-row items-center justify-between py-6 border-t gap-4">
+          <div className="text-sm font-medium text-muted-foreground bg-muted/30 px-4 py-2 rounded-full">
+            Showing <span className="text-foreground">{(page - 1) * ITEMS_PER_PAGE + 1}</span> to{" "}
+            <span className="text-foreground">{Math.min(page * ITEMS_PER_PAGE, totalCount)}</span> of{" "}
+            <span className="text-foreground">{totalCount}</span> contests
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Button
               variant="outline"
               size="icon"
+              className="rounded-full h-10 w-10 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 dark:hover:bg-indigo-950/30"
               disabled={page <= 1}
-              onClick={() => updateFilter("page", page - 1)}
+              onClick={() => setPage(page - 1)}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-5 w-5" />
             </Button>
-            <div className="text-sm font-medium">
+            <div className="text-sm font-semibold min-w-24 text-center">
               Page {page} of {totalPages}
             </div>
             <Button
               variant="outline"
               size="icon"
+              className="rounded-full h-10 w-10 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 dark:hover:bg-indigo-950/30"
               disabled={page >= totalPages}
-              onClick={() => updateFilter("page", page + 1)}
+              onClick={() => setPage(page + 1)}
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-5 w-5" />
             </Button>
           </div>
         </div>
