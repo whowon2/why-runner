@@ -38,7 +38,7 @@ export default function Profile({ user }: { user: User }) {
         {/* Optional: Pattern Overlay */}
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:20px_20px]"></div>
       </div>
-      
+
       <CardContent className="relative px-6 pb-8 sm:px-10">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           {/* Avatar breakout */}
@@ -55,10 +55,10 @@ export default function Profile({ user }: { user: User }) {
             {/* Glow effect behind avatar */}
             <div className="absolute inset-0 rounded-full bg-indigo-500/40 blur-xl -z-10 animate-pulse"></div>
           </div>
-          
+
           {/* Top Actions (Follow, Edit Profile, etc) can go here */}
           <div className="pt-2 sm:pt-0">
-             {/* Stub button space for future "Edit Profile" */}
+            {/* Stub button space for future "Edit Profile" */}
           </div>
         </div>
 
