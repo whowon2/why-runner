@@ -209,7 +209,7 @@ export default function Home() {
           {t("landing.stack.title")}
         </h2>
         <div className="flex flex-wrap justify-center gap-3">
-          {["Next.js", "Rust", "tRPC", "Prisma", "PostgreSQL", "AWS SQS", "Bun", "Docker", "Gemini API", "NX Monorepo"].map((tech) => (
+          {["Next.js", "Rust", "tRPC", "Drizzle", "PostgreSQL", "SQS", "Bun", "Docker"].map((tech) => (
             <div key={tech} className="px-4 py-2 rounded-full border bg-background/50 backdrop-blur-sm text-sm font-medium text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors cursor-default">
               {tech}
             </div>
