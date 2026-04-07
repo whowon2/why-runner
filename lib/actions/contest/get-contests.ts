@@ -2,18 +2,22 @@
 
 import { db } from "@/drizzle/db";
 import { contest } from "@/drizzle/schema"; // Ensure this imports your contest table definition
-import { and, count, ilike, desc, asc } from "drizzle-orm";
+import { and, count, ilike, desc, eq } from "drizzle-orm";
 
 export interface GetContestsParams {
   page: number;
   pageSize: number;
   search?: string;
+  my?: boolean;
+  userId?: string;
 }
 
 export async function getContests({
   page = 1,
   pageSize = 10,
   search,
+  my,
+  userId,
 }: GetContestsParams) {
   const offset = (page - 1) * pageSize;
 
@@ -22,6 +26,10 @@ export async function getContests({
   // Filter by title if search is present
   if (search) {
     conditions.push(ilike(contest.name, `%${search}%`));
+  }
+
+  if (my && userId) {
+    conditions.push(eq(contest.createdBy, userId));
   }
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
