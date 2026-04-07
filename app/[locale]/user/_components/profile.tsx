@@ -1,12 +1,12 @@
 "use client";
 
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useProfile } from "@/hooks/use-profile";
 import type { User } from "better-auth";
+import { Calendar, Link as LinkIcon, MapPin } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import { useProfile } from "@/hooks/use-profile";
-import { MapPin, Link as LinkIcon, Calendar } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Profile({ user }: { user: User }) {
   const { data, isPending } = useProfile(user.id);
@@ -36,7 +36,7 @@ export default function Profile({ user }: { user: User }) {
       <div className="h-48 w-full bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 relative">
         <div className="absolute inset-0 bg-black/10 mix-blend-overlay"></div>
         {/* Optional: Pattern Overlay */}
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:20px_20px]"></div>
+        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] bg-size-[20px_20px]"></div>
       </div>
 
       <CardContent className="relative px-6 pb-8 sm:px-10">
@@ -66,7 +66,6 @@ export default function Profile({ user }: { user: User }) {
           {/* User Info */}
           <div className="space-y-2">
             <h1 className="text-3xl font-extrabold tracking-tight text-foreground">{data.name}</h1>
-            <p className="text-muted-foreground text-sm uppercase tracking-wider font-semibold">@<span className="text-indigo-500">{data.name.split(" ")[0].toLowerCase().replace(/[^a-z0-9]/g, "")}{(user.id).slice(-4)}</span></p>
           </div>
 
           <p className="text-base leading-relaxed max-w-2xl text-foreground/90">
