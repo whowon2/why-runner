@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1765232629324,
-      "tag": "0000_absurd_supernaut",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1773964333637,
-      "tag": "0001_shiny_randall_flagg",
+      "when": 1775597319610,
+      "tag": "0000_simple_wallflower",
       "breakpoints": true
     }
   ]

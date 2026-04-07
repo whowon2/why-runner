@@ -2,7 +2,7 @@ CREATE TYPE "public"."problem_difficulty" AS ENUM('easy', 'medium', 'hard');--> 
 CREATE TYPE "public"."language" AS ENUM('c', 'cpp', 'java', 'python', 'rust');--> statement-breakpoint
 CREATE TYPE "public"."submission_status" AS ENUM('PENDING', 'PASSED', 'FAILED', 'ERROR', 'RUNNING');--> statement-breakpoint
 CREATE TABLE "contest" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
 	"description" text NOT NULL,
 	"start_date" timestamp NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE "contest" (
 );
 --> statement-breakpoint
 CREATE TABLE "problem" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"title" text NOT NULL,
 	"description" text NOT NULL,
 	"difficulty" "problem_difficulty",
@@ -24,15 +24,15 @@ CREATE TABLE "problem" (
 );
 --> statement-breakpoint
 CREATE TABLE "submission" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"status" "submission_status" DEFAULT 'PENDING' NOT NULL,
 	"code" text NOT NULL,
 	"language" "language",
 	"question_letter" text NOT NULL,
 	"output" text,
 	"user_id" text NOT NULL,
-	"problem_id" serial NOT NULL,
-	"contest_id" serial NOT NULL,
+	"problem_id" uuid NOT NULL,
+	"contest_id" uuid NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
@@ -54,8 +54,8 @@ CREATE TABLE "account" (
 );
 --> statement-breakpoint
 CREATE TABLE "problem_on_contest" (
-	"problem_id" serial NOT NULL,
-	"contest_id" serial NOT NULL
+	"problem_id" uuid NOT NULL,
+	"contest_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "session" (
@@ -84,7 +84,7 @@ CREATE TABLE "user" (
 --> statement-breakpoint
 CREATE TABLE "user_on_contest" (
 	"user_id" text NOT NULL,
-	"contest_id" serial NOT NULL,
+	"contest_id" uuid NOT NULL,
 	"answered" text[] DEFAULT '{}' NOT NULL
 );
 --> statement-breakpoint

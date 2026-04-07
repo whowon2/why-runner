@@ -1,5 +1,5 @@
 {
-  "id": "96effb13-386b-4137-bfb9-6e9d7ca95896",
+  "id": "5570c339-d287-4cf1-8193-3d8b90c6c920",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,9 +10,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "name": {
           "name": "name",
@@ -66,9 +67,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "title": {
           "name": "title",
@@ -136,9 +138,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "status": {
           "name": "status",
@@ -181,13 +184,13 @@
         },
         "problem_id": {
           "name": "problem_id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
         "contest_id": {
           "name": "contest_id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -212,8 +215,12 @@
           "name": "submission_user_id_user_id_fk",
           "tableFrom": "submission",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -221,8 +228,12 @@
           "name": "submission_problem_id_problem_id_fk",
           "tableFrom": "submission",
           "tableTo": "problem",
-          "columnsFrom": ["problem_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "problem_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -339,8 +350,12 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -357,13 +372,13 @@
       "columns": {
         "problem_id": {
           "name": "problem_id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
         "contest_id": {
           "name": "contest_id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         }
@@ -374,8 +389,12 @@
           "name": "problem_on_contest_problem_id_problem_id_fk",
           "tableFrom": "problem_on_contest",
           "tableTo": "problem",
-          "columnsFrom": ["problem_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "problem_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -383,8 +402,12 @@
           "name": "problem_on_contest_contest_id_contest_id_fk",
           "tableFrom": "problem_on_contest",
           "tableTo": "contest",
-          "columnsFrom": ["contest_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "contest_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -471,8 +494,12 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -482,7 +509,9 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": ["token"]
+          "columns": [
+            "token"
+          ]
         }
       },
       "policies": {},
@@ -552,7 +581,9 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       },
       "policies": {},
@@ -571,7 +602,7 @@
         },
         "contest_id": {
           "name": "contest_id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -589,8 +620,12 @@
           "name": "user_on_contest_contest_id_contest_id_fk",
           "tableFrom": "user_on_contest",
           "tableTo": "contest",
-          "columnsFrom": ["contest_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "contest_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -673,17 +708,33 @@
     "public.problem_difficulty": {
       "name": "problem_difficulty",
       "schema": "public",
-      "values": ["easy", "medium", "hard"]
+      "values": [
+        "easy",
+        "medium",
+        "hard"
+      ]
     },
     "public.language": {
       "name": "language",
       "schema": "public",
-      "values": ["c", "cpp", "java", "python", "rust"]
+      "values": [
+        "c",
+        "cpp",
+        "java",
+        "python",
+        "rust"
+      ]
     },
     "public.submission_status": {
       "name": "submission_status",
       "schema": "public",
-      "values": ["PENDING", "PASSED", "FAILED", "ERROR", "RUNNING"]
+      "values": [
+        "PENDING",
+        "PASSED",
+        "FAILED",
+        "ERROR",
+        "RUNNING"
+      ]
     }
   },
   "schemas": {},
