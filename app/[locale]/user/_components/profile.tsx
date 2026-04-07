@@ -75,18 +75,24 @@ export default function Profile({ user }: { user: User }) {
 
           {/* User Meta tags */}
           <div className="flex flex-wrap items-center gap-y-3 gap-x-6 text-sm text-muted-foreground font-medium">
-            <div className="flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer">
-              <MapPin className="w-4 h-4" />
-              <span>Global Logic Network</span>
-            </div>
-            <div className="flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer">
-              <LinkIcon className="w-4 h-4" />
-              <span className="text-indigo-500 hover:text-indigo-400">algorithm.dev</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4" />
-              <span>Joined recently</span>
-            </div>
+            {data.location && (
+              <div className="flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer">
+                <MapPin className="w-4 h-4" />
+                <span>{data.location}</span>
+              </div>
+            )}
+            {data.website && (
+              <div className="flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer">
+                <LinkIcon className="w-4 h-4" />
+                <span className="text-indigo-500 hover:text-indigo-400">{data.website}</span>
+              </div>
+            )}
+            {data.createdAt && (
+              <div className="flex items-center gap-1.5">
+                <Calendar className="w-4 h-4" />
+                <span>Joined {new Date(data.createdAt).toLocaleDateString()}</span>
+              </div>
+            )}
           </div>
 
           {/* Stats Bar */}
