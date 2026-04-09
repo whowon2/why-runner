@@ -63,13 +63,13 @@ export function SelectProblem({
     >
       {options.map((option) => {
         const isAnswered = answered.includes(option.label);
-        
+
         return (
           <RadioGroup.Item
             className={cn(
               "cursor-pointer rounded px-4 py-2 ring-[1px] ring-border transition-all duration-200 hover:bg-secondary data-[state=checked]:ring-2 data-[state=checked]:ring-secondary min-w-[60px]",
               {
-                "bg-green-600 text-white ring-green-700": isAnswered,
+                "bg-green-500 text-white": isAnswered,
               },
             )}
             key={option.value}
@@ -77,11 +77,6 @@ export function SelectProblem({
           >
             <div className="flex flex-col items-center justify-center">
               <span className="font-bold text-lg">{option.label}</span>
-              {isAnswered && (
-                <span className="text-[10px] leading-tight font-black uppercase opacity-90">
-                  Answered
-                </span>
-              )}
             </div>
           </RadioGroup.Item>
         );
