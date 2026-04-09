@@ -16,7 +16,6 @@ import type {
 } from "@/drizzle/schema";
 import { useContestSubmissions } from "@/hooks/use-contest-submissions";
 import { letters } from "@/lib/letters";
-import { isProblemSolved } from "@/lib/utils";
 import { SelectProblem } from "./select-problem";
 import { SubmissionList } from "./submission-list";
 import { UploadCode } from "./upload";
@@ -74,10 +73,11 @@ export function ProblemTab({
     );
   }
 
-  const solvedProblems =
-    submissions
-      ?.filter((sub) => sub.status === "PASSED" && sub.userId === user.id)
-      .map((sub) => sub.problem) ?? [];
+  const answeredLetters = isUserOnContest?.answered ?? [];
+  const currentProblemLetter = problem 
+    ? letters[contest.problems.findIndex((p) => p.problemId === problem.id)]
+    : null;
+  const isCurrentProblemSolved = currentProblemLetter && answeredLetters.includes(currentProblemLetter);
 
   return (
     <div className="flex flex-col w-full gap-4">
@@ -85,7 +85,7 @@ export function ProblemTab({
         contest={contest}
         setProblem={setProblem}
         user={user}
-        solved={solvedProblems}
+        answered={answeredLetters}
       />
 
       {problem && (
@@ -98,7 +98,7 @@ export function ProblemTab({
           </ResizablePanel>
           {isUserOnContest &&
             contest.endDate > new Date() &&
-            !isProblemSolved(problem.id, solvedProblems) && (
+            !isCurrentProblemSolved && (
               <Fragment>
                 <ResizableHandle withHandle />
                 <ResizablePanel className="pl-4">
@@ -106,13 +106,7 @@ export function ProblemTab({
                     user={user}
                     contest={contest}
                     problem={problem}
-                    problemLetter={
-                      letters[
-                      contest.problems.findIndex(
-                        (p) => p.problemId === problem.id,
-                      )
-                      ] ?? ""
-                    }
+                    problemLetter={currentProblemLetter ?? ""}
                   />
                 </ResizablePanel>
               </Fragment>
