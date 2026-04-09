@@ -2,11 +2,11 @@ import * as RadioGroup from "@radix-ui/react-radio-group";
 import type { User } from "better-auth";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import {
-  type Contest,
-  type Problem,
-  type ProblemOnContest,
-  type UserOnContest,
+import type {
+  Contest,
+  Problem,
+  ProblemOnContest,
+  UserOnContest,
 } from "@/drizzle/schema";
 import { useRouter } from "@/i18n/navigation";
 import { letters } from "@/lib/letters";
@@ -47,9 +47,7 @@ export function SelectProblem({
   useEffect(() => {
     const problemId = searchParams.get("problem");
     if (problemId) {
-      const prob = contest.problems.find(
-        (p) => p.problemId === problemId,
-      );
+      const prob = contest.problems.find((p) => p.problemId === problemId);
       if (prob) {
         setProblem(prob.problem);
       }

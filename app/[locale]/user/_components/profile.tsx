@@ -1,12 +1,12 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useProfile } from "@/hooks/use-profile";
 import type { User } from "better-auth";
 import { Calendar, Link as LinkIcon, MapPin } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useProfile } from "@/hooks/use-profile";
 
 export default function Profile({ user }: { user: User }) {
   const { data, isPending } = useProfile(user.id);
@@ -45,7 +45,10 @@ export default function Profile({ user }: { user: User }) {
           <div className="relative -mt-16 sm:-mt-20 inline-block shrink-0">
             <div className="rounded-full border-4 border-background bg-background shadow-xl overflow-hidden h-32 w-32 sm:h-40 sm:w-40 relative z-10 transition-transform duration-500 group-hover:scale-105">
               <Image
-                src={data.image || "https://api.dicebear.com/9.x/glass/svg?seed=" + data.name}
+                src={
+                  data.image ||
+                  "https://api.dicebear.com/9.x/glass/svg?seed=" + data.name
+                }
                 fill
                 alt="avatar"
                 className="object-cover"
@@ -65,11 +68,14 @@ export default function Profile({ user }: { user: User }) {
         <div className="mt-6 flex flex-col gap-6">
           {/* User Info */}
           <div className="space-y-2">
-            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">{data.name}</h1>
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+              {data.name}
+            </h1>
           </div>
 
           <p className="text-base leading-relaxed max-w-2xl text-foreground/90">
-            {data.bio || "Competitive programmer and algorithmic logic enthusiast. Building the future one test case at a time. Always eager to learn new data structures and optimize runtime."}
+            {data.bio ||
+              "Competitive programmer and algorithmic logic enthusiast. Building the future one test case at a time. Always eager to learn new data structures and optimize runtime."}
           </p>
 
           {/* User Meta tags */}
@@ -83,13 +89,17 @@ export default function Profile({ user }: { user: User }) {
             {data.website && (
               <div className="flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer">
                 <LinkIcon className="w-4 h-4" />
-                <span className="text-indigo-500 hover:text-indigo-400">{data.website}</span>
+                <span className="text-indigo-500 hover:text-indigo-400">
+                  {data.website}
+                </span>
               </div>
             )}
             {data.createdAt && (
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4" />
-                <span>Joined {new Date(data.createdAt).toLocaleDateString()}</span>
+                <span>
+                  Joined {new Date(data.createdAt).toLocaleDateString()}
+                </span>
               </div>
             )}
           </div>
@@ -98,15 +108,23 @@ export default function Profile({ user }: { user: User }) {
           <div className="flex gap-8 mt-4 pt-6 border-t">
             <div className="flex flex-col">
               <span className="font-extrabold text-2xl">4</span>
-              <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Contests</span>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                Contests
+              </span>
             </div>
             <div className="flex flex-col">
               <span className="font-extrabold text-2xl">12</span>
-              <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Problems</span>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                Problems
+              </span>
             </div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-2xl text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-rose-500">1st</span>
-              <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Global Rank</span>
+              <span className="font-extrabold text-2xl text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-rose-500">
+                1st
+              </span>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                Global Rank
+              </span>
             </div>
           </div>
         </div>

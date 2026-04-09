@@ -1,8 +1,8 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { user } from "./users";
 import { contest } from "./contests";
 import { problem } from "./problems";
+import { user } from "./users";
 
 export const activityFeed = pgTable("activity_feed", {
   id: uuid("id").defaultRandom().primaryKey(),

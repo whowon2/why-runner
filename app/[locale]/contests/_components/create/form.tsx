@@ -1,6 +1,16 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { useForm, useFormContext } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { ShareToFeedModal } from "@/components/share-to-feed-modal";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DialogFooter } from "@/components/ui/dialog";
 import {
   Form,
@@ -12,19 +22,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useCreateContest } from "@/hooks/use-create-contest";
-import { authClient } from "@/lib/auth/client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useForm, useFormContext } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { useState } from "react";
 import { useProblems } from "@/hooks/use-problems";
-import { Checkbox } from "@/components/ui/checkbox";
-import { ShareToFeedModal } from "@/components/share-to-feed-modal";
 import { createActivity } from "@/lib/actions/activity/create-activity";
+import { authClient } from "@/lib/auth/client";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(50),
@@ -99,13 +99,20 @@ function BasicInfoStep() {
 }
 
 function ProblemsStep() {
-  const { watch, setValue, formState: { errors } } = useFormContext<FormValues>();
+  const {
+    watch,
+    setValue,
+    formState: { errors },
+  } = useFormContext<FormValues>();
   const { data, isLoading } = useProblems({ page: 1, pageSize: 50 });
   const selectedProblems = watch("problems");
 
   const toggleProblem = (id: string, checked: boolean) => {
     if (!checked) {
-      setValue("problems", selectedProblems.filter(pid => pid !== id));
+      setValue(
+        "problems",
+        selectedProblems.filter((pid) => pid !== id),
+      );
     } else {
       setValue("problems", [...selectedProblems, id]);
     }
@@ -114,10 +121,16 @@ function ProblemsStep() {
   return (
     <div className="space-y-4 pt-2">
       <div className="space-y-1">
-        <h3 className="font-semibold text-lg leading-none tracking-tight">Select Problems</h3>
-        <p className="text-sm text-muted-foreground">Select the problems to include in this contest.</p>
+        <h3 className="font-semibold text-lg leading-none tracking-tight">
+          Select Problems
+        </h3>
+        <p className="text-sm text-muted-foreground">
+          Select the problems to include in this contest.
+        </p>
         {errors.problems && (
-          <p className="text-[0.8rem] font-medium text-destructive">{errors.problems.message}</p>
+          <p className="text-[0.8rem] font-medium text-destructive">
+            {errors.problems.message}
+          </p>
         )}
       </div>
 
@@ -129,16 +142,31 @@ function ProblemsStep() {
             <p className="text-sm text-center py-4">No problems found.</p>
           )}
           {data?.data?.map((problem) => (
-            <div key={problem.id} className="flex flex-row items-center space-x-3 rounded-md border p-3 hover:bg-muted/50 transition-colors">
+            <div
+              key={problem.id}
+              className="flex flex-row items-center space-x-3 rounded-md border p-3 hover:bg-muted/50 transition-colors"
+            >
               <Checkbox
                 id={`problem-${problem.id}`}
                 checked={selectedProblems.includes(problem.id)}
-                onCheckedChange={(checked) => toggleProblem(problem.id, !!checked)}
+                onCheckedChange={(checked) =>
+                  toggleProblem(problem.id, !!checked)
+                }
               />
-              <div className="space-y-0.5 leading-none cursor-pointer flex-1" onClick={() => toggleProblem(problem.id, !selectedProblems.includes(problem.id))}>
-                <FormLabel className="cursor-pointer font-medium">{problem.title}</FormLabel>
+              <div
+                className="space-y-0.5 leading-none cursor-pointer flex-1"
+                onClick={() =>
+                  toggleProblem(
+                    problem.id,
+                    !selectedProblems.includes(problem.id),
+                  )
+                }
+              >
+                <FormLabel className="cursor-pointer font-medium">
+                  {problem.title}
+                </FormLabel>
                 <p className="text-xs text-muted-foreground">
-                  Difficulty: {problem.difficulty || 'Normal'}
+                  Difficulty: {problem.difficulty || "Normal"}
                 </p>
               </div>
             </div>
@@ -156,8 +184,12 @@ function ReviewStep() {
   return (
     <div className="space-y-4 pt-2">
       <div className="space-y-1">
-        <h3 className="font-semibold text-lg leading-none tracking-tight">Review Details</h3>
-        <p className="text-sm text-muted-foreground">Verify your contest information before creation.</p>
+        <h3 className="font-semibold text-lg leading-none tracking-tight">
+          Review Details
+        </h3>
+        <p className="text-sm text-muted-foreground">
+          Verify your contest information before creation.
+        </p>
       </div>
 
       <div className="rounded-md border bg-muted/20 p-4 space-y-3 text-sm">
@@ -167,7 +199,9 @@ function ReviewStep() {
         </div>
         <div className="flex justify-between items-center border-b pb-2">
           <span className="font-medium text-muted-foreground">Start Date</span>
-          <span className="font-medium">{new Date(values.startDate).toLocaleString()}</span>
+          <span className="font-medium">
+            {new Date(values.startDate).toLocaleString()}
+          </span>
         </div>
         <div className="flex justify-between items-center border-b pb-2">
           <span className="font-medium text-muted-foreground">Duration</span>
@@ -175,7 +209,9 @@ function ReviewStep() {
         </div>
         <div className="flex justify-between items-center">
           <span className="font-medium text-muted-foreground">Questions</span>
-          <span className="font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">{values.problems?.length || 0} selected</span>
+          <span className="font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+            {values.problems?.length || 0} selected
+          </span>
         </div>
       </div>
     </div>
@@ -198,7 +234,9 @@ export function CreateContestForm({
   const form = useForm<FormValues>({
     defaultValues: {
       name: "New Contest",
-      startDate: new Date(Date.now() + 1000 * 60 * 60).toISOString().slice(0, 16),
+      startDate: new Date(Date.now() + 1000 * 60 * 60)
+        .toISOString()
+        .slice(0, 16),
       duration: "15",
       problems: [],
     },
@@ -272,20 +310,25 @@ export function CreateContestForm({
         {/* Stepper Header */}
         <div className="flex items-center justify-between mb-4 mt-2">
           {steps.map((s) => (
-            <div key={s.id} className="flex flex-col items-center gap-1 w-full relative">
+            <div
+              key={s.id}
+              className="flex flex-col items-center gap-1 w-full relative"
+            >
               <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium z-10 transition-colors ${step === s.id
+                className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium z-10 transition-colors ${
+                  step === s.id
                     ? "bg-primary text-primary-foreground border-2 border-primary"
                     : step > s.id
                       ? "bg-primary/20 text-primary border-2 border-primary/20"
                       : "bg-muted text-muted-foreground border-2 border-muted"
-                  }`}
+                }`}
               >
                 {step > s.id ? "✓" : s.id + 1}
               </div>
               <span
-                className={`text-[10px] font-medium uppercase tracking-wider ${step >= s.id ? "text-foreground" : "text-muted-foreground"
-                  }`}
+                className={`text-[10px] font-medium uppercase tracking-wider ${
+                  step >= s.id ? "text-foreground" : "text-muted-foreground"
+                }`}
               >
                 {s.title}
               </span>
@@ -293,17 +336,16 @@ export function CreateContestForm({
               {/* Line connector */}
               {s.id !== steps.length - 1 && (
                 <div
-                  className={`absolute top-4 left-[50%] w-full h-[2px] -z-0 ${step > s.id ? "bg-primary/50" : "bg-muted"
-                    }`}
+                  className={`absolute top-4 left-[50%] w-full h-[2px] -z-0 ${
+                    step > s.id ? "bg-primary/50" : "bg-muted"
+                  }`}
                 />
               )}
             </div>
           ))}
         </div>
 
-        <div className="min-h-[220px]">
-          {steps[step].component}
-        </div>
+        <div className="min-h-[220px]">{steps[step].component}</div>
 
         <DialogFooter className="flex flex-row gap-2 justify-between w-full sm:justify-between items-center pt-4 border-t mt-4">
           <Button
@@ -353,7 +395,7 @@ export function CreateContestForm({
           }
         }}
         title="Share your new Contest"
-        descriptionText={`Let your followers know you've created "${createdContest?.name || 'a new contest'}"!`}
+        descriptionText={`Let your followers know you've created "${createdContest?.name || "a new contest"}"!`}
       />
     </Form>
   );

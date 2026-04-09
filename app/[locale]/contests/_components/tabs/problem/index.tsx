@@ -74,10 +74,11 @@ export function ProblemTab({
   }
 
   const answeredLetters = isUserOnContest?.answered ?? [];
-  const currentProblemLetter = problem 
+  const currentProblemLetter = problem
     ? letters[contest.problems.findIndex((p) => p.problemId === problem.id)]
     : null;
-  const isCurrentProblemSolved = currentProblemLetter && answeredLetters.includes(currentProblemLetter);
+  const isCurrentProblemSolved =
+    currentProblemLetter && answeredLetters.includes(currentProblemLetter);
 
   return (
     <div className="flex flex-col w-full gap-4">

@@ -1,7 +1,6 @@
 "use client";
 
 import { FileCode, PlusCircle } from "lucide-react";
-import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useProblems } from "@/hooks/use-problems";
+import { Link } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 
 export function MyProblems() {
@@ -45,16 +45,21 @@ export function MyProblems() {
       <Separator className="w-full h-px bg-linear-to-r from-border to-transparent" />
 
       {isLoading ? (
-        <div className="flex justify-center p-14"><span className="animate-pulse">Loading problems...</span></div>
+        <div className="flex justify-center p-14">
+          <span className="animate-pulse">Loading problems...</span>
+        </div>
       ) : problems.length === 0 ? (
         <Card className="border-dashed shadow-sm bg-muted/20 transition-all hover:bg-muted/30 hover:shadow-md border-2">
           <CardContent className="flex flex-col items-center justify-center p-14 text-center">
             <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-indigo-500/10 mb-6 transition-transform hover:scale-110 hover:bg-indigo-500/20 cursor-default">
               <FileCode className="h-10 w-10 text-indigo-500" />
             </div>
-            <CardTitle className="mb-3 text-2xl font-semibold">No problems yet</CardTitle>
+            <CardTitle className="mb-3 text-2xl font-semibold">
+              No problems yet
+            </CardTitle>
             <CardDescription className="max-w-md mx-auto mb-8 text-base">
-              You haven't authored any problems yet. Get started by designing your first coding problem and defining its test cases!
+              You haven't authored any problems yet. Get started by designing
+              your first coding problem and defining its test cases!
             </CardDescription>
 
             <div className="relative group">
@@ -77,12 +82,21 @@ export function MyProblems() {
               <CardContent className="p-6 flex flex-col justify-between h-full space-y-4">
                 <div>
                   <div className="flex justify-between items-start mb-2 gap-2">
-                    <h3 className="font-bold text-lg line-clamp-1" title={prob.title}>{prob.title}</h3>
-                    <span className={`px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wide flex-shrink-0 ${
-                      prob.difficulty === "easy" ? "bg-green-100/50 text-green-700 dark:bg-green-500/20 dark:text-green-400" :
-                      prob.difficulty === "medium" ? "bg-orange-100/50 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400" :
-                      "bg-red-100/50 text-red-700 dark:bg-red-500/20 dark:text-red-400"
-                    }`}>
+                    <h3
+                      className="font-bold text-lg line-clamp-1"
+                      title={prob.title}
+                    >
+                      {prob.title}
+                    </h3>
+                    <span
+                      className={`px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wide flex-shrink-0 ${
+                        prob.difficulty === "easy"
+                          ? "bg-green-100/50 text-green-700 dark:bg-green-500/20 dark:text-green-400"
+                          : prob.difficulty === "medium"
+                            ? "bg-orange-100/50 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400"
+                            : "bg-red-100/50 text-red-700 dark:bg-red-500/20 dark:text-red-400"
+                      }`}
+                    >
                       {prob.difficulty}
                     </span>
                   </div>
@@ -92,7 +106,9 @@ export function MyProblems() {
                 </div>
                 <div className="pt-2 border-t">
                   <Link href={`/problems/${prob.id}`}>
-                    <Button variant="secondary" className="w-full">View Details</Button>
+                    <Button variant="secondary" className="w-full">
+                      View Details
+                    </Button>
                   </Link>
                 </div>
               </CardContent>

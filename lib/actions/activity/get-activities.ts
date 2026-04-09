@@ -1,7 +1,7 @@
 "use server";
 
-import { db } from "@/drizzle/db";
 import { desc, eq } from "drizzle-orm";
+import { db } from "@/drizzle/db";
 import { activityFeed } from "@/drizzle/schema";
 
 export async function getActivities(userId?: string) {

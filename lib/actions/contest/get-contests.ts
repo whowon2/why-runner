@@ -1,8 +1,8 @@
 "use server";
 
+import { and, count, desc, eq, gt, gte, ilike, lt, lte } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { contest } from "@/drizzle/schema"; // Ensure this imports your contest table definition
-import { and, count, ilike, desc, eq, gt, lt, lte, gte } from "drizzle-orm";
 
 export interface GetContestsParams {
   page: number;
@@ -39,7 +39,9 @@ export async function getContests({
     if (status === "upcoming") {
       conditions.push(gt(contest.startDate, now));
     } else if (status === "active") {
-      conditions.push(and(lte(contest.startDate, now), gte(contest.endDate, now)));
+      conditions.push(
+        and(lte(contest.startDate, now), gte(contest.endDate, now)),
+      );
     } else if (status === "past") {
       conditions.push(lt(contest.endDate, now));
     }

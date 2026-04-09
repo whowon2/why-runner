@@ -1,7 +1,7 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
-  getContests,
   type GetContestsParams,
+  getContests,
 } from "@/lib/actions/contest/get-contests";
 
 export const useContests = (params: GetContestsParams) =>

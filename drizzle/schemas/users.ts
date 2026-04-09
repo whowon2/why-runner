@@ -4,9 +4,10 @@ import {
   boolean,
   index,
   pgTable,
-  uuid,
+  primaryKey,
   text,
   timestamp,
+  uuid,
 } from "drizzle-orm/pg-core";
 import { contest } from "./contests";
 import { type Problem, problem } from "./problems";
@@ -105,31 +106,41 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }));
 
-export const userOnContest = pgTable("user_on_contest", {
-  userId: text("user_id").notNull(),
-  contestId: uuid("contest_id")
-    .notNull()
-    .references(() => contest.id, {
-      onDelete: "cascade",
-      onUpdate: "cascade",
-    }),
-  answered: text("answered").array().notNull().default([]),
-});
+export const userOnContest = pgTable(
+  "user_on_contest",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    contestId: uuid("contest_id")
+      .notNull()
+      .references(() => contest.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    answered: text("answered").array().notNull().default([]),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.contestId] })],
+);
 
-export const problemOnContest = pgTable("problem_on_contest", {
-  problemId: uuid("problem_id")
-    .notNull()
-    .references(() => problem.id, {
-      onDelete: "cascade",
-      onUpdate: "cascade",
-    }),
-  contestId: uuid("contest_id")
-    .notNull()
-    .references(() => contest.id, {
-      onDelete: "cascade",
-      onUpdate: "cascade",
-    }),
-});
+export const problemOnContest = pgTable(
+  "problem_on_contest",
+  {
+    problemId: uuid("problem_id")
+      .notNull()
+      .references(() => problem.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    contestId: uuid("contest_id")
+      .notNull()
+      .references(() => contest.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+  },
+  (t) => [primaryKey({ columns: [t.problemId, t.contestId] })],
+);
 
 export const userOnContestRelations = relations(userOnContest, ({ one }) => ({
   user: one(user, {

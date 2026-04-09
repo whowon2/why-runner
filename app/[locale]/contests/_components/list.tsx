@@ -1,14 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useContests } from "@/hooks/use-contests";
-import { Link } from "@/i18n/navigation";
 import { ChevronLeft, ChevronRight, Search, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ContestCard } from "./card";
-import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
+import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -16,6 +12,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useContests } from "@/hooks/use-contests";
+import { Link } from "@/i18n/navigation";
+import { ContestCard } from "./card";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -24,8 +24,14 @@ export function ContestList() {
 
   // 1. Extract State using nuqs
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
-  const [search, setSearch] = useQueryState("q", parseAsString.withDefault("").withOptions({ shallow: false }));
-  const [status, setStatus] = useQueryState("status", parseAsString.withDefault("all").withOptions({ shallow: false }));
+  const [search, setSearch] = useQueryState(
+    "q",
+    parseAsString.withDefault("").withOptions({ shallow: false }),
+  );
+  const [status, setStatus] = useQueryState(
+    "status",
+    parseAsString.withDefault("all").withOptions({ shallow: false }),
+  );
 
   // 2. Fetch Data
   const {
@@ -36,7 +42,7 @@ export function ContestList() {
     page,
     pageSize: ITEMS_PER_PAGE,
     search,
-    // @ts-ignore - Let backend handle standard "all", "upcoming", "active", "past"
+    // @ts-expect-error - Let backend handle standard "all", "upcoming", "active", "past"
     status,
   });
 
@@ -61,7 +67,10 @@ export function ContestList() {
             Find the best contests and test your skills.
           </p>
         </div>
-        <Button asChild className="shrink-0 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-indigo-500/25 rounded-full px-6 transition-all hover:scale-105 active:scale-95 border-0">
+        <Button
+          asChild
+          className="shrink-0 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-indigo-500/25 rounded-full px-6 transition-all hover:scale-105 active:scale-95 border-0"
+        >
           <Link href={"/user?tab=contests"}>My Contests</Link>
         </Button>
       </div>
@@ -77,8 +86,8 @@ export function ContestList() {
             className="pl-11 h-12 text-base rounded-2xl bg-muted/30 border-muted-foreground/20 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500 shadow-sm transition-all w-full"
             value={search}
             onChange={(e) => {
-               setSearch(e.target.value || null);
-               setPage(1);
+              setSearch(e.target.value || null);
+              setPage(1);
             }}
           />
         </div>
@@ -94,10 +103,24 @@ export function ContestList() {
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent className="rounded-xl border-muted-foreground/20 p-1">
-              <SelectItem value="all" className="rounded-lg">Any Status</SelectItem>
-              <SelectItem value="upcoming" className="rounded-lg text-emerald-600 dark:text-emerald-400">Upcoming</SelectItem>
-              <SelectItem value="active" className="rounded-lg text-amber-600 dark:text-amber-500">Active</SelectItem>
-              <SelectItem value="past" className="rounded-lg text-neutral-500">Past</SelectItem>
+              <SelectItem value="all" className="rounded-lg">
+                Any Status
+              </SelectItem>
+              <SelectItem
+                value="upcoming"
+                className="rounded-lg text-emerald-600 dark:text-emerald-400"
+              >
+                Upcoming
+              </SelectItem>
+              <SelectItem
+                value="active"
+                className="rounded-lg text-amber-600 dark:text-amber-500"
+              >
+                Active
+              </SelectItem>
+              <SelectItem value="past" className="rounded-lg text-neutral-500">
+                Past
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -108,7 +131,10 @@ export function ContestList() {
         {isPending ? (
           <div className="flex flex-col gap-4">
             {Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
-              <Skeleton key={i} className="h-40 w-full rounded-2xl bg-muted/40" />
+              <Skeleton
+                key={i}
+                className="h-40 w-full rounded-2xl bg-muted/40"
+              />
             ))}
           </div>
         ) : (
@@ -118,19 +144,24 @@ export function ContestList() {
                 <div className="p-4 bg-muted/30 rounded-full mb-4">
                   <Search className="h-8 w-8 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold mb-1">No contests found</h3>
+                <h3 className="text-lg font-semibold mb-1">
+                  No contests found
+                </h3>
                 <p className="text-muted-foreground max-w-sm">
-                  {search 
+                  {search
                     ? `We couldn't find any contests matching "${search}". Try adjusting your search.`
-                    : t("notFound")?.replace("not found", "No contests available yet.") || "No contests available yet."}
+                    : t("notFound")?.replace(
+                        "not found",
+                        "No contests available yet.",
+                      ) || "No contests available yet."}
                 </p>
                 {search && (
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="mt-6 rounded-full"
                     onClick={() => {
-                        setSearch(null);
-                        setPage(1);
+                      setSearch(null);
+                      setPage(1);
                     }}
                   >
                     Clear Search
@@ -144,7 +175,10 @@ export function ContestList() {
                 }`}
               >
                 {contests.map((contest) => (
-                  <div key={contest.id} className="transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/5 rounded-2xl">
+                  <div
+                    key={contest.id}
+                    className="transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/5 rounded-2xl"
+                  >
                     <ContestCard contest={contest} />
                   </div>
                 ))}
@@ -158,9 +192,15 @@ export function ContestList() {
       {!isPending && totalCount > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between py-6 border-t gap-4">
           <div className="text-sm font-medium text-muted-foreground bg-muted/30 px-4 py-2 rounded-full">
-            Showing <span className="text-foreground">{(page - 1) * ITEMS_PER_PAGE + 1}</span> to{" "}
-            <span className="text-foreground">{Math.min(page * ITEMS_PER_PAGE, totalCount)}</span> of{" "}
-            <span className="text-foreground">{totalCount}</span> contests
+            Showing{" "}
+            <span className="text-foreground">
+              {(page - 1) * ITEMS_PER_PAGE + 1}
+            </span>{" "}
+            to{" "}
+            <span className="text-foreground">
+              {Math.min(page * ITEMS_PER_PAGE, totalCount)}
+            </span>{" "}
+            of <span className="text-foreground">{totalCount}</span> contests
           </div>
           <div className="flex items-center gap-3">
             <Button

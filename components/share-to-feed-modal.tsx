@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 interface ShareToFeedModalProps {
@@ -36,7 +36,7 @@ export function ShareToFeedModal({
       if (description) {
         await onShare(description);
       } else {
-        await onShare(""); 
+        await onShare("");
       }
       onClose();
     } catch (e) {

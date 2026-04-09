@@ -6,6 +6,9 @@ import type { User } from "better-auth";
 import { Delete } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import ReactMarkdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -25,17 +28,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateProblem } from "@/hooks/use-create-problem";
 import { useRouter } from "@/i18n/navigation";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ReactMarkdown from "react-markdown";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import { Eye, Pencil } from "lucide-react";
 import { ShareToFeedModal } from "@/components/share-to-feed-modal";
 import { createActivity } from "@/lib/actions/activity/create-activity";
+
 const formSchema = z.object({
   description: z.string().min(1),
   difficulty: z.enum(["easy", "medium", "hard"], {
@@ -139,7 +140,9 @@ export function NewProblem({ user }: { user: User }) {
   return (
     <div className="flex flex-col p-8 w-full max-w-5xl mx-auto">
       <div className="flex justify-between mb-8">
-        <h1 className="font-extrabold text-3xl tracking-tight">Create Problem</h1>
+        <h1 className="font-extrabold text-3xl tracking-tight">
+          Create Problem
+        </h1>
       </div>
 
       <Tabs defaultValue="edit" className="w-full">
@@ -180,7 +183,9 @@ export function NewProblem({ user }: { user: User }) {
                   <FormItem className="w-full">
                     <div className="flex items-center justify-between">
                       <FormLabel>Description</FormLabel>
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Supports Markdown & LaTeX</span>
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+                        Supports Markdown & LaTeX
+                      </span>
                     </div>
                     <FormControl>
                       <Textarea
@@ -237,7 +242,11 @@ export function NewProblem({ user }: { user: User }) {
                           <FormItem className="w-full">
                             <FormLabel>Input {index + 1}</FormLabel>
                             <FormControl>
-                              <Textarea className="min-h-[100px] font-mono" placeholder="1 2 3" {...field} />
+                              <Textarea
+                                className="min-h-[100px] font-mono"
+                                placeholder="1 2 3"
+                                {...field}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -257,7 +266,11 @@ export function NewProblem({ user }: { user: User }) {
                           <FormItem className="w-full">
                             <FormLabel>Output {index + 1}</FormLabel>
                             <FormControl>
-                              <Textarea className="min-h-[100px] font-mono" placeholder="1 2 3" {...field} />
+                              <Textarea
+                                className="min-h-[100px] font-mono"
+                                placeholder="1 2 3"
+                                {...field}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -278,7 +291,12 @@ export function NewProblem({ user }: { user: User }) {
                   ))}
                 </div>
               </div>
-              <Button variant="secondary" className="max-w-min" onClick={addInput} type="button">
+              <Button
+                variant="secondary"
+                className="max-w-min"
+                onClick={addInput}
+                type="button"
+              >
                 + Adicionar Entrada / Saída
               </Button>
 
@@ -295,24 +313,31 @@ export function NewProblem({ user }: { user: User }) {
         <TabsContent value="preview" className="mt-0">
           <div className="border rounded-xl p-8 bg-card shadow-sm space-y-8 min-h-[500px]">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b pb-6">
-              <h1 className="text-3xl font-extrabold tracking-tight">{formValues.title || "Untitled Problem"}</h1>
+              <h1 className="text-3xl font-extrabold tracking-tight">
+                {formValues.title || "Untitled Problem"}
+              </h1>
               <div className="shrink-0 mt-2 sm:mt-0">
-                <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
-                  formValues.difficulty === "easy" ? "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400" :
-                  formValues.difficulty === "medium" ? "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400" :
-                  "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400"
-                }`}>
+                <span
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+                    formValues.difficulty === "easy"
+                      ? "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400"
+                      : formValues.difficulty === "medium"
+                        ? "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400"
+                        : "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400"
+                  }`}
+                >
                   {formValues.difficulty || "NORMAL"}
                 </span>
               </div>
             </div>
-            
+
             <div className="prose dark:prose-invert max-w-none text-foreground prose-p:leading-relaxed prose-pre:bg-muted/50">
-              <ReactMarkdown 
-                remarkPlugins={[remarkMath]} 
+              <ReactMarkdown
+                remarkPlugins={[remarkMath]}
                 rehypePlugins={[rehypeKatex]}
               >
-                {formValues.description || "*(No description provided. Edit the problem to add instructions.)*"}
+                {formValues.description ||
+                  "*(No description provided. Edit the problem to add instructions.)*"}
               </ReactMarkdown>
             </div>
 
@@ -320,14 +345,25 @@ export function NewProblem({ user }: { user: User }) {
               <div className="space-y-6 pt-6">
                 <h3 className="text-xl font-bold tracking-tight">Examples</h3>
                 {formValues.inputs.map((input, idx) => (
-                  <div key={idx} className="flex flex-col md:flex-row gap-6 bg-muted/30 p-6 rounded-lg border">
+                  <div
+                    key={idx}
+                    className="flex flex-col md:flex-row gap-6 bg-muted/30 p-6 rounded-lg border"
+                  >
                     <div className="flex-1 space-y-3">
-                      <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Input {idx + 1}</h4>
-                      <pre className="p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">{input || " "}</pre>
+                      <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                        Input {idx + 1}
+                      </h4>
+                      <pre className="p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">
+                        {input || " "}
+                      </pre>
                     </div>
                     <div className="flex-1 space-y-3">
-                      <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Output {idx + 1}</h4>
-                      <pre className="p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">{formValues.outputs?.[idx] || " "}</pre>
+                      <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                        Output {idx + 1}
+                      </h4>
+                      <pre className="p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">
+                        {formValues.outputs?.[idx] || " "}
+                      </pre>
                     </div>
                   </div>
                 ))}
@@ -356,7 +392,7 @@ export function NewProblem({ user }: { user: User }) {
           router.back();
         }}
         title="Share your new Problem"
-        descriptionText={`Let your followers know you've created "${createdProblem?.title || 'a new problem'}"!`}
+        descriptionText={`Let your followers know you've created "${createdProblem?.title || "a new problem"}"!`}
       />
     </div>
   );

@@ -1,12 +1,23 @@
 "use client";
 
-import { ArrowDown, Sparkles, Lock, Bot, Zap, Code2, GraduationCap, Trophy, Terminal, Layers } from "lucide-react";
+import {
+  ArrowDown,
+  Bot,
+  Code2,
+  GraduationCap,
+  Layers,
+  Lock,
+  Sparkles,
+  Terminal,
+  Trophy,
+  Zap,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { FlipWords } from "@/components/ui/flip-words";
 import { Safari } from "@/components/ui/safari";
 import { Link } from "@/i18n/navigation";
-import { Card, CardContent } from "@/components/ui/card";
 
 export default function Home() {
   const t = useTranslations("HomePage");
@@ -20,7 +31,9 @@ export default function Home() {
       <section className="relative flex flex-col items-center justify-center px-4 h-screen min-h-[800px] w-full  text-center -mt-10">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border/50 text-sm font-medium mb-8 backdrop-blur-md animate-in fade-in slide-in-from-bottom-4 duration-500">
           <Sparkles className="w-4 h-4 text-indigo-500" />
-          <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-500 to-cyan-500 font-semibold">The Future of Competitive Programming</span>
+          <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-500 to-cyan-500 font-semibold">
+            The Future of Competitive Programming
+          </span>
         </div>
 
         <div className="flex flex-col font-extrabold text-5xl tracking-tight sm:text-[6rem] leading-[1.1] animate-in fade-in slide-in-from-bottom-6 duration-700 delay-150">
@@ -33,18 +46,26 @@ export default function Home() {
         </div>
 
         <p className="mt-6 text-xl text-muted-foreground max-w-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
-          A premium algorithmic platform designed to empower students, instructors, and developers world-wide.
+          A premium algorithmic platform designed to empower students,
+          instructors, and developers world-wide.
         </p>
 
         {/* Navigation Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mt-10 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-500">
           <Link href="contests">
-            <Button size="lg" className="rounded-full px-8 h-12 text-base font-semibold shadow-[0_0_40px_-10px_rgba(99,102,241,0.5)] transition-all hover:scale-105 hover:shadow-[0_0_60px_-10px_rgba(99,102,241,0.6)]">
+            <Button
+              size="lg"
+              className="rounded-full px-8 h-12 text-base font-semibold shadow-[0_0_40px_-10px_rgba(99,102,241,0.5)] transition-all hover:scale-105 hover:shadow-[0_0_60px_-10px_rgba(99,102,241,0.6)]"
+            >
               {t("buttons.contests")}
             </Button>
           </Link>
           <Link href="problems">
-            <Button variant="outline" size="lg" className="rounded-full px-8 h-12 text-base font-semibold hover:bg-muted/50 backdrop-blur-md border-border/50 transition-all hover:scale-105">
+            <Button
+              variant="outline"
+              size="lg"
+              className="rounded-full px-8 h-12 text-base font-semibold hover:bg-muted/50 backdrop-blur-md border-border/50 transition-all hover:scale-105"
+            >
               {t("buttons.problems")}
             </Button>
           </Link>
@@ -58,7 +79,10 @@ export default function Home() {
       </section>
 
       {/* Safari Preview */}
-      <section className="w-full max-w-6xl px-4 text-center mt-10 space-y-8 relative " id="example">
+      <section
+        className="w-full max-w-6xl px-4 text-center mt-10 space-y-8 relative "
+        id="example"
+      >
         <div className="space-y-4 max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
             {t("landing.submission.title")}
@@ -147,16 +171,33 @@ export default function Home() {
           <div className="hidden md:block absolute top-[44px] left-[15%] right-[15%] h-0.5 bg-linear-to-r from-transparent via-border to-transparent -" />
 
           {[
-            { step: 1, title: t("landing.how.step1.title"), desc: t("landing.how.step1.description") },
-            { step: 2, title: t("landing.how.step2.title"), desc: t("landing.how.step2.description") },
-            { step: 3, title: t("landing.how.step3.title"), desc: t("landing.how.step3.description") }
+            {
+              step: 1,
+              title: t("landing.how.step1.title"),
+              desc: t("landing.how.step1.description"),
+            },
+            {
+              step: 2,
+              title: t("landing.how.step2.title"),
+              desc: t("landing.how.step2.description"),
+            },
+            {
+              step: 3,
+              title: t("landing.how.step3.title"),
+              desc: t("landing.how.step3.description"),
+            },
           ].map((item, idx) => (
-            <div key={idx} className="flex flex-col items-center text-center space-y-4 relative bg-background/80 backdrop-blur-sm p-4 rounded-xl">
+            <div
+              key={idx}
+              className="flex flex-col items-center text-center space-y-4 relative bg-background/80 backdrop-blur-sm p-4 rounded-xl"
+            >
               <div className="h-14 w-14 rounded-full bg-background border-4 border-indigo-500 flex items-center justify-center font-bold text-xl shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] ">
                 {item.step}
               </div>
               <h3 className="text-xl font-bold">{item.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
+              <p className="text-muted-foreground leading-relaxed">
+                {item.desc}
+              </p>
             </div>
           ))}
         </div>
@@ -176,8 +217,12 @@ export default function Home() {
               <div className="p-4 bg-muted rounded-full">
                 <GraduationCap className="w-8 h-8 text-foreground" />
               </div>
-              <h3 className="text-xl font-bold">{t("landing.usecases.instructors.title")}</h3>
-              <p className="text-muted-foreground">{t("landing.usecases.instructors.description")}</p>
+              <h3 className="text-xl font-bold">
+                {t("landing.usecases.instructors.title")}
+              </h3>
+              <p className="text-muted-foreground">
+                {t("landing.usecases.instructors.description")}
+              </p>
             </CardContent>
           </Card>
 
@@ -186,8 +231,12 @@ export default function Home() {
               <div className="p-4 bg-muted rounded-full">
                 <Code2 className="w-8 h-8 text-foreground" />
               </div>
-              <h3 className="text-xl font-bold">{t("landing.usecases.students.title")}</h3>
-              <p className="text-muted-foreground">{t("landing.usecases.students.description")}</p>
+              <h3 className="text-xl font-bold">
+                {t("landing.usecases.students.title")}
+              </h3>
+              <p className="text-muted-foreground">
+                {t("landing.usecases.students.description")}
+              </p>
             </CardContent>
           </Card>
 
@@ -196,8 +245,12 @@ export default function Home() {
               <div className="p-4 bg-muted rounded-full">
                 <Trophy className="w-8 h-8 text-foreground" />
               </div>
-              <h3 className="text-xl font-bold">{t("landing.usecases.contests.title")}</h3>
-              <p className="text-muted-foreground">{t("landing.usecases.contests.description")}</p>
+              <h3 className="text-xl font-bold">
+                {t("landing.usecases.contests.title")}
+              </h3>
+              <p className="text-muted-foreground">
+                {t("landing.usecases.contests.description")}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -209,8 +262,20 @@ export default function Home() {
           {t("landing.stack.title")}
         </h2>
         <div className="flex flex-wrap justify-center gap-3">
-          {["Next.js", "Rust", "tRPC", "Drizzle", "PostgreSQL", "SQS", "Bun", "Docker"].map((tech) => (
-            <div key={tech} className="px-4 py-2 rounded-full border bg-background/50 backdrop-blur-sm text-sm font-medium text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors cursor-default">
+          {[
+            "Next.js",
+            "Rust",
+            "tRPC",
+            "Drizzle",
+            "PostgreSQL",
+            "SQS",
+            "Bun",
+            "Docker",
+          ].map((tech) => (
+            <div
+              key={tech}
+              className="px-4 py-2 rounded-full border bg-background/50 backdrop-blur-sm text-sm font-medium text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors cursor-default"
+            >
               {tech}
             </div>
           ))}

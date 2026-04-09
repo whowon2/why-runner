@@ -1,8 +1,8 @@
 "use server";
 
 import { GoogleGenAI } from "@google/genai";
-import { env } from "@/env";
 import type { Problem, Submission } from "@/drizzle/schema";
+import { env } from "@/env";
 import { getPrompt } from "../prompt";
 
 export async function getAIHelp(

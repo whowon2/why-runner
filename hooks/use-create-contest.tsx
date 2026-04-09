@@ -1,5 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import { createContest, type CreateContestInput } from "@/lib/actions/contest/create-contest";
+import {
+  type CreateContestInput,
+  createContest,
+} from "@/lib/actions/contest/create-contest";
 
 export const useCreateContest = () =>
   useMutation({

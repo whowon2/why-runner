@@ -1,15 +1,19 @@
 "use server";
 
-import { sql, and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { type CreateSubmissionInput, submission, userOnContest } from "@/drizzle/schema";
+import {
+  type CreateSubmissionInput,
+  submission,
+  userOnContest,
+} from "@/drizzle/schema";
 
 export async function createSubmission(input: CreateSubmissionInput) {
   // Check if user already got it right
   const userProgress = await db.query.userOnContest.findFirst({
     where: and(
       eq(userOnContest.userId, input.userId),
-      eq(userOnContest.contestId, input.contestId)
+      eq(userOnContest.contestId, input.contestId),
     ),
   });
 

@@ -62,7 +62,9 @@ async function main() {
         inputs: f.valuesFromArray({
           values: [["1 2", "5 10"], ["100"], ["0 0"]] as unknown as string[],
         }),
-        outputs: f.valuesFromArray({ values: [["3", "15"], ["100"], ["0"]] as unknown as string[] }),
+        outputs: f.valuesFromArray({
+          values: [["3", "15"], ["100"], ["0"]] as unknown as string[],
+        }),
       },
     },
 
@@ -100,7 +102,9 @@ async function main() {
     // 5. Join Tables (Refining explicit table columns if needed)
     userOnContest: {
       columns: {
-        answered: f.valuesFromArray({ values: [["A", "B"], [], ["C"]] as unknown as string[] }),
+        answered: f.valuesFromArray({
+          values: [["A", "B"], [], ["C"]] as unknown as string[],
+        }),
       },
     },
   }));
@@ -110,24 +114,30 @@ async function main() {
   const start = new Date(now.getTime() + 60 * 1000); // starts in 1 min
   const end = new Date(start.getTime() + 60 * 60 * 1000); // ends in 1 hour
 
-  const [specificContest] = await db.insert(schema.contest).values({
-    name: "Quick Join Contest",
-    description: "A contest created just for you to join right now!",
-    startDate: start,
-    endDate: end,
-    createdBy: "Admin",
-    createdAt: now,
-  }).returning();
+  const [specificContest] = await db
+    .insert(schema.contest)
+    .values({
+      name: "Quick Join Contest",
+      description: "A contest created just for you to join right now!",
+      startDate: start,
+      endDate: end,
+      createdBy: "Admin",
+      createdAt: now,
+    })
+    .returning();
 
   console.log("📝 Adding 'Two Sum' problem to the contest...");
-  const [twoSum] = await db.insert(schema.problem).values({
-    title: "Two Sum",
-    description: "Given two integers separated by a space, print their sum.",
-    difficulty: "easy",
-    inputs: ["1 2", "5 10", "100 200", "-5 5"],
-    outputs: ["3", "15", "300", "0"],
-    createdBy: "Admin"
-  }).returning();
+  const [twoSum] = await db
+    .insert(schema.problem)
+    .values({
+      title: "Two Sum",
+      description: "Given two integers separated by a space, print their sum.",
+      difficulty: "easy",
+      inputs: ["1 2", "5 10", "100 200", "-5 5"],
+      outputs: ["3", "15", "300", "0"],
+      createdBy: "Admin",
+    })
+    .returning();
 
   await db.insert(schema.problemOnContest).values({
     contestId: specificContest.id,
