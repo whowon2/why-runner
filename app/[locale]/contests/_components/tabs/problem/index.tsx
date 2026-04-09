@@ -108,9 +108,9 @@ export function ProblemTab({
                     problem={problem}
                     problemLetter={
                       letters[
-                        contest.problems.findIndex(
-                          (p) => p.problemId === problem.id,
-                        )
+                      contest.problems.findIndex(
+                        (p) => p.problemId === problem.id,
+                      )
                       ] ?? ""
                     }
                   />
