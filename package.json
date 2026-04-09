@@ -15,7 +15,6 @@
     "db:seed": "bun drizzle/seed.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.948.0",
     "@google/genai": "^1.33.0",
     "@hookform/resolvers": "^5.2.2",
     "@monaco-editor/react": "^4.7.0",
