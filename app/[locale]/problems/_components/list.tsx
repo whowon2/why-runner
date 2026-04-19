@@ -1,6 +1,5 @@
 "use client";
 
-import type { User } from "better-auth";
 import { ChevronLeft, ChevronRight, Loader, Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -30,7 +29,7 @@ interface ProblemFilters {
 const difficultyOptions: ProblemDifficulty[] = ["easy", "medium", "hard"];
 const ITEMS_PER_PAGE = 10;
 
-export function ProblemsList({ user }: { user: User }) {
+export function ProblemsList() {
   const t = useTranslations("ProblemsPage");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -54,7 +53,6 @@ export function ProblemsList({ user }: { user: User }) {
     search,
     difficulty,
     my,
-    userId: user.id,
   });
 
   const problems = queryData?.data || [];

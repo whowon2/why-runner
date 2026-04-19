@@ -11,15 +11,11 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useProblems } from "@/hooks/use-problems";
 import { Link } from "@/i18n/navigation";
-import { authClient } from "@/lib/auth/client";
-
 export function MyProblems() {
-  const { data: session } = authClient.useSession();
   const { data, isLoading } = useProblems({
     page: 1,
     pageSize: 50,
     my: true,
-    userId: session?.user?.id ?? "",
   });
 
   const problems = data?.data || [];

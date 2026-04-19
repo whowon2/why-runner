@@ -3,14 +3,14 @@
 import { and, count, eq, ilike } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { type ProblemDifficulty, problem } from "@/drizzle/schema";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 export interface GetProblemsParams {
   page: number;
   pageSize: number;
   search?: string;
   difficulty?: ProblemDifficulty | "all";
-  userId?: string; // ID of current user (for "my problems")
-  my?: boolean; // Toggle for "my problems"
+  my?: boolean;
 }
 
 export async function getProblems({
@@ -18,17 +18,13 @@ export async function getProblems({
   pageSize = 10,
   search,
   difficulty,
-  userId,
   my,
 }: GetProblemsParams) {
-  // 1. Calculate offset
   const offset = (page - 1) * pageSize;
 
-  // 2. Build where conditions
   const conditions = [];
 
   if (search) {
-    // ilike is case-insensitive search
     conditions.push(ilike(problem.title, `%${search}%`));
   }
 
@@ -36,8 +32,9 @@ export async function getProblems({
     conditions.push(eq(problem.difficulty, difficulty));
   }
 
-  if (my && userId) {
-    conditions.push(eq(problem.createdBy, userId));
+  if (my) {
+    const currentUser = await getCurrentUser({});
+    conditions.push(eq(problem.createdBy, currentUser.id));
   }
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
