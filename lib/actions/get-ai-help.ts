@@ -3,20 +3,22 @@
 import { GoogleGenAI } from "@google/genai";
 import type { Problem, Submission } from "@/drizzle/schema";
 import { env } from "@/env";
-import { getPrompt } from "../prompt";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { SYSTEM_INSTRUCTION, getUserPrompt } from "../prompt";
 
 export async function getAIHelp(
   problem: Problem,
   submission: Submission,
   locale: string,
 ) {
-  const prompt = getPrompt({ problem, submission, locale });
+  await getCurrentUser({});
 
   const ai = new GoogleGenAI({ apiKey: env.GEMINI_KEY });
 
   const response = await ai.models.generateContent({
     model: "gemini-2.0-flash",
-    contents: prompt,
+    config: { systemInstruction: SYSTEM_INSTRUCTION },
+    contents: getUserPrompt({ problem, submission, locale }),
   });
 
   return response.text;
