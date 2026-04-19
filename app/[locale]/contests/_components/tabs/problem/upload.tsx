@@ -52,6 +52,7 @@ export function UploadCode({
     java: ["java"],
     rust: ["rs"],
     python: ["py"],
+    portugol: ["por"],
   };
 
   function handleUpload() {
@@ -170,6 +171,7 @@ export function UploadCode({
                 <SelectItem value="c">c</SelectItem>
                 <SelectItem value="java">java</SelectItem>
                 <SelectItem value="python">python</SelectItem>
+                <SelectItem value="portugol">portugol</SelectItem>
               </SelectContent>
             </Select>
 

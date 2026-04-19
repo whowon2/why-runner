@@ -43,6 +43,13 @@
       "when": 1776563000031,
       "tag": "0005_worried_centennial",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1776570764999,
+      "tag": "0006_silly_hannibal_king",
+      "breakpoints": true
     }
   ]
 }
