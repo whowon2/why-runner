@@ -42,7 +42,7 @@ const formSchema = z.object({
   difficulty: z.enum(["easy", "medium", "hard"], {
     message: "Difficulty is required",
   }),
-  exampleCount: z.coerce.number().int().min(1),
+  exampleCount: z.number().int().min(1),
   inputs: z.array(z.string().min(1)).min(1),
   outputs: z.array(z.string().min(1)).min(1),
   title: z.string().min(1),
@@ -246,6 +246,7 @@ export function NewProblem({ user }: { user: User }) {
                         min={1}
                         max={formValues.inputs?.length || 1}
                         {...field}
+                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
                       />
                     </FormControl>
                     <FormMessage />
