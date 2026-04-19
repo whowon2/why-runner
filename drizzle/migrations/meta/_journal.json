@@ -36,6 +36,13 @@
       "when": 1776559107501,
       "tag": "0004_thankful_pestilence",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1776563000031,
+      "tag": "0005_worried_centennial",
+      "breakpoints": true
     }
   ]
 }
