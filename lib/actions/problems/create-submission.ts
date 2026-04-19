@@ -30,6 +30,4 @@ export async function createSubmission(input: CreateSubmissionInput) {
 
   // Send a notification to the judge worker via Postgres LISTEN/NOTIFY
   await db.execute(sql`SELECT pg_notify('new_submission', ${sub.id})`);
-
-  console.log("Submission created and judge notified:", sub.id);
 }
