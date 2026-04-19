@@ -18,6 +18,7 @@ import type { ProblemDifficulty } from "@/drizzle/schema";
 import { useProblems } from "@/hooks/use-problems";
 import { Link, useRouter } from "@/i18n/navigation";
 import { DifficultyBadge } from "./badge";
+import { ImportProblems } from "./import";
 
 interface ProblemFilters {
   my: boolean;
@@ -90,9 +91,12 @@ export function ProblemsList() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="font-bold text-2xl">Problems</h1>
-        <Link href={"/problems/new"}>
-          <Button variant={"outline"}>{t("Create.button")}</Button>
-        </Link>
+        <div className="flex gap-2">
+          <ImportProblems />
+          <Link href={"/problems/new"}>
+            <Button variant={"outline"}>{t("Create.button")}</Button>
+          </Link>
+        </div>
       </div>
 
       {/* Filter Toolbar */}
