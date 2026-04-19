@@ -7,7 +7,11 @@ import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 const problemColumns = { inputs: false, outputs: false } as const;
 
-export async function getContestSubmissions(input: { contestId: string }) {
+export async function getContestSubmissions(input: {
+  contestId: string;
+  problemId?: string;
+  userId?: string;
+}) {
   const currentUser = await getCurrentUser({});
 
   const owned = await db.query.contest.findFirst({
@@ -18,13 +22,12 @@ export async function getContestSubmissions(input: { contestId: string }) {
   const isOwner = owned?.createdBy === currentUser.id;
 
   return db.query.submission.findMany({
-    where: (submissions, { and, eq }) =>
-      isOwner
-        ? eq(submissions.contestId, input.contestId)
-        : and(
-            eq(submissions.contestId, input.contestId),
-            eq(submissions.userId, currentUser.id),
-          ),
+    where: (submissions, { and, eq }) => {
+      const conditions = [eq(submissions.contestId, input.contestId)];
+      if (!isOwner) conditions.push(eq(submissions.userId, currentUser.id));
+      if (input.problemId) conditions.push(eq(submissions.problemId, input.problemId));
+      return and(...conditions);
+    },
     with: {
       user: true,
       problem: { columns: problemColumns },
