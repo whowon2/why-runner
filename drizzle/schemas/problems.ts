@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { problemOnContest, user } from "./users";
 
 export const ProblemDifficulty = pgEnum("problem_difficulty", [
@@ -18,6 +18,7 @@ export const problem = pgTable("problem", {
   createdBy: text("created_by").notNull(),
   inputs: text("inputs").array().notNull(),
   outputs: text("outputs").array().notNull(),
+  exampleCount: integer("example_count").default(1).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()

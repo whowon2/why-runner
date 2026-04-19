@@ -42,6 +42,7 @@ const formSchema = z.object({
   difficulty: z.enum(["easy", "medium", "hard"], {
     message: "Difficulty is required",
   }),
+  exampleCount: z.coerce.number().int().min(1),
   inputs: z.array(z.string().min(1)).min(1),
   outputs: z.array(z.string().min(1)).min(1),
   title: z.string().min(1),
@@ -55,6 +56,7 @@ export function NewProblem({ user }: { user: User }) {
       description:
         "Consider an algorithm that takes as input a positive integer n. If n is even, the algorithm divides it by two, and if n is odd, the algorithm multiplies it by three and adds one. The algorithm repeats this, until n is one. For example, the sequence for n=3 is as follows:",
       difficulty: "easy",
+      exampleCount: 1,
       inputs: [],
       outputs: [],
       title: "Weird Algorithm",
@@ -87,6 +89,7 @@ export function NewProblem({ user }: { user: User }) {
         title: values.title,
         difficulty: values.difficulty,
         description: values.description,
+        exampleCount: Math.min(values.exampleCount, values.inputs.length),
         inputs: values.inputs,
         outputs: values.outputs,
       },
@@ -226,6 +229,25 @@ export function NewProblem({ user }: { user: User }) {
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="exampleCount"
+                render={({ field }) => (
+                  <FormItem className="max-w-[200px]">
+                    <FormLabel>Examples shown to solvers</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={formValues.inputs?.length || 1}
+                        {...field}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

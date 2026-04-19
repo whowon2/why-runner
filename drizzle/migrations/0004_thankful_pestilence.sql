@@ -1,0 +1,1 @@
+ALTER TABLE "problem" ADD COLUMN "example_count" integer DEFAULT 1 NOT NULL;
