@@ -49,8 +49,10 @@ export async function getProblems({
       limit: pageSize,
       offset: offset,
       where: whereClause,
-      // Optional: Add default sorting
-      // orderBy: (table, { desc }) => [desc(table.createdAt)],
+      columns: {
+        inputs: false,
+        outputs: false,
+      },
     }),
 
     // Get the total count for pagination
