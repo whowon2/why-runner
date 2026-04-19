@@ -279,7 +279,6 @@ export function CreateContestForm({
         description: "",
         startDate,
         endDate,
-        createdBy: session.user.id,
         problems: values.problems,
       },
       {

@@ -10,9 +10,6 @@ export type GetUserSubmissionsOnContest = {
 export const useProblemSubmissions = (input: GetUserSubmissionsOnContest) =>
   useQuery({
     queryKey: ["submissions", String(input.problemId)],
-    queryFn: async () => {
-      console.log("Fetching submissions");
-      return await getContestSubmissions(input);
-    },
+    queryFn: () => getContestSubmissions(input),
     refetchInterval: 10000,
   });

@@ -1,12 +1,20 @@
 "use server";
 
 import { db } from "@/drizzle/db";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 export async function getProblemSubmissions(problemId: string) {
-  const submissions = await db.query.submission.findMany({
-    where: (submissions, { eq }) => eq(submissions.problemId, problemId),
-    with: { user: true, problem: true },
-  });
+  const currentUser = await getCurrentUser({});
 
-  return submissions;
+  return db.query.submission.findMany({
+    where: (submissions, { and, eq }) =>
+      and(
+        eq(submissions.problemId, problemId),
+        eq(submissions.userId, currentUser.id),
+      ),
+    with: {
+      user: true,
+      problem: { columns: { inputs: false, outputs: false } },
+    },
+  });
 }

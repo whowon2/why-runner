@@ -4,8 +4,5 @@ import { getContestSubmissions } from "@/lib/actions/contest/get-submissions";
 export const useContestSubmissions = (input: { contestId: string }) =>
   useQuery({
     queryKey: ["submissions", input],
-    queryFn: async () => {
-      console.log("Fetching submissions");
-      return await getContestSubmissions(input);
-    },
+    queryFn: () => getContestSubmissions(input),
   });
