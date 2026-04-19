@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import type { User } from "better-auth";
 import { Delete } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -48,7 +47,7 @@ const formSchema = z.object({
   title: z.string().min(1),
 });
 
-export function NewProblem({ user }: { user: User }) {
+export function NewProblem() {
   const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -85,7 +84,6 @@ export function NewProblem({ user }: { user: User }) {
   function onSubmit(values: z.infer<typeof formSchema>) {
     createProblem(
       {
-        createdBy: user.id,
         title: values.title,
         difficulty: values.difficulty,
         description: values.description,

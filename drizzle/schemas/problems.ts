@@ -37,4 +37,4 @@ export const problemRelations = relations(problem, ({ many, one }) => ({
   }),
 }));
 
-export type CreateProblemInput = typeof problem.$inferInsert;
+export type CreateProblemInput = Omit<typeof problem.$inferInsert, "createdBy">;
