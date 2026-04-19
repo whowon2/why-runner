@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Contest, Problem, ProblemOnContest } from "@/drizzle/schema";
+import type { Contest, ProblemOnContest, ProblemPreview } from "@/drizzle/schema";
 import { useAddProblemToContest } from "@/hooks/use-add-problem";
 import { useProblems } from "@/hooks/use-problems";
 import { useRemoveProblemToContest as useRemoveProblemFromContest } from "@/hooks/use-remove-problem";
@@ -110,7 +110,7 @@ function RemoveProblemButton({
   problem,
   contest,
 }: {
-  problem: Problem;
+  problem: ProblemPreview;
   contest: Contest;
 }) {
   const { mutate: removeProblem, isPending: isRemovePending } =

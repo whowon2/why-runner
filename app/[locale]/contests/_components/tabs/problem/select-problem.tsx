@@ -4,8 +4,8 @@ import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import type {
   Contest,
-  Problem,
   ProblemOnContest,
+  ProblemPreview,
   UserOnContest,
 } from "@/drizzle/schema";
 import { useRouter } from "@/i18n/navigation";
@@ -22,7 +22,7 @@ export function SelectProblem({
     problems: ProblemOnContest[];
     users: UserOnContest[];
   };
-  setProblem: (problem: Problem) => void;
+  setProblem: (problem: ProblemPreview) => void;
   user: User;
   answered: string[];
 }) {

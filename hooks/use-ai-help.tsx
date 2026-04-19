@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import type { Problem, Submission } from "@/drizzle/schema";
+import type { ProblemPreview, Submission } from "@/drizzle/schema";
 import { getAIHelp } from "@/lib/actions/get-ai-help";
 
 type CreateContestInput = {
-  problem: Problem;
+  problem: ProblemPreview;
   submission: Submission;
   locale: string;
 };

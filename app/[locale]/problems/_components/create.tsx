@@ -134,8 +134,6 @@ export function NewProblem({ user }: { user: User }) {
     }
   }, [inputs, outputs]);
 
-
-
   const formValues = form.watch();
 
   return (
@@ -253,7 +251,7 @@ export function NewProblem({ user }: { user: User }) {
               />
 
               <div className="flex gap-4">
-                <div className="flex w-full flex-col">
+                <div className="flex w-full flex-col gap-4">
                   {inputs.fields.map((input, index) => (
                     <div className="flex justify-between gap-4" key={input.id}>
                       <FormField
@@ -277,7 +275,7 @@ export function NewProblem({ user }: { user: User }) {
                   ))}
                 </div>
 
-                <div className="flex w-full flex-col">
+                <div className="flex w-full flex-col gap-4">
                   {outputs.fields.map((input, index) => (
                     <div className="flex justify-between gap-4" key={input.id}>
                       <FormField

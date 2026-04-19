@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Contest, Problem } from "@/drizzle/schema";
+import type { Contest, ProblemPreview } from "@/drizzle/schema";
 import { useProblemSubmissions } from "@/hooks/use-problem-submissions";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +23,7 @@ export function SubmissionList({
   contest,
   user,
 }: {
-  problem: Problem;
+  problem: ProblemPreview;
   contest: Contest;
   user: User;
 }) {

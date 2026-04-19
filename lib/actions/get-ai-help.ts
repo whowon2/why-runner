@@ -1,13 +1,13 @@
 "use server";
 
 import { GoogleGenAI } from "@google/genai";
-import type { Problem, Submission } from "@/drizzle/schema";
+import type { ProblemPreview, Submission } from "@/drizzle/schema";
 import { env } from "@/env";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { SYSTEM_INSTRUCTION, getUserPrompt } from "../prompt";
 
 export async function getAIHelp(
-  problem: Problem,
+  problem: ProblemPreview,
   submission: Submission,
   locale: string,
 ) {

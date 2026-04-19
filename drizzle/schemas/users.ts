@@ -10,7 +10,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { contest } from "./contests";
-import { type Problem, problem } from "./problems";
+import { type ProblemPreview, problem } from "./problems";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -174,5 +174,5 @@ export const problemOnContestRelations = relations(
 export type UserOnContest = typeof userOnContest.$inferSelect;
 
 export type ProblemOnContest = typeof problemOnContest.$inferSelect & {
-  problem: Problem;
+  problem: ProblemPreview;
 };

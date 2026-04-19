@@ -27,6 +27,7 @@ export const problem = pgTable("problem", {
 });
 
 export type Problem = typeof problem.$inferSelect;
+export type ProblemPreview = Omit<Problem, "inputs" | "outputs">;
 
 export const problemRelations = relations(problem, ({ many, one }) => ({
   contests: many(problemOnContest),

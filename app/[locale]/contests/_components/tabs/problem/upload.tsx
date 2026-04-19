@@ -24,7 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Contest, Language, Problem } from "@/drizzle/schema";
+import type { Contest, Language, ProblemPreview } from "@/drizzle/schema";
 import { useCreateSubmission } from "@/hooks/use-create-submission";
 
 export function UploadCode({
@@ -34,7 +34,7 @@ export function UploadCode({
   problemLetter,
 }: {
   user: User;
-  problem: Problem;
+  problem: ProblemPreview;
   contest: Contest;
   problemLetter: string;
 }) {
@@ -64,8 +64,6 @@ export function UploadCode({
       toast.warning("You can't submit empty code");
       return;
     }
-
-    console.log(code.trim().length);
 
     mutate(
       {

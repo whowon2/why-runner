@@ -20,7 +20,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Problem, Submission } from "@/drizzle/schema";
+import type { ProblemPreview, Submission } from "@/drizzle/schema";
 import { useAIHelp } from "@/hooks/use-ai-help";
 
 export function AIDialog({
@@ -28,7 +28,7 @@ export function AIDialog({
   problem,
 }: {
   submission: Submission;
-  problem: Problem;
+  problem: ProblemPreview;
 }) {
   const { mutate, isPending } = useAIHelp();
 

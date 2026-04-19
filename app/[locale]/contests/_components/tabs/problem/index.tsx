@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/resizable";
 import type {
   Contest,
-  Problem,
   ProblemOnContest,
+  ProblemPreview,
   UserOnContest,
 } from "@/drizzle/schema";
 import { useContestSubmissions } from "@/hooks/use-contest-submissions";
@@ -33,7 +33,7 @@ export function ProblemTab({
   const { data: submissions } = useContestSubmissions({
     contestId: contest.id,
   });
-  const [problem, setProblem] = useState<Problem | null>(null);
+  const [problem, setProblem] = useState<ProblemPreview | null>(null);
   const [isContestStarted, setIsContestStarted] = useState(
     () => new Date() >= contest.startDate,
   );

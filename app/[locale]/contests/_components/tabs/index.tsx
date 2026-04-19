@@ -83,7 +83,14 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
         </TabsList>
 
         <TabsContent className="flex w-full gap-4" value="problems">
-          <ProblemTab contest={contest} user={user} />
+          {contest.joinStatus === "pending" ? (
+            <div className="flex flex-col items-center justify-center w-full min-h-[30vh] gap-2 text-center text-muted-foreground">
+              <p className="font-semibold text-lg">Join request pending</p>
+              <p className="text-sm">The contest owner must approve your request before you can view problems.</p>
+            </div>
+          ) : (
+            <ProblemTab contest={contest} user={user} />
+          )}
         </TabsContent>
         <TabsContent value="leaderboard">
           <Leaderboard contest={contest} />
