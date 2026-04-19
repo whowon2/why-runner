@@ -16,9 +16,7 @@ export async function joinContest(input: JoinContestInput) {
 
   if (!found) throw new Error("Contest not found.");
 
-  const now = new Date();
-  if (now > found.endDate) throw new Error("Contest has already ended.");
-  if (now < found.startDate) throw new Error("Contest has not started yet.");
+  if (new Date() > found.endDate) throw new Error("Contest has already ended.");
 
   await db
     .insert(userOnContest)
