@@ -38,6 +38,7 @@ const formSchema = z.object({
     },
   ),
   duration: z.string().min(1, "Duration must be set"),
+  isPrivate: z.boolean(),
   problems: z.array(z.string()).min(1, "You must select at least one problem"),
 });
 
@@ -91,6 +92,27 @@ function BasicInfoStep() {
               <Input placeholder="15" type="number" {...field} />
             </FormControl>
             <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="isPrivate"
+        render={({ field }) => (
+          <FormItem className="flex items-center gap-3 rounded border p-3">
+            <FormControl>
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <div className="leading-none">
+              <FormLabel className="cursor-pointer">Private contest</FormLabel>
+              <p className="text-xs text-muted-foreground mt-1">
+                Participants must be approved before joining.
+              </p>
+            </div>
           </FormItem>
         )}
       />
@@ -238,6 +260,7 @@ export function CreateContestForm({
         .toISOString()
         .slice(0, 16),
       duration: "15",
+      isPrivate: false,
       problems: [],
     },
     resolver: zodResolver(formSchema),
@@ -279,6 +302,7 @@ export function CreateContestForm({
         description: "",
         startDate,
         endDate,
+        isPrivate: values.isPrivate,
         problems: values.problems,
       },
       {

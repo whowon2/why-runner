@@ -3,12 +3,9 @@
 import { db } from "@/drizzle/db";
 
 export async function getContestLeaderboard(contestId: string) {
-  const contests = await db.query.userOnContest.findMany({
-    where: (c, { eq }) => eq(c.contestId, contestId),
-    with: {
-      user: true,
-    },
+  return db.query.userOnContest.findMany({
+    where: (c, { and, eq }) =>
+      and(eq(c.contestId, contestId), eq(c.joinStatus, "accepted")),
+    with: { user: true },
   });
-
-  return contests;
 }

@@ -106,6 +106,9 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }));
 
+export const JoinStatus = ["pending", "accepted"] as const;
+export type JoinStatus = (typeof JoinStatus)[number];
+
 export const userOnContest = pgTable(
   "user_on_contest",
   {
@@ -119,6 +122,7 @@ export const userOnContest = pgTable(
         onUpdate: "cascade",
       }),
     answered: text("answered").array().notNull().default([]),
+    joinStatus: text("join_status").$type<JoinStatus>().default("accepted").notNull(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.contestId] })],
 );

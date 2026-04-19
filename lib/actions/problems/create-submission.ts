@@ -39,7 +39,9 @@ export async function createSubmission(input: CreateSubmissionInput) {
     ),
   });
 
-  if (userProgress?.answered.includes(input.questionLetter)) {
+  if (!userProgress) throw new Error("You are not a participant in this contest.");
+  if (userProgress.joinStatus === "pending") throw new Error("Your join request is still pending approval.");
+  if (userProgress.answered.includes(input.questionLetter)) {
     throw new Error("You have already answered this question correctly.");
   }
 

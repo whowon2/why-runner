@@ -11,15 +11,18 @@ export async function joinContest(input: JoinContestInput) {
 
   const found = await db.query.contest.findFirst({
     where: eq(contest.id, input.contestId),
-    columns: { startDate: true, endDate: true },
+    columns: { endDate: true, isPrivate: true },
   });
 
   if (!found) throw new Error("Contest not found.");
-
   if (new Date() > found.endDate) throw new Error("Contest has already ended.");
+
+  const joinStatus = found.isPrivate ? "pending" : "accepted";
 
   await db
     .insert(userOnContest)
-    .values({ userId: currentUser.id, contestId: input.contestId })
+    .values({ userId: currentUser.id, contestId: input.contestId, joinStatus })
     .onConflictDoNothing();
+
+  return { pending: found.isPrivate };
 }
