@@ -134,9 +134,7 @@ export function NewProblem({ user }: { user: User }) {
     }
   }, [inputs, outputs]);
 
-  useEffect(() => {
-    console.log(form.formState.errors);
-  }, [form.formState.errors]);
+
 
   const formValues = form.watch();
 
