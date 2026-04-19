@@ -7,12 +7,14 @@ import {
   submission,
   userOnContest,
 } from "@/drizzle/schema";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 export async function createSubmission(input: CreateSubmissionInput) {
-  // Check if user already got it right
+  const currentUser = await getCurrentUser({});
+
   const userProgress = await db.query.userOnContest.findFirst({
     where: and(
-      eq(userOnContest.userId, input.userId),
+      eq(userOnContest.userId, currentUser.id),
       eq(userOnContest.contestId, input.contestId),
     ),
   });
@@ -21,7 +23,10 @@ export async function createSubmission(input: CreateSubmissionInput) {
     throw new Error("You have already answered this question correctly.");
   }
 
-  const [sub] = await db.insert(submission).values(input).returning();
+  const [sub] = await db
+    .insert(submission)
+    .values({ ...input, userId: currentUser.id })
+    .returning();
 
   // Send a notification to the judge worker via Postgres LISTEN/NOTIFY
   await db.execute(sql`SELECT pg_notify('new_submission', ${sub.id})`);
