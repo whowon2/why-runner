@@ -14,7 +14,7 @@ import type {
   ProblemPreview,
   UserOnContest,
 } from "@/drizzle/schema";
-import { useContestSubmissions } from "@/hooks/use-contest-submissions";
+import { useUserContestStatus } from "@/hooks/use-user-contest-status";
 import { letters } from "@/lib/letters";
 import { SelectProblem } from "./select-problem";
 import { SubmissionList } from "./submission-list";
@@ -30,9 +30,7 @@ export function ProblemTab({
     users: UserOnContest[];
   };
 }) {
-  const { data: submissions } = useContestSubmissions({
-    contestId: contest.id,
-  });
+  const { data: liveAnswered } = useUserContestStatus(contest.id);
   const [problem, setProblem] = useState<ProblemPreview | null>(null);
   const [isContestStarted, setIsContestStarted] = useState(
     () => new Date() >= contest.startDate,
@@ -73,7 +71,7 @@ export function ProblemTab({
     );
   }
 
-  const answeredLetters = isUserOnContest?.answered ?? [];
+  const answeredLetters = liveAnswered ?? isUserOnContest?.answered ?? [];
   const currentProblemLetter = problem
     ? letters[contest.problems.findIndex((p) => p.problemId === problem.id)]
     : null;
