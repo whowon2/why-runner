@@ -342,7 +342,7 @@ export function CreateContestForm({
                   step === s.id
                     ? "bg-primary text-primary-foreground border-2 border-primary"
                     : step > s.id
-                      ? "bg-primary/20 text-primary border-2 border-primary/20"
+                      ? "bg-secondary text-secondary-foreground border-2 border-primary/20"
                       : "bg-muted text-muted-foreground border-2 border-muted"
                 }`}
               >
@@ -359,7 +359,7 @@ export function CreateContestForm({
               {/* Line connector */}
               {s.id !== steps.length - 1 && (
                 <div
-                  className={`absolute top-4 left-[50%] w-full h-[2px] -z-0 ${
+                  className={`absolute top-4 left-[50%] w-full h-[2px] -z- ${
                     step > s.id ? "bg-primary/50" : "bg-muted"
                   }`}
                 />

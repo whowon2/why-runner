@@ -46,7 +46,7 @@ export function ContestDescription({ contestId }: { contestId: string }) {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center gap-6 mt-6 mb-8 w-full max-w-5xl p-8 rounded-3xl bg-white/40 dark:bg-neutral-900/40 backdrop-blur-xl border border-white/20 shadow-2xl shadow-indigo-500/5">
+    <div className="relative flex flex-col items-center justify-center gap-6 mt-6 mb-8 w-full max-w-6xl p-8 rounded-3xl bg-white/40 dark:bg-neutral-900/40 backdrop-blur-xl border border-white/20 shadow-2xl shadow-indigo-500/5">
       {/* Top gradient sliver */}
       <div
         className={`absolute top-0 left-0 right-0 h-2 bg-linear-to-r ${status.gradient} opacity-90 rounded-t-3xl`}
