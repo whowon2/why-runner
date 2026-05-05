@@ -1,6 +1,7 @@
 "use client";
 
 import type { Contest } from "@/drizzle/schema";
+import { DeleteContest } from "./delete-contest";
 import { EditContest } from "./edit/edit";
 import { ExportContestData } from "./export";
 import { Participants } from "./participants";
@@ -8,9 +9,11 @@ import { PendingJoins } from "./pending-joins";
 import { ContestSubmissions } from "./submissions";
 
 export function ContestManagement({ contest }: { contest: Contest }) {
+  const beforeStart = new Date() < contest.startDate;
+
   return (
     <div className="flex flex-col gap-4">
-      {new Date() < contest.startDate && <EditContest contestId={contest.id} />}
+      {beforeStart && <EditContest contestId={contest.id} />}
 
       {contest.isPrivate && <PendingJoins contestId={contest.id} />}
 
@@ -19,6 +22,8 @@ export function ContestManagement({ contest }: { contest: Contest }) {
       <ExportContestData contest={contest} />
 
       <ContestSubmissions contest={contest} />
+
+      {beforeStart && <DeleteContest contestId={contest.id} />}
     </div>
   );
 }
