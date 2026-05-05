@@ -108,9 +108,9 @@ function BasicInfoStep() {
               />
             </FormControl>
             <div className="leading-none">
-              <FormLabel className="cursor-pointer">Private contest</FormLabel>
+              <FormLabel className="cursor-pointer">{t("form.privateContest")}</FormLabel>
               <p className="text-xs text-muted-foreground mt-1">
-                Participants must be approved before joining.
+                {t("form.privateDescription")}
               </p>
             </div>
           </FormItem>
@@ -128,6 +128,7 @@ function ProblemsStep() {
   } = useFormContext<FormValues>();
   const { data, isLoading } = useProblems({ page: 1, pageSize: 50 });
   const selectedProblems = watch("problems");
+  const t = useTranslations("ContestsPage.createDialog");
 
   const toggleProblem = (id: string, checked: boolean) => {
     if (!checked) {
@@ -144,10 +145,10 @@ function ProblemsStep() {
     <div className="space-y-4 pt-2">
       <div className="space-y-1">
         <h3 className="font-semibold text-lg leading-none tracking-tight">
-          Select Problems
+          {t("form.selectProblemsTitle")}
         </h3>
         <p className="text-sm text-muted-foreground">
-          Select the problems to include in this contest.
+          {t("form.selectProblemsDescription")}
         </p>
         {errors.problems && (
           <p className="text-[0.8rem] font-medium text-destructive">
@@ -157,11 +158,11 @@ function ProblemsStep() {
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-center py-4">Loading problems...</p>
+        <p className="text-sm text-center py-4">{t("form.loadingProblems")}</p>
       ) : (
         <div className="space-y-2 max-h-[220px] overflow-y-auto pr-2 rounded-md">
           {(!data?.data || data.data.length === 0) && (
-            <p className="text-sm text-center py-4">No problems found.</p>
+            <p className="text-sm text-center py-4">{t("form.noProblems")}</p>
           )}
           {data?.data?.map((problem) => (
             <div
@@ -188,7 +189,7 @@ function ProblemsStep() {
                   {problem.title}
                 </FormLabel>
                 <p className="text-xs text-muted-foreground">
-                  Difficulty: {problem.difficulty || "Normal"}
+                  {t("form.difficulty")}: {problem.difficulty || t("form.normal")}
                 </p>
               </div>
             </div>
@@ -202,37 +203,38 @@ function ProblemsStep() {
 function ReviewStep() {
   const { getValues } = useFormContext<FormValues>();
   const values = getValues();
+  const t = useTranslations("ContestsPage.createDialog");
 
   return (
     <div className="space-y-4 pt-2">
       <div className="space-y-1">
         <h3 className="font-semibold text-lg leading-none tracking-tight">
-          Review Details
+          {t("form.reviewDetailsTitle")}
         </h3>
         <p className="text-sm text-muted-foreground">
-          Verify your contest information before creation.
+          {t("form.reviewDetailsDescription")}
         </p>
       </div>
 
       <div className="rounded-md border bg-muted/20 p-4 space-y-3 text-sm">
         <div className="flex justify-between items-center border-b pb-2">
-          <span className="font-medium text-muted-foreground">Name</span>
+          <span className="font-medium text-muted-foreground">{t("name")}</span>
           <span className="font-medium">{values.name}</span>
         </div>
         <div className="flex justify-between items-center border-b pb-2">
-          <span className="font-medium text-muted-foreground">Start Date</span>
+          <span className="font-medium text-muted-foreground">{t("date")}</span>
           <span className="font-medium">
             {new Date(values.startDate).toLocaleString()}
           </span>
         </div>
         <div className="flex justify-between items-center border-b pb-2">
-          <span className="font-medium text-muted-foreground">Duration</span>
-          <span className="font-medium">{values.duration} minutes</span>
+          <span className="font-medium text-muted-foreground">{t("duration")}</span>
+          <span className="font-medium">{values.duration}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="font-medium text-muted-foreground">Questions</span>
+          <span className="font-medium text-muted-foreground">{t("form.questions")}</span>
           <span className="font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-            {values.problems?.length || 0} selected
+            {values.problems?.length || 0} {t("form.selected")}
           </span>
         </div>
       </div>
@@ -252,6 +254,7 @@ export function CreateContestForm({
   const [step, setStep] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
   const [createdContest, setCreatedContest] = useState<any>(null);
+  const t = useTranslations("ContestsPage.createDialog");
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -322,9 +325,9 @@ export function CreateContestForm({
   }
 
   const steps = [
-    { id: 0, title: "Basic Info", component: <BasicInfoStep /> },
-    { id: 1, title: "Problems", component: <ProblemsStep /> },
-    { id: 2, title: "Review", component: <ReviewStep /> },
+    { id: 0, title: t("steps.basicInfo"), component: <BasicInfoStep /> },
+    { id: 1, title: t("steps.problems"), component: <ProblemsStep /> },
+    { id: 2, title: t("steps.review"), component: <ReviewStep /> },
   ];
 
   return (
@@ -378,16 +381,16 @@ export function CreateContestForm({
             disabled={step === 0 || isPending}
             className="w-24"
           >
-            Back
+            {t("form.back")}
           </Button>
 
           {step < steps.length - 1 ? (
             <Button type="button" onClick={nextStep} className="w-24">
-              Next
+              {t("form.next")}
             </Button>
           ) : (
             <Button disabled={isPending} type="submit" className="min-w-24">
-              {isPending ? "Creating..." : "Confirm"}
+              {isPending ? t("form.creating") : t("form.confirm")}
             </Button>
           )}
         </DialogFooter>

@@ -98,7 +98,30 @@
       "title": "Criar Torneio",
       "name": "Nome",
       "date": "Data e Hora",
-      "duration": "Duração"
+      "duration": "Duração",
+      "steps": {
+        "basicInfo": "Informações Básicas",
+        "problems": "Problemas",
+        "review": "Revisão"
+      },
+      "form": {
+        "privateContest": "Torneio Privado",
+        "privateDescription": "Participantes devem ser aprovados antes de entrar.",
+        "selectProblemsTitle": "Selecionar Problemas",
+        "selectProblemsDescription": "Selecione os problemas para incluir neste torneio.",
+        "loadingProblems": "Carregando problemas...",
+        "noProblems": "Nenhum problema encontrado.",
+        "difficulty": "Dificuldade",
+        "normal": "Normal",
+        "reviewDetailsTitle": "Revisar Detalhes",
+        "reviewDetailsDescription": "Verifique as informações do torneio antes de criar.",
+        "questions": "Questões",
+        "selected": "selecionado(s)",
+        "back": "Voltar",
+        "next": "Próximo",
+        "creating": "Criando...",
+        "confirm": "Confirmar"
+      }
     },
     "JoinButton": {
       "Join": {

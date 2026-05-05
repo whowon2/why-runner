@@ -121,7 +121,30 @@
       "title": "Create Contest",
       "name": "Name",
       "date": "Date and Time",
-      "duration": "Duration"
+      "duration": "Duration",
+      "steps": {
+        "basicInfo": "Basic Info",
+        "problems": "Problems",
+        "review": "Review"
+      },
+      "form": {
+        "privateContest": "Private contest",
+        "privateDescription": "Participants must be approved before joining.",
+        "selectProblemsTitle": "Select Problems",
+        "selectProblemsDescription": "Select the problems to include in this contest.",
+        "loadingProblems": "Loading problems...",
+        "noProblems": "No problems found.",
+        "difficulty": "Difficulty",
+        "normal": "Normal",
+        "reviewDetailsTitle": "Review Details",
+        "reviewDetailsDescription": "Verify your contest information before creation.",
+        "questions": "Questions",
+        "selected": "selected",
+        "back": "Back",
+        "next": "Next",
+        "creating": "Creating...",
+        "confirm": "Confirm"
+      }
     },
     "JoinButton": {
       "Join": {
