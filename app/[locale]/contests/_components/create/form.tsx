@@ -334,11 +334,11 @@ export function CreateContestForm({
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
         {/* Stepper Header */}
-        <div className="flex items-center justify-between mb-4 mt-2">
+        <div className="flex items-center justify-between mb-6 mt-12">
           {steps.map((s) => (
             <div
               key={s.id}
-              className="flex flex-col items-center gap-1 w-full relative"
+              className="flex flex-col items-center flex-1 relative"
             >
               <div
                 className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium z-10 transition-colors ${
@@ -351,18 +351,20 @@ export function CreateContestForm({
               >
                 {step > s.id ? "✓" : s.id + 1}
               </div>
-              <span
-                className={`text-[10px] font-medium uppercase tracking-wider ${
-                  step >= s.id ? "text-foreground" : "text-muted-foreground"
-                }`}
-              >
-                {s.title}
-              </span>
+              <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[120px] text-center">
+                <span
+                  className={`text-[10px] font-medium uppercase tracking-wider leading-tight ${
+                    step >= s.id ? "text-foreground" : "text-muted-foreground"
+                  }`}
+                >
+                  {s.title}
+                </span>
+              </div>
 
               {/* Line connector */}
               {s.id !== steps.length - 1 && (
                 <div
-                  className={`absolute top-4 left-[50%] w-full h-[2px] -z- ${
+                  className={`absolute top-4 left-[50%] w-full h-[2px] -z-10 ${
                     step > s.id ? "bg-primary/50" : "bg-muted"
                   }`}
                 />
