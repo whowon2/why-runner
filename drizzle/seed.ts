@@ -8,7 +8,12 @@ async function main() {
 
   console.log("🌱 Seeding database...");
 
-  await seed(db, schema).refine((f) => ({
+  const {
+    userOnContest: _uoc,
+    problemOnContest: _poc,
+    ...seedableSchema
+  } = schema;
+  await seed(db, seedableSchema).refine((f) => ({
     // 1. Users
     user: {
       count: 50,
@@ -22,10 +27,6 @@ async function main() {
         bio: f.loremIpsum({ sentencesCount: 3 }),
         createdAt: f.date({ maxDate: new Date().toISOString() }),
       },
-      // Generate related entries
-      with: {
-        userOnContest: 2, // Each user joins ~2 contests
-      },
     },
 
     // 2. Contests
@@ -36,13 +37,9 @@ async function main() {
         name: f.companyName(), // "Acme Corp Contest"
         description: f.loremIpsum({ sentencesCount: 1 }),
         startDate: f.date({ minDate: "2023-01-01", maxDate: "2024-12-31" }),
-        // Ensure endDate is handled effectively (random dates usually work, but simple logic is hard in seeders)
         endDate: f.date({ minDate: "2025-01-01", maxDate: "2026-01-01" }),
-        createdBy: f.fullName(), // Simple text field in your schema
+        createdBy: f.fullName(),
         createdAt: f.date({ maxDate: new Date().toISOString() }),
-      },
-      with: {
-        problemOnContest: 5, // Each contest gets ~5 problems
       },
     },
 
@@ -108,6 +105,56 @@ async function main() {
       },
     },
   }));
+
+  console.log("📚 Seeding problem-contest assignments...");
+  const allProblems = await db
+    .select({ id: schema.problem.id })
+    .from(schema.problem);
+  const contestList = await db
+    .select({ id: schema.contest.id })
+    .from(schema.contest);
+  const pcPairs = new Set<string>();
+  const pcLinks: { problemId: string; contestId: string }[] = [];
+  for (const c of contestList) {
+    const shuffled = allProblems
+      .sort(() => Math.random() - 0.5)
+      .slice(0, Math.min(5, allProblems.length));
+    for (const p of shuffled) {
+      const key = `${p.id}:${c.id}`;
+      if (!pcPairs.has(key)) {
+        pcPairs.add(key);
+        pcLinks.push({ problemId: p.id, contestId: c.id });
+      }
+    }
+  }
+  if (pcLinks.length > 0) {
+    await db
+      .insert(schema.problemOnContest)
+      .values(pcLinks)
+      .onConflictDoNothing();
+  }
+
+  console.log("👥 Seeding user-contest memberships...");
+  const allUsers = await db.select({ id: schema.user.id }).from(schema.user);
+  const allContests = await db
+    .select({ id: schema.contest.id })
+    .from(schema.contest);
+  const pairs = new Set<string>();
+  const memberships: { userId: string; contestId: string }[] = [];
+  for (const u of allUsers) {
+    const shuffled = allContests.sort(() => Math.random() - 0.5).slice(0, 2);
+    for (const c of shuffled) {
+      const key = `${u.id}:${c.id}`;
+      if (!pairs.has(key)) {
+        pairs.add(key);
+        memberships.push({ userId: u.id, contestId: c.id });
+      }
+    }
+  }
+  await db
+    .insert(schema.userOnContest)
+    .values(memberships)
+    .onConflictDoNothing();
 
   console.log("⚡ Creating a specific contest to join in 1 minute...");
   const now = new Date();

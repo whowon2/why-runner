@@ -50,6 +50,13 @@
       "when": 1776570764999,
       "tag": "0006_silly_hannibal_king",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1778002787142,
+      "tag": "0007_futuristic_molten_man",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "problem_on_contest" ADD COLUMN "order" integer DEFAULT 0 NOT NULL;

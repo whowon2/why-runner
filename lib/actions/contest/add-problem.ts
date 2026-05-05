@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { contest, problemOnContest } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
@@ -18,5 +18,10 @@ export async function addProblemToContest(input: AddProblemToContestInput) {
     throw new Error("Forbidden");
   }
 
-  await db.insert(problemOnContest).values(input);
+  const [{ value: existingCount }] = await db
+    .select({ value: count() })
+    .from(problemOnContest)
+    .where(eq(problemOnContest.contestId, input.contestId));
+
+  await db.insert(problemOnContest).values({ ...input, order: existingCount });
 }

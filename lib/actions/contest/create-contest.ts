@@ -5,7 +5,10 @@ import { contest } from "@/drizzle/schema";
 import { problemOnContest } from "@/drizzle/schemas/users";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 
-export type CreateContestInput = Omit<typeof contest.$inferInsert, "createdBy"> & {
+export type CreateContestInput = Omit<
+  typeof contest.$inferInsert,
+  "createdBy"
+> & {
   problems?: string[];
 };
 

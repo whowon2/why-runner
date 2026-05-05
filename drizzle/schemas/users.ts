@@ -3,6 +3,7 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
+  integer,
   pgTable,
   primaryKey,
   text,
@@ -122,7 +123,10 @@ export const userOnContest = pgTable(
         onUpdate: "cascade",
       }),
     answered: text("answered").array().notNull().default([]),
-    joinStatus: text("join_status").$type<JoinStatus>().default("accepted").notNull(),
+    joinStatus: text("join_status")
+      .$type<JoinStatus>()
+      .default("accepted")
+      .notNull(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.contestId] })],
 );
@@ -142,6 +146,7 @@ export const problemOnContest = pgTable(
         onDelete: "cascade",
         onUpdate: "cascade",
       }),
+    order: integer("order").notNull().default(0),
   },
   (t) => [primaryKey({ columns: [t.problemId, t.contestId] })],
 );

@@ -56,7 +56,8 @@ export async function getContests({
       offset: offset,
       where: whereClause,
       with: {
-        users: true, // Preserving your existing relation
+        users: true,
+        problems: true,
       },
       orderBy: [desc(contest.createdAt)], // Generally want newest contests first
     }),

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,6 +28,7 @@ export function ShareToFeedModal({
   title,
   descriptionText,
 }: ShareToFeedModalProps) {
+  const t = useTranslations("ShareToFeed");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -55,7 +57,7 @@ export function ShareToFeedModal({
         </DialogHeader>
         <div className="py-4">
           <Textarea
-            placeholder="Write a custom message... (optional)"
+            placeholder={t("placeholder")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             disabled={isSubmitting}
@@ -64,10 +66,10 @@ export function ShareToFeedModal({
         </div>
         <DialogFooter className="flex sm:justify-between w-full flex-row">
           <Button variant="ghost" onClick={onClose} disabled={isSubmitting}>
-            Skip
+            {t("skip")}
           </Button>
           <Button onClick={handleShare} disabled={isSubmitting}>
-            {isSubmitting ? "Sharing..." : "Share to Feed"}
+            {isSubmitting ? t("sharing") : t("share")}
           </Button>
         </DialogFooter>
       </DialogContent>

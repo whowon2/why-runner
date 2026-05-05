@@ -116,7 +116,10 @@
       "starts": "Começa em",
       "ends": "Termina em",
       "finished": "FINALIZADO",
-      "participants": "Participantes"
+      "participants": "Participantes",
+      "private": "Privado",
+      "duration": "duração",
+      "problems": "problemas"
     },
     "Tabs": {
       "problems": "Problemas",
@@ -125,6 +128,8 @@
       "manage": "Gerenciar",
       "Problem": {
         "description": "Descrição",
+        "notStarted": "O torneio ainda não começou. Os problemas ficarão visíveis quando ele iniciar.",
+        "viewAfterEnd": "Você precisa participar do torneio para ver os problemas enquanto ele está ativo.",
         "Examples": {
           "title": "Exemplos",
           "input": "Entrada",
@@ -147,15 +152,20 @@
       "Leaderboard": {
         "name": "Nome",
         "correct": "Acertos",
-        "score": "Pontuação"
+        "score": "Pontuação",
+        "empty": "Nenhum participante ainda",
+        "rank": "#"
       },
       "Description": {
         "starts": "Começa em",
         "ends": "Termina em",
         "finished": "FINALIZADO",
         "participants": "Participantes",
-        "problems": "Problemas"
+        "problems": "Problemas",
+        "private": "Privado"
       },
+      "pendingTitle": "Solicitação de entrada pendente",
+      "pendingDescription": "O organizador do torneio precisa aprovar sua solicitação antes de você poder ver os problemas.",
       "Management": {
         "id_copied": "ID copiado para o clipboard!"
       }
@@ -182,5 +192,60 @@
     "problems": "Problemas",
     "contests": "Torneios",
     "theme": "Tema"
+  },
+  "NotFound": {
+    "title": "Página não encontrada",
+    "description": "A página que você está procurando não existe ou foi movida.",
+    "goHome": "Ir para o início"
+  },
+  "BreadCrumbs": {
+    "home": "Início"
+  },
+  "ShareToFeed": {
+    "placeholder": "Escreva uma mensagem personalizada... (opcional)",
+    "skip": "Pular",
+    "share": "Compartilhar no Feed",
+    "sharing": "Compartilhando..."
+  },
+  "ActionButton": {
+    "title": "Tem certeza?",
+    "description": "Esta ação não pode ser desfeita.",
+    "cancel": "Cancelar",
+    "confirm": "Sim"
+  },
+  "UserPage": {
+    "Feed": {
+      "title": "Feed de Atividades",
+      "subtitle": "Veja o que você e seus colegas estão fazendo.",
+      "empty": "Nenhuma atividade para mostrar ainda. Seja o primeiro a compartilhar algo!",
+      "caughtUp": "Você está em dia com tudo!",
+      "authoredBy": "Criado por",
+      "newProblem": "Novo Problema Publicado",
+      "activity": "Atividade",
+      "newContest": "Novo Torneio",
+      "like": "Curtir",
+      "discuss": "Discutir",
+      "problem": "Problema:",
+      "someone": "alguém"
+    },
+    "MyContests": {
+      "title": "Meus Torneios",
+      "subtitle": "Gerencie seus torneios criados e veja as submissões dos participantes.",
+      "loading": "Carregando torneios...",
+      "emptyTitle": "Nenhum torneio encontrado",
+      "emptyDescription": "Você ainda não criou nenhum torneio. Comece criando seu primeiro torneio de programação para compartilhar com seus alunos ou colegas.",
+      "start": "Início:",
+      "duration": "Duração:",
+      "viewDashboard": "Ver Painel"
+    },
+    "MyProblems": {
+      "title": "Meus Problemas",
+      "subtitle": "Gerencie seus problemas algorítmicos e casos de teste.",
+      "create": "Criar Problema",
+      "loading": "Carregando problemas...",
+      "emptyTitle": "Nenhum problema ainda",
+      "emptyDescription": "Você ainda não criou nenhum problema. Comece projetando seu primeiro problema de programação e definindo seus casos de teste!",
+      "viewDetails": "Ver Detalhes"
+    }
   }
 }

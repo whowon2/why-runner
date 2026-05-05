@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,14 +13,15 @@ import {
 import { usePathname } from "@/i18n/navigation";
 
 export function BreadCrumbs() {
-  const pathname = usePathname(); // Get current path
+  const t = useTranslations("BreadCrumbs");
+  const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean); // Remove empty strings
 
   return (
     <Breadcrumb className="p-2">
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          <BreadcrumbLink href="/">{t("home")}</BreadcrumbLink>
         </BreadcrumbItem>
 
         {segments.map((segment, idx) => {

@@ -10,6 +10,7 @@ import {
   Share2,
   Trophy,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,6 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import { getActivities } from "@/lib/actions/activity/get-activities";
 
 export function Feed() {
+  const t = useTranslations("UserPage.Feed");
   const { data: activities = [], isLoading: loading } = useQuery({
     queryKey: ["activities"],
     queryFn: async () => {
@@ -35,11 +37,9 @@ export function Feed() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1.5">
           <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-neutral-900 to-neutral-500 dark:from-neutral-50 dark:to-neutral-400">
-            Activity Feed
+            {t("title")}
           </h1>
-          <p className="text-muted-foreground text-lg">
-            See what you and your peers are up to.
-          </p>
+          <p className="text-muted-foreground text-lg">{t("subtitle")}</p>
         </div>
       </div>
 
@@ -52,7 +52,7 @@ export function Feed() {
           </div>
         ) : activities.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
-            No activity to show yet. Be the first to share something!
+            {t("empty")}
           </div>
         ) : (
           activities.map((activity) => {
@@ -61,11 +61,10 @@ export function Feed() {
             const title = isContest
               ? activity.contest?.name
               : isProblem
-                ? "New Problem Published"
-                : "Activity";
+                ? t("newProblem")
+                : t("activity");
             const targetName = isProblem ? activity.problem?.title : "";
-            const authorText =
-              "Authored by " + (activity.user?.name || "someone");
+            const authorText = `${t("authoredBy")} ${activity.user?.name || t("someone")}`;
 
             return (
               <Card
@@ -74,7 +73,7 @@ export function Feed() {
               >
                 <div
                   className={`h-1.5 w-full bg-linear-to-r ${isContest ? "from-indigo-500 to-cyan-500" : "from-emerald-500 to-teal-500"}`}
-                ></div>
+                />
                 <CardHeader className="flex flex-row items-center gap-4 space-y-0 pt-6">
                   <div
                     className={`flex h-12 w-12 items-center justify-center rounded-2xl shrink-0 transition-colors ${isContest ? "bg-indigo-500/10 group-hover:bg-indigo-500/20" : "bg-emerald-500/10 group-hover:bg-emerald-500/20"}`}
@@ -95,7 +94,7 @@ export function Feed() {
                             : "text-emerald-600 dark:text-emerald-400"
                         }
                       >
-                        {isContest ? "New Contest" : "New Problem"}
+                        {isContest ? t("newContest") : t("newProblem")}
                       </span>{" "}
                       • {new Date(activity.createdAt).toLocaleDateString()}
                     </CardDescription>
@@ -113,7 +112,7 @@ export function Feed() {
                     )}
                     {isProblem && (
                       <div>
-                        Problem:{" "}
+                        {t("problem")}{" "}
                         <span className="font-bold px-2 py-1 bg-background rounded-md border ml-1 shadow-sm">
                           {targetName}
                         </span>
@@ -129,7 +128,7 @@ export function Feed() {
                       className="text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 dark:hover:text-rose-400 rounded-full px-4"
                     >
                       <Heart className="w-4 h-4 mr-2" />
-                      Like
+                      {t("like")}
                     </Button>
                     <Button
                       variant="ghost"
@@ -137,7 +136,7 @@ export function Feed() {
                       className="text-muted-foreground hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 dark:hover:text-blue-400 rounded-full px-4"
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />
-                      Discuss
+                      {t("discuss")}
                     </Button>
                   </div>
                   <Button
@@ -153,12 +152,11 @@ export function Feed() {
           })
         )}
 
-        {/* End of feed */}
         <div className="flex flex-col items-center justify-center pt-8 pb-12 text-muted-foreground space-y-3">
           <div className="p-4 rounded-full bg-muted/30">
             <Flame className="w-8 h-8 text-orange-500/70" />
           </div>
-          <p className="text-sm font-medium">You are all caught up!</p>
+          <p className="text-sm font-medium">{t("caughtUp")}</p>
         </div>
       </div>
     </div>

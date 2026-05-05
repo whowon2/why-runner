@@ -2,6 +2,7 @@
 
 import type { User } from "better-auth";
 import { Fragment, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ProblemDescription } from "@/app/[locale]/problems/_components/description";
 import {
   ResizableHandle,
@@ -30,6 +31,7 @@ export function ProblemTab({
     users: UserOnContest[];
   };
 }) {
+  const t = useTranslations("ContestsPage.Tabs.Problem");
   const { data: liveAnswered } = useUserContestStatus(contest.id);
   const [problem, setProblem] = useState<ProblemPreview | null>(null);
   const [isContestStarted, setIsContestStarted] = useState(
@@ -57,16 +59,16 @@ export function ProblemTab({
 
   if (!isContestStarted) {
     return (
-      <div className="w-full flex items-center justify-center mt-10 font-bold text-xl">
-        Você ainda não pode ver os problemas.
+      <div className="w-full flex items-center justify-center mt-10 font-bold text-xl text-muted-foreground">
+        {t("notStarted")}
       </div>
     );
   }
 
   if (contest.endDate > new Date() && !isUserOnContest) {
     return (
-      <div className="w-full flex items-center justify-center mt-10 font-bold text-xl">
-        Você poderá ver os problemas após o término do torneio.
+      <div className="w-full flex items-center justify-center mt-10 font-bold text-xl text-muted-foreground">
+        {t("viewAfterEnd")}
       </div>
     );
   }

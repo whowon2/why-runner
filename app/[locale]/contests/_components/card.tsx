@@ -1,6 +1,13 @@
 "use client";
 
-import { Calendar, ChevronRight, Clock, Trophy, Users } from "lucide-react";
+import {
+  Calendar,
+  ChevronRight,
+  Clock,
+  ListOrdered,
+  Lock,
+  Users,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import {
@@ -13,11 +20,12 @@ import {
 import type { Contest, UserOnContest } from "@/drizzle/schema";
 import { Link } from "@/i18n/navigation";
 import { formatDuration } from "@/lib/format-duration";
+import { getContestStatus } from "@/lib/get-contest-status";
 
 export function ContestCard({
   contest,
 }: {
-  contest: Contest & { users: UserOnContest[] };
+  contest: Contest & { users: UserOnContest[]; problems: unknown[] };
 }) {
   const [now, setNow] = useState(new Date());
   const t = useTranslations("ContestsPage");
@@ -29,39 +37,18 @@ export function ContestCard({
     return () => clearInterval(interval);
   }, []);
 
-  function getStatusInfo(start: Date, end: Date) {
-    if (now < start) {
-      const diffMs = start.getTime() - now.getTime();
-      return {
-        text: `${t("card.starts") || "Starts in"}: ${formatDuration(diffMs)}`,
-        badge: "Upcoming",
-        color:
-          "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20",
-        gradient: "from-emerald-500 to-teal-400",
-      };
+  function getStatusText(start: Date, end: Date) {
+    if (now < new Date(start)) {
+      return `${t("card.starts")}: ${formatDuration(new Date(start).getTime() - now.getTime())}`;
     }
-
-    if (start <= now && now <= end) {
-      const diffMs = end.getTime() - now.getTime();
-      return {
-        text: `${t("card.ends") || "Ends in"}: ${formatDuration(diffMs)}`,
-        badge: "Active",
-        color:
-          "text-amber-600 bg-amber-50 dark:bg-amber-500/10 dark:text-amber-500 border-amber-200 dark:border-amber-500/20",
-        gradient: "from-amber-500 to-orange-400",
-      };
+    if (new Date(start) <= now && now <= new Date(end)) {
+      return `${t("card.ends")}: ${formatDuration(new Date(end).getTime() - now.getTime())}`;
     }
-
-    return {
-      text: t("card.finished") || "Finished",
-      badge: "Past",
-      color:
-        "text-neutral-600 bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 border-neutral-200 dark:border-neutral-700",
-      gradient: "from-neutral-400 to-neutral-500",
-    };
+    return t("card.finished");
   }
 
-  const status = getStatusInfo(contest.startDate, contest.endDate);
+  const status = getContestStatus(contest.startDate, contest.endDate, now);
+  const statusText = getStatusText(contest.startDate, contest.endDate);
 
   return (
     <Link href={`/contests/${contest.id}`} className="block group">
@@ -73,18 +60,25 @@ export function ContestCard({
 
         <CardHeader className="pb-3 flex flex-row items-start justify-between">
           <div className="space-y-1.5 flex-1 pr-4">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
               <span
                 className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border ${status.color}`}
               >
                 {status.badge}
               </span>
+              {contest.isPrivate && (
+                <span className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border border-muted text-muted-foreground bg-muted/40">
+                  <Lock className="w-3 h-3" />
+                  {t("card.private")}
+                </span>
+              )}
               <span className="text-xs text-muted-foreground flex items-center font-medium">
                 <Clock className="w-3.5 h-3.5 mr-1 opacity-70" />
                 {formatDuration(
-                  contest.endDate.getTime() - contest.startDate.getTime(),
+                  new Date(contest.endDate).getTime() -
+                    new Date(contest.startDate).getTime(),
                 )}{" "}
-                duration
+                {t("card.duration")}
               </span>
             </div>
 
@@ -100,16 +94,9 @@ export function ContestCard({
                     : "text-foreground/80"
                 }`}
               >
-                {status.text}
+                {statusText}
               </span>
             </CardDescription>
-          </div>
-
-          <div className="hidden sm:flex flex-col items-center justify-center p-3 bg-muted/40 rounded-xl border border-muted/50 mt-1 shrink-0 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 transition-colors">
-            <Trophy className="w-6 h-6 text-indigo-400 mb-1" />
-            <span className="text-[11px] font-semibold text-muted-foreground">
-              REWARD
-            </span>
           </div>
         </CardHeader>
 
@@ -120,7 +107,15 @@ export function ContestCard({
               <span className="font-medium text-foreground/80 mr-1">
                 {contest.users.length}
               </span>{" "}
-              {t("card.participants") || "participants"}
+              {t("card.participants")}
+            </div>
+
+            <div className="flex items-center text-sm text-muted-foreground">
+              <ListOrdered className="w-4 h-4 mr-2 text-indigo-500/70" />
+              <span className="font-medium text-foreground/80 mr-1">
+                {contest.problems.length}
+              </span>{" "}
+              {t("card.problems")}
             </div>
 
             <div className="flex items-center text-sm text-muted-foreground">

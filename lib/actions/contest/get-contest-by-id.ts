@@ -1,8 +1,8 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { userOnContest } from "@/drizzle/schema";
+import { problemOnContest, userOnContest } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 const problemColumns = { inputs: false, outputs: false } as const;
@@ -17,6 +17,7 @@ export async function getContest(id: string) {
         with: {
           problem: { columns: problemColumns },
         },
+        orderBy: asc(problemOnContest.order),
       },
       users: true,
     },
@@ -34,7 +35,8 @@ export async function getContest(id: string) {
 
   const isOwner = found.createdBy === currentUser.id;
   const joinStatus = membership?.joinStatus ?? null;
-  const canViewProblems = isOwner || !found.isPrivate || joinStatus === "accepted";
+  const canViewProblems =
+    isOwner || !found.isPrivate || joinStatus === "accepted";
 
   return {
     ...found,

@@ -28,16 +28,33 @@ export async function exportContestData(contestId: string): Promise<string> {
 
   const problemLetters = found.problems.map((_, i) => letters[i]);
 
-  const header = ["Name", "Email", "Score", ...problemLetters, "Total Submissions", "Pass Rate"];
+  const header = [
+    "Name",
+    "Email",
+    "Score",
+    ...problemLetters,
+    "Total Submissions",
+    "Pass Rate",
+  ];
 
   const rows = found.users
     .map(({ user: u, answered }) => {
       const userSubs = submissions.filter((s) => s.userId === u.id);
       const passed = userSubs.filter((s) => s.status === "PASSED").length;
       const total = userSubs.length;
-      const passRate = total > 0 ? `${Math.round((passed / total) * 100)}%` : "0%";
-      const problemCols = problemLetters.map((l) => (answered.includes(l) ? "✓" : "✗"));
-      return [u.name, u.email, answered.length, ...problemCols, total, passRate] as (string | number)[];
+      const passRate =
+        total > 0 ? `${Math.round((passed / total) * 100)}%` : "0%";
+      const problemCols = problemLetters.map((l) =>
+        answered.includes(l) ? "✓" : "✗",
+      );
+      return [
+        u.name,
+        u.email,
+        answered.length,
+        ...problemCols,
+        total,
+        passRate,
+      ] as (string | number)[];
     })
     .sort((a, b) => (b[2] as number) - (a[2] as number));
 

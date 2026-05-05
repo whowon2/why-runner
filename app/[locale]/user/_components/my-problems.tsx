@@ -1,6 +1,7 @@
 "use client";
 
 import { FileCode, PlusCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,7 +12,9 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useProblems } from "@/hooks/use-problems";
 import { Link } from "@/i18n/navigation";
+
 export function MyProblems() {
+  const t = useTranslations("UserPage.MyProblems");
   const { data, isLoading } = useProblems({
     page: 1,
     pageSize: 50,
@@ -25,15 +28,13 @@ export function MyProblems() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1.5">
           <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-neutral-900 to-neutral-500 dark:from-neutral-50 dark:to-neutral-400">
-            My Problems
+            {t("title")}
           </h1>
-          <p className="text-muted-foreground text-lg">
-            Manage your created algorithmic problems and test cases.
-          </p>
+          <p className="text-muted-foreground text-lg">{t("subtitle")}</p>
         </div>
         <div className="shrink-0">
           <Link href="/problems/new">
-            <Button variant="outline">Create Problem</Button>
+            <Button variant="outline">{t("create")}</Button>
           </Link>
         </div>
       </div>
@@ -42,7 +43,7 @@ export function MyProblems() {
 
       {isLoading ? (
         <div className="flex justify-center p-14">
-          <span className="animate-pulse">Loading problems...</span>
+          <span className="animate-pulse">{t("loading")}</span>
         </div>
       ) : problems.length === 0 ? (
         <Card className="border-dashed shadow-sm bg-muted/20 transition-all hover:bg-muted/30 hover:shadow-md border-2">
@@ -51,20 +52,19 @@ export function MyProblems() {
               <FileCode className="h-10 w-10 text-indigo-500" />
             </div>
             <CardTitle className="mb-3 text-2xl font-semibold">
-              No problems yet
+              {t("emptyTitle")}
             </CardTitle>
             <CardDescription className="max-w-md mx-auto mb-8 text-base">
-              You haven't authored any problems yet. Get started by designing
-              your first coding problem and defining its test cases!
+              {t("emptyDescription")}
             </CardDescription>
 
             <div className="relative group">
-              <div className="absolute -inset-1 blur-lg bg-linear-to-r from-indigo-500 to-cyan-500 opacity-20 group-hover:opacity-40 transition duration-500 rounded-lg"></div>
+              <div className="absolute -inset-1 blur-lg bg-linear-to-r from-indigo-500 to-cyan-500 opacity-20 group-hover:opacity-40 transition duration-500 rounded-lg" />
               <div className="relative">
                 <Link href="/problems/new">
                   <Button>
                     <PlusCircle className="mr-2 h-4 w-4" />
-                    Create Problem
+                    {t("create")}
                   </Button>
                 </Link>
               </div>
@@ -103,7 +103,7 @@ export function MyProblems() {
                 <div className="pt-2 border-t">
                   <Link href={`/problems/${prob.id}`}>
                     <Button variant="secondary" className="w-full">
-                      View Details
+                      {t("viewDetails")}
                     </Button>
                   </Link>
                 </div>

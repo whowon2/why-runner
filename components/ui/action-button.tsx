@@ -1,6 +1,7 @@
 "use client";
 
 import { type ComponentProps, type ReactNode, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -19,13 +20,14 @@ import { LoadingSwap } from "@/components/ui/loading-swap";
 export function ActionButton({
   action,
   requireAreYouSure = false,
-  areYouSureDescription = "This action cannot be undone.",
+  areYouSureDescription,
   ...props
 }: ComponentProps<typeof Button> & {
   action: () => Promise<{ error: boolean; message?: string }>;
   requireAreYouSure?: boolean;
   areYouSureDescription?: ReactNode;
 }) {
+  const t = useTranslations("ActionButton");
   const [isLoading, startTransition] = useTransition();
 
   function performAction() {
@@ -47,15 +49,15 @@ export function ActionButton({
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>{t("title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              {areYouSureDescription}
+              {areYouSureDescription ?? t("description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction disabled={isLoading} onClick={performAction}>
-              <LoadingSwap isLoading={isLoading}>Yes</LoadingSwap>
+              <LoadingSwap isLoading={isLoading}>{t("confirm")}</LoadingSwap>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

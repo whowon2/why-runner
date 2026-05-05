@@ -12,6 +12,9 @@ export async function updateContest(input: UpdateContestInput) {
     .update(contest)
     .set(input.contest)
     .where(
-      and(eq(contest.id, input.contestId), eq(contest.createdBy, currentUser.id)),
+      and(
+        eq(contest.id, input.contestId),
+        eq(contest.createdBy, currentUser.id),
+      ),
     );
 }

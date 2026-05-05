@@ -116,7 +116,10 @@
       "starts": "Starts in",
       "ends": "Ends in",
       "finished": "FINISHED",
-      "participants": "Participants"
+      "participants": "Participants",
+      "private": "Private",
+      "duration": "duration",
+      "problems": "problems"
     },
     "Tabs": {
       "problems": "Problems",
@@ -125,6 +128,8 @@
       "manage": "Manage",
       "Problem": {
         "description": "Description",
+        "notStarted": "The contest hasn't started yet. Problems will be visible once it begins.",
+        "viewAfterEnd": "You must join the contest to view problems while it's active.",
         "Examples": {
           "title": "Examples",
           "input": "Input",
@@ -147,15 +152,20 @@
       "Leaderboard": {
         "name": "Name",
         "correct": "Correct",
-        "score": "Score"
+        "score": "Score",
+        "empty": "No participants yet",
+        "rank": "#"
       },
       "Description": {
         "starts": "Starts in",
         "ends": "Ends in",
         "finished": "FINISHED",
         "participants": "Participants",
-        "problems": "Problems"
+        "problems": "Problems",
+        "private": "Private"
       },
+      "pendingTitle": "Join request pending",
+      "pendingDescription": "The contest owner must approve your request before you can view problems.",
       "Management": {
         "id_copied": "ID copied to clipboard!"
       }
@@ -182,5 +192,60 @@
     "problems": "Problems",
     "contests": "Contests",
     "theme": "Theme"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "goHome": "Go home"
+  },
+  "BreadCrumbs": {
+    "home": "Home"
+  },
+  "ShareToFeed": {
+    "placeholder": "Write a custom message... (optional)",
+    "skip": "Skip",
+    "share": "Share to Feed",
+    "sharing": "Sharing..."
+  },
+  "ActionButton": {
+    "title": "Are you sure?",
+    "description": "This action cannot be undone.",
+    "cancel": "Cancel",
+    "confirm": "Yes"
+  },
+  "UserPage": {
+    "Feed": {
+      "title": "Activity Feed",
+      "subtitle": "See what you and your peers are up to.",
+      "empty": "No activity to show yet. Be the first to share something!",
+      "caughtUp": "You are all caught up!",
+      "authoredBy": "Authored by",
+      "newProblem": "New Problem Published",
+      "activity": "Activity",
+      "newContest": "New Contest",
+      "like": "Like",
+      "discuss": "Discuss",
+      "problem": "Problem:",
+      "someone": "someone"
+    },
+    "MyContests": {
+      "title": "My Contests",
+      "subtitle": "Manage your created contests and view participant submissions.",
+      "loading": "Loading contests...",
+      "emptyTitle": "No contests found",
+      "emptyDescription": "You haven't created any contests yet. Get started by creating your first coding contest to share with your students or peers.",
+      "start": "Start:",
+      "duration": "Duration:",
+      "viewDashboard": "View Dashboard"
+    },
+    "MyProblems": {
+      "title": "My Problems",
+      "subtitle": "Manage your created algorithmic problems and test cases.",
+      "create": "Create Problem",
+      "loading": "Loading problems...",
+      "emptyTitle": "No problems yet",
+      "emptyDescription": "You haven't authored any problems yet. Get started by designing your first coding problem and defining its test cases!",
+      "viewDetails": "View Details"
+    }
   }
 }

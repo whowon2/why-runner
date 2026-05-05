@@ -25,7 +25,8 @@ export async function getContestSubmissions(input: {
     where: (submissions, { and, eq }) => {
       const conditions = [eq(submissions.contestId, input.contestId)];
       if (!isOwner) conditions.push(eq(submissions.userId, currentUser.id));
-      if (input.problemId) conditions.push(eq(submissions.problemId, input.problemId));
+      if (input.problemId)
+        conditions.push(eq(submissions.problemId, input.problemId));
       return and(...conditions);
     },
     with: {

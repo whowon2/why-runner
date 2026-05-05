@@ -21,7 +21,9 @@ export async function importProblems(data: unknown): Promise<number> {
 
   const parsed = importSchema.safeParse(data);
   if (!parsed.success) {
-    throw new Error(`Invalid format: ${parsed.error.issues[0]?.message ?? "unknown error"}`);
+    throw new Error(
+      `Invalid format: ${parsed.error.issues[0]?.message ?? "unknown error"}`,
+    );
   }
 
   if (parsed.data.length === 0) {
