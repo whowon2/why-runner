@@ -167,7 +167,15 @@
       "pendingTitle": "Solicitação de entrada pendente",
       "pendingDescription": "O organizador do torneio precisa aprovar sua solicitação antes de você poder ver os problemas.",
       "Management": {
-        "id_copied": "ID copiado para o clipboard!"
+        "id_copied": "ID copiado para o clipboard!",
+        "overviewAndSettings": "Visão Geral & Configurações",
+        "contestAlreadyStarted": "O torneio já começou.",
+        "editingDisabled": "A edição foi desativada para garantir a imparcialidade.",
+        "peopleManagement": "Gerenciamento de Pessoas",
+        "submissions": "Submissões",
+        "dangerZone": "Zona de Perigo",
+        "deleteContest": "Excluir Torneio",
+        "deleteWarning": "Uma vez que você excluir um torneio, não há como voltar atrás. Por favor, tenha certeza."
       }
     }
   },

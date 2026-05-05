@@ -91,8 +91,31 @@
   },
   "ContestsPage": {
     "title": "Contests",
+    "subtitle": "Find the best contests and test your skills.",
+    "myContests": "My Contests",
+    "searchPlaceholder": "Search contests by name...",
+    "noContestsFound": "No contests found",
+    "noContestsSearch": "We couldn't find any contests matching \"{search}\". Try adjusting your search.",
+    "noContestsAvailable": "No contests available yet.",
+    "clearSearch": "Clear Search",
     "notFound": "No contest found",
     "backToList": "Go back to contests list",
+    "filter": {
+      "placeholder": "All Status",
+      "all": "Any Status",
+      "upcoming": "Upcoming",
+      "active": "Active",
+      "past": "Past"
+    },
+    "badge": {
+      "Upcoming": "Upcoming",
+      "Active": "Active",
+      "Past": "Past"
+    },
+    "pagination": {
+      "showing": "Showing {from} to {to} of {total} contests",
+      "page": "Page {page} of {totalPages}"
+    },
     "createDialog": {
       "button": "Create Contest",
       "title": "Create Contest",
@@ -167,7 +190,45 @@
       "pendingTitle": "Join request pending",
       "pendingDescription": "The contest owner must approve your request before you can view problems.",
       "Management": {
-        "id_copied": "ID copied to clipboard!"
+        "id_copied": "ID copied to clipboard!",
+        "overviewAndSettings": "Overview & Settings",
+        "contestAlreadyStarted": "Contest has already started.",
+        "editingDisabled": "Editing is disabled to ensure fairness.",
+        "peopleManagement": "People Management",
+        "submissions": "Submissions",
+        "dangerZone": "Danger Zone",
+        "deleteContest": "Delete Contest",
+        "deleteWarning": "Once you delete a contest, there is no going back. Please be certain.",
+        "PendingJoins": {
+          "title": "Pending Join Requests ({count})",
+          "approve": "Approve",
+          "reject": "Reject",
+          "approveSuccess": "Participant approved.",
+          "rejectSuccess": "Participant rejected."
+        },
+        "Participants": {
+          "title": "Participants ({count})"
+        },
+        "DeleteContest": {
+          "button": "Delete Contest",
+          "dialogTitle": "Delete this contest?",
+          "dialogDescription": "This action cannot be undone. All problems, submissions, and participants will be removed.",
+          "cancel": "Cancel",
+          "confirm": "Delete",
+          "success": "Contest deleted",
+          "error": "Failed to delete contest"
+        },
+        "Problems": {
+          "placeholder": "Problem",
+          "create": "Create",
+          "saveOrder": "Save Order",
+          "addSuccess": "Problem added",
+          "addError": "Failed to add problem",
+          "removeSuccess": "Problem removed",
+          "removeError": "Failed to remove problem",
+          "orderSaved": "Order saved",
+          "orderError": "Failed to save order"
+        }
       }
     }
   },

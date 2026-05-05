@@ -46,63 +46,84 @@ export function ContestDescription({ contestId }: { contestId: string }) {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3 mt-8 w-full max-w-2xl">
+    <div className="relative flex flex-col items-center justify-center gap-6 mt-6 mb-8 w-full max-w-5xl p-8 rounded-3xl bg-white/40 dark:bg-neutral-900/40 backdrop-blur-xl border border-white/20 shadow-2xl shadow-indigo-500/5">
+      {/* Top gradient sliver */}
+      <div
+        className={`absolute top-0 left-0 right-0 h-2 bg-linear-to-r ${status.gradient} opacity-90 rounded-t-3xl`}
+      />
+
       {/* Status badges */}
-      <div className="flex items-center gap-2 flex-wrap justify-center">
+      <div className="flex items-center gap-3 flex-wrap justify-center mt-2">
         <span
-          className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border ${status.color}`}
+          className={`text-xs uppercase font-bold tracking-widest px-3 py-1 rounded-full border ${status.color}`}
         >
           {status.badge}
         </span>
         {c.isPrivate && (
-          <span className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border border-muted text-muted-foreground bg-muted/40">
-            <Lock className="w-3 h-3" />
+          <span className="flex items-center gap-1.5 text-xs uppercase font-bold tracking-widest px-3 py-1 rounded-full border border-muted text-muted-foreground bg-muted/40">
+            <Lock className="w-3.5 h-3.5" />
             {t("Tabs.Description.private")}
           </span>
         )}
       </div>
 
       {/* Title */}
-      <h1 className="font-bold text-3xl text-center">{c.name}</h1>
+      <h1 className="font-extrabold text-4xl sm:text-5xl text-center tracking-tight text-foreground bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/70">
+        {c.name}
+      </h1>
 
       {/* Description */}
       {c.description && (
-        <p className="text-sm text-muted-foreground text-center max-w-lg">
+        <p className="text-base sm:text-lg text-muted-foreground text-center max-w-2xl leading-relaxed">
           {c.description}
         </p>
       )}
 
       {/* Join / Leave button */}
-      <JoinButton contest={c} isCreatedByUser={isCreatedByUser} user={user} />
-
-      {/* Countdown */}
-      <div className="flex items-center gap-2 text-sm">
-        <CalendarDays className="w-4 h-4 text-primary" />
-        <span>{getCountdown()}</span>
+      <div className="mt-2">
+        <JoinButton contest={c} isCreatedByUser={isCreatedByUser} user={user} />
       </div>
 
-      {/* Date range */}
-      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-        <Calendar className="w-3.5 h-3.5" />
-        <span>{formatDate(startDate)}</span>
-        <span>→</span>
-        <span>{formatDate(endDate)}</span>
-      </div>
+      {/* Stats & Info Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full mt-4">
+        {/* Countdown */}
+        <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-muted/30 border border-muted/50 gap-2 transition-transform hover:scale-[1.02]">
+          <div className="p-2 rounded-full bg-indigo-500/10 text-indigo-500">
+            <CalendarDays className="w-5 h-5" />
+          </div>
+          <span className="text-sm font-semibold text-center">{getCountdown()}</span>
+        </div>
 
-      {/* Stats bar */}
-      <div className="flex items-center gap-6 mt-1 px-6 py-3 rounded-xl bg-muted/40 border border-muted/50">
-        <div className="flex items-center gap-2 text-sm">
-          <Users className="w-4 h-4 text-blue-500/70" />
-          <span className="font-semibold">{c.users.length}</span>
-          <span className="text-muted-foreground">
+        {/* Date range */}
+        <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-muted/30 border border-muted/50 gap-2 transition-transform hover:scale-[1.02]">
+          <div className="p-2 rounded-full bg-emerald-500/10 text-emerald-500">
+            <Calendar className="w-5 h-5" />
+          </div>
+          <div className="flex flex-col items-center text-xs font-medium text-muted-foreground text-center">
+            <span>{formatDate(startDate)}</span>
+            <span className="my-0.5 opacity-50">↓</span>
+            <span>{formatDate(endDate)}</span>
+          </div>
+        </div>
+
+        {/* Participants stat card */}
+        <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-muted/30 border border-muted/50 gap-1 transition-transform hover:scale-[1.02]">
+          <div className="flex items-center gap-2 mb-1">
+            <Users className="w-5 h-5 text-blue-500" />
+            <span className="text-2xl font-bold">{c.users.length}</span>
+          </div>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
             {t("Tabs.Description.participants")}
           </span>
         </div>
-        <div className="w-px h-4 bg-muted" />
-        <div className="flex items-center gap-2 text-sm">
-          <ListOrdered className="w-4 h-4 text-indigo-500/70" />
-          <span className="font-semibold">{c.problems.length}</span>
-          <span className="text-muted-foreground">
+
+        {/* Problems stat card */}
+        <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-muted/30 border border-muted/50 gap-1 transition-transform hover:scale-[1.02]">
+          <div className="flex items-center gap-2 mb-1">
+            <ListOrdered className="w-5 h-5 text-purple-500" />
+            <span className="text-2xl font-bold">{c.problems.length}</span>
+          </div>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
             {t("Tabs.Description.problems")}
           </span>
         </div>
