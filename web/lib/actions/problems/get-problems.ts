@@ -53,10 +53,7 @@ export async function getProblems({
     }),
 
     // Get the total count for pagination
-    db
-      .select({ count: count() })
-      .from(problem)
-      .where(whereClause),
+    db.select({ count: count() }).from(problem).where(whereClause),
   ]);
 
   return {

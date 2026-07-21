@@ -170,10 +170,7 @@ export function ContestList() {
                 }`}
               >
                 {contests.map((contest) => (
-                  <div
-                    key={contest.id}
-                    className="transition-all rounded-2xl"
-                  >
+                  <div key={contest.id} className="transition-all rounded-2xl">
                     <ContestCard contest={contest} />
                   </div>
                 ))}

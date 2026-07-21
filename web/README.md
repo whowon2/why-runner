@@ -20,11 +20,12 @@ This is the main web application and API surface for the Runner platform (a TCC 
 ### Prerequisites
 
 - [Docker](https://www.docker.com/) (For PostgreSQL database)
-- [Bun](https://bun.sh/) 
+- [Bun](https://bun.sh/)
 
 ### Development Setup
 
 1. **Install dependencies:**
+
    ```bash
    bun install
    ```
@@ -34,6 +35,7 @@ This is the main web application and API surface for the Runner platform (a TCC 
 
 3. **Database Setup:**
    Run the database migrations and optionally seed the database:
+
    ```bash
    bun run db:push
    # Or using migrations
@@ -61,10 +63,10 @@ This is the main web application and API surface for the Runner platform (a TCC 
 
 ## 🧑‍💻 Author
 
-**Juan Israel** – *Computer Engineering Student*
+**Juan Israel** – _Computer Engineering Student_
 
-TCC Advisor: *Prof. Suelen*
-Institution: *IFMG*
+TCC Advisor: _Prof. Suelen_
+Institution: _IFMG_
 
 ## 📜 License
 

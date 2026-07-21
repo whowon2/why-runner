@@ -33,17 +33,17 @@ Server actions handle auth checks, business logic, and DB queries. Hooks wrap ac
 
 ### Key Directory Map
 
-| Path | Purpose |
-|---|---|
-| `app/[locale]/` | All pages, locale-prefixed via `next-intl` |
-| `lib/actions/` | All server actions (`"use server"`) |
-| `lib/auth/` | Better Auth setup + session helpers |
-| `hooks/` | React Query wrappers around server actions |
-| `drizzle/schemas/` | Drizzle table definitions |
-| `drizzle/migrations/` | SQL migration history |
-| `components/ui/` | Radix UI-based component library |
-| `messages/` | i18n strings (pt, en) |
-| `env.ts` | Typed env vars via `@t3-oss/env-nextjs` |
+| Path                  | Purpose                                    |
+| --------------------- | ------------------------------------------ |
+| `app/[locale]/`       | All pages, locale-prefixed via `next-intl` |
+| `lib/actions/`        | All server actions (`"use server"`)        |
+| `lib/auth/`           | Better Auth setup + session helpers        |
+| `hooks/`              | React Query wrappers around server actions |
+| `drizzle/schemas/`    | Drizzle table definitions                  |
+| `drizzle/migrations/` | SQL migration history                      |
+| `components/ui/`      | Radix UI-based component library           |
+| `messages/`           | i18n strings (pt, en)                      |
+| `env.ts`              | Typed env vars via `@t3-oss/env-nextjs`    |
 
 ### Database Schema (PostgreSQL via Drizzle)
 
@@ -65,6 +65,7 @@ Server actions handle auth checks, business logic, and DB queries. Hooks wrap ac
 ### Auth
 
 Better Auth with email/password + GitHub + Google OAuth. Session access:
+
 - Server: `getCurrentUser()` in `lib/auth/get-current-user.ts` (redirects to signin if unauthenticated)
 - Client: `authClient` from `lib/auth/client.ts`
 
@@ -75,6 +76,7 @@ Better Auth with email/password + GitHub + Google OAuth. Session access:
 ## Environment Variables
 
 Required in `.env`:
+
 ```
 DATABASE_URL=psql://judge:judge@localhost:5433/judge
 BETTER_AUTH_SECRET=

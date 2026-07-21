@@ -89,24 +89,37 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
         </div>
 
         <div className="mt-4">
-          <TabsContent className="flex w-full gap-4 focus-visible:outline-none focus-visible:ring-0" value="problems">
+          <TabsContent
+            className="flex w-full gap-4 focus-visible:outline-none focus-visible:ring-0"
+            value="problems"
+          >
             {contest.joinStatus === "pending" ? (
               <div className="flex flex-col items-center justify-center w-full min-h-[30vh] gap-3 text-center p-8 rounded-3xl bg-muted/20 border border-dashed border-muted-foreground/30">
                 <div className="p-4 rounded-full bg-amber-500/10 text-amber-500">
                   <Lock className="w-8 h-8" />
                 </div>
-                <p className="font-semibold text-xl">{t("Tabs.pendingTitle")}</p>
-                <p className="text-muted-foreground max-w-sm">{t("Tabs.pendingDescription")}</p>
+                <p className="font-semibold text-xl">
+                  {t("Tabs.pendingTitle")}
+                </p>
+                <p className="text-muted-foreground max-w-sm">
+                  {t("Tabs.pendingDescription")}
+                </p>
               </div>
             ) : (
               <ProblemTab contest={contest} user={user} />
             )}
           </TabsContent>
-          <TabsContent className="focus-visible:outline-none focus-visible:ring-0" value="leaderboard">
+          <TabsContent
+            className="focus-visible:outline-none focus-visible:ring-0"
+            value="leaderboard"
+          >
             <Leaderboard contest={contest} />
           </TabsContent>
           {contest.createdBy === user.id && (
-            <TabsContent className="focus-visible:outline-none focus-visible:ring-0" value="manage">
+            <TabsContent
+              className="focus-visible:outline-none focus-visible:ring-0"
+              value="manage"
+            >
               <ContestManagement contest={contest} />
             </TabsContent>
           )}
