@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  integer,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { problem } from "./problems";
 import { user } from "./users";
 
@@ -25,6 +32,7 @@ export const SubmissionStatus = pgEnum("submission_status", [
 export const submission = pgTable("submission", {
   id: uuid("id").defaultRandom().primaryKey(),
   status: SubmissionStatus().default("PENDING").notNull(),
+  retryCount: integer("retry_count").default(0).notNull(),
   code: text("code").notNull(),
   language: Language(),
   questionLetter: text("question_letter").notNull(),
