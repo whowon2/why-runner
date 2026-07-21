@@ -10,7 +10,7 @@ This is the main web application and API surface for the Runner platform (a TCC 
 - **Styling:** Tailwind CSS v4, Framer Motion, Radix UI variants
 - **Database & ORM:** PostgreSQL + [Drizzle ORM](https://orm.drizzle.team/)
 - **Authentication:** [Better Auth](https://better-auth.com/)
-- **Queueing:** AWS SQS (To send execution jobs to the Judge worker)
+- **Queueing:** PostgreSQL `LISTEN/NOTIFY` (to notify the Judge worker of new submissions)
 - **Internationalization:** next-intl
 - **Editor:** Monaco Editor
 - **Validation:** Zod
@@ -30,7 +30,7 @@ This is the main web application and API surface for the Runner platform (a TCC 
    ```
 
 2. **Environment Configuration:**
-   Create a `.env` file based on your local settings (Database, SQS, Auth secrets, etc.).
+   Create a `.env` file based on your local settings (Database, Auth secrets, etc.).
 
 3. **Database Setup:**
    Run the database migrations and optionally seed the database:
@@ -55,8 +55,8 @@ This is the main web application and API surface for the Runner platform (a TCC 
 ## 🧪 System Architecture
 
 1. **Web Frontend:** Displays problems, contests, leaderboards, and a code editor (Monaco).
-2. **Web API / Actions:** Next.js Server Actions handle user submissions and queue a job payload onto an AWS SQS queue.
-3. **Judge Worker (Rust):** A separate worker process (see the `judge` directory) polls the SQS queue, fetches the code, executes it inside a secure Docker container (`python:3.9-slim`), checks it against test cases, and saves the result to the DB.
+2. **Web API / Actions:** Next.js Server Actions write a `PENDING` submission row to Postgres and call `pg_notify('new_submission', ...)`.
+3. **Judge Worker (Rust):** A separate worker process (see the `judge` directory) listens on that Postgres channel (with a periodic sweep fallback), claims the row, executes the code inside a sandboxed Docker container per language, checks it against test cases, and saves the result to the DB.
 4. **Realtime view:** Users see their submission test results updated in the web application.
 
 ## 🧑‍💻 Author
