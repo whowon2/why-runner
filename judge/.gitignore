@@ -1,0 +1,8 @@
+/target
+
+.env*
+
+# Portugol Studio — cloned repo and built artifacts (Dockerfile builds from source)
+Portugol-Studio/
+portugol/*.jar
+portugol/lib/

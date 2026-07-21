@@ -1,0 +1,160 @@
+
+
+
+    Home
+    O evento
+    Eventos Satélites
+    Programação
+    Seja um patrocinador
+
+Concurso Integrado de Desenvolvimento de Soluções de Tecnologia e Objetos de Aprendizagem para a Educação (Apps.Edu 2026)
+Coordenação do Apps.Edu 2026
+
+Taynara Dutra (IFSC) | Lattes | taynara.dutra@ifsc.edu.br
+
+Laura Quevedo Jurgina (UFPEL) | Lattes | lqjurgina@inf.ufpel.edu.br
+
+Fabrizio Honda Franzoia (UFAM) | Lattes | fabrizio.honda@icomp.ufam.edu.br
+Coordenação Geral de Programa do C B I E 2026
+
+Rafael Dias Araújo (UFU) | Lattes | rafael.araujo@ufu.br
+
+Taciana Pontual Falcão (UFRPE) | Lattes | taciana.pontual@ufrpe.br
+Datas importantes
+
+    03/06/2026: Data limite para submissão de trabalhos
+    17/07/2026: Notificação de aceitação de trabalhos
+    31/07/2026: Data limite para envio das versões finais dos trabalhos 
+    31/07/2026: Data limite para inscrição de pelo menos um autor por trabalho
+    31/07/2026: Envio do comprovante de pagamento e autorização de publicação via J E M S
+
+Apresentação e escopo do concurso
+
+O Apps.Edu é um concurso destinado a softwares educacionais que oferecem soluções tecnológicas relacionadas ao processo de ensino e aprendizagem em espaços formais e não formais. O Apps.Edu tem como propósito promover um espaço de compartilhamento de soluções digitais que possam impactar positivamente no ambiente educacional, bem como estimular o pensamento empreendedor e a geração de inovação disruptiva na área.
+
+Estão fora do escopo deste concurso recursos educacionais, tais como: slides, e-books, vídeos ou similares.
+Objetivos
+
+    Promover um cenário de integração multidisciplinar, com diferentes atores, para o compartilhamento de soluções digitais para os desafios no campo da Educação;
+    Possibilitar o compartilhamento de diagnósticos sobre problemas reais que afetam a educação do país;
+    Engajar pesquisadores, educadores, estudantes e especialistas no desenvolvimento de soluções digitais para oportunidades detectadas em âmbito educacional;
+    Estimular o desenvolvimento de soluções tecnológicas inovadoras para a evolução da educação;
+    Incentivar a criação de parcerias para o desenvolvimento de soluções inovadoras, aproximando atores do cenário público e privado.
+
+Público-Alvo
+
+O Apps.Edu destina-se ao seguinte público-alvo:
+
+    Pessoas vinculadas a comunidades da educação básica, acadêmicas e/ou de pesquisa como, por exemplo: professores, técnicos, acadêmicos/pesquisadores e estudantes de Ensino Fundamental, Médio e/ou Técnico, Graduação e Pós-graduação de qualquer área de conhecimento;
+    Projetos de inovação e desenvolvimento vinculados a Instituições de Ensino e/ou Institutos de Ciência e Tecnologia;
+    Startups que desenvolvem produtos educacionais e estejam em fase inicial ou de tração;
+    Empresas incubadas (residentes e/ou não residentes) em incubadoras de Instituições de Ensino e/ou Institutos de Ciência e Tecnologia.
+     
+
+Categorias de software educacional
+
+Os softwares educacionais enviados podem se enquadrar em uma das seguintes categorias:
+
+Considera-se protótipo o software educacional em fase de concepção e desenvolvimento, tendo ou não passado por algum estudo experimental no momento da submissão. Também pertencem a essa categoria soluções desenvolvidas e que ainda não foram utilizadas de maneira sistemática e contínua em contextos educacionais, e aquelas que não foram comercializadas. O design do protótipo deve estar mais próximo da versão final o quanto possível de modo a possibilitar a interação com o usuário e que permita ser avaliado.
+1. Protótipo
+
+Considera-se produto o software educacional que já tenha validação de campo e/ou esteja sendo utilizado pela comunidade de maneira sistemática e contínua. Por se tratar de um concurso de estímulo ao desenvolvimento de novos negócios, para esta categoria serão aceitos apenas produtos que estejam no mercado há, no máximo, 2 anos.
+2. Produto
+Submissão de Trabalhos
+
+As submissões de trabalhos devem ser feitas, exclusivamente, pelo sistema J E M S. Elas devem ser efetuadas até a data limite para submissão de trabalhos, seguindo o cronograma disponível.
+
+A inscrição será realizada em uma única etapa, na qual devem ser informados: autor(es), título, vinculação (instituição acadêmica e/ou de pesquisa, nome da startup e/ou empresa, etc.), resumo do trabalho; e submetidos mais 3 arquivos obrigatórios, relacionados a seguir:
+
+a) Apresentação do software
+
+    Deve ser enviado um arquivo de apresentação do software, com no máximo 4 (quatro) páginas.
+    Esse arquivo deve conter, em sua primeira página, um abstract e resumo, no formato de artigo da S B C. A partir da segunda página, o formato é white paper, sendo o modelo de livre escolha dos autores e podendo seguir a identidade visual do software apresentado. Esse documento integrará o catálogo de software do Apps.Edu a ser anexado aos Anais do C B I E 2026. O arquivo deve ser enviado no formato P D F. 
+
+Exemplos podem ser consultados nos links abaixo:
+
+Exemplo 1,  Exemplo 2, Exemplo 3 e Exemplo 4
+
+    Recomenda-se que o texto contenha os seguintes tópicos: 
+        Contexto educacional: descrever conteúdo didático abordado pelo software, a disciplina em que pode ser utilizado, abordagem pedagógica, eixo/objetivo/objeto de aprendizagem listados na B N C C / B N C C-Computação;
+        Objetivo: descrever qual o propósito de uso e apropriação educacional do software considerando aspectos práticos de aplicação em espaços/momentos de aprendizagem;
+        Públicos/comunidades a quem o protótipo se destina: descrever ano/série do público-alvo, características, necessidades e expectativas dos públicos ou comunidades a quem o protótipo/produto se destina.
+        Diferenciais e potenciais de inovação: descrever diferenciais/potencialidades do software perante outros existentes em relação às práticas e/ou abordagens educacionais, metodologias de desenvolvimento, arcabouço teórico, tecnologias digitais inovadoras;
+        Repercussões educacionais: descrever desdobramentos no processo de ensino-aprendizagem que o software propicia ou pode propiciar ao público-alvo;
+        Aspectos tecnológicos: arquitetura, linguagens, frameworks, tipo de licença, etc.;
+        Apresentação do software: capturas de tela, fluxos de utilização, etc.;
+        Considerações finais: conclusões e outras informações que os autores considerem pertinentes.
+        Informar o Nível T R L (Technology Readiness Level), conforme a escala de 1 a 9, que classifica o estágio de desenvolvimento da tecnologia desde a formulação conceitual até sua validação e uso em contexto real. : Referência TRL NASA
+
+
+b) Link para vídeo demonstrativo do software
+
+    Deve ser enviado um arquivo texto contendo o link do vídeo demonstrativo do protótipo ou produto. Este pode ser disponibilizado em plataformas como YouTube e Vimeo em modo não listado, ou ainda, em plataformas de compartilhamento como Google Drive e OneDrive, desde que sem restrição de acesso. O vídeo deverá apresentar o software em no máximo 3 minutos. Os vídeos poderão ser divulgados durante o evento e em páginas na Internet e redes sociais ligadas ao Concurso Apps.Edu – C B I E 2026.
+
+c) Instruções de utilização do software
+
+    Deve ser submetido um arquivo contendo os detalhes de requisitos, acesso, e o processo de instalação e utilização do software. Caso o software esteja disponível para acesso na Internet, deverá conter a URL de acesso ao sistema e demais informações necessárias, tais como, usuário e senha para autenticação. O arquivo será usado para avaliação do software na primeira etapa e caso as instruções não permitam o acesso e a utilização do software, o trabalho será desclassificado.
+
+Exemplos de documentos para instruções de utilização do software: Aplicativos/Softwares e jogos. 
+
+Obs:  os documentos são exemplos criados em projetos da comunidade. Não sendo obrigatório seguir esse template, desde que o documento a ser enviado contenha todas as informações necessárias para acesso ao software. 
+
+Observações importantes para a submissão e classificação:
+
+    Softwares que tenham participado em edições anteriores na categoria Produto não podem inscrever-se no Concurso Apps.Edu C B I E 2026; 
+    Softwares que tenham participado em edições anteriores na categoria Protótipo e que apresentem evolução em seu desenvolvimento podem inscrever-se na categoria Produto;
+    Se necessário, a comissão organizadora solicitará comprovação de que o Protótipo ou Produto desenvolvido pertence ao público-alvo do Apps.Edu (Verificar seção Público-Alvo).
+
+Etapas do Concurso
+
+O concurso consiste em 3 etapas, a primeira eliminatória, a segunda será a mostra e avaliação dos softwares e a terceira será a banca final.
+
+Após a submissão dos trabalhos, a comissão organizadora avaliará os softwares com base nos seguintes critérios:
+
+    Aderência ao escopo do concurso, conforme descrito na seção de Objetivos;
+    Aderência dos autores ao público-alvo, conforme descrito na seção de Público-alvo;
+    Texto de apresentação do software, conforme orientações da seção de Submissão de Trabalhos (item a);
+    Vídeo enviado conforme as orientações da seção de Submissão de Trabalhos (item b);
+    Acesso e utilização do software, através das instruções conforme orientações da seção de Submissão de Trabalhos (item c ).
+
+ 
+
+Caso o trabalho não atenda um ou mais critérios elencados acima, será desclassificado.
+Etapa 1 – Eliminatória
+
+Os softwares aceitos para participação no Apps.Edu deverão ser apresentados por pelo menos 1 (um) membro das respectivas equipes de autores em um espaço de visitação que será disponibilizado pelo evento. Neste ambiente, as equipes receberão visitas de participantes do C B I E 2026 bem como dos avaliadores do Apps.Edu.
+
+Durante a exposição, sugere-se que as equipes destaquem as seguintes características de seu trabalho:
+
+    Contexto educacional: conteúdo didático abordado pelo software, a disciplina em que pode ser utilizado, abordagem pedagógica, eixo/objetivo/objeto de aprendizagem listados na B N C C / B N C C-Computação;
+    Objetivo: o propósito de uso e apropriação educacional do software considerando aspectos práticos de aplicação em espaços/momentos de aprendizagem;
+    Públicos/comunidades a quem o protótipo se destina: ano/série do público-alvo, características, necessidades e expectativas dos públicos ou comunidades a quem o protótipo se destina.
+    Diferenciais e potenciais de inovação: diferenciais/potencialidades do software perante outros existentes em relação às práticas e/ou abordagens educacionais, metodologias de desenvolvimento, arcabouço teórico, tecnologias digitais inovadoras;
+    Repercussões educacionais: desdobramentos no processo de ensino-aprendizagem que o software propicia ou pode propiciar ao público-alvo.
+
+     
+
+Cada equipe é responsável por providenciar o(s) dispositivo(s) e pôsteres para que os softwares sejam apresentados durante o evento.
+Etapa 2 – Mostra de Softwares (Feira de aplicativos)
+
+Após a Etapa 2, serão selecionados os softwares que serão apresentados para uma banca de jurados na etapa final do concurso, onde serão eleitos os premiados.  O número de trabalhos que irão para a Etapa 3 será definido baseado no número de classificados na Etapa 2.
+Etapa 3 – Banca Final
+Código de Conduta para Autores em Publicações da SBC
+
+Ao submeterem trabalhos ao Apps.Edu, as pessoas autoras reconhecem que estão em conformidade com o Código de Conduta para Autores em Publicações da S B C, o qual está disponível em: https://sol.sbc.org.br/index.php/indice/conduta. 
+Publicação de Trabalhos
+
+Os trabalhos selecionados serão publicados nos Anais Estendidos do Congresso Brasileiro de Informática na Educação, na S B C Open Library. Todos os white papers serão indexados com D O I.
+
+O trabalho aprovado será publicado nos anais do evento, desde que:
+
+    Pelo menos uma das pessoas autoras efetive sua inscrição no evento no prazo indicado, seguindo as regras de inscrição;
+    Seja paga uma taxa de publicação por cada trabalho aceito;
+    Envio do termo de autorização para publicação.
+
+Termo de Autorização da Obra
+
+O(s) autor(es) da obra autoriza(m) a S B C a publicá-la de acordo com os termos da licença Creative Commons Attribution 4.0 International Public License (CC BY 4.0). Dessa forma, fica permitido ao(s) autor(es) ou a terceiros a reprodução, ou distribuição, em parte ou no todo, do material extraído dessa obra, de forma verbatim, adaptada ou remixada, bem como a criação ou produção a partir do conteúdo desta obra, desde que sejam atribuídos os devidos créditos à criação original. Cópias da obra não devem ser utilizadas de nenhum modo que implique o endosso da S B C.
+
+Efetuar o download do TERMO DE AUTORIZAÇÃO DA OBRA
+Logo CBIE2026

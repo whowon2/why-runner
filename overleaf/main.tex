@@ -1,0 +1,358 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+
+\usepackage{graphicx,url}
+
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{float}
+
+\sloppy
+
+\title{WhyRunner: Online Judge for Competitive Programming}
+
+\author{Juan Israel dos Anjos}
+
+\address{Instituto Federal de Educacao, Ciencia e Tecnologia de Minas Gerais
+  (IFMG)\\
+  Rua Afonso Sardinha, 90, Bairro Minas Talco – Ouro Branco/MG – CEP: 36494-018 – Brazil
+  \email{juaniwk3@gmail.com}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  Existing online judges primarily focus on correctness-based evaluation, often neglecting pedagogical feedback and real-time contest dynamics essential for educational contexts. This paper introduces WhyRunner: Programming Online Judge, a modular and secure system that integrates containerized code execution, real-time contest management, and AI-powered feedback. Tested in classroom environments with over 50 submissions, WhyRunner demonstrates improved student engagement and educational results through detailed, automated feedback and flexible contest configurations. This paper presents the system's architecture, development methodology, implementation, and evaluation in classroom environments.
+\end{abstract}
+
+\begin{resumo}
+  Os juízes online existentes focam principalmente na avaliação baseada em correção, negligenciando o feedback pedagógico e a dinâmica de competições em tempo real, essenciais em contextos educacionais. Este artigo apresenta o WhyRunner: Programming Online Judge, um sistema modular e seguro que integra execução de código em contêineres, gerenciamento de competições em tempo real e feedback assistido por inteligência artificial. Testado em ambientes de sala de aula com mais de 50 submissões, o WhyRunner demonstra maior engajamento dos estudantes e melhores resultados educacionais por meio de feedback automatizado e detalhado, além de configurações flexíveis de competição. Este artigo descreve a arquitetura do sistema, a metodologia de desenvolvimento, a implementação e a avaliação em ambientes de sala de aula.
+\end{resumo}
+
+\section{Introduction}
+
+Competitive programming plays a significant role in algorithmic thinking, logical reasoning, and problem-solving skills. These capabilities are essential for students pursuing careers in computer science and related fields. In recent years, the adoption of online judge systems—automated platforms that evaluate submitted code against predefined test cases—has become increasingly popular, especially in academic settings. These platforms simulate real-world programming contests, enabling students to practice and improve their skills outside of traditional classroom environments.
+
+Most online judges are not optimized for educational use. They were primarily designed for competitive environments, prioritizing fairness and efficiency over pedagogical considerations. As a result, students receive limited feedback typically restricted to ``Wrong Answer'' or ``Time Limit Exceeded'' without explanations that help learning.
+
+Many platforms are rigid in design, making it difficult for educators and students to configure and use. Features such as adaptive problem sets, real-time contest control, and support for multiple programming languages are either limited or absent. The increasing complexity of software development tools and the diverse backgrounds of students further highlight the need for more accessible and educationally driven platforms.
+
+To address these limitations, this work presents \textbf{WhyRunner}, a modern and modular online judge system developed specifically for educational contexts. WhyRunner was designed from the ground up with three core objectives: (1) to provide rich, automated feedback using artificial intelligence; (2) to support safe, scalable, and multi-language code execution through containerization; and (3) to enable flexible real-time contest management for classroom or remote settings.
+
+Using current technologies such as containers for code execution, queues for scalable job queuing, and AI to deliver feedback that does not remove the learning challenge from the user.
+
+This paper details the design, development, and evaluation of WhyRunner.
+
+\section{Methodology}\label{sec:methodology}
+
+The system development followed an iterative and incremental methodology. This means the system was built step by step, adding features and improvements after each test and evaluation.
+
+\subsection{Requirements Analysis}
+
+The initial phase consisted of identifying shortcomings in existing judges through a combination of literature review, user interviews with forms, classroom observation and practical experience. Key problems found included limited pedagogical feedback, lack of support for different programming languages and website display languages, and contest management.
+
+\subsection{Design Principles}
+
+The system was designed with modularity, scalability, and pedagogical value as central principles:
+
+\begin{itemize}
+  \item \textbf{Modularity}: Components such as code execution, feedback generation, user interface, and contest management were developed as loosely coupled modules, enabling easier maintenance and future upgrades.
+  \item \textbf{Scalability}: The system leverages message queues and container orchestration to handle multiple concurrent submissions with minimal latency.
+  \item \textbf{Security}: All submitted code is executed in isolated Docker containers with restricted resource access, minimizing the risk of malicious code affecting the system.
+  \item \textbf{Educational Feedback}: Instead of reporting only binary results (e.g., ``Accepted'' or ``Wrong Answer''), the system uses AI to generate contextual explanations and suggestions for improvement.
+\end{itemize}
+
+\subsection{Technology Evaluation}
+
+The selection of technologies for WhyRunner was guided by practicality, familiarity, and empirical testing. Throughout development, multiple frameworks and tools were evaluated based on performance, maintainability, and ease of deployment in cloud environments.
+
+Initially, the front-end was built using the React framework due to prior experience and its robust ecosystem. To ensure server-side rendering, route handling, and production-readiness, the Next.js framework was selected. It offered a seamless development experience, especially for projects requiring both front-end and server-side logic.
+
+Queue management was a critical component of the architecture. The first approach involved using BullMQ, a Redis-based task queue that integrates well with Node.js. However, in production, BullMQ generated excessive idle traffic to the Redis instance hosted on Upstash, even when no messages were present. This constant polling led to unnecessary costs and complexity. As an alternative, AWS Simple Queue Service (SQS) was adopted. Unlike Redis queues, SQS uses a push-based model, consuming resources only when messages are actively sent or received. However, SQS introduced its own operational overhead and external dependency. The final architecture replaced it with PostgreSQL's native \texttt{LISTEN/NOTIFY} mechanism, which eliminated the need for any external queue service while preserving asynchronous, event-driven behavior.
+
+The database and authentication layers were also subject to experimentation. Supabase was initially tested due to its built-in PostgreSQL support and integrated authentication. However, it proved restrictive in handling custom server-side logic and authentication flows, especially when integrating server components within Next.js. As a result, the system transitioned to using a standalone PostgreSQL instance, interfaced through Drizzle ORM for type-safe, schema-driven database access. Authentication is handled by Better-Auth, a framework-agnostic library that integrates natively with Next.js Server Actions.
+
+For API development, NestJS was explored due to its structure and robustness. However, splitting the application into separate back-end and front-end repositories introduced complexity in managing shared types, authentication, and business logic. This duplication increased maintenance overhead. A simpler and more integrated solution was found in using Next.js Server Actions, which enabled end-to-end type safety and tight coupling between data access and client-side components, without requiring a separate API service.
+
+During earlier phases, a monorepo approach was attempted using TurboRepo to manage separate front-end and back-end packages. However, TurboRepo complicated Docker-based deployments. After consolidating the codebase, the judge worker—responsible for running code submissions—was implemented as a standalone Rust binary. Rust was chosen for its performance, memory safety, and suitability for system-level tasks such as spawning processes and managing execution timeouts. The judge worker listens for new submissions via PostgreSQL \texttt{LISTEN/NOTIFY} and executes them inside Docker containers.
+
+\subsection{Development Process}
+
+Development occurred in cycles, each involving implementation, integration, classroom testing, and refinement. A minimum viable product (MVP) was first shown in a Discord server for informal testing by a small group of students. Feedback from these sessions led to rapid improvements, including enhancements to the user interface, better error reporting, and more detailed AI explanations.
+
+Subsequent versions were tested in controlled classroom settings, allowing instructors to configure contests and monitor real-time activity. Each deployment cycle provided new insights, which were used to refactor code, adjust parameters (e.g., time/memory limits), and improve usability.
+
+\subsection{Validation and Feedback Loop}
+
+The final validation phase involved a real classroom contest with over 20 students and 50+ submissions across multiple languages. The contest simulated real-world conditions and allowed for stress testing of system components under load. Post-contest surveys and interviews with students and instructors helped assess usability, educational impact, and system stability. This feedback loop was instrumental in identifying key improvements and prioritizing features for future versions.
+
+\section{Related Work} \label{sec:related}
+
+\subsection{Ataux} \cite{silva2021ataux}
+
+The objective of Ataux is the creation of programming problems lists. A administrator can create lists and the class will submit solutions to be reviewed, generating a sheet with the results.
+
+The system offers different kinds of users (admins, collaborators and members), creating problems lists, viewing the solutions and the result sheets. Furthermore, the members can filter questions by difficulty and type, register themselves in new teams and solve questions through Codeforces.
+
+The architecture of Ataux is based on a RESTful Client-Server model.
+The front-end is developed using React (JavaScript), with Redux for state management and Bootstrap for UI styling.
+The back-end is built with NestJS (TypeScript), utilizing PostgreSQL as the database, accessed through TypeORM.
+The system is deployed in a production environment on Heroku.
+
+Ataux supports multiple programming languages to allow flexibility in solving problems, although the range is limited compared to larger competitive platforms.
+
+Some limitations of the system include the restricted number of supported languages, less flexibility in problem creation formats, and basic evaluation feedback focused only on correctness.
+
+To assess the system's usability, the Post-Study System Usability Questionnaire (PSSUQ) methodology was applied.
+The questionnaire was completed by a group of 71 students and 1 teaching assistant, who used the system over a period of two weeks during their programming activities.
+
+\subsection{GOJ} \cite{lima2022gamma}
+
+The objective of GOJ is to store and judge problems from previous editions of the UnB Programming Marathons, while also providing support tools for beginners.
+
+Among its main features are:
+
+\begin{itemize}
+  \item Storage and automatic judging of problems from past events.
+  \item Availability of tutorials designed to assist newcomers in programming competitions.
+  \item Automated judging of submissions.
+  \item Organization of problems by event for easier navigation.
+  \item Administration tools through the Gamma Judge Admin system.
+\end{itemize}
+
+The architecture of GOJ is based on a micro services model and Web APIs.
+It leverages various AWS services, including SQS (Simple Queue Service), SNS (Simple Notification Service), and S3 (Simple Storage Service), to enhance scalability and reliability.
+The back-end is developed using .NET, with MongoDB as its primary database.
+The front-end is built in React, with additional support for rendering HTML and LaTeX elements via React Latex.
+Submission judging is performed through Bash scripts, ensuring lightweight and efficient code evaluation.
+
+\subsection{Run Codes} \cite{runcodes2024}
+
+Run Codes is an online judge platform developed by Brazilian universities, designed to create and manage programming contests and activities. It allows teachers to create problem lists and competitions, automates the evaluation of code submissions, and generates reports for performance analysis.
+
+It supports a wide variety of programming languages and integrates with virtual learning environments. However, Run Codes' complexity and external dependencies can make it less flexible for fully customized learning activities or research projects.
+
+\subsection{BOCA} \cite{de2004boca}
+
+BOCA (BOCA Online Contest Administrator) is an open-source system widely used in Brazilian programming competitions like the ACM ICPC regional contests. BOCA allows managing contests, teams, problems, and automated judging.
+
+The system is built mainly with PHP and relies on a LAMP stack (Linux, Apache, MySQL, PHP). While robust for traditional contests, its interface and extensibility are more limited compared to newer platforms.
+
+\section{Comparative Analysis}
+
+Comparing the analyzed platforms to WhyRunner:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{System} & \textbf{AI Feedback} & \textbf{Multi-Language} & \textbf{Real-time Features} \\
+\hline
+Ataux      & No  & Limited   & No \\
+GOJ        & No  & Moderate  & Limited \\
+Run Codes  & No  & Extensive & Yes \\
+BOCA       & No  & Moderate  & Yes \\
+WhyRunner  & Yes & Extensive & Yes \\
+\hline
+\end{tabular}
+\caption{Comparison of programming judge systems}
+\label{tab:judge-comparison}
+\end{table}
+
+\section{System Design}
+
+\subsection{Overview}
+
+WhyRunner is structured as two cooperating services: a \textbf{Next.js web application} responsible for the user interface, authentication, and all server-side business logic via Server Actions; and a \textbf{Rust-based judge worker} responsible for code execution and result evaluation.
+
+The system's backend relies on \textbf{PostgreSQL} for persistent data storage, managed by \textbf{Drizzle ORM}. Asynchronous communication between the web application and the judge worker is handled through PostgreSQL's native \texttt{LISTEN/NOTIFY} mechanism, eliminating the need for an external message broker. When a user submits code, the web application inserts a row into the \texttt{submission} table and issues a \texttt{NOTIFY}; the judge worker, which holds an open connection via \texttt{PgListener}, receives the notification and begins processing. The \textbf{Google Gemini API} generates AI-powered feedback for students on failed submissions.
+
+\subsection{Technology Stack}
+
+\begin{itemize}
+    \item \textbf{Next.js} \cite{nextjs2024}: Full-stack web framework for the user interface and server-side logic via Server Actions.
+    \item \textbf{Better-Auth:} Authentication library integrated with Next.js for session management.
+    \item \textbf{Drizzle ORM} \cite{drizzleorm2024}: Type-safe database access layer for PostgreSQL.
+    \item \textbf{PostgreSQL} \cite{stonebraker1986design}: Relational database for persistent data storage and inter-service messaging via \texttt{LISTEN/NOTIFY}.
+    \item \textbf{Rust} \cite{matsakis2014rust}: Systems language used for the judge worker, chosen for performance and memory safety.
+    \item \textbf{Docker} \cite{merkel2014docker}: Isolated, resource-constrained containers for safe user code execution.
+    \item \textbf{Gemini API} \cite{gemini2023}: Powers AI-driven feedback on failed submissions.
+\end{itemize}
+
+\newpage
+\subsection{Submission Lifecycle}
+
+The core implementation revolves around a pipeline that ensures decoupling between submission, execution, and feedback. Figure~\ref{fig:submission-flow} illustrates the flow.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sub-seq.png}
+\caption{Submission flow architecture in WhyRunner}
+\label{fig:submission-flow}
+\end{figure}
+
+\subsubsection{Sending Submission}
+The user submits code via the web interface. A Next.js Server Action validates the submission, checks contest membership and rate limits, and saves it to PostgreSQL with a \texttt{PENDING} status. A \texttt{NOTIFY} is then issued on the \texttt{submission\_created} channel.
+
+\subsubsection{Queue Dispatch}
+The judge worker holds a persistent connection to PostgreSQL and listens on the \texttt{submission\_created} channel using \texttt{PgListener} from the \texttt{sqlx} library. Upon receiving a notification, it fetches the submission and its associated test cases from the database.
+
+
+\subsubsection{Execution}
+The judge worker spawns a Docker container for the submission's language. The container runs with strict resource limits (\texttt{--cpus 0.5 --memory 128m}) and a configurable execution timeout. User code is compiled and executed inside the container, with stdout captured for comparison.
+
+
+\subsubsection{Result Evaluation}
+The container's output is compared against the expected outputs for each test case. The judge produces a structured JSON report indicating how many tests passed and, on failure, the specific input, expected output, and actual output of the failing case.
+
+
+\subsubsection{AI Feedback}
+On failed submissions, the student may request AI assistance. The system calls the Gemini API with a structured prompt containing the problem statement, the student's code, and the judge's failure report. The AI is instructed to provide vague but directional hints, supporting learning rather than providing direct solutions.
+
+\subsubsection{Result Notification}
+The final status and optional feedback are persisted. The front-end polls for updates via TanStack Query, and students can view their submission history with detailed results per test case.
+
+\subsection{Execution Environment}
+
+To ensure safe and reproducible code execution, user code runs inside Docker containers spawned by the Rust judge worker. Each container is ephemeral: it is created per submission, executed with time and resource limits, and destroyed upon completion. Resource constraints are enforced via Docker runtime flags:
+
+\begin{itemize}
+  \item \textbf{CPU}: limited to 0.5 cores (\texttt{--cpus 0.5})
+  \item \textbf{Memory}: limited to 128 MB (\texttt{--memory 128m})
+  \item \textbf{Execution time}: enforced by the judge worker via a configurable timeout
+\end{itemize}
+
+The system currently supports Python, Rust, and C++ as execution languages. Each language environment includes an interpreter or compiler and a test runner script. Support for additional languages can be added by extending the runner configuration.
+
+\subsection{Feedback Enhancement via AI}
+
+WhyRunner provides an optional AI-powered feedback system designed to support student learning through contextual code analysis. Instead of automatically triggering feedback on every failed submission, the system allows students to explicitly request AI help when they feel it is needed. This choice supports autonomy in learning and reduces unnecessary API usage.
+
+When a student requests help, the system calls the \texttt{getAIHelp} Server Action, which constructs a structured prompt containing:
+
+\begin{itemize}
+  \item Problem title and description
+  \item Student's submission code and programming language
+  \item Judge result: status, failing test case input, expected and actual output
+  \item Locale (for multilingual feedback)
+\end{itemize}
+
+The prompt is designed to encourage problem-solving rather than exposing answers. The system instruction explicitly instructs the model to remain vague about the direct fix while explaining the logical error. User-supplied content (code and problem description) is enclosed in XML delimiters to prevent prompt injection.
+
+\vspace{0.5em}
+\noindent\textbf{Example – Failed Submission:}
+\begin{quote}
+\textit{``Your logic is close, but check how you're handling edge cases when input is zero. Something might be off.''}
+\end{quote}
+
+\vspace{0.5em}
+\noindent\textbf{Example – Successful Submission:}
+\begin{quote}
+\textit{``Nice work! You could simplify the loop using a built-in function or consider using a set for constant-time lookups.''}
+\end{quote}
+
+The response is returned in the user's preferred language, supporting internationalization and accessibility. This feedback mechanism reduces teacher workload while offering scalable, contextual assistance that aligns with constructivist learning principles.
+
+\subsection{Integration and Deployment}
+
+The system is organized as a two-project repository: the Next.js web application and the Rust judge worker. Both services share the same PostgreSQL instance and communicate exclusively through database primitives, with no shared runtime dependencies.
+
+The web application is deployed on a platform supporting long-running Next.js applications. The judge worker is built as a Docker image and deployed as a persistent background service, maintaining its \texttt{LISTEN} connection to PostgreSQL at all times.
+
+\section{Evaluation}
+
+To assess the system under realistic conditions, a classroom programming contest was organized at IFMG -- Ouro Branco. Table~\ref{tab:contest-setup} summarizes the contest parameters.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Parameter} & \textbf{Value} \\
+\hline
+Number of problems        & 6 \\
+Participants              & 23 undergraduate students \\
+Total submissions         & 50+ \\
+Languages used            & Python, C++ \\
+Contest duration          & 2 hours \\
+AI feedback requests      & Multiple (student-initiated) \\
+System crashes            & 0 \\
+\hline
+\end{tabular}
+\caption{Classroom contest parameters}
+\label{tab:contest-setup}
+\end{table}
+
+Problems covered a range of difficulties, from basic input/output to introductory algorithmic problems. The contest used live features including a real-time scoreboard and broadcast announcements visible to all participants.
+
+\section{Results}
+
+Table~\ref{tab:contest-results} summarizes the observed outcomes of the classroom contest.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Metric} & \textbf{Observation} \\
+\hline
+Submission processing     & All processed within seconds, no queue backlog \\
+System availability       & 100\% during the contest session \\
+AI feedback utility       & Helpful for beginners with input parsing errors \\
+Instructor experience     & Scoreboard and problem control reduced manual overhead \\
+Student experience        & Immediate results enabled faster iteration on solutions \\
+\hline
+\end{tabular}
+\caption{Observed outcomes from classroom deployment}
+\label{tab:contest-results}
+\end{table}
+
+The trial confirmed the system's educational value, especially in environments that benefit from automated and immediate feedback. The AI feedback mechanism was particularly noted by students as useful for understanding \textit{why} a solution failed, rather than just receiving a binary verdict.
+
+\section{Discussion}
+
+\subsection{Strengths}
+
+WhyRunner exhibits several notable strengths:
+
+\begin{itemize}
+  \item \textbf{Modular and scalable architecture:} Clear separation of concerns across the web layer, judge worker, and execution containers allows for easy maintenance and future expansion.
+  \item \textbf{Secure code execution:} User code runs in ephemeral Docker containers with enforced CPU, memory, and time limits, isolating it from the host system.
+  \item \textbf{No external queue dependency:} Using PostgreSQL \texttt{LISTEN/NOTIFY} for inter-service communication removes operational overhead while maintaining reliability.
+  \item \textbf{AI-powered feedback:} The use of large language models enhances the learning process by offering tailored hints and performance improvement suggestions without revealing direct solutions.
+  \item \textbf{Type-safe full-stack:} The combination of Next.js Server Actions, Drizzle ORM, and Zod validation provides end-to-end type safety from database schema to user interface.
+\end{itemize}
+
+\subsection{Limitations}
+
+Despite its strengths, WhyRunner has some limitations:
+
+\begin{itemize}
+  \item \textbf{Dependency on third-party AI APIs:} The feedback system relies on the availability and consistency of the Gemini API, which may be subject to rate limits or cost constraints at scale.
+  \item \textbf{Limited language support:} Currently, Python, Rust, and C++ are fully supported for execution. C and Java are architecturally supported but not yet implemented in the judge runner.
+  \item \textbf{Deployment complexity:} The initial setup requires knowledge of Docker, Rust, and PostgreSQL configuration, which may present a barrier for non-technical instructors.
+\end{itemize}
+
+\subsection{Future Work}
+
+Planned improvements include:
+
+\begin{itemize}
+  \item \textbf{Language support expansion:} Add support for C, Java, and Kotlin by implementing the respective compiler scripts in the Docker execution environment.
+  \item \textbf{Quantitative evaluation:} Apply standardized usability questionnaires (e.g., SUS or PSSUQ) to collect measurable data on user satisfaction and system usability.
+  \item \textbf{Plagiarism detection:} Integrate code similarity analysis to support academic integrity in contest settings.
+  \item \textbf{Improved test case management:} Develop tooling for automated test case generation and validation based on problem constraints.
+\end{itemize}
+
+\section{Conclusion}
+
+WhyRunner introduces a novel approach to online code evaluation in educational settings by combining real-time contest features, secure multi-language execution, and AI-powered feedback. Through its classroom deployment, the system demonstrated effectiveness in supporting both students and instructors, delivering immediate insights and enabling scalable programming education.
+
+With a modular and extensible design, WhyRunner can evolve to meet broader needs in computer science teaching and competitive programming training. The continued integration of AI technologies and developer tooling positions it as a promising platform for the future of automated learning environments.
+
+\bibliographystyle{sbc}
+\bibliography{refs}
+
+\end{document}

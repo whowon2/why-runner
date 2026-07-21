@@ -1,0 +1,86 @@
+[
+  {
+    "title": "Hello World",
+    "description": "Print the text `Hello, World!` exactly as shown.\n\n**Input:** None.\n\n**Output:** A single line containing `Hello, World!`",
+    "difficulty": "easy",
+    "exampleCount": 1,
+    "inputs": ["", "", ""],
+    "outputs": ["Hello, World!", "Hello, World!", "Hello, World!"]
+  },
+  {
+    "title": "Sum of Two Numbers",
+    "description": "Read two integers on a single line separated by a space. Print their sum.\n\n**Input:** Two integers A and B (−10⁹ ≤ A, B ≤ 10⁹).\n\n**Output:** A single integer: A + B.",
+    "difficulty": "easy",
+    "exampleCount": 2,
+    "inputs": ["3 5", "100 200", "-7 3", "0 0", "1000000000 1000000000"],
+    "outputs": ["8", "300", "-4", "0", "2000000000"]
+  },
+  {
+    "title": "Even or Odd",
+    "description": "Read an integer and determine if it is even or odd.\n\n**Input:** A single integer N (−10⁶ ≤ N ≤ 10⁶).\n\n**Output:** Print `Even` if N is even, or `Odd` if N is odd.",
+    "difficulty": "easy",
+    "exampleCount": 2,
+    "inputs": ["4", "7", "0", "-3", "-8"],
+    "outputs": ["Even", "Odd", "Even", "Odd", "Even"]
+  },
+  {
+    "title": "Factorial",
+    "description": "Compute the factorial of a non-negative integer N.\n\nThe factorial of N is defined as N! = 1 × 2 × 3 × … × N. By convention, 0! = 1.\n\n**Input:** A single integer N (0 ≤ N ≤ 12).\n\n**Output:** A single integer: N!",
+    "difficulty": "easy",
+    "exampleCount": 2,
+    "inputs": ["0", "1", "5", "10", "12"],
+    "outputs": ["1", "1", "120", "3628800", "479001600"]
+  },
+  {
+    "title": "Fibonacci",
+    "description": "Print the N-th term of the Fibonacci sequence (1-indexed).\n\nThe Fibonacci sequence is: 1, 1, 2, 3, 5, 8, 13, 21, …\n\n**Input:** A single integer N (1 ≤ N ≤ 30).\n\n**Output:** A single integer: the N-th Fibonacci number.",
+    "difficulty": "easy",
+    "exampleCount": 2,
+    "inputs": ["1", "2", "7", "10", "20"],
+    "outputs": ["1", "1", "13", "55", "6765"]
+  },
+  {
+    "title": "Palindrome Check",
+    "description": "Check whether a word is a palindrome. A palindrome reads the same forwards and backwards.\n\n**Input:** A single word (lowercase letters only, 1 ≤ length ≤ 100).\n\n**Output:** Print `Yes` if the word is a palindrome, or `No` otherwise.",
+    "difficulty": "easy",
+    "exampleCount": 2,
+    "inputs": ["racecar", "hello", "level", "world", "madam"],
+    "outputs": ["Yes", "No", "Yes", "No", "Yes"]
+  },
+  {
+    "title": "Count Vowels",
+    "description": "Count the number of vowels (a, e, i, o, u) in a given string. Uppercase and lowercase vowels both count.\n\n**Input:** A single line containing a string (1 ≤ length ≤ 1000).\n\n**Output:** A single integer: the number of vowels.",
+    "difficulty": "easy",
+    "exampleCount": 2,
+    "inputs": ["hello", "AEIOU", "rhythm", "Programming", "The quick brown fox"],
+    "outputs": ["2", "5", "0", "3", "5"]
+  },
+  {
+    "title": "Reverse a String",
+    "description": "Read a string and print it in reverse order.\n\n**Input:** A single line containing a string (1 ≤ length ≤ 1000, no leading or trailing spaces).\n\n**Output:** The string reversed.",
+    "difficulty": "easy",
+    "exampleCount": 2,
+    "inputs": ["hello", "abcde", "racecar", "12345", "OpenAI"],
+    "outputs": ["olleh", "edcba", "racecar", "54321", "IAnepO"]
+  },
+  {
+    "title": "FizzBuzz",
+    "description": "Print the FizzBuzz sequence from 1 to N.\n\nFor each number from 1 to N:\n- If divisible by both 3 and 5, print `FizzBuzz`\n- If divisible only by 3, print `Fizz`\n- If divisible only by 5, print `Buzz`\n- Otherwise, print the number itself\n\n**Input:** A single integer N (1 ≤ N ≤ 100).\n\n**Output:** N lines, one per number.",
+    "difficulty": "easy",
+    "exampleCount": 1,
+    "inputs": ["15", "5", "3"],
+    "outputs": [
+      "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz",
+      "1\n2\nFizz\n4\nBuzz",
+      "1\n2\nFizz"
+    ]
+  },
+  {
+    "title": "Maximum of an Array",
+    "description": "Find the largest number in a list of integers.\n\n**Input:** The first line contains an integer N (1 ≤ N ≤ 1000). The second line contains N integers separated by spaces (−10⁶ ≤ each value ≤ 10⁶).\n\n**Output:** A single integer: the maximum value in the list.",
+    "difficulty": "easy",
+    "exampleCount": 2,
+    "inputs": ["5\n3 1 4 1 5", "3\n-10 -3 -7", "1\n42", "4\n0 0 0 0", "6\n100 200 50 300 150 250"],
+    "outputs": ["5", "-3", "42", "0", "300"]
+  }
+]

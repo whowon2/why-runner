@@ -2,95 +2,26 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Commands
+## What this is
 
-```bash
-bun dev           # Start dev server
-bun build         # Production build
-bun lint          # Biome check
-bun format        # Biome format --write
+WhyRunner — a competitive/judged code-execution platform (TCC / thesis project, IFMG). Two independent services, each its own git repository:
 
-bun db:push       # Push schema changes to DB (no migration file)
-bun db:generate   # Generate migration SQL
-bun db:migrate    # Run pending migrations
-bun db:studio     # Drizzle Studio GUI
-bun db:seed       # Seed database
-```
+- `web/` — Next.js 16 frontend + server actions + Postgres (Drizzle). See `web/CLAUDE.md`.
+- `judge/` — Rust worker that executes submitted code in sandboxed Docker containers and grades it. See `judge/CLAUDE.md`.
 
-No test suite exists yet.
+This root directory is **not itself a git repo** — `web/` and `judge/` are separate repos nested here, plus non-code TCC material (below). Always work inside the relevant subdirectory's repo; there's no root-level build/test/lint command that spans both.
 
-## Architecture
+## How the two services connect
 
-**Next.js 16 App Router** with server actions as the primary data layer. No tRPC, no REST routes beyond `/api/auth`.
+`web` writes a `PENDING` submission row to Postgres and calls `pg_notify('new_submission', ...)`; `judge` listens on that channel (with a periodic sweep fallback), claims the row, runs the code per test case in a network-less Docker sandbox, and writes results back to the same Postgres database. Both share the same DB but not a shared schema-definition source — `judge/src/models.rs`'s Rust enums (`Language`, `SubmissionStatus`) must be kept in sync by hand with `web/drizzle/schemas/`'s Drizzle enums.
 
-### Request Flow
+(Note: `web/README.md` describes an AWS SQS queue between web and judge — that's stale; the actual mechanism is Postgres LISTEN/NOTIFY, per both CLAUDE.md files and `judge/src/main.rs`.)
 
-```
-Browser → React Query hook (/hooks/) → Server Action (/lib/actions/) → Drizzle ORM → PostgreSQL
-```
+## Where to look
 
-Server actions handle auth checks, business logic, and DB queries. Hooks wrap actions with `useQuery`/`useMutation`.
-
-### Key Directory Map
-
-| Path | Purpose |
-|---|---|
-| `app/[locale]/` | All pages, locale-prefixed via `next-intl` |
-| `lib/actions/` | All server actions (`"use server"`) |
-| `lib/auth/` | Better Auth setup + session helpers |
-| `hooks/` | React Query wrappers around server actions |
-| `drizzle/schemas/` | Drizzle table definitions |
-| `drizzle/migrations/` | SQL migration history |
-| `components/ui/` | Radix UI-based component library |
-| `messages/` | i18n strings (pt, en) |
-| `env.ts` | Typed env vars via `@t3-oss/env-nextjs` |
-
-### Database Schema (PostgreSQL via Drizzle)
-
-- `user`, `session`, `account`, `verification` — Better Auth tables
-- `problem` — Code problems with test `inputs[]`/`outputs[]` arrays, `difficulty` enum
-- `submission` — Execution results, `status`: `PENDING|RUNNING|PASSED|FAILED|ERROR`, supports languages: `c|cpp|java|python|portugol|rust`
-- `contest` — Contests with date range, `isPrivate` flag
-- `userOnContest` — Join table with `joinStatus`: `pending|accepted`
-- `problemOnContest` — Problem assignment to contest
-- `activityFeed` — User activity events
-
-### Submission Pipeline
-
-1. `createSubmission` server action rate-limits (5/30s), validates user is accepted in contest, writes `PENDING` row
-2. Calls `pg_notify('new_submission', submissionId)` — picked up by external Judge worker (Rust, separate repo)
-3. Judge executes code in Docker (python:3.9-slim or equivalent) and writes result back
-4. Frontend polls submission status via React Query
-
-### Auth
-
-Better Auth with email/password + GitHub + Google OAuth. Session access:
-- Server: `getCurrentUser()` in `lib/auth/get-current-user.ts` (redirects to signin if unauthenticated)
-- Client: `authClient` from `lib/auth/client.ts`
-
-### AI Help
-
-`getAIHelp()` server action calls Gemini 2.0 Flash to explain submission failures. Parses JSON output from Judge to identify which test cases failed.
-
-## Environment Variables
-
-Required in `.env`:
-```
-DATABASE_URL=psql://judge:judge@localhost:5433/judge
-BETTER_AUTH_SECRET=
-BETTER_AUTH_URL=http://localhost:3000
-GITHUB_ID=
-GITHUB_SECRET=
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GEMINI_KEY=
-```
-
-## Conventions
-
-- **Linting/formatting:** Biome (not ESLint/Prettier). Run `bun lint` before committing.
-- **Path alias:** `@/` maps to project root.
-- **Imports:** Biome organizes imports automatically on format.
-- **UI:** Tailwind v4 + Radix UI primitives. No CSS modules.
-- **Forms:** React Hook Form + Zod schemas.
-- **URL state:** `nuqs` for search params.
+- Frontend/API work → read `web/CLAUDE.md` first, then work inside `web/`.
+- Sandboxed execution / grading logic → read `judge/CLAUDE.md` first, then work inside `judge/`.
+- `openspec/` — spec-driven change workflow config (currently no active changes or specs checked in).
+- `overleaf/` — LaTeX source for the accompanying thesis paper (SBC template).
+- `AUDITORIA_PRE_DEFESA.md` — Portuguese-language pre-defense audit/punch-list notes for the thesis, not application docs.
+- `problems.json`, `Why-runner.pdf`, `cbie.txt` — supporting TCC artifacts (sample problem set, thesis PDF, conference info), not consumed by either app at runtime.

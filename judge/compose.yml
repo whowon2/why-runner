@@ -1,0 +1,22 @@
+services:
+  portugol:
+    build: ./portugol
+    image: portugol:latest
+    command: echo "Portugol image ready"
+
+  judge-worker:
+    build: .
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - .env
+    restart: on-failure
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: judge
+      POSTGRES_PASSWORD: judge
+      POSTGRES_DB: judge
+    ports:
+      - "5433:5432"
