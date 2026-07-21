@@ -172,7 +172,7 @@ export function ContestList() {
                 {contests.map((contest) => (
                   <div
                     key={contest.id}
-                    className="transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/5 rounded-2xl"
+                    className="transition-all rounded-2xl"
                   >
                     <ContestCard contest={contest} />
                   </div>

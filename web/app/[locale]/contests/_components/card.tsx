@@ -52,12 +52,7 @@ export function ContestCard({
 
   return (
     <Link href={`/contests/${contest.slug}`} className="block group">
-      <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
-        {/* Top gradient sliver */}
-        <div
-          className={`absolute top-0 left-0 right-0 h-1.5 bg-linear-to-r ${status.gradient} opacity-90`}
-        />
-
+      <Card className="relative overflow-hidden transition-all duration-300 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
         <CardHeader className="pb-3 flex flex-row items-start justify-between">
           <div className="space-y-1.5 flex-1 pr-4">
             <div className="flex items-center gap-2 mb-2 flex-wrap">
