@@ -101,7 +101,7 @@ export function MyProblems() {
                   </p>
                 </div>
                 <div className="pt-2 border-t">
-                  <Link href={`/problems/${prob.id}`}>
+                  <Link href={`/problems/${prob.slug}`}>
                     <Button variant="secondary" className="w-full">
                       {t("viewDetails")}
                     </Button>

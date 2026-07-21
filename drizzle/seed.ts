@@ -1,6 +1,7 @@
 import { reset, seed } from "drizzle-seed";
 import { db } from "@/drizzle/db";
 import * as schema from "@/drizzle/schema";
+import { generateSlug } from "@/lib/slug";
 
 async function main() {
   console.log("⏳ Resetting database...");
@@ -34,6 +35,7 @@ async function main() {
       count: 10,
       columns: {
         id: f.uuid(),
+        slug: f.uuid(),
         name: f.companyName(), // "Acme Corp Contest"
         description: f.loremIpsum({ sentencesCount: 1 }),
         startDate: f.date({ minDate: "2023-01-01", maxDate: "2024-12-31" }),
@@ -47,6 +49,7 @@ async function main() {
     problem: {
       count: 1,
       columns: {
+        slug: f.uuid(),
         title: f.loremIpsum({ sentencesCount: 1 }),
         description: f.loremIpsum({ sentencesCount: 3 }),
         // Drizzle Seed detects Enums automatically, but we can weight them:
@@ -165,6 +168,7 @@ async function main() {
     .insert(schema.contest)
     .values({
       name: "Quick Join Contest",
+      slug: generateSlug("Quick Join Contest"),
       description: "A contest created just for you to join right now!",
       startDate: start,
       endDate: end,
@@ -178,6 +182,7 @@ async function main() {
     .insert(schema.problem)
     .values({
       title: "Two Sum",
+      slug: generateSlug("Two Sum"),
       description: "Given two integers separated by a space, print their sum.",
       difficulty: "easy",
       inputs: ["1 2", "5 10", "100 200", "-5 5"],

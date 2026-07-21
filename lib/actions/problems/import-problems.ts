@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "@/drizzle/db";
 import { problem } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { generateSlug } from "@/lib/slug";
 
 const importSchema = z.array(
   z.object({
@@ -33,6 +34,7 @@ export async function importProblems(data: unknown): Promise<number> {
   const values = parsed.data.map((p) => ({
     ...p,
     difficulty: p.difficulty ?? null,
+    slug: generateSlug(p.title),
     createdBy: currentUser.id,
   }));
 

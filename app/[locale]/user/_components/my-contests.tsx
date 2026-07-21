@@ -101,7 +101,7 @@ export function MyContests() {
                     </div>
                   </div>
                   <div className="pt-4 border-t mt-4">
-                    <Link href={`/contests/${contest.id}`}>
+                    <Link href={`/contests/${contest.slug}`}>
                       <Button variant="secondary" className="w-full">
                         {t("viewDashboard")}
                       </Button>

@@ -51,7 +51,7 @@ export function ContestCard({
   const statusText = getStatusText(contest.startDate, contest.endDate);
 
   return (
-    <Link href={`/contests/${contest.id}`} className="block group">
+    <Link href={`/contests/${contest.slug}`} className="block group">
       <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
         {/* Top gradient sliver */}
         <div

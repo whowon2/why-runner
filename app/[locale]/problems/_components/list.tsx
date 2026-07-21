@@ -167,7 +167,7 @@ export function ProblemsList() {
           ) : (
             <div className={isPlaceholderData ? "opacity-50" : ""}>
               {problems.map((problem) => (
-                <Link href={`/problems/${problem.id}`} key={problem.id}>
+                <Link href={`/problems/${problem.slug}`} key={problem.id}>
                   <div className="flex justify-between items-center rounded-lg border p-4 hover:bg-muted/50 transition-colors my-2">
                     <h3 className="font-bold">{problem.title}</h3>
                     <DifficultyBadge difficulty={problem.difficulty} />

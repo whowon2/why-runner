@@ -411,8 +411,8 @@ export function CreateContestForm({
         onClose={() => {
           setShowShareModal(false);
           onSuccessAction();
-          if (createdContest?.id) {
-            router.push(`/contests/${createdContest.id}`);
+          if (createdContest?.slug) {
+            router.push(`/contests/${createdContest.slug}`);
           }
         }}
         onShare={async (description) => {
@@ -426,8 +426,8 @@ export function CreateContestForm({
           }
           setShowShareModal(false);
           onSuccessAction();
-          if (createdContest?.id) {
-            router.push(`/contests/${createdContest.id}`);
+          if (createdContest?.slug) {
+            router.push(`/contests/${createdContest.slug}`);
           }
         }}
         title={t("shareTitle")}

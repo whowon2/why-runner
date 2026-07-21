@@ -20,6 +20,7 @@ export type ProblemDifficulty = (typeof ProblemDifficulty.enumValues)[number];
 export const problem = pgTable("problem", {
   id: uuid("id").defaultRandom().primaryKey(),
   title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
   description: text("description").notNull(),
   difficulty: ProblemDifficulty(),
   createdBy: text("created_by").notNull(),
@@ -44,4 +45,7 @@ export const problemRelations = relations(problem, ({ many, one }) => ({
   }),
 }));
 
-export type CreateProblemInput = Omit<typeof problem.$inferInsert, "createdBy">;
+export type CreateProblemInput = Omit<
+  typeof problem.$inferInsert,
+  "createdBy" | "slug"
+>;

@@ -4,10 +4,11 @@ import { db } from "@/drizzle/db";
 import { contest } from "@/drizzle/schema";
 import { problemOnContest } from "@/drizzle/schemas/users";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { generateSlug } from "@/lib/slug";
 
 export type CreateContestInput = Omit<
   typeof contest.$inferInsert,
-  "createdBy"
+  "createdBy" | "slug"
 > & {
   problems?: string[];
 };
@@ -18,7 +19,11 @@ export async function createContest(input: CreateContestInput) {
 
   const [result] = await db
     .insert(contest)
-    .values({ ...contestData, createdBy: currentUser.id })
+    .values({
+      ...contestData,
+      slug: generateSlug(contestData.name),
+      createdBy: currentUser.id,
+    })
     .returning();
 
   if (problems && problems.length > 0) {

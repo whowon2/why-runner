@@ -5,6 +5,7 @@ import { problemOnContest, userOnContest } from "./users";
 export const contest = pgTable("contest", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
   description: text("description").notNull(),
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),

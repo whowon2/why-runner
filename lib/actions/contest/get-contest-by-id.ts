@@ -44,3 +44,11 @@ export async function getContest(id: string) {
     problems: canViewProblems ? found.problems : [],
   };
 }
+
+export async function getContestBySlug(slug: string) {
+  const found = await db.query.contest.findFirst({
+    where: (contests, { eq }) => eq(contests.slug, slug),
+  });
+
+  return found ?? null;
+}
