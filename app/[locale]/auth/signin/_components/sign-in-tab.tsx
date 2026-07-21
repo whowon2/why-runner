@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -33,6 +34,7 @@ export function SignInTab({
   openEmailVerificationTab: (email: string) => void;
   openForgotPassword: () => void;
 }) {
+  const t = useTranslations("Auth");
   const router = useRouter();
   const form = useForm<SignInForm>({
     resolver: zodResolver(signInSchema),
@@ -52,7 +54,7 @@ export function SignInTab({
           if (error.error.code === "EMAIL_NOT_VERIFIED") {
             openEmailVerificationTab(data.email);
           }
-          toast.error(error.error.message || "Failed to sign in");
+          toast.error(error.error.message || t("failedSignIn"));
         },
         onSuccess: () => {
           router.push("/");
@@ -70,7 +72,7 @@ export function SignInTab({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t("email")}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
@@ -89,7 +91,7 @@ export function SignInTab({
             render={({ field }) => (
               <FormItem>
                 <div className="flex justify-between items-center">
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{t("password")}</FormLabel>
                   <Button
                     onClick={openForgotPassword}
                     type="button"
@@ -97,7 +99,7 @@ export function SignInTab({
                     size="sm"
                     className="text-sm font-normal underline"
                   >
-                    Forgot password?
+                    {t("forgotPasswordLink")}
                   </Button>
                 </div>
                 <FormControl>
@@ -112,7 +114,7 @@ export function SignInTab({
           />
 
           <Button type="submit" disabled={isSubmitting} className="w-full">
-            <LoadingSwap isLoading={isSubmitting}>Sign In</LoadingSwap>
+            <LoadingSwap isLoading={isSubmitting}>{t("signIn")}</LoadingSwap>
           </Button>
         </form>
       </Form>

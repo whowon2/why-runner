@@ -4,11 +4,13 @@ import type { User } from "better-auth";
 import { Calendar, Link as LinkIcon, MapPin } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProfile } from "@/hooks/use-profile";
 
 export default function Profile({ user }: { user: User }) {
+  const t = useTranslations("ProfilePage");
   const { data, isPending } = useProfile(user.id);
 
   if (isPending) {
@@ -47,10 +49,10 @@ export default function Profile({ user }: { user: User }) {
               <Image
                 src={
                   data.image ||
-                  "https://api.dicebear.com/9.x/glass/svg?seed=" + data.name
+                  `https://api.dicebear.com/9.x/glass/svg?seed=${data.name}`
                 }
                 fill
-                alt="avatar"
+                alt={t("avatarAlt")}
                 className="object-cover"
                 sizes="(max-width: 768px) 128px, 160px"
               />
@@ -74,8 +76,7 @@ export default function Profile({ user }: { user: User }) {
           </div>
 
           <p className="text-base leading-relaxed max-w-2xl text-foreground/90">
-            {data.bio ||
-              "Competitive programmer and algorithmic logic enthusiast. Building the future one test case at a time. Always eager to learn new data structures and optimize runtime."}
+            {data.bio || t("defaultBio")}
           </p>
 
           {/* User Meta tags */}
@@ -98,7 +99,7 @@ export default function Profile({ user }: { user: User }) {
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4" />
                 <span>
-                  Joined {new Date(data.createdAt).toLocaleDateString()}
+                  {t("joined")} {new Date(data.createdAt).toLocaleDateString()}
                 </span>
               </div>
             )}
@@ -109,13 +110,13 @@ export default function Profile({ user }: { user: User }) {
             <div className="flex flex-col">
               <span className="font-extrabold text-2xl">4</span>
               <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
-                Contests
+                {t("contests")}
               </span>
             </div>
             <div className="flex flex-col">
               <span className="font-extrabold text-2xl">12</span>
               <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
-                Problems
+                {t("problems")}
               </span>
             </div>
             <div className="flex flex-col">
@@ -123,7 +124,7 @@ export default function Profile({ user }: { user: User }) {
                 1st
               </span>
               <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
-                Global Rank
+                {t("globalRank")}
               </span>
             </div>
           </div>

@@ -1,4 +1,15 @@
 {
+  "Common": {
+    "close": "Close",
+    "error": "Error",
+    "loading": "Loading..."
+  },
+  "ErrorPage": {
+    "title": "Something went wrong",
+    "connectError": "Could not connect to the database. Please try again later.",
+    "genericError": "An unexpected error occurred.",
+    "tryAgain": "Try again"
+  },
   "ToolTips": {
     "open-file": "Open File",
     "save": "Save on browser",
@@ -7,12 +18,18 @@
   "Dock": {
     "home": "Home",
     "problems": "Problems",
-    "contests": "Contests"
+    "contests": "Contests",
+    "login": "Login"
   },
   "HomePage": {
     "buttons": {
       "contests": "Contests",
       "problems": "Problems"
+    },
+    "hero": {
+      "badge": "The Future of Competitive Programming",
+      "description": "A premium algorithmic platform designed to empower students, instructors, and developers world-wide.",
+      "scrollDown": "Scroll down"
     },
     "landing": {
       "submission": {
@@ -71,8 +88,43 @@
     }
   },
   "ProblemsPage": {
+    "title": "Problems",
+    "noResults": "No problems found matching your filters.",
+    "notFound": "Problem not found",
+    "pagination": {
+      "showing": "Showing {from}-{to} of {total}",
+      "page": "Page {page} of {totalPages}"
+    },
     "Create": {
-      "button": "New Problem"
+      "button": "New Problem",
+      "pageTitle": "Create Problem",
+      "editTab": "Edit Problem",
+      "previewTab": "Live Preview",
+      "titleLabel": "Title",
+      "titlePlaceholder": "1 2 3",
+      "descriptionLabel": "Description",
+      "markdownSupport": "Supports Markdown & LaTeX",
+      "descriptionPlaceholder": "Consider an algorithm that takes as input a positive integer n.",
+      "difficultyLabel": "Difficulty",
+      "difficultyPlaceholder": "Select a difficulty",
+      "difficultyRequired": "Difficulty is required",
+      "examplesShown": "Examples shown to solvers",
+      "inputLabel": "Input {n}",
+      "outputLabel": "Output {n}",
+      "inputOutputPlaceholder": "1 2 3",
+      "addInputOutput": "+ Add Input / Output",
+      "creating": "Creating...",
+      "submit": "Create Problem",
+      "untitled": "Untitled Problem",
+      "normal": "NORMAL",
+      "examplesTitle": "Examples",
+      "noDescription": "*(No description provided. Edit the problem to add instructions.)*",
+      "errorOccurred": "An error occurred",
+      "createdSuccess": "Problem created successfully!",
+      "sharedToFeed": "Shared to your activity feed!",
+      "shareTitle": "Share your new Problem",
+      "shareDescription": "Let your followers know you've created \"{title}\"!",
+      "defaultTitle": "a new problem"
     },
     "Filters": {
       "searchPlaceholder": "Search problems...",
@@ -88,6 +140,12 @@
         "null": "all"
       }
     }
+  },
+  "ImportProblems": {
+    "button": "Import JSON",
+    "success": "{count, plural, one {# problem imported} other {# problems imported}}",
+    "failed": "Import failed",
+    "invalidJson": "Invalid JSON file"
   },
   "ContestsPage": {
     "title": "Contests",
@@ -120,8 +178,19 @@
       "button": "Create Contest",
       "title": "Create Contest",
       "name": "Name",
+      "namePlaceholder": "Do You Have Brio 2024",
       "date": "Date and Time",
       "duration": "Duration",
+      "nameMinError": "Name must be at least 2 characters",
+      "startDateFutureError": "Start Date must be in the future",
+      "durationRequiredError": "Duration must be set",
+      "problemsRequiredError": "You must select at least one problem",
+      "failedCreate": "Failed to create contest",
+      "created": "Contest Created",
+      "sharedToFeed": "Shared to your activity feed!",
+      "shareTitle": "Share your new Contest",
+      "shareDescription": "Let your followers know you've created \"{name}\"!",
+      "defaultName": "a new contest",
       "steps": {
         "basicInfo": "Basic Info",
         "problems": "Problems",
@@ -183,6 +252,18 @@
         },
         "Submissions": {
           "title": "Submissions",
+          "noSubmissions": "No submissions!",
+          "unknownError": "Unknown error state",
+          "empty": "Empty",
+          "noOutput": "No output available",
+          "allTestsPassed": "🎉 All {count} tests passed!",
+          "failedOn": "❌ Failed on Test Case #{index}",
+          "passedCount": "(Passed {passed}/{total})",
+          "inputLabel": "Input",
+          "yourOutputLabel": "Your Output",
+          "expectedOutputLabel": "Expected Output",
+          "errorLog": "Error Log (Stderr)",
+          "processing": "Processing...",
           "AI": {
             "title": "AI Assistant",
             "description": "Get help from our AI to understand why your solution might be failing. The AI will analyze your code against the problem and your solution and provide suggestions.",
@@ -192,6 +273,19 @@
             "request": "Request Help",
             "error": "An error occurred while trying to get help from the AI. Please try again later.",
             "noResponse": "The AI did not provide a response. Please try again."
+          },
+          "Upload": {
+            "languagePlaceholder": "Language",
+            "selectLanguage": "Please select a language",
+            "emptyCode": "You can't submit empty code",
+            "failedSubmit": "Failed to submit code",
+            "submitted": "Code Submitted",
+            "invalidExtension": "Invalid file extension",
+            "expectedExtensions": "Expected: {extensions}",
+            "codeSaved": "Code saved successfully!",
+            "noCodeToSave": "No code to save!",
+            "loadSavedPrompt": "Do you want to load the saved code?",
+            "load": "Load"
           }
         }
       },
@@ -251,6 +345,28 @@
           "removeError": "Failed to remove problem",
           "orderSaved": "Order saved",
           "orderError": "Failed to save order"
+        },
+        "SubmissionsTable": {
+          "title": "Submissions ({count})",
+          "id": "ID",
+          "user": "User",
+          "status": "Status",
+          "date": "Date",
+          "problem": "Problem",
+          "code": "Code"
+        },
+        "EditContest": {
+          "contestSection": "Contest",
+          "nameLabel": "Name",
+          "save": "Save",
+          "failedUpdate": "Failed to update contest",
+          "updated": "Contest updated"
+        },
+        "Export": {
+          "button": "Export Results (CSV)",
+          "success": "Results exported",
+          "failed": "Export failed",
+          "unknownError": "Unknown error"
         }
       }
     }
@@ -275,7 +391,8 @@
     "profile": "Profile",
     "problems": "Problems",
     "contests": "Contests",
-    "theme": "Theme"
+    "theme": "Theme",
+    "logout": "Log out"
   },
   "NotFound": {
     "title": "Page not found",
@@ -295,7 +412,50 @@
     "title": "Are you sure?",
     "description": "This action cannot be undone.",
     "cancel": "Cancel",
-    "confirm": "Yes"
+    "confirm": "Yes",
+    "genericError": "Error"
+  },
+  "Auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "verifyEmail": "Verify Your Email",
+    "forgotPassword": "Forgot Password",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "forgotPasswordLink": "Forgot password?",
+    "failedSignIn": "Failed to sign in",
+    "failedSignUp": "Failed to sign up"
+  },
+  "PasswordInput": {
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "strengthAriaLabel": "Password Strength",
+    "strengthLabel": "Password strength",
+    "loadingStrength": "Loading strength checker",
+    "veryWeak": "Very weak",
+    "weak": "Weak",
+    "strong": "Strong",
+    "veryStrong": "Very strong"
+  },
+  "UserForm": {
+    "title": "Profile",
+    "username": "Username",
+    "usernamePlaceholder": "shadcn",
+    "usernameDescription": "This is your public display name.",
+    "avatarUrl": "Avatar URL",
+    "avatarDescription": "This is your public avatar.",
+    "saveProfile": "Save Profile",
+    "failedUpdate": "Failed to update profile",
+    "updated": "Profile updated"
+  },
+  "ProfilePage": {
+    "avatarAlt": "avatar",
+    "defaultBio": "Competitive programmer and algorithmic logic enthusiast. Building the future one test case at a time. Always eager to learn new data structures and optimize runtime.",
+    "joined": "Joined",
+    "contests": "Contests",
+    "problems": "Problems",
+    "globalRank": "Global Rank"
   },
   "UserPage": {
     "Feed": {

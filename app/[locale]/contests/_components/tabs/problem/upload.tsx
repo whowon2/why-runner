@@ -44,6 +44,10 @@ export function UploadCode({
   const { mutate, isPending } = useCreateSubmission();
   const { theme, systemTheme } = useTheme();
   const t = useTranslations();
+  const tUpload = useTranslations(
+    "ContestsPage.Tabs.Problem.Submissions.Upload",
+  );
+  const tAI = useTranslations("ContestsPage.Tabs.Problem.Submissions.AI");
   const queryClient = useQueryClient();
 
   const extensions = {
@@ -57,12 +61,12 @@ export function UploadCode({
 
   function handleUpload() {
     if (!language) {
-      toast.warning("Please select a language");
+      toast.warning(tUpload("selectLanguage"));
       return;
     }
 
     if (!code.length) {
-      toast.warning("You can't submit empty code");
+      toast.warning(tUpload("emptyCode"));
       return;
     }
 
@@ -77,10 +81,10 @@ export function UploadCode({
       },
       {
         onError: (error) => {
-          toast.error("Failed to submit code", { description: error.message });
+          toast.error(tUpload("failedSubmit"), { description: error.message });
         },
         onSuccess: () => {
-          toast.success("Code Submitted");
+          toast.success(tUpload("submitted"));
           queryClient.invalidateQueries({
             queryKey: ["submissions", String(problem.id)],
           });
@@ -100,8 +104,11 @@ export function UploadCode({
       !extension ||
       !extensions[language as keyof typeof extensions]?.includes(extension)
     ) {
-      toast.warning("Invalid file extension", {
-        description: `Expected: ${extensions[language as keyof typeof extensions].join(", ")}`,
+      toast.warning(tUpload("invalidExtension"), {
+        description: tUpload("expectedExtensions", {
+          extensions:
+            extensions[language as keyof typeof extensions].join(", "),
+        }),
       });
 
       if (fileRef.current) {
@@ -126,9 +133,9 @@ export function UploadCode({
     if (code) {
       localStorage.setItem(`code-${problem.id}-${language}`, code);
 
-      toast.success("Code saved successfully!");
+      toast.success(tUpload("codeSaved"));
     } else {
-      toast.warning("No code to save!");
+      toast.warning(tUpload("noCodeToSave"));
     }
   }
 
@@ -140,13 +147,13 @@ export function UploadCode({
         );
 
         if (savedCode) {
-          toast("Do you want to load the saved code?", {
+          toast(tUpload("loadSavedPrompt"), {
             action: {
-              label: "Load",
+              label: tUpload("load"),
               onClick: () => setCode(savedCode),
             },
             cancel: {
-              label: "Cancel",
+              label: tAI("cancel"),
               onClick: () => {},
             },
             duration: 100000,
@@ -154,7 +161,7 @@ export function UploadCode({
         }
       }
     }
-  }, [code, problem.id, language]);
+  }, [code, problem.id, language, tAI, tUpload]);
 
   return (
     <Card className="h-full max-h-screen w-full bg-transparent border-none shadow-none">
@@ -163,7 +170,7 @@ export function UploadCode({
           <div className="flex justify-between gap-2">
             <Select onValueChange={handleLanguageChange}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Language" />
+                <SelectValue placeholder={tUpload("languagePlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="rust">rust</SelectItem>

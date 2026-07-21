@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Delete } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
@@ -36,19 +37,21 @@ import { Eye, Pencil } from "lucide-react";
 import { ShareToFeedModal } from "@/components/share-to-feed-modal";
 import { createActivity } from "@/lib/actions/activity/create-activity";
 
-const formSchema = z.object({
-  description: z.string().min(1),
-  difficulty: z.enum(["easy", "medium", "hard"], {
-    message: "Difficulty is required",
-  }),
-  exampleCount: z.number().int().min(1),
-  inputs: z.array(z.string().min(1)).min(1),
-  outputs: z.array(z.string().min(1)).min(1),
-  title: z.string().min(1),
-});
-
 export function NewProblem() {
+  const t = useTranslations("ProblemsPage.Create");
+  const tDifficulty = useTranslations("Difficults");
   const queryClient = useQueryClient();
+
+  const formSchema = z.object({
+    description: z.string().min(1),
+    difficulty: z.enum(["easy", "medium", "hard"], {
+      message: t("difficultyRequired"),
+    }),
+    exampleCount: z.number().int().min(1),
+    inputs: z.array(z.string().min(1)).min(1),
+    outputs: z.array(z.string().min(1)).min(1),
+    title: z.string().min(1),
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
@@ -94,7 +97,7 @@ export function NewProblem() {
       {
         onError(error) {
           console.error(error);
-          toast.error("An error occurred", {
+          toast.error(t("errorOccurred"), {
             description: error.message,
           });
         },
@@ -102,7 +105,7 @@ export function NewProblem() {
           queryClient.invalidateQueries({ queryKey: ["problems"] });
         },
         onSuccess(data) {
-          toast.success("Problem created successfully!");
+          toast.success(t("createdSuccess"));
           setCreatedProblem(data);
           setShowShareModal(true);
         },
@@ -138,7 +141,7 @@ export function NewProblem() {
     <div className="flex flex-col p-8 w-full max-w-5xl mx-auto">
       <div className="flex justify-between mb-8">
         <h1 className="font-extrabold text-3xl tracking-tight">
-          Create Problem
+          {t("pageTitle")}
         </h1>
       </div>
 
@@ -146,11 +149,11 @@ export function NewProblem() {
         <TabsList className="mb-6 grid w-full grid-cols-2 max-w-[400px]">
           <TabsTrigger value="edit" className="flex items-center gap-2">
             <Pencil className="w-4 h-4" />
-            Edit Problem
+            {t("editTab")}
           </TabsTrigger>
           <TabsTrigger value="preview" className="flex items-center gap-2">
             <Eye className="w-4 h-4" />
-            Live Preview
+            {t("previewTab")}
           </TabsTrigger>
         </TabsList>
 
@@ -165,9 +168,9 @@ export function NewProblem() {
                 name="title"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>{t("titleLabel")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="1 2 3" {...field} />
+                      <Input placeholder={t("titlePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -179,14 +182,14 @@ export function NewProblem() {
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <div className="flex items-center justify-between">
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel>{t("descriptionLabel")}</FormLabel>
                       <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
-                        Supports Markdown & LaTeX
+                        {t("markdownSupport")}
                       </span>
                     </div>
                     <FormControl>
                       <Textarea
-                        placeholder="Consider an algorithm that takes as input a positive integer n."
+                        placeholder={t("descriptionPlaceholder")}
                         className="min-h-[250px] font-mono text-sm leading-relaxed"
                         {...field}
                       />
@@ -201,25 +204,27 @@ export function NewProblem() {
                 name="difficulty"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Difficulty</FormLabel>
+                    <FormLabel>{t("difficultyLabel")}</FormLabel>
                     <Select
                       defaultValue={field.value}
                       onValueChange={field.onChange}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a difficulty" />
+                          <SelectValue
+                            placeholder={t("difficultyPlaceholder")}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         <SelectItem className="text-green-400" value="easy">
-                          Fácil
+                          {tDifficulty("easy")}
                         </SelectItem>
                         <SelectItem className="text-orange-400" value="medium">
-                          Médio
+                          {tDifficulty("medium")}
                         </SelectItem>
                         <SelectItem className="text-red-400" value="hard">
-                          Difícil
+                          {tDifficulty("hard")}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -233,7 +238,7 @@ export function NewProblem() {
                 name="exampleCount"
                 render={({ field }) => (
                   <FormItem className="max-w-[200px]">
-                    <FormLabel>Examples shown to solvers</FormLabel>
+                    <FormLabel>{t("examplesShown")}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -257,11 +262,13 @@ export function NewProblem() {
                         name={`inputs.${index}`}
                         render={({ field }) => (
                           <FormItem className="w-full">
-                            <FormLabel>Input {index + 1}</FormLabel>
+                            <FormLabel>
+                              {t("inputLabel", { n: index + 1 })}
+                            </FormLabel>
                             <FormControl>
                               <Textarea
                                 className="min-h-[100px] font-mono"
-                                placeholder="1 2 3"
+                                placeholder={t("inputOutputPlaceholder")}
                                 {...field}
                               />
                             </FormControl>
@@ -281,11 +288,13 @@ export function NewProblem() {
                         name={`outputs.${index}`}
                         render={({ field }) => (
                           <FormItem className="w-full">
-                            <FormLabel>Output {index + 1}</FormLabel>
+                            <FormLabel>
+                              {t("outputLabel", { n: index + 1 })}
+                            </FormLabel>
                             <FormControl>
                               <Textarea
                                 className="min-h-[100px] font-mono"
-                                placeholder="1 2 3"
+                                placeholder={t("inputOutputPlaceholder")}
                                 {...field}
                               />
                             </FormControl>
@@ -314,12 +323,12 @@ export function NewProblem() {
                 onClick={addInput}
                 type="button"
               >
-                + Adicionar Entrada / Saída
+                {t("addInputOutput")}
               </Button>
 
               <div className="border-t pt-6 flex justify-end">
                 <Button disabled={isPending} type="submit" size="lg">
-                  {isPending ? "Criando..." : "Criar Problema"}
+                  {isPending ? t("creating") : t("submit")}
                 </Button>
               </div>
             </form>
@@ -331,7 +340,7 @@ export function NewProblem() {
           <div className="border rounded-xl p-8 bg-card shadow-sm space-y-8 min-h-[500px]">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b pb-6">
               <h1 className="text-3xl font-extrabold tracking-tight">
-                {formValues.title || "Untitled Problem"}
+                {formValues.title || t("untitled")}
               </h1>
               <div className="shrink-0 mt-2 sm:mt-0">
                 <span
@@ -343,7 +352,9 @@ export function NewProblem() {
                         : "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400"
                   }`}
                 >
-                  {formValues.difficulty || "NORMAL"}
+                  {formValues.difficulty
+                    ? tDifficulty(formValues.difficulty)
+                    : t("normal")}
                 </span>
               </div>
             </div>
@@ -353,14 +364,15 @@ export function NewProblem() {
                 remarkPlugins={[remarkMath]}
                 rehypePlugins={[rehypeKatex]}
               >
-                {formValues.description ||
-                  "*(No description provided. Edit the problem to add instructions.)*"}
+                {formValues.description || t("noDescription")}
               </ReactMarkdown>
             </div>
 
             {formValues.inputs && formValues.inputs.length > 0 && (
               <div className="space-y-6 pt-6">
-                <h3 className="text-xl font-bold tracking-tight">Examples</h3>
+                <h3 className="text-xl font-bold tracking-tight">
+                  {t("examplesTitle")}
+                </h3>
                 {formValues.inputs.map((input, idx) => (
                   <div
                     key={idx}
@@ -368,7 +380,7 @@ export function NewProblem() {
                   >
                     <div className="flex-1 space-y-3">
                       <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
-                        Input {idx + 1}
+                        {t("inputLabel", { n: idx + 1 })}
                       </h4>
                       <pre className="p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">
                         {input || " "}
@@ -376,7 +388,7 @@ export function NewProblem() {
                     </div>
                     <div className="flex-1 space-y-3">
                       <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
-                        Output {idx + 1}
+                        {t("outputLabel", { n: idx + 1 })}
                       </h4>
                       <pre className="p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">
                         {formValues.outputs?.[idx] || " "}
@@ -403,13 +415,15 @@ export function NewProblem() {
               description,
               problemId: createdProblem.id,
             });
-            toast.success("Shared to your activity feed!");
+            toast.success(t("sharedToFeed"));
           }
           setShowShareModal(false);
           router.back();
         }}
-        title="Share your new Problem"
-        descriptionText={`Let your followers know you've created "${createdProblem?.title || "a new problem"}"!`}
+        title={t("shareTitle")}
+        descriptionText={t("shareDescription", {
+          title: createdProblem?.title || t("defaultTitle"),
+        })}
       />
     </div>
   );

@@ -26,23 +26,27 @@ import { useProblems } from "@/hooks/use-problems";
 import { createActivity } from "@/lib/actions/activity/create-activity";
 import { authClient } from "@/lib/auth/client";
 
-const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters").max(50),
-  startDate: z.string().refine(
-    (dateStr) => {
-      const date = new Date(dateStr);
-      return !Number.isNaN(date.getTime()) && date > new Date();
-    },
-    {
-      message: "Start Date must be in the future",
-    },
-  ),
-  duration: z.string().min(1, "Duration must be set"),
-  isPrivate: z.boolean(),
-  problems: z.array(z.string()).min(1, "You must select at least one problem"),
-});
+function useContestFormSchema() {
+  const t = useTranslations("ContestsPage.createDialog");
 
-type FormValues = z.infer<typeof formSchema>;
+  return z.object({
+    name: z.string().min(2, t("nameMinError")).max(50),
+    startDate: z.string().refine(
+      (dateStr) => {
+        const date = new Date(dateStr);
+        return !Number.isNaN(date.getTime()) && date > new Date();
+      },
+      {
+        message: t("startDateFutureError"),
+      },
+    ),
+    duration: z.string().min(1, t("durationRequiredError")),
+    isPrivate: z.boolean(),
+    problems: z.array(z.string()).min(1, t("problemsRequiredError")),
+  });
+}
+
+type FormValues = z.infer<ReturnType<typeof useContestFormSchema>>;
 
 function BasicInfoStep() {
   const { control } = useFormContext<FormValues>();
@@ -57,7 +61,7 @@ function BasicInfoStep() {
           <FormItem>
             <FormLabel>{t("name")}</FormLabel>
             <FormControl>
-              <Input placeholder="Do You Have Brio 2024" {...field} />
+              <Input placeholder={t("namePlaceholder")} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -71,11 +75,7 @@ function BasicInfoStep() {
           <FormItem>
             <FormLabel>{t("date")}</FormLabel>
             <FormControl>
-              <Input
-                placeholder="Do You Have Brio 2024"
-                type="datetime-local"
-                {...field}
-              />
+              <Input type="datetime-local" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -108,7 +108,9 @@ function BasicInfoStep() {
               />
             </FormControl>
             <div className="leading-none">
-              <FormLabel className="cursor-pointer">{t("form.privateContest")}</FormLabel>
+              <FormLabel className="cursor-pointer">
+                {t("form.privateContest")}
+              </FormLabel>
               <p className="text-xs text-muted-foreground mt-1">
                 {t("form.privateDescription")}
               </p>
@@ -189,7 +191,8 @@ function ProblemsStep() {
                   {problem.title}
                 </FormLabel>
                 <p className="text-xs text-muted-foreground">
-                  {t("form.difficulty")}: {problem.difficulty || t("form.normal")}
+                  {t("form.difficulty")}:{" "}
+                  {problem.difficulty || t("form.normal")}
                 </p>
               </div>
             </div>
@@ -228,11 +231,15 @@ function ReviewStep() {
           </span>
         </div>
         <div className="flex justify-between items-center border-b pb-2">
-          <span className="font-medium text-muted-foreground">{t("duration")}</span>
+          <span className="font-medium text-muted-foreground">
+            {t("duration")}
+          </span>
           <span className="font-medium">{values.duration}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="font-medium text-muted-foreground">{t("form.questions")}</span>
+          <span className="font-medium text-muted-foreground">
+            {t("form.questions")}
+          </span>
           <span className="font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
             {values.problems?.length || 0} {t("form.selected")}
           </span>
@@ -255,6 +262,7 @@ export function CreateContestForm({
   const [showShareModal, setShowShareModal] = useState(false);
   const [createdContest, setCreatedContest] = useState<any>(null);
   const t = useTranslations("ContestsPage.createDialog");
+  const formSchema = useContestFormSchema();
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -310,12 +318,12 @@ export function CreateContestForm({
       },
       {
         onError: (error) => {
-          toast.error("Failed to create contest", {
+          toast.error(t("failedCreate"), {
             description: error.message,
           });
         },
         onSuccess: (data) => {
-          toast.success("Contest Created");
+          toast.success(t("created"));
           queryClient.invalidateQueries({ queryKey: ["contests"] });
           setCreatedContest(data);
           setShowShareModal(true);
@@ -414,7 +422,7 @@ export function CreateContestForm({
               description,
               contestId: createdContest.id,
             });
-            toast.success("Shared to your activity feed!");
+            toast.success(t("sharedToFeed"));
           }
           setShowShareModal(false);
           onSuccessAction();
@@ -422,8 +430,10 @@ export function CreateContestForm({
             router.push(`/contests/${createdContest.id}`);
           }
         }}
-        title="Share your new Contest"
-        descriptionText={`Let your followers know you've created "${createdContest?.name || "a new contest"}"!`}
+        title={t("shareTitle")}
+        descriptionText={t("shareDescription", {
+          name: createdContest?.name || t("defaultName"),
+        })}
       />
     </Form>
   );

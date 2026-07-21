@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { EmailVerification } from "@/components/auth/email-verification";
 import {
@@ -20,6 +21,7 @@ import { SocialAuthButtons } from "./_components/social-auth-buttons";
 type Tab = "signin" | "signup" | "email-verification" | "forgot-password";
 
 export default function LoginPage() {
+  const t = useTranslations("Auth");
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [selectedTab, setSelectedTab] = useState<Tab>("signin");
@@ -44,14 +46,14 @@ export default function LoginPage() {
       >
         {(selectedTab === "signin" || selectedTab === "signup") && (
           <TabsList>
-            <TabsTrigger value="signin">Sign In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsTrigger value="signin">{t("signIn")}</TabsTrigger>
+            <TabsTrigger value="signup">{t("signUp")}</TabsTrigger>
           </TabsList>
         )}
         <TabsContent value="signin">
           <Card>
             <CardHeader className="text-2xl font-bold">
-              <CardTitle>Sign In</CardTitle>
+              <CardTitle>{t("signIn")}</CardTitle>
             </CardHeader>
             <CardContent>
               <SignInTab
@@ -71,7 +73,7 @@ export default function LoginPage() {
         <TabsContent value="signup">
           <Card>
             <CardHeader className="text-2xl font-bold">
-              <CardTitle>Sign Up</CardTitle>
+              <CardTitle>{t("signUp")}</CardTitle>
             </CardHeader>
             <CardContent>
               <SignUpTab openEmailVerificationTab={openEmailVerificationTab} />
@@ -88,7 +90,7 @@ export default function LoginPage() {
         <TabsContent value="email-verification">
           <Card>
             <CardHeader className="text-2xl font-bold">
-              <CardTitle>Verify Your Email</CardTitle>
+              <CardTitle>{t("verifyEmail")}</CardTitle>
             </CardHeader>
             <CardContent>
               <EmailVerification email={email} />
@@ -99,7 +101,7 @@ export default function LoginPage() {
         <TabsContent value="forgot-password">
           <Card>
             <CardHeader className="text-2xl font-bold">
-              <CardTitle>Forgot Password</CardTitle>
+              <CardTitle>{t("forgotPassword")}</CardTitle>
             </CardHeader>
             <CardContent>
               {/*<ForgotPassword openSignInTab={() => setSelectedTab("signin")} />*/}

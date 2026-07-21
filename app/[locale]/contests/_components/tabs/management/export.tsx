@@ -1,6 +1,7 @@
 "use client";
 
 import { Download, Loader } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import type { Contest } from "@/drizzle/schema";
 import { exportContestData } from "@/lib/actions/contest/export-contest";
 
 export function ExportContestData({ contest }: { contest: Contest }) {
+  const t = useTranslations("ContestsPage.Tabs.Management.Export");
   const [isPending, setIsPending] = useState(false);
 
   async function handleExport() {
@@ -21,10 +23,10 @@ export function ExportContestData({ contest }: { contest: Contest }) {
       a.download = `${contest.name.replace(/\s+/g, "_")}_results.csv`;
       a.click();
       URL.revokeObjectURL(url);
-      toast.success("Results exported");
+      toast.success(t("success"));
     } catch (e) {
-      toast.error("Export failed", {
-        description: e instanceof Error ? e.message : "Unknown error",
+      toast.error(t("failed"), {
+        description: e instanceof Error ? e.message : t("unknownError"),
       });
     } finally {
       setIsPending(false);
@@ -34,7 +36,7 @@ export function ExportContestData({ contest }: { contest: Contest }) {
   return (
     <Button onClick={handleExport} disabled={isPending} variant="outline">
       {isPending ? <Loader className="animate-spin" /> : <Download />}
-      Export Results (CSV)
+      {t("button")}
     </Button>
   );
 }

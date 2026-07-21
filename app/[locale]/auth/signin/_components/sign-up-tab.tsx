@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -31,6 +32,7 @@ export function SignUpTab({
 }: {
   openEmailVerificationTab: (email: string) => void;
 }) {
+  const t = useTranslations("Auth");
   const form = useForm<SignUpForm>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -47,7 +49,7 @@ export function SignUpTab({
       { ...data, callbackURL: "/" },
       {
         onError: (error) => {
-          toast.error(error.error.message || "Failed to sign up");
+          toast.error(error.error.message || t("failedSignUp"));
         },
       },
     );
@@ -65,7 +67,7 @@ export function SignUpTab({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{t("name")}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -79,7 +81,7 @@ export function SignUpTab({
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t("email")}</FormLabel>
               <FormControl>
                 <Input type="email" {...field} />
               </FormControl>
@@ -93,7 +95,7 @@ export function SignUpTab({
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t("password")}</FormLabel>
               <FormControl>
                 <PasswordInput {...field} />
               </FormControl>
@@ -103,7 +105,7 @@ export function SignUpTab({
         />
 
         <Button type="submit" disabled={isSubmitting} className="w-full">
-          <LoadingSwap isLoading={isSubmitting}>Sign Up</LoadingSwap>
+          <LoadingSwap isLoading={isSubmitting}>{t("signUp")}</LoadingSwap>
         </Button>
       </form>
     </Form>

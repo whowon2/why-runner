@@ -90,7 +90,7 @@ export function ProblemsList() {
     <div className="w-full max-w-7xl flex-1 flex flex-col gap-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="font-bold text-2xl">Problems</h1>
+        <h1 className="font-bold text-2xl">{t("title")}</h1>
         <div className="flex gap-2">
           <ImportProblems />
           <Link href={"/problems/new"}>
@@ -104,7 +104,7 @@ export function ProblemsList() {
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder={t("Filters.searchPlaceholder") || "Search problems..."}
+            placeholder={t("Filters.searchPlaceholder")}
             className="pl-9"
             defaultValue={search} // Use defaultValue to prevent re-render on every keystroke
             // Ideally, debounce this updateFilter call
@@ -162,7 +162,7 @@ export function ProblemsList() {
         <div className="flex flex-col gap-2">
           {problems.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground border rounded-lg border-dashed">
-              No problems found matching your filters.
+              {t("noResults")}
             </div>
           ) : (
             <div className={isPlaceholderData ? "opacity-50" : ""}>
@@ -183,9 +183,11 @@ export function ProblemsList() {
       {totalCount > 0 && (
         <div className="flex items-center justify-between py-4">
           <div className="text-sm text-muted-foreground">
-            Showing <strong>{(page - 1) * ITEMS_PER_PAGE + 1}</strong>-
-            <strong>{Math.min(page * ITEMS_PER_PAGE, totalCount)}</strong> of{" "}
-            <strong>{totalCount}</strong>
+            {t("pagination.showing", {
+              from: (page - 1) * ITEMS_PER_PAGE + 1,
+              to: Math.min(page * ITEMS_PER_PAGE, totalCount),
+              total: totalCount,
+            })}
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -197,7 +199,7 @@ export function ProblemsList() {
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <div className="text-sm font-medium">
-              Page {page} of {totalPages}
+              {t("pagination.page", { page, totalPages })}
             </div>
             <Button
               variant="outline"

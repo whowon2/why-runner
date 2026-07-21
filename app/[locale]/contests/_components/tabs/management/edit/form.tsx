@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -30,6 +31,8 @@ export function EditContestForm({
     problems: ProblemOnContest[];
   };
 }) {
+  const t = useTranslations("ContestsPage.Tabs.Management.EditContest");
+  const tCreate = useTranslations("ContestsPage.createDialog");
   const { mutate: updateContest, isPending } = useUpdateContest();
   const queryClient = useQueryClient();
 
@@ -50,10 +53,10 @@ export function EditContestForm({
       },
       {
         onError: (error) => {
-          toast.error("Fail to update", { description: error.message });
+          toast.error(t("failedUpdate"), { description: error.message });
         },
         onSuccess: () => {
-          toast.success("Updated");
+          toast.success(t("updated"));
 
           form.reset(values);
 
@@ -73,16 +76,16 @@ export function EditContestForm({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{t("nameLabel")}</FormLabel>
               <FormControl>
-                <Input placeholder="Do You Have Brio 2024" {...field} />
+                <Input placeholder={tCreate("namePlaceholder")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button disabled={isPending || !form.formState.isDirty} type="submit">
-          {isPending ? <Loader className="animate-spin" /> : "Save"}
+          {isPending ? <Loader className="animate-spin" /> : t("save")}
         </Button>
       </form>
     </Form>

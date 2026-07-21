@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "better-auth";
 import { Save } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -32,6 +33,7 @@ const updateProfileSchema = z.object({
 });
 
 export function UpdateForm({ user }: { user: User }) {
+  const t = useTranslations("UserForm");
   const form = useForm<z.infer<typeof updateProfileSchema>>({
     defaultValues: {
       image: user.image ?? "",
@@ -45,17 +47,17 @@ export function UpdateForm({ user }: { user: User }) {
   async function onSubmit(values: z.infer<typeof updateProfileSchema>) {
     updateUser(values, {
       onError() {
-        toast("Failed to update profile");
+        toast(t("failedUpdate"));
       },
       async onSuccess() {
-        toast("Profile updated");
+        toast(t("updated"));
       },
     });
   }
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profile</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -65,13 +67,11 @@ export function UpdateForm({ user }: { user: User }) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>{t("username")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder={t("usernamePlaceholder")} {...field} />
                   </FormControl>
-                  <FormDescription>
-                    This is your public display name.
-                  </FormDescription>
+                  <FormDescription>{t("usernameDescription")}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -81,14 +81,14 @@ export function UpdateForm({ user }: { user: User }) {
               name="image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Avatar URL</FormLabel>
+                  <FormLabel>{t("avatarUrl")}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="https://example.com/avatar.png"
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>This is your public avatar.</FormDescription>
+                  <FormDescription>{t("avatarDescription")}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -105,7 +105,7 @@ export function UpdateForm({ user }: { user: User }) {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Save Profile</p>
+                  <p>{t("saveProfile")}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

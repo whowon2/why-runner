@@ -1,7 +1,7 @@
 "use client";
 
-import { type ComponentProps, type ReactNode, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { type ComponentProps, type ReactNode, useTransition } from "react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -34,7 +34,7 @@ export function ActionButton({
     startTransition(async () => {
       const data = await action();
       if (data.error) {
-        toast.error(data.message ?? "Error");
+        toast.error(data.message ?? t("genericError"));
       } else if (data.message) {
         toast.success(data.message);
       }

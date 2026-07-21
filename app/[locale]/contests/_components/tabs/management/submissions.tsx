@@ -19,22 +19,27 @@ export function ContestSubmissions({ contest }: { contest: Contest }) {
     contestId: contest.id,
   });
   const t = useTranslations("ContestsPage.Tabs.Management");
+  const tTable = useTranslations(
+    "ContestsPage.Tabs.Management.SubmissionsTable",
+  );
 
   return (
     <Card className="">
       <CardHeader>
-        <CardTitle>Submissions ({submissions?.length ?? 0})</CardTitle>
+        <CardTitle>
+          {tTable("title", { count: submissions?.length ?? 0 })}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>User</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Problem</TableHead>
-              <TableHead>Code</TableHead>
+              <TableHead>{tTable("id")}</TableHead>
+              <TableHead>{tTable("user")}</TableHead>
+              <TableHead>{tTable("status")}</TableHead>
+              <TableHead>{tTable("date")}</TableHead>
+              <TableHead>{tTable("problem")}</TableHead>
+              <TableHead>{tTable("code")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

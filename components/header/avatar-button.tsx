@@ -73,7 +73,7 @@ export function AvatarButton({ user }: { user: User }) {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => authClient.signOut()}>
           <LogOut />
-          <span>Log out</span>
+          <span>{t("AvatarButton.logout")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

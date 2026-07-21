@@ -5,10 +5,8 @@ import {
   Bot,
   Code2,
   GraduationCap,
-  Layers,
   Lock,
   Sparkles,
-  Terminal,
   Trophy,
   Zap,
 } from "lucide-react";
@@ -32,7 +30,7 @@ export default function Home() {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border/50 text-sm font-medium mb-8 backdrop-blur-md animate-in fade-in slide-in-from-bottom-4 duration-500">
           <Sparkles className="w-4 h-4 text-indigo-500" />
           <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-500 to-cyan-500 font-semibold">
-            The Future of Competitive Programming
+            {t("hero.badge")}
           </span>
         </div>
 
@@ -46,8 +44,7 @@ export default function Home() {
         </div>
 
         <p className="mt-6 text-xl text-muted-foreground max-w-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
-          A premium algorithmic platform designed to empower students,
-          instructors, and developers world-wide.
+          {t("hero.description")}
         </p>
 
         {/* Navigation Buttons */}
@@ -72,7 +69,7 @@ export default function Home() {
         </div>
 
         <div className="absolute bottom-10 animate-bounce cursor-pointer opacity-70 hover:opacity-100 transition-opacity">
-          <a href="#example" aria-label="Scroll down">
+          <a href="#example" aria-label={t("hero.scrollDown")}>
             <ArrowDown className="w-6 h-6" />
           </a>
         </div>

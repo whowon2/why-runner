@@ -132,7 +132,7 @@ export function UserDock() {
             </DockIcon>
           ) : (
             <Link href={"/auth/signin"}>
-              <Button variant={"outline"}>Login</Button>
+              <Button variant={"outline"}>{t("Dock.login")}</Button>
             </Link>
           )}
         </Dock>

@@ -1,4 +1,15 @@
 {
+  "Common": {
+    "close": "Fechar",
+    "error": "Erro",
+    "loading": "Carregando..."
+  },
+  "ErrorPage": {
+    "title": "Algo deu errado",
+    "connectError": "Não foi possível conectar ao banco de dados. Por favor, tente novamente mais tarde.",
+    "genericError": "Ocorreu um erro inesperado.",
+    "tryAgain": "Tentar novamente"
+  },
   "ToolTips": {
     "open-file": "Abrir Arquivo",
     "save": "Salvar no navegador",
@@ -7,12 +18,18 @@
   "Dock": {
     "home": "Página Inicial",
     "problems": "Problemas",
-    "contests": "Torneios"
+    "contests": "Torneios",
+    "login": "Entrar"
   },
   "HomePage": {
     "buttons": {
       "contests": "Torneios",
       "problems": "Problemas"
+    },
+    "hero": {
+      "badge": "O Futuro da Programação Competitiva",
+      "description": "Uma plataforma algorítmica premium feita para capacitar alunos, instrutores e desenvolvedores no mundo todo.",
+      "scrollDown": "Rolar para baixo"
     },
     "landing": {
       "submission": {
@@ -71,8 +88,42 @@
     }
   },
   "ProblemsPage": {
+    "title": "Problemas",
+    "noResults": "Nenhum problema encontrado com os filtros atuais.",
+    "notFound": "Problema não encontrado",
+    "pagination": {
+      "showing": "Mostrando {from}-{to} de {total}",
+      "page": "Página {page} de {totalPages}"
+    },
     "Create": {
-      "button": "Novo Problema"
+      "button": "Novo Problema",
+      "pageTitle": "Criar Problema",
+      "editTab": "Editar Problema",
+      "previewTab": "Pré-visualização",
+      "titleLabel": "Título",
+      "titlePlaceholder": "1 2 3",
+      "descriptionLabel": "Descrição",
+      "markdownSupport": "Suporta Markdown & LaTeX",
+      "descriptionPlaceholder": "Considere um algoritmo que recebe como entrada um número inteiro positivo n.",
+      "difficultyLabel": "Dificuldade",
+      "difficultyPlaceholder": "Selecione uma dificuldade",
+      "difficultyRequired": "Dificuldade é obrigatória",
+      "examplesShown": "Exemplos mostrados aos participantes",
+      "inputLabel": "Entrada {n}",
+      "outputLabel": "Saída {n}",
+      "inputOutputPlaceholder": "1 2 3",
+      "addInputOutput": "+ Adicionar Entrada / Saída",
+      "creating": "Criando...",
+      "submit": "Criar Problema",
+      "untitled": "Problema Sem Título",
+      "normal": "NORMAL",
+      "examplesTitle": "Exemplos",
+      "noDescription": "*(Nenhuma descrição fornecida. Edite o problema para adicionar instruções.)*",
+      "errorOccurred": "Ocorreu um erro",
+      "createdSuccess": "Problema criado com sucesso!",
+      "sharedToFeed": "Compartilhado no seu feed de atividades!",
+      "shareTitle": "Compartilhe seu novo Problema",
+      "defaultTitle": "um novo problema"
     },
     "Filters": {
       "searchPlaceholder": "Pesquisar problemas...",
@@ -89,16 +140,56 @@
       }
     }
   },
+  "ImportProblems": {
+    "button": "Importar JSON",
+    "success": "{count, plural, one {# problema importado} other {# problemas importados}}",
+    "failed": "Falha ao importar",
+    "invalidJson": "Arquivo JSON inválido"
+  },
   "ContestsPage": {
     "title": "Torneios",
+    "subtitle": "Encontre os melhores torneios e teste suas habilidades.",
+    "myContests": "Meus Torneios",
+    "searchPlaceholder": "Pesquisar torneios por nome...",
+    "noContestsFound": "Nenhum torneio encontrado",
+    "noContestsSearch": "Não encontramos nenhum torneio correspondente a \"{search}\". Tente ajustar sua pesquisa.",
+    "noContestsAvailable": "Nenhum torneio disponível ainda.",
+    "clearSearch": "Limpar Pesquisa",
     "notFound": "Nenhum torneio encontrado",
     "backToList": "Voltar para a lista de torneios",
+    "filter": {
+      "placeholder": "Todos os Status",
+      "all": "Qualquer Status",
+      "upcoming": "Em Breve",
+      "active": "Ativo",
+      "past": "Encerrado"
+    },
+    "badge": {
+      "Upcoming": "Em Breve",
+      "Active": "Ativo",
+      "Past": "Encerrado"
+    },
+    "pagination": {
+      "showing": "Mostrando {from} a {to} de {total} torneios",
+      "page": "Página {page} de {totalPages}"
+    },
     "createDialog": {
       "button": "Criar Torneio",
       "title": "Criar Torneio",
       "name": "Nome",
+      "namePlaceholder": "Do You Have Brio 2024",
       "date": "Data e Hora",
       "duration": "Duração",
+      "nameMinError": "O nome deve ter pelo menos 2 caracteres",
+      "startDateFutureError": "A data de início deve ser no futuro",
+      "durationRequiredError": "A duração deve ser definida",
+      "problemsRequiredError": "Você deve selecionar pelo menos um problema",
+      "failedCreate": "Falha ao criar torneio",
+      "created": "Torneio Criado",
+      "sharedToFeed": "Compartilhado no seu feed de atividades!",
+      "shareTitle": "Compartilhe seu novo Torneio",
+      "shareDescription": "Deixe seus seguidores saberem que você criou \"{name}\"!",
+      "defaultName": "um novo torneio",
       "steps": {
         "basicInfo": "Informações",
         "problems": "Problemas",
@@ -160,6 +251,18 @@
         },
         "Submissions": {
           "title": "Submissões",
+          "noSubmissions": "Nenhuma submissão!",
+          "unknownError": "Estado de erro desconhecido",
+          "empty": "Vazio",
+          "noOutput": "Nenhuma saída disponível",
+          "allTestsPassed": "🎉 Todos os {count} testes passaram!",
+          "failedOn": "❌ Falhou no Caso de Teste #{index}",
+          "passedCount": "(Passou {passed}/{total})",
+          "inputLabel": "Entrada",
+          "yourOutputLabel": "Sua Saída",
+          "expectedOutputLabel": "Saída Esperada",
+          "errorLog": "Log de Erro (Stderr)",
+          "processing": "Processando...",
           "AI": {
             "title": "Assistente de IA",
             "description": "Receba ajuda da nossa IA para entender por que sua solução pode estar falhando ou no que melhorar. A IA analisará seu código com base no problema e na sua solução e fornecerá sugestões.",
@@ -169,6 +272,19 @@
             "request": "Solicitar Ajuda",
             "error": "Ocorreu um erro ao tentar obter ajuda da IA. Por favor, tente novamente mais tarde.",
             "noResponse": "A IA não forneceu uma resposta. Por favor, tente novamente."
+          },
+          "Upload": {
+            "languagePlaceholder": "Linguagem",
+            "selectLanguage": "Por favor, selecione uma linguagem",
+            "emptyCode": "Você não pode enviar código vazio",
+            "failedSubmit": "Falha ao enviar código",
+            "submitted": "Código Enviado",
+            "invalidExtension": "Extensão de arquivo inválida",
+            "expectedExtensions": "Esperado: {extensions}",
+            "codeSaved": "Código salvo com sucesso!",
+            "noCodeToSave": "Nenhum código para salvar!",
+            "loadSavedPrompt": "Deseja carregar o código salvo?",
+            "load": "Carregar"
           }
         }
       },
@@ -198,7 +314,59 @@
         "submissions": "Submissões",
         "dangerZone": "Zona de Perigo",
         "deleteContest": "Excluir Torneio",
-        "deleteWarning": "Uma vez que você excluir um torneio, não há como voltar atrás. Por favor, tenha certeza."
+        "deleteWarning": "Uma vez que você excluir um torneio, não há como voltar atrás. Por favor, tenha certeza.",
+        "PendingJoins": {
+          "title": "Solicitações de Entrada Pendentes ({count})",
+          "approve": "Aprovar",
+          "reject": "Rejeitar",
+          "approveSuccess": "Participante aprovado.",
+          "rejectSuccess": "Participante rejeitado."
+        },
+        "Participants": {
+          "title": "Participantes ({count})"
+        },
+        "DeleteContest": {
+          "button": "Excluir Torneio",
+          "dialogTitle": "Excluir este torneio?",
+          "dialogDescription": "Esta ação não pode ser desfeita. Todos os problemas, submissões e participantes serão removidos.",
+          "cancel": "Cancelar",
+          "confirm": "Excluir",
+          "success": "Torneio excluído",
+          "error": "Falha ao excluir torneio"
+        },
+        "Problems": {
+          "placeholder": "Problema",
+          "create": "Criar",
+          "saveOrder": "Salvar Ordem",
+          "addSuccess": "Problema adicionado",
+          "addError": "Falha ao adicionar problema",
+          "removeSuccess": "Problema removido",
+          "removeError": "Falha ao remover problema",
+          "orderSaved": "Ordem salva",
+          "orderError": "Falha ao salvar ordem"
+        },
+        "SubmissionsTable": {
+          "title": "Submissões ({count})",
+          "id": "ID",
+          "user": "Usuário",
+          "status": "Status",
+          "date": "Data",
+          "problem": "Problema",
+          "code": "Código"
+        },
+        "EditContest": {
+          "contestSection": "Torneio",
+          "nameLabel": "Nome",
+          "save": "Salvar",
+          "failedUpdate": "Falha ao atualizar torneio",
+          "updated": "Torneio atualizado"
+        },
+        "Export": {
+          "button": "Exportar Resultados (CSV)",
+          "success": "Resultados exportados",
+          "failed": "Falha ao exportar",
+          "unknownError": "Erro desconhecido"
+        }
       }
     }
   },
@@ -222,7 +390,8 @@
     "profile": "Perfil",
     "problems": "Problemas",
     "contests": "Torneios",
-    "theme": "Tema"
+    "theme": "Tema",
+    "logout": "Sair"
   },
   "NotFound": {
     "title": "Página não encontrada",
@@ -242,7 +411,50 @@
     "title": "Tem certeza?",
     "description": "Esta ação não pode ser desfeita.",
     "cancel": "Cancelar",
-    "confirm": "Sim"
+    "confirm": "Sim",
+    "genericError": "Erro"
+  },
+  "Auth": {
+    "signIn": "Entrar",
+    "signUp": "Cadastrar",
+    "verifyEmail": "Verifique Seu Email",
+    "forgotPassword": "Esqueci Minha Senha",
+    "name": "Nome",
+    "email": "Email",
+    "password": "Senha",
+    "forgotPasswordLink": "Esqueceu a senha?",
+    "failedSignIn": "Falha ao entrar",
+    "failedSignUp": "Falha ao cadastrar"
+  },
+  "PasswordInput": {
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha",
+    "strengthAriaLabel": "Força da Senha",
+    "strengthLabel": "Força da senha",
+    "loadingStrength": "Carregando verificador de força",
+    "veryWeak": "Muito fraca",
+    "weak": "Fraca",
+    "strong": "Forte",
+    "veryStrong": "Muito forte"
+  },
+  "UserForm": {
+    "title": "Perfil",
+    "username": "Nome de usuário",
+    "usernamePlaceholder": "shadcn",
+    "usernameDescription": "Este é seu nome de exibição público.",
+    "avatarUrl": "URL do Avatar",
+    "avatarDescription": "Este é seu avatar público.",
+    "saveProfile": "Salvar Perfil",
+    "failedUpdate": "Falha ao atualizar perfil",
+    "updated": "Perfil atualizado"
+  },
+  "ProfilePage": {
+    "avatarAlt": "avatar",
+    "defaultBio": "Programador competitivo e entusiasta de lógica algorítmica. Construindo o futuro um caso de teste de cada vez. Sempre disposto a aprender novas estruturas de dados e otimizar o tempo de execução.",
+    "joined": "Entrou em",
+    "contests": "Torneios",
+    "problems": "Problemas",
+    "globalRank": "Ranking Global"
   },
   "UserPage": {
     "Feed": {

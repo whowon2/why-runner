@@ -1,13 +1,15 @@
 "use client";
 
-import { Upload, Loader } from "lucide-react";
-import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { Loader, Upload } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { importProblems } from "@/lib/actions/problems/import-problems";
 
 export function ImportProblems() {
+  const t = useTranslations("ImportProblems");
   const fileRef = useRef<HTMLInputElement>(null);
   const [isPending, setIsPending] = useState(false);
   const queryClient = useQueryClient();
@@ -21,11 +23,11 @@ export function ImportProblems() {
       const text = await file.text();
       const data = JSON.parse(text);
       const count = await importProblems(data);
-      toast.success(`${count} problem${count !== 1 ? "s" : ""} imported`);
+      toast.success(t("success", { count }));
       queryClient.invalidateQueries({ queryKey: ["problems"] });
     } catch (err) {
-      toast.error("Import failed", {
-        description: err instanceof Error ? err.message : "Invalid JSON file",
+      toast.error(t("failed"), {
+        description: err instanceof Error ? err.message : t("invalidJson"),
       });
     } finally {
       setIsPending(false);
@@ -48,7 +50,7 @@ export function ImportProblems() {
         onClick={() => fileRef.current?.click()}
       >
         {isPending ? <Loader className="animate-spin" /> : <Upload />}
-        Import JSON
+        {t("button")}
       </Button>
     </>
   );

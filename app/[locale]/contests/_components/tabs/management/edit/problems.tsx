@@ -2,6 +2,7 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, Loader, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -32,8 +33,10 @@ export function EditContestProblems({
     problems: ProblemOnContest[];
   };
 }) {
+  const t = useTranslations("ContestsPage.Tabs.Management.Problems");
   const { data: problems } = useProblems({ page: 1, pageSize: 10 });
-  const { mutate: addProblem, isPending: isAddPending } = useAddProblemToContest();
+  const { mutate: addProblem, isPending: isAddPending } =
+    useAddProblemToContest();
   const queryClient = useQueryClient();
   const pathname = usePathname();
   const canReorder = new Date() < contest.startDate;
@@ -59,10 +62,12 @@ export function EditContestProblems({
     setIsSaving(true);
     try {
       await reorderProblems(contest.id, localOrder);
-      toast.success("Order saved");
-      queryClient.invalidateQueries({ queryKey: ["contest", String(contest.id)] });
+      toast.success(t("orderSaved"));
+      queryClient.invalidateQueries({
+        queryKey: ["contest", String(contest.id)],
+      });
     } catch (e) {
-      toast.error("Failed to save order", {
+      toast.error(t("orderError"), {
         description: e instanceof Error ? e.message : String(e),
       });
     } finally {
@@ -78,10 +83,10 @@ export function EditContestProblems({
       { contestId: contest.id, problemId: id },
       {
         onError(error) {
-          toast.error("Failed to add problem", { description: error.message });
+          toast.error(t("addError"), { description: error.message });
         },
         onSuccess() {
-          toast.success("Problem added");
+          toast.success(t("addSuccess"));
           queryClient.invalidateQueries({
             queryKey: ["contest", String(contest.id)],
           });
@@ -93,9 +98,13 @@ export function EditContestProblems({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex w-full gap-2">
-        <Select disabled={isAddPending} onValueChange={handleProblemSelect} value={""}>
+        <Select
+          disabled={isAddPending}
+          onValueChange={handleProblemSelect}
+          value={""}
+        >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Problem" />
+            <SelectValue placeholder={t("placeholder")} />
           </SelectTrigger>
           <SelectContent>
             {problems?.data
@@ -110,7 +119,7 @@ export function EditContestProblems({
           </SelectContent>
         </Select>
         <Link href={`/problems/new?callback=${pathname}`}>
-          <Button type="button">Create</Button>
+          <Button type="button">{t("create")}</Button>
         </Link>
       </div>
 
@@ -147,7 +156,10 @@ export function EditContestProblems({
                   </Button>
                 </>
               )}
-              <RemoveProblemButton contest={contest} problem={probOnCont.problem} />
+              <RemoveProblemButton
+                contest={contest}
+                problem={probOnCont.problem}
+              />
             </div>
           </div>
         ))}
@@ -155,7 +167,7 @@ export function EditContestProblems({
 
       {canReorder && orderChanged && (
         <Button onClick={handleSaveOrder} disabled={isSaving}>
-          {isSaving ? <Loader className="animate-spin" /> : "Save Order"}
+          {isSaving ? <Loader className="animate-spin" /> : t("saveOrder")}
         </Button>
       )}
     </div>
@@ -169,6 +181,7 @@ function RemoveProblemButton({
   problem: ProblemPreview;
   contest: Contest;
 }) {
+  const t = useTranslations("ContestsPage.Tabs.Management.Problems");
   const { mutate: removeProblem, isPending: isRemovePending } =
     useRemoveProblemFromContest();
   const queryClient = useQueryClient();
@@ -178,10 +191,10 @@ function RemoveProblemButton({
       { contestId: contest.id, problemId: id },
       {
         onError(error) {
-          toast.error("Failed to remove problem", { description: error.message });
+          toast.error(t("removeError"), { description: error.message });
         },
         onSuccess() {
-          toast.success("Problem removed");
+          toast.success(t("removeSuccess"));
           queryClient.invalidateQueries({
             queryKey: ["contest", String(contest.id)],
           });

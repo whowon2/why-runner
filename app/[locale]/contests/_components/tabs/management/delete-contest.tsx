@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -18,16 +19,17 @@ import { useDeleteContest } from "@/hooks/use-delete-contest";
 import { useRouter } from "@/i18n/navigation";
 
 export function DeleteContest({ contestId }: { contestId: string }) {
+  const t = useTranslations("ContestsPage.Tabs.Management.DeleteContest");
   const { mutate: deleteContest, isPending } = useDeleteContest();
   const router = useRouter();
 
   function handleDelete() {
     deleteContest(contestId, {
       onError(error) {
-        toast.error("Failed to delete contest", { description: error.message });
+        toast.error(t("error"), { description: error.message });
       },
       onSuccess() {
-        toast.success("Contest deleted");
+        toast.success(t("success"));
         router.push("/contests");
       },
     });
@@ -42,19 +44,21 @@ export function DeleteContest({ contestId }: { contestId: string }) {
           ) : (
             <Trash2 className="mr-2 h-4 w-4" />
           )}
-          Delete Contest
+          {t("button")}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete this contest?</AlertDialogTitle>
+          <AlertDialogTitle>{t("dialogTitle")}</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. All problems, submissions, and participants will be removed.
+            {t("dialogDescription")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+          <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete}>
+            {t("confirm")}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

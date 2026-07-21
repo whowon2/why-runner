@@ -8,15 +8,17 @@ import { ProblemExamples } from "./examples";
 
 export function ProblemDescription({ problemId }: { problemId: string }) {
   const t = useTranslations("ContestsPage");
+  const tCommon = useTranslations("Common");
+  const tProblems = useTranslations("ProblemsPage");
 
   const { data: problem, isPending } = useProblem(problemId);
 
   if (isPending) {
-    return <div>Loading...</div>;
+    return <div>{tCommon("loading")}</div>;
   }
 
   if (!problem) {
-    return <div>Problem not found</div>;
+    return <div>{tProblems("notFound")}</div>;
   }
 
   return (

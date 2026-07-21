@@ -60,18 +60,16 @@ export function ContestList() {
               <Trophy className="w-8 h-8 text-indigo-500" />
             </span>
             <span className="bg-clip-text text-transparent bg-linear-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-              {t("title") || "Contests"}
+              {t("title")}
             </span>
           </h1>
-          <p className="text-muted-foreground text-lg">
-            Find the best contests and test your skills.
-          </p>
+          <p className="text-muted-foreground text-lg">{t("subtitle")}</p>
         </div>
         <Button
           asChild
           className="shrink-0 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-indigo-500/25 rounded-full px-6 transition-all hover:scale-105 active:scale-95 border-0"
         >
-          <Link href={"/user?tab=contests"}>My Contests</Link>
+          <Link href={"/user?tab=contests"}>{t("myContests")}</Link>
         </Button>
       </div>
 
@@ -82,7 +80,7 @@ export function ContestList() {
             <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-indigo-500 transition-colors" />
           </div>
           <Input
-            placeholder="Search contests by name..."
+            placeholder={t("searchPlaceholder")}
             className="pl-11 h-12 text-base rounded-2xl bg-muted/30 border-muted-foreground/20 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500 shadow-sm transition-all w-full"
             value={search}
             onChange={(e) => {
@@ -100,26 +98,26 @@ export function ContestList() {
             }}
           >
             <SelectTrigger className="w-full h-12! rounded-2xl bg-muted/30 border-muted-foreground/20 focus:ring-indigo-500/50">
-              <SelectValue placeholder="All Status" />
+              <SelectValue placeholder={t("filter.placeholder")} />
             </SelectTrigger>
             <SelectContent className="rounded-xl border-muted-foreground/20 p-1">
               <SelectItem value="all" className="rounded-lg">
-                Any Status
+                {t("filter.all")}
               </SelectItem>
               <SelectItem
                 value="upcoming"
                 className="rounded-lg text-emerald-600 dark:text-emerald-400"
               >
-                Upcoming
+                {t("filter.upcoming")}
               </SelectItem>
               <SelectItem
                 value="active"
                 className="rounded-lg text-amber-600 dark:text-amber-500"
               >
-                Active
+                {t("filter.active")}
               </SelectItem>
               <SelectItem value="past" className="rounded-lg text-neutral-500">
-                Past
+                {t("filter.past")}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -145,15 +143,12 @@ export function ContestList() {
                   <Search className="h-8 w-8 text-muted-foreground" />
                 </div>
                 <h3 className="text-lg font-semibold mb-1">
-                  No contests found
+                  {t("noContestsFound")}
                 </h3>
                 <p className="text-muted-foreground max-w-sm">
                   {search
-                    ? `We couldn't find any contests matching "${search}". Try adjusting your search.`
-                    : t("notFound")?.replace(
-                        "not found",
-                        "No contests available yet.",
-                      ) || "No contests available yet."}
+                    ? t("noContestsSearch", { search })
+                    : t("noContestsAvailable")}
                 </p>
                 {search && (
                   <Button
@@ -164,7 +159,7 @@ export function ContestList() {
                       setPage(1);
                     }}
                   >
-                    Clear Search
+                    {t("clearSearch")}
                   </Button>
                 )}
               </div>
@@ -192,15 +187,11 @@ export function ContestList() {
       {!isPending && totalCount > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between py-6 border-t gap-4">
           <div className="text-sm font-medium text-muted-foreground bg-muted/30 px-4 py-2 rounded-full">
-            Showing{" "}
-            <span className="text-foreground">
-              {(page - 1) * ITEMS_PER_PAGE + 1}
-            </span>{" "}
-            to{" "}
-            <span className="text-foreground">
-              {Math.min(page * ITEMS_PER_PAGE, totalCount)}
-            </span>{" "}
-            of <span className="text-foreground">{totalCount}</span> contests
+            {t("pagination.showing", {
+              from: (page - 1) * ITEMS_PER_PAGE + 1,
+              to: Math.min(page * ITEMS_PER_PAGE, totalCount),
+              total: totalCount,
+            })}
           </div>
           <div className="flex items-center gap-3">
             <Button
@@ -213,7 +204,7 @@ export function ContestList() {
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <div className="text-sm font-semibold min-w-24 text-center">
-              Page {page} of {totalPages}
+              {t("pagination.page", { page, totalPages })}
             </div>
             <Button
               variant="outline"

@@ -2,6 +2,7 @@
 
 import { zxcvbn, zxcvbnOptions } from "@zxcvbn-ts/core";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   type ChangeEvent,
   type ComponentProps,
@@ -38,6 +39,7 @@ export function PasswordInput({
 }: Omit<ComponentProps<typeof Input>, "type"> & {
   children?: ReactNode;
 }) {
+  const t = useTranslations("PasswordInput");
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState(defaultValue ?? "");
 
@@ -67,7 +69,7 @@ export function PasswordInput({
             >
               <Icon className="size-4.5" />
               <span className="sr-only">
-                {showPassword ? "Hide password" : "Show password"}
+                {showPassword ? t("hidePassword") : t("showPassword")}
               </span>
             </InputGroupButton>
           </InputGroupAddon>
@@ -79,6 +81,7 @@ export function PasswordInput({
 }
 
 export function PasswordInputStrengthChecker() {
+  const t = useTranslations("PasswordInput");
   const [optionsLoaded, setOptionsLoaded] = useState(false);
   const [errorLoadingOptions, setErrorLoadingOptions] = useState(false);
 
@@ -113,20 +116,20 @@ export function PasswordInputStrengthChecker() {
   }, []);
 
   function getLabel() {
-    if (deferredPassword.length === 0) return "Password strength";
-    if (!optionsLoaded) return "Loading strength checker";
+    if (deferredPassword.length === 0) return t("strengthLabel");
+    if (!optionsLoaded) return t("loadingStrength");
 
     const score = strengthResult.score;
     switch (score) {
       case 0:
       case 1:
-        return "Very weak";
+        return t("veryWeak");
       case 2:
-        return "Weak";
+        return t("weak");
       case 3:
-        return "Strong";
+        return t("strong");
       case 4:
-        return "Very strong";
+        return t("veryStrong");
       default:
         throw new Error(`Invalid score: ${score satisfies never}`);
     }
@@ -140,7 +143,7 @@ export function PasswordInputStrengthChecker() {
     <div className="space-y-0.5">
       <div
         role="progressbar"
-        aria-label="Password Strength"
+        aria-label={t("strengthAriaLabel")}
         aria-valuenow={strengthResult.score}
         aria-valuemin={0}
         aria-valuemax={4}
