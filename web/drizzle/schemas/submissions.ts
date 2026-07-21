@@ -35,7 +35,7 @@ export const submission = pgTable("submission", {
   retryCount: integer("retry_count").default(0).notNull(),
   code: text("code").notNull(),
   language: Language(),
-  questionLetter: text("question_letter").notNull(),
+  questionLetter: text("question_letter"),
   output: text("output"),
   userId: text("user_id")
     .notNull()
@@ -43,7 +43,7 @@ export const submission = pgTable("submission", {
   problemId: uuid("problem_id")
     .notNull()
     .references(() => problem.id, { onDelete: "cascade" }),
-  contestId: uuid("contest_id").notNull(),
+  contestId: uuid("contest_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()

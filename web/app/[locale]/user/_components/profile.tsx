@@ -5,13 +5,16 @@ import { Calendar, Link as LinkIcon, MapPin } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProfile } from "@/hooks/use-profile";
+import { useUserSkills } from "@/hooks/use-user-skills";
 
 export default function Profile({ user }: { user: User }) {
   const t = useTranslations("ProfilePage");
   const { data, isPending } = useProfile(user.id);
+  const { data: skills } = useUserSkills(user.id);
 
   if (isPending) {
     return (
@@ -128,6 +131,42 @@ export default function Profile({ user }: { user: User }) {
               </span>
             </div>
           </div>
+
+          {/* Skills */}
+          {skills &&
+            (skills.themeSkills.length > 0 ||
+              skills.languageSkills.length > 0) && (
+              <div className="flex flex-col gap-4 pt-6 border-t">
+                {skills.themeSkills.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                      {t("Skills.themesTitle")}
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {skills.themeSkills.map((s) => (
+                        <Badge key={s.theme} variant="outline">
+                          {s.theme}: {s.value}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {skills.languageSkills.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                      {t("Skills.languagesTitle")}
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {skills.languageSkills.map((s) => (
+                        <Badge key={s.language} variant="outline">
+                          {s.language}: {s.value}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
         </div>
       </CardContent>
     </Card>

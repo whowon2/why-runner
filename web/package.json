@@ -12,7 +12,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
-    "db:seed": "bun drizzle/seed.ts"
+    "db:seed": "bun drizzle/seed.ts",
+    "db:seed:lessons": "bun drizzle/seed-lessons.ts"
   },
   "dependencies": {
     "@google/genai": "^1.33.0",

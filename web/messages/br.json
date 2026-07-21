@@ -19,6 +19,7 @@
     "home": "Página Inicial",
     "problems": "Problemas",
     "contests": "Torneios",
+    "roadmap": "Trilha",
     "login": "Entrar"
   },
   "HomePage": {
@@ -138,6 +139,26 @@
         "undefined": "todas",
         "null": "todas"
       }
+    }
+  },
+  "RoadmapPage": {
+    "title": "Trilha",
+    "subtitle": "Aprenda programação competitiva passo a passo. Passe em uma lição em qualquer linguagem para ganhar habilidade.",
+    "loading": "Carregando trilha...",
+    "empty": "Nenhuma lição disponível ainda.",
+    "completed": "Concluída",
+    "notFound": "Lição não encontrada",
+    "backToRoadmap": "Voltar para a trilha",
+    "themes": {
+      "strings": "Strings",
+      "arrays": "Vetores",
+      "loops": "Laços",
+      "conditionals": "Condicionais"
+    },
+    "Lesson": {
+      "primaryLanguage": "Linguagem sugerida: {language}",
+      "anyLanguage": "Você pode enviar em qualquer linguagem.",
+      "submissionsTitle": "Envios"
     }
   },
   "ImportProblems": {
@@ -459,7 +480,11 @@
     "joined": "Entrou em",
     "contests": "Torneios",
     "problems": "Problemas",
-    "globalRank": "Ranking Global"
+    "globalRank": "Ranking Global",
+    "Skills": {
+      "themesTitle": "Habilidades por Tema",
+      "languagesTitle": "Habilidades por Linguagem"
+    }
   },
   "UserPage": {
     "Feed": {

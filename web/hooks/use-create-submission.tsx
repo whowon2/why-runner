@@ -2,7 +2,10 @@ import { useMutation } from "@tanstack/react-query";
 import type { submission } from "@/drizzle/schema";
 import { createSubmission } from "@/lib/actions/problems/create-submission";
 
-type CreateSubmissionInput = typeof submission.$inferInsert;
+type CreateSubmissionInput = typeof submission.$inferInsert & {
+  contestId: string;
+  questionLetter: string;
+};
 
 export const useCreateSubmission = () =>
   useMutation({

@@ -1,6 +1,6 @@
 "use client";
 
-import { HomeIcon, Moon, ScrollText, Sun, Trophy } from "lucide-react";
+import { GraduationCap, HomeIcon, Moon, ScrollText, Sun, Trophy } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -46,6 +46,7 @@ export function UserDock() {
       { href: "/", icon: HomeIcon, label: t("Dock.home") },
       { href: "/contests", icon: Trophy, label: t("Dock.contests") },
       { href: "/problems", icon: ScrollText, label: t("Dock.problems") },
+      { href: "/roadmap", icon: GraduationCap, label: t("Dock.roadmap") },
     ],
     contact: {
       social: {

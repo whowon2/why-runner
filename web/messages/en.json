@@ -19,6 +19,7 @@
     "home": "Home",
     "problems": "Problems",
     "contests": "Contests",
+    "roadmap": "Roadmap",
     "login": "Login"
   },
   "HomePage": {
@@ -139,6 +140,26 @@
         "undefined": "all",
         "null": "all"
       }
+    }
+  },
+  "RoadmapPage": {
+    "title": "Roadmap",
+    "subtitle": "Learn competitive programming step by step. Pass a lesson in any language to earn skill.",
+    "loading": "Loading roadmap...",
+    "empty": "No lessons available yet.",
+    "completed": "Completed",
+    "notFound": "Lesson not found",
+    "backToRoadmap": "Back to roadmap",
+    "themes": {
+      "strings": "Strings",
+      "arrays": "Arrays",
+      "loops": "Loops",
+      "conditionals": "Conditionals"
+    },
+    "Lesson": {
+      "primaryLanguage": "Suggested language: {language}",
+      "anyLanguage": "You may submit in any language.",
+      "submissionsTitle": "Submissions"
     }
   },
   "ImportProblems": {
@@ -460,7 +481,11 @@
     "joined": "Joined",
     "contests": "Contests",
     "problems": "Problems",
-    "globalRank": "Global Rank"
+    "globalRank": "Global Rank",
+    "Skills": {
+      "themesTitle": "Theme Skills",
+      "languagesTitle": "Language Skills"
+    }
   },
   "UserPage": {
     "Feed": {
