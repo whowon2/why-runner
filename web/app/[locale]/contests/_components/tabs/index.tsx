@@ -14,7 +14,7 @@ import { ContestManagement } from "./management";
 import { ProblemTab } from "./problem";
 
 export function ContestTabs({ id, user }: { id: string; user: User }) {
-  const { data: contest } = useContest(id);
+  const { data: contest, isPending } = useContest(id);
   const t = useTranslations("ContestsPage");
   const router = useRouter();
   const pathname = usePathname();
@@ -36,6 +36,10 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
       scroll: false, // keeps the page from scrolling to top
     });
   };
+
+  if (isPending) {
+    return null;
+  }
 
   if (!contest) {
     return (

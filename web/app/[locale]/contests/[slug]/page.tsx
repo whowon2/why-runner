@@ -10,6 +10,7 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
   const contest = await getContestBySlug(slug);
 
   if (!contest) notFound();
