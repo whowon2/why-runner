@@ -52,7 +52,7 @@ export function ContestDescription({ contestId }: { contestId: string }) {
         <span
           className={`text-xs uppercase font-bold tracking-widest px-3 py-1 rounded-full border ${status.color}`}
         >
-          {status.badge}
+          {t(`card.status.${status.badge}`)}
         </span>
         {c.isPrivate && (
           <span className="flex items-center gap-1.5 text-xs uppercase font-bold tracking-widest px-3 py-1 rounded-full border border-muted text-muted-foreground bg-muted/40">
@@ -86,7 +86,9 @@ export function ContestDescription({ contestId }: { contestId: string }) {
           <div className="p-2 rounded-full bg-indigo-500/10 text-indigo-500">
             <CalendarDays className="w-5 h-5" />
           </div>
-          <span className="text-sm font-semibold text-center">{getCountdown()}</span>
+          <span className="text-sm font-semibold text-center">
+            {getCountdown()}
+          </span>
         </div>
 
         {/* Date range */}

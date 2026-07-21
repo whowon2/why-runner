@@ -59,7 +59,7 @@ export function ContestCard({
               <span
                 className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border ${status.color}`}
               >
-                {status.badge}
+                {t(`card.status.${status.badge}`)}
               </span>
               {contest.isPrivate && (
                 <span className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border border-muted text-muted-foreground bg-muted/40">
@@ -84,7 +84,7 @@ export function ContestCard({
             <CardDescription className="flex items-center text-sm font-medium pt-1">
               <span
                 className={`flex items-center ${
-                  status.badge === "Past"
+                  status.badge === "past"
                     ? "text-neutral-500"
                     : "text-foreground/80"
                 }`}

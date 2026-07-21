@@ -234,7 +234,12 @@
       "participants": "Participants",
       "private": "Private",
       "duration": "duration",
-      "problems": "problems"
+      "problems": "problems",
+      "status": {
+        "upcoming": "Upcoming",
+        "active": "Active",
+        "past": "Past"
+      }
     },
     "Tabs": {
       "problems": "Problems",
