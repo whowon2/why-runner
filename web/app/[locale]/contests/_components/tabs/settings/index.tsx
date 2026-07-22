@@ -26,12 +26,12 @@ export function ContestSettings({ contestId }: { contestId: string }) {
     <div className="flex flex-col gap-8 w-full mx-auto py-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <section className="space-y-4">
         <Card>
-          <CardHeader>
-            <CardTitle>{tTabs("problems")}</CardTitle>
+          <CardHeader className="flex items-center justify-between">
+            <CardTitle>{t("title")}</CardTitle>
+            {contest.status === "draft" && <PublishContest contest={contest} />}
           </CardHeader>
           <CardContent className="space-y-4">
             <EditContestForm contest={contest as Contest} />
-            {contest.status === "draft" && <PublishContest contest={contest} />}
           </CardContent>
         </Card>
       </section>
