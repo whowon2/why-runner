@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import { ThemeProvider } from "./theme-provider";
+import { ThemeTokensProvider } from "./theme-tokens-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = React.useState(
@@ -22,7 +23,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="dark">
-        {children}
+        <ThemeTokensProvider>{children}</ThemeTokensProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

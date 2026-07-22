@@ -1,6 +1,14 @@
 "use client";
 
-import { GraduationCap, HomeIcon, Moon, ScrollText, Sun, Trophy } from "lucide-react";
+import {
+  GraduationCap,
+  HomeIcon,
+  Moon,
+  ScrollText,
+  Settings,
+  Sun,
+  Trophy,
+} from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -86,7 +94,7 @@ export function UserDock() {
                       buttonVariants({ variant: "ghost", size: "icon" }),
                       "size-12 rounded-none",
                       {
-                        "text-secondary": pathname === item.href,
+                        "text-primary": pathname === item.href,
                       },
                     )}
                   >
@@ -128,9 +136,33 @@ export function UserDock() {
             {theme === "dark" ? <Moon size={20} /> : <Sun size={20} />}
           </DockIcon>
           {session ? (
-            <DockIcon>
-              <AvatarButton user={session.user} />
-            </DockIcon>
+            <>
+              <DockIcon>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href="/settings"
+                      aria-label={t("Dock.settings")}
+                      className={cn(
+                        buttonVariants({ variant: "ghost", size: "icon" }),
+                        "size-12 rounded-none",
+                        {
+                          "text-primary": pathname === "/settings",
+                        },
+                      )}
+                    >
+                      <Settings className="size-4" />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t("Dock.settings")}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </DockIcon>
+              <DockIcon>
+                <AvatarButton user={session.user} />
+              </DockIcon>
+            </>
           ) : (
             <Link href={"/auth/signin"}>
               <Button variant={"outline"}>{t("Dock.login")}</Button>

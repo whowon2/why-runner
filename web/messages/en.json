@@ -23,7 +23,8 @@
     "problems": "Problems",
     "contests": "Contests",
     "roadmap": "Roadmap",
-    "login": "Login"
+    "login": "Login",
+    "settings": "Settings"
   },
   "HomePage": {
     "buttons": {
@@ -594,6 +595,20 @@
       "emptyTitle": "No problems yet",
       "emptyDescription": "You haven't authored any problems yet. Get started by designing your first coding problem and defining its test cases!",
       "viewDetails": "View Details"
+    }
+  },
+  "SettingsPage": {
+    "nav": {
+      "appearance": "Appearance"
+    },
+    "appearance": {
+      "mode": "mode",
+      "light": "light",
+      "dark": "dark",
+      "title": "theme",
+      "description": "Completely change the look and feel of the website by picking one of the presets, or by creating your own custom theme.",
+      "preset": "preset",
+      "custom": "custom"
     }
   }
 }

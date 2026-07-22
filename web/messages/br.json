@@ -23,7 +23,8 @@
     "problems": "Problemas",
     "contests": "Torneios",
     "roadmap": "Trilha",
-    "login": "Entrar"
+    "login": "Entrar",
+    "settings": "Configurações"
   },
   "HomePage": {
     "buttons": {
@@ -593,6 +594,20 @@
       "emptyTitle": "Nenhum problema ainda",
       "emptyDescription": "Você ainda não criou nenhum problema. Comece projetando seu primeiro problema de programação e definindo seus casos de teste!",
       "viewDetails": "Ver Detalhes"
+    }
+  },
+  "SettingsPage": {
+    "nav": {
+      "appearance": "Aparência"
+    },
+    "appearance": {
+      "mode": "modo",
+      "light": "claro",
+      "dark": "escuro",
+      "title": "tema",
+      "description": "Mude completamente o visual do site escolhendo um dos temas prontos, ou criando seu próprio tema personalizado.",
+      "preset": "predefinido",
+      "custom": "personalizado"
     }
   }
 }
