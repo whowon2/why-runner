@@ -45,7 +45,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     if sub.retry_count > 0 {
                         println!(
                             "Processing submission: {} (retry {}/{})",
-                            sub.id, sub.retry_count, db::MAX_RETRIES
+                            sub.id,
+                            sub.retry_count,
+                            db::MAX_RETRIES
                         );
                     } else {
                         println!("Processing submission: {}", sub.id);
@@ -101,12 +103,18 @@ async fn process_job(db: &DbClient, sub: Submission) {
     let mut passed_count = 0;
     let mut failure_details: Option<TestCaseResult> = None;
     let mut all_passed = true;
+    let mut runtime_ms: i64 = 0;
+    let mut memory_kb: Option<i64> = None;
 
     for (i, input) in problem.inputs.iter().enumerate() {
         let expected = match problem.outputs.get(i) {
             Some(o) => o,
             None => {
-                eprintln!("Problem {} missing expected output for test case {}", sub.problem_id, i + 1);
+                eprintln!(
+                    "Problem {} missing expected output for test case {}",
+                    sub.problem_id,
+                    i + 1
+                );
                 all_passed = false;
                 break;
             }
@@ -116,6 +124,10 @@ async fn process_job(db: &DbClient, sub: Submission) {
         // Run code
         let result = runner::run(&sub.code, input, sub.language, time_limit).await;
         let actual = result.stdout.trim().to_string();
+        runtime_ms += result.duration_ms;
+        if let Some(kb) = result.peak_memory_kb {
+            memory_kb = Some(memory_kb.map_or(kb, |current| current.max(kb)));
+        }
 
         if result.is_timeout {
             all_passed = false;
@@ -188,7 +200,7 @@ async fn process_job(db: &DbClient, sub: Submission) {
 
     // Save to DB
     if let Err(e) = db
-        .update_submission_result(&sub, status, &output_json)
+        .update_submission_result(&sub, status, &output_json, runtime_ms, memory_kb)
         .await
     {
         eprintln!("❌ Failed to update DB: {}", e);

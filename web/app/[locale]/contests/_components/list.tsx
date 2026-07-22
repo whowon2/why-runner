@@ -53,7 +53,7 @@ export function ContestList() {
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 py-8">
+    <div className="w-full max-w-5xl mx-auto flex flex-col gap-8 py-8">
       <ListPageHeader
         icon={Trophy}
         title={t("title")}

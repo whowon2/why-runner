@@ -1,9 +1,12 @@
 "use server";
 
-import { and, count, eq, ilike } from "drizzle-orm";
+import { and, count, desc, eq, ilike, inArray, sql } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { type ProblemDifficulty, problem } from "@/drizzle/schema";
+import { type ProblemDifficulty, problem, submission } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+
+export type ProblemSortBy = "solvedBy";
+export type SortDirection = "asc" | "desc";
 
 export interface GetProblemsParams {
   page: number;
@@ -11,6 +14,8 @@ export interface GetProblemsParams {
   search?: string;
   difficulty?: ProblemDifficulty | "all";
   my?: boolean;
+  sortBy?: ProblemSortBy;
+  sortDirection?: SortDirection;
 }
 
 export async function getProblems({
@@ -19,6 +24,8 @@ export async function getProblems({
   search,
   difficulty,
   my,
+  sortBy,
+  sortDirection = "desc",
 }: GetProblemsParams) {
   const offset = (page - 1) * pageSize;
 
@@ -39,25 +46,85 @@ export async function getProblems({
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
+  const currentUser = await getCurrentUser({});
+
+  // Solved-by count needs to be joined in before pagination when sorting by
+  // it, since it's computed from `submission`, not a column on `problem`.
+  const solvedCounts = db
+    .select({
+      problemId: submission.problemId,
+      solvedByCount: sql<number>`count(distinct ${submission.userId})`.as(
+        "solved_by_count",
+      ),
+    })
+    .from(submission)
+    .where(eq(submission.status, "PASSED"))
+    .groupBy(submission.problemId)
+    .as("solved_counts");
+
+  const solvedByCountExpr = sql<number>`coalesce(${solvedCounts.solvedByCount}, 0)`;
+
+  const orderByClause =
+    sortBy === "solvedBy"
+      ? sortDirection === "asc"
+        ? sql`${solvedByCountExpr} asc`
+        : sql`${solvedByCountExpr} desc`
+      : desc(problem.createdAt);
+
   // 3. Run queries in parallel (Data + Total Count)
   const [data, totalResult] = await Promise.all([
     // Get the actual data
-    db.query.problem.findMany({
-      limit: pageSize,
-      offset: offset,
-      where: whereClause,
-      columns: {
-        inputs: false,
-        outputs: false,
-      },
-    }),
+    db
+      .select({
+        id: problem.id,
+        title: problem.title,
+        slug: problem.slug,
+        description: problem.description,
+        difficulty: problem.difficulty,
+        createdBy: problem.createdBy,
+        exampleCount: problem.exampleCount,
+        timeLimitMs: problem.timeLimitMs,
+        memoryLimitMb: problem.memoryLimitMb,
+        createdAt: problem.createdAt,
+        updatedAt: problem.updatedAt,
+        solvedByCount: solvedByCountExpr,
+      })
+      .from(problem)
+      .leftJoin(solvedCounts, eq(solvedCounts.problemId, problem.id))
+      .where(whereClause)
+      .orderBy(orderByClause)
+      .limit(pageSize)
+      .offset(offset),
 
     // Get the total count for pagination
     db.select({ count: count() }).from(problem).where(whereClause),
   ]);
 
+  const problemIds = data.map((p) => p.id);
+
+  const mySolvedRows =
+    problemIds.length > 0
+      ? await db
+          .select({ problemId: submission.problemId })
+          .from(submission)
+          .where(
+            and(
+              inArray(submission.problemId, problemIds),
+              eq(submission.userId, currentUser.id),
+              eq(submission.status, "PASSED"),
+            ),
+          )
+          .groupBy(submission.problemId)
+      : [];
+
+  const mySolvedSet = new Set(mySolvedRows.map((row) => row.problemId));
+
   return {
-    data,
+    data: data.map((p) => ({
+      ...p,
+      solvedByCount: Number(p.solvedByCount),
+      solvedByMe: mySolvedSet.has(p.id),
+    })),
     total: totalResult[0]?.count || 0,
   };
 }

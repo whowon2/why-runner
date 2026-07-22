@@ -29,6 +29,18 @@ export function ProblemDescription({ problemId }: { problemId: string }) {
             <h1 className="font-bold text-3xl">{problem.title}</h1>
             <DifficultyBadge difficulty={problem.difficulty} />
           </CardTitle>
+          <div className="flex gap-4 text-muted-foreground text-sm">
+            <span>
+              {tProblems("Workspace.Task.timeLimit", {
+                seconds: problem.timeLimitMs / 1000,
+              })}
+            </span>
+            <span>
+              {tProblems("Workspace.Task.memoryLimit", {
+                mb: problem.memoryLimitMb,
+              })}
+            </span>
+          </div>
         </CardHeader>
         <CardContent>
           <pre className="whitespace-pre-wrap rounded-md ">

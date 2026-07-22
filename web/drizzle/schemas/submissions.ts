@@ -37,6 +37,9 @@ export const submission = pgTable("submission", {
   language: Language(),
   questionLetter: text("question_letter"),
   output: text("output"),
+  runtimeMs: integer("runtime_ms"),
+  memoryKb: integer("memory_kb"),
+  codeSize: integer("code_size"),
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),

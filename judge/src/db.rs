@@ -64,12 +64,10 @@ impl DbClient {
     }
 
     pub async fn get_problem(&self, problem_id: Uuid) -> Result<Problem> {
-        sqlx::query_as::<_, Problem>(
-            "SELECT inputs, outputs FROM problem WHERE id = $1",
-        )
-        .bind(problem_id)
-        .fetch_one(&self.pool)
-        .await
+        sqlx::query_as::<_, Problem>("SELECT inputs, outputs FROM problem WHERE id = $1")
+            .bind(problem_id)
+            .fetch_one(&self.pool)
+            .await
     }
 
     pub async fn update_submission_result(
@@ -77,16 +75,22 @@ impl DbClient {
         submission: &Submission,
         status: SubmissionStatus,
         output: &str,
+        runtime_ms: i64,
+        memory_kb: Option<i64>,
     ) -> Result<()> {
         let mut tx = self.pool.begin().await?;
 
         // 1. Update the submission record
-        sqlx::query("UPDATE submission SET status = $1, output = $2 WHERE id = $3")
-            .bind(status)
-            .bind(output)
-            .bind(submission.id)
-            .execute(&mut *tx)
-            .await?;
+        sqlx::query(
+            "UPDATE submission SET status = $1, output = $2, runtime_ms = $3, memory_kb = $4 WHERE id = $5",
+        )
+        .bind(status)
+        .bind(output)
+        .bind(runtime_ms)
+        .bind(memory_kb)
+        .bind(submission.id)
+        .execute(&mut *tx)
+        .await?;
 
         // 2. If the submission PASSED and is tied to a contest, update the
         // user's leaderboard entry. Lesson submissions have no contest_id /

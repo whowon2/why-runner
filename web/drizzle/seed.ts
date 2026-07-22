@@ -72,6 +72,8 @@ async function main() {
         outputs: f.valuesFromArray({
           values: [["3", "15"], ["100"], ["0"]] as unknown as string[],
         }),
+        timeLimitMs: f.valuesFromArray({ values: [1000, 2000, 3000] }),
+        memoryLimitMb: f.valuesFromArray({ values: [128, 256, 512] }),
       },
     },
 
@@ -103,6 +105,9 @@ async function main() {
         questionLetter: f.valuesFromArray({
           values: ["A", "B", "C", "D", "E"],
         }),
+        runtimeMs: f.int({ minValue: 10, maxValue: 5000 }),
+        memoryKb: f.int({ minValue: 1024, maxValue: 131072 }),
+        codeSize: f.int({ minValue: 20, maxValue: 2000 }),
       },
     },
 

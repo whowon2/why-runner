@@ -23,7 +23,6 @@ pub enum Language {
     Rust,
 }
 
-
 #[derive(Debug, FromRow)]
 pub struct Submission {
     pub id: Uuid,

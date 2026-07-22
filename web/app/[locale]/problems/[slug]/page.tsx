@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getProblemBySlug } from "@/lib/actions/problems/get-problem-by-slug";
-import { ProblemDescription } from "../_components/description";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { ProblemWorkspace } from "../_components/workspace";
 
 export default async function ProblemPage({
   params,
@@ -8,15 +9,14 @@ export default async function ProblemPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  await getCurrentUser({ redirectTo: "/auth/signin" });
   const problem = await getProblemBySlug(slug);
 
   if (!problem) notFound();
 
   return (
     <div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">
-      <div className="flex flex-1 flex-col gap-8">
-        <ProblemDescription problemId={problem.id} />
-      </div>
+      <ProblemWorkspace problem={problem} />
     </div>
   );
 }

@@ -27,6 +27,8 @@ export const problem = pgTable("problem", {
   inputs: text("inputs").array().notNull(),
   outputs: text("outputs").array().notNull(),
   exampleCount: integer("example_count").default(1).notNull(),
+  timeLimitMs: integer("time_limit_ms").default(1000).notNull(),
+  memoryLimitMb: integer("memory_limit_mb").default(512).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
