@@ -9,6 +9,7 @@ import {
   lessonThemeRequirement,
   problem,
 } from "@/drizzle/schema";
+import { generateProblemCode } from "@/lib/problem-code";
 import { generateSlug } from "@/lib/slug";
 
 interface SeedProblem {
@@ -47,7 +48,9 @@ const LESSON_MAP: Record<
 
 async function main() {
   const problemsPath = path.resolve(__dirname, "../../problems.json");
-  const problems: SeedProblem[] = JSON.parse(readFileSync(problemsPath, "utf-8"));
+  const problems: SeedProblem[] = JSON.parse(
+    readFileSync(problemsPath, "utf-8"),
+  );
 
   for (const p of problems) {
     const mapping = LESSON_MAP[p.title];
@@ -58,6 +61,7 @@ async function main() {
       .values({
         title: p.title,
         slug: generateSlug(p.title),
+        code: await generateProblemCode(),
         description: p.description,
         difficulty: p.difficulty,
         createdBy: "system",

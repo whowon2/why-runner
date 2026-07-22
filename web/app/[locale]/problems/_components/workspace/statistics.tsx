@@ -2,12 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useProblemStatistics } from "@/hooks/use-problem-statistics";
 
 export function ProblemStatisticsTab({ problemId }: { problemId: string }) {
@@ -29,15 +24,11 @@ export function ProblemStatisticsTab({ problemId }: { problemId: string }) {
               <TableCell>{stats.solvedByCount}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="font-medium">
-                {t("attemptedBy")}
-              </TableCell>
+              <TableCell className="font-medium">{t("attemptedBy")}</TableCell>
               <TableCell>{stats.attemptedByCount}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="font-medium">
-                {t("successRate")}
-              </TableCell>
+              <TableCell className="font-medium">{t("successRate")}</TableCell>
               <TableCell>{(stats.successRate * 100).toFixed(2)}%</TableCell>
             </TableRow>
           </TableBody>

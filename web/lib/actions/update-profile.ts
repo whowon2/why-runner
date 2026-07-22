@@ -4,9 +4,27 @@ import { eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { user } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { usernameSchema } from "@/lib/username";
 import type { UpdateProfileInput } from "@/hooks/user-update-profile";
 
 export async function updateProfile(input: UpdateProfileInput) {
   const currentUser = await getCurrentUser({});
-  await db.update(user).set(input).where(eq(user.id, currentUser.id));
+
+  const parsed = usernameSchema.safeParse(input.username);
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0]?.message ?? "Invalid username");
+  }
+
+  const existing = await db.query.user.findFirst({
+    where: (u, { eq: eqOp, and, ne }) =>
+      and(eqOp(u.username, parsed.data), ne(u.id, currentUser.id)),
+  });
+  if (existing) {
+    throw new Error("Username is already taken");
+  }
+
+  await db
+    .update(user)
+    .set({ username: parsed.data })
+    .where(eq(user.id, currentUser.id));
 }

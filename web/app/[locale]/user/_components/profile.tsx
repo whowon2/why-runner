@@ -1,6 +1,5 @@
 "use client";
 
-import type { User } from "better-auth";
 import { Camera } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -55,12 +54,18 @@ function FactRow({
   );
 }
 
-export default function Profile({ user }: { user: User }) {
+export default function Profile({
+  userId,
+  isOwner,
+}: {
+  userId: string;
+  isOwner: boolean;
+}) {
   const t = useTranslations("ProfilePage");
-  const { data, isPending } = useProfile(user.id);
-  const { data: skills } = useUserSkills(user.id);
+  const { data, isPending } = useProfile(userId);
+  const { data: skills } = useUserSkills(userId);
   const { mutateAsync: uploadImage, isPending: isUploading } =
-    useUploadProfileImage(user.id);
+    useUploadProfileImage(userId);
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const [avatarImageSrc, setAvatarImageSrc] = useState<string | null>(null);
@@ -154,26 +159,30 @@ export default function Profile({ user }: { user: User }) {
               sizes="(max-width: 768px) 128px, 160px"
             />
           </div>
-          <input
-            ref={avatarInputRef}
-            type="file"
-            accept="image/png,image/jpeg,image/webp"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) readFileAsDataUrl(file, setAvatarImageSrc);
-              e.target.value = "";
-            }}
-          />
-          <button
-            type="button"
-            disabled={isUploading}
-            onClick={() => avatarInputRef.current?.click()}
-            className="absolute bottom-1 right-1 z-20 flex h-9 w-9 items-center justify-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transition-transform hover:scale-110 disabled:opacity-50 disabled:pointer-events-none"
-          >
-            <Camera className="h-5 w-5" />
-            <span className="sr-only">{t("changeAvatar")}</span>
-          </button>
+          {isOwner && (
+            <>
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) readFileAsDataUrl(file, setAvatarImageSrc);
+                  e.target.value = "";
+                }}
+              />
+              <button
+                type="button"
+                disabled={isUploading}
+                onClick={() => avatarInputRef.current?.click()}
+                className="absolute bottom-1 right-1 z-20 flex h-9 w-9 items-center justify-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transition-transform hover:scale-110 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                <Camera className="h-5 w-5" />
+                <span className="sr-only">{t("changeAvatar")}</span>
+              </button>
+            </>
+          )}
           <div className="absolute inset-0 rounded-none bg-indigo-500/40 blur-xl -z-10 animate-pulse"></div>
         </div>
 
@@ -207,9 +216,7 @@ export default function Profile({ user }: { user: User }) {
               <FactRow
                 onCover={onCover}
                 label={t("website")}
-                value={
-                  <span className="text-indigo-400">{data.website}</span>
-                }
+                value={<span className="text-indigo-400">{data.website}</span>}
               />
             )}
             {data.createdAt && (
@@ -284,66 +291,73 @@ export default function Profile({ user }: { user: User }) {
         </div>
       </CardContent>
 
-      <input
-        ref={coverInputRef}
-        type="file"
-        accept="image/png,image/jpeg,image/webp"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            setCoverDim(data.coverDim ?? 60);
-            readFileAsDataUrl(file, setCoverImageSrc);
-          }
-          e.target.value = "";
-        }}
-      />
-      <button
-        type="button"
-        disabled={isUploading}
-        onClick={() => coverInputRef.current?.click()}
-        className={`absolute bottom-3 left-3 z-20 flex h-9 w-9 items-center justify-center transition-transform hover:scale-110 disabled:opacity-50 disabled:pointer-events-none ${onCover ? "text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]" : "text-foreground"}`}
-      >
-        <Camera className="h-5 w-5" />
-        <span className="sr-only">{t("changeCover")}</span>
-      </button>
+      {isOwner && (
+        <>
+          <input
+            ref={coverInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                setCoverDim(data.coverDim ?? 60);
+                readFileAsDataUrl(file, setCoverImageSrc);
+              }
+              e.target.value = "";
+            }}
+          />
+          <button
+            type="button"
+            disabled={isUploading}
+            onClick={() => coverInputRef.current?.click()}
+            className={`absolute bottom-3 left-3 z-20 flex h-9 w-9 items-center justify-center transition-transform hover:scale-110 disabled:opacity-50 disabled:pointer-events-none ${onCover ? "text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]" : "text-foreground"}`}
+          >
+            <Camera className="h-5 w-5" />
+            <span className="sr-only">{t("changeCover")}</span>
+          </button>
 
-      <CropImageDialog
-        isOpen={avatarImageSrc !== null}
-        onClose={() => setAvatarImageSrc(null)}
-        imageSrc={avatarImageSrc}
-        aspect={1}
-        cropShape="round"
-        title={t("adjustAvatar")}
-        onConfirm={handleConfirmUpload}
-      />
+          <CropImageDialog
+            isOpen={avatarImageSrc !== null}
+            onClose={() => setAvatarImageSrc(null)}
+            imageSrc={avatarImageSrc}
+            aspect={1}
+            cropShape="round"
+            title={t("adjustAvatar")}
+            onConfirm={handleConfirmUpload}
+          />
 
-      <CropImageDialog
-        isOpen={coverImageSrc !== null}
-        onClose={() => setCoverImageSrc(null)}
-        imageSrc={coverImageSrc}
-        aspect={16 / 9}
-        cropShape="rect"
-        title={t("adjustCover")}
-        onConfirm={handleConfirmCoverUpload}
-        extraControls={
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="cover-dim" className="text-xs text-muted-foreground">
-              {t("coverDim")}
-            </label>
-            <input
-              id="cover-dim"
-              type="range"
-              min={0}
-              max={100}
-              step={1}
-              value={coverDim}
-              onChange={(e) => setCoverDim(Number(e.target.value))}
-              className="w-full accent-primary"
-            />
-          </div>
-        }
-      />
+          <CropImageDialog
+            isOpen={coverImageSrc !== null}
+            onClose={() => setCoverImageSrc(null)}
+            imageSrc={coverImageSrc}
+            aspect={16 / 9}
+            cropShape="rect"
+            title={t("adjustCover")}
+            onConfirm={handleConfirmCoverUpload}
+            extraControls={
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="cover-dim"
+                  className="text-xs text-muted-foreground"
+                >
+                  {t("coverDim")}
+                </label>
+                <input
+                  id="cover-dim"
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={1}
+                  value={coverDim}
+                  onChange={(e) => setCoverDim(Number(e.target.value))}
+                  className="w-full accent-primary"
+                />
+              </div>
+            }
+          />
+        </>
+      )}
     </Card>
   );
 }

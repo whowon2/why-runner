@@ -15,7 +15,10 @@ export async function getContest(id: string) {
     with: {
       problems: {
         with: {
-          problem: { columns: problemColumns },
+          problem: {
+            columns: problemColumns,
+            with: { user: { columns: { name: true, username: true } } },
+          },
         },
         orderBy: asc(problemOnContest.order),
       },

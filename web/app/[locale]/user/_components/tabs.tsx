@@ -8,7 +8,13 @@ import { Feed } from "./feed";
 import { MyContests } from "./my-contests";
 import { MyProblems } from "./my-problems";
 
-export function ProfileTabs() {
+export function ProfileTabs({
+  userId,
+  isOwner,
+}: {
+  userId: string;
+  isOwner: boolean;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -55,13 +61,13 @@ export function ProfileTabs() {
 
       <div className="mt-8">
         <TabsContent value="feed" className="mt-0 outline-none">
-          <Feed />
+          <Feed userId={userId} />
         </TabsContent>
         <TabsContent value="contests" className="mt-0 outline-none">
-          <MyContests />
+          <MyContests userId={userId} isOwner={isOwner} />
         </TabsContent>
         <TabsContent value="problems" className="mt-0 outline-none">
-          <MyProblems />
+          <MyProblems userId={userId} isOwner={isOwner} />
         </TabsContent>
       </div>
     </Tabs>

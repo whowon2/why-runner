@@ -19,11 +19,13 @@ export async function publishContest(contestId: string) {
 
   if (!found) throw new Error("Contest not found.");
   if (found.createdBy !== currentUser.id) throw new Error("Forbidden");
-  if (found.status !== "draft") throw new Error("Contest is already published.");
+  if (found.status !== "draft")
+    throw new Error("Contest is already published.");
 
   const fields: PublishContestFieldError[] = [];
   if (!found.name.trim()) fields.push("name");
-  if (!found.startDate || found.startDate <= new Date()) fields.push("startDate");
+  if (!found.startDate || found.startDate <= new Date())
+    fields.push("startDate");
   if (!found.endDate || (found.startDate && found.endDate <= found.startDate))
     fields.push("endDate");
   if (found.problems.length === 0) fields.push("problems");

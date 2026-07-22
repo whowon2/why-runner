@@ -16,6 +16,7 @@ import { type ProblemPreview, problem } from "./problems";
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
+  username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),
@@ -24,6 +25,7 @@ export const user = pgTable("user", {
   bio: text("bio"),
   location: text("location"),
   website: text("website"),
+  finishedOnboarding: boolean("finished_onboarding").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -181,5 +183,7 @@ export const problemOnContestRelations = relations(
 export type UserOnContest = typeof userOnContest.$inferSelect;
 
 export type ProblemOnContest = typeof problemOnContest.$inferSelect & {
-  problem: ProblemPreview;
+  problem: ProblemPreview & {
+    user: { name: string; username: string } | null;
+  };
 };

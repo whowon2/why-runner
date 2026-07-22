@@ -5,6 +5,17 @@ import { db } from "@/drizzle/db";
 import { env } from "@/env";
 
 export const auth = betterAuth({
+  user: {
+    additionalFields: {
+      username: { type: "string", required: false, input: false },
+      finishedOnboarding: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,

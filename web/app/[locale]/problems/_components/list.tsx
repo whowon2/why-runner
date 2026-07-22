@@ -168,11 +168,33 @@ export function ProblemsList() {
                 : `/problems/${row.original.slug}`
             }
           >
+            <span className="font-mono text-xs text-muted-foreground">
+              [{row.original.code}]
+            </span>
             {row.original.title}
             <DifficultyBadge difficulty={row.original.difficulty} />
             {row.original.status === "draft" && <DraftBadge />}
           </Link>
         ),
+      },
+      {
+        id: "creator",
+        header: t("Table.creator"),
+        enableSorting: false,
+        cell: ({ row }) =>
+          row.original.creatorUsername ? (
+            <Link
+              className="hover:underline text-muted-foreground"
+              href={`/user/${row.original.creatorUsername}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {row.original.creatorName}
+            </Link>
+          ) : (
+            <span className="text-muted-foreground">
+              {row.original.creatorName}
+            </span>
+          ),
       },
       {
         accessorKey: "solvedByCount",
@@ -322,7 +344,10 @@ export function ProblemsList() {
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>

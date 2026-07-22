@@ -9,6 +9,7 @@ import type { Language, Problem } from "@/drizzle/schema";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 import { ProblemDescription } from "../description";
+import { PublishProblem } from "../publish-button";
 import { ProblemEditTab } from "./edit";
 import { ProblemResultsTab } from "./results";
 import { ProblemStatisticsTab } from "./statistics";
@@ -53,48 +54,56 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
         defaultValue={tab}
         onValueChange={handleTabChange}
       >
-        <div className="w-full overflow-x-auto pb-4 mb-2 scrollbar-hide">
-          <TabsList className="inline-flex min-w-max h-12 items-center justify-start rounded-none bg-muted/40 p-1 text-muted-foreground border border-muted/50">
-            <TabsTrigger
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
-              value="task"
-            >
-              {t("tabs.task")}
-            </TabsTrigger>
-            <TabsTrigger
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
-              value="submit"
-            >
-              {t("tabs.submit")}
-            </TabsTrigger>
-            <TabsTrigger
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
-              value="results"
-            >
-              {t("tabs.results")}
-            </TabsTrigger>
-            <TabsTrigger
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
-              value="statistics"
-            >
-              {t("tabs.statistics")}
-            </TabsTrigger>
-            <TabsTrigger
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
-              value="tests"
-            >
-              {t("tabs.tests")}
-            </TabsTrigger>
-            {isOwner && (
+        <div className="flex w-full items-center justify-between gap-4 pb-4 mb-2">
+          <div className="overflow-x-auto scrollbar-hide">
+            <TabsList className="inline-flex min-w-max h-12 items-center justify-start rounded-none bg-muted/40 p-1 text-muted-foreground border border-muted/50">
               <TabsTrigger
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:shadow-sm gap-2"
-                value="edit"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
+                value="task"
               >
-                {t("tabs.edit")}
-                <Pencil className="w-4 h-4" />
+                {t("tabs.task")}
               </TabsTrigger>
-            )}
-          </TabsList>
+              <TabsTrigger
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
+                value="submit"
+              >
+                {t("tabs.submit")}
+              </TabsTrigger>
+              <TabsTrigger
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
+                value="results"
+              >
+                {t("tabs.results")}
+              </TabsTrigger>
+              <TabsTrigger
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
+                value="statistics"
+              >
+                {t("tabs.statistics")}
+              </TabsTrigger>
+              <TabsTrigger
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
+                value="tests"
+              >
+                {t("tabs.tests")}
+              </TabsTrigger>
+              {isOwner && (
+                <TabsTrigger
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:shadow-sm gap-2"
+                  value="edit"
+                >
+                  {t("tabs.edit")}
+                  <Pencil className="w-4 h-4" />
+                </TabsTrigger>
+              )}
+            </TabsList>
+          </div>
+
+          {isOwner && problem.status === "draft" && (
+            <div className="shrink-0">
+              <PublishProblem problem={problem} />
+            </div>
+          )}
         </div>
 
         <div className="mt-4 rounded-none bg-white/40 dark:bg-neutral-900/40 backdrop-blur-xl border border-white/20 shadow-2xl shadow-indigo-500/5 p-6">

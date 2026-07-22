@@ -2,7 +2,12 @@
 
 import { and, count, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { type ProblemDifficulty, problem, submission } from "@/drizzle/schema";
+import {
+  type ProblemDifficulty,
+  problem,
+  submission,
+  user,
+} from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 export type ProblemSortBy = "solvedBy";
@@ -14,6 +19,7 @@ export interface GetProblemsParams {
   search?: string;
   difficulty?: ProblemDifficulty | "all";
   my?: boolean;
+  userId?: string;
   sortBy?: ProblemSortBy;
   sortDirection?: SortDirection;
 }
@@ -24,6 +30,7 @@ export async function getProblems({
   search,
   difficulty,
   my,
+  userId,
   sortBy,
   sortDirection = "desc",
 }: GetProblemsParams) {
@@ -43,7 +50,9 @@ export async function getProblems({
     conditions.push(eq(problem.difficulty, difficulty));
   }
 
-  if (my) {
+  if (userId) {
+    conditions.push(eq(problem.createdBy, userId));
+  } else if (my) {
     conditions.push(eq(problem.createdBy, currentUser.id));
   }
 
@@ -80,10 +89,13 @@ export async function getProblems({
         id: problem.id,
         title: problem.title,
         slug: problem.slug,
+        code: problem.code,
         description: problem.description,
         difficulty: problem.difficulty,
         status: problem.status,
         createdBy: problem.createdBy,
+        creatorName: user.name,
+        creatorUsername: user.username,
         exampleCount: problem.exampleCount,
         timeLimitMs: problem.timeLimitMs,
         memoryLimitMb: problem.memoryLimitMb,
@@ -93,6 +105,7 @@ export async function getProblems({
       })
       .from(problem)
       .leftJoin(solvedCounts, eq(solvedCounts.problemId, problem.id))
+      .leftJoin(user, eq(user.id, problem.createdBy))
       .where(whereClause)
       .orderBy(orderByClause)
       .limit(pageSize)

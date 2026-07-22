@@ -1,17 +1,6 @@
 "use server";
 
-import {
-  and,
-  count,
-  desc,
-  eq,
-  gt,
-  gte,
-  ilike,
-  lt,
-  lte,
-  or,
-} from "drizzle-orm";
+import { and, count, desc, eq, gt, gte, ilike, lt, lte, or } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { contest } from "@/drizzle/schema"; // Ensure this imports your contest table definition
 import { getCurrentUser } from "@/lib/auth/get-current-user";

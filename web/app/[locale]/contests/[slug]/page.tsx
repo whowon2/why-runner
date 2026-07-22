@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getContestBySlug } from "@/lib/actions/contest/get-contest-by-id";
-import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
 import { ContestDescription } from "../_components/description";
 import { ContestTabs } from "../_components/tabs";
 
@@ -11,7 +11,7 @@ export default async function Page({
 }) {
   const { slug } = await params;
 
-  const user = await getCurrentUser({ redirectTo: "/auth/signin" });
+  const user = await requireOnboardedUser({ redirectTo: "/auth/signin" });
 
   const contest = await getContestBySlug(slug);
 

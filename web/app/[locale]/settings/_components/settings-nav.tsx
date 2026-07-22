@@ -5,7 +5,9 @@ import { useTranslations } from "next-intl";
 
 export function SettingsNav() {
   const t = useTranslations("SettingsPage.nav");
-  const sections = [{ id: "appearance", label: t("appearance"), icon: Palette }];
+  const sections = [
+    { id: "appearance", label: t("appearance"), icon: Palette },
+  ];
 
   return (
     <nav className="flex md:flex-col gap-1 md:w-48 shrink-0">

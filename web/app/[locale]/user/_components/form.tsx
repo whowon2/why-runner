@@ -28,14 +28,14 @@ import {
 import { useUpdateProfile } from "@/hooks/user-update-profile";
 
 const updateProfileSchema = z.object({
-  name: z.string(),
+  username: z.string(),
 });
 
-export function UpdateForm({ user }: { user: User }) {
+export function UpdateForm({ user }: { user: User & { username?: string } }) {
   const t = useTranslations("UserForm");
   const form = useForm<z.infer<typeof updateProfileSchema>>({
     defaultValues: {
-      name: user.name ?? "",
+      username: user.username ?? "",
     },
     resolver: zodResolver(updateProfileSchema),
   });
@@ -62,7 +62,7 @@ export function UpdateForm({ user }: { user: User }) {
           <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
-              name="name"
+              name="username"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("username")}</FormLabel>

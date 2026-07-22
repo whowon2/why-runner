@@ -29,7 +29,12 @@ export function ListPageHeader({
 }: ListPageHeaderProps) {
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader icon={icon} title={title} subtitle={subtitle} action={action} />
+      <PageHeader
+        icon={icon}
+        title={title}
+        subtitle={subtitle}
+        action={action}
+      />
 
       <div className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">

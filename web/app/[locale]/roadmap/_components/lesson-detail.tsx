@@ -108,7 +108,9 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
               <div className="flex flex-col gap-1">
                 {lesson.requirements.map((r) => {
                   const key =
-                    r.kind === "theme" ? `theme-${r.theme}` : `lang-${r.language}`;
+                    r.kind === "theme"
+                      ? `theme-${r.theme}`
+                      : `lang-${r.language}`;
                   const label =
                     r.kind === "theme"
                       ? t(`themes.${r.theme}` as Parameters<typeof t>[0])
@@ -231,9 +233,7 @@ function LessonSubmit({ problemId }: { problemId: string }) {
 
 function LessonSubmissions({ problemId }: { problemId: string }) {
   const t = useTranslations("RoadmapPage.Lesson");
-  const tCommon = useTranslations(
-    "ContestsPage.Tabs.Problem.Submissions",
-  );
+  const tCommon = useTranslations("ContestsPage.Tabs.Problem.Submissions");
   const { data: submissions, isPending } = useLessonSubmissions(problemId);
 
   if (isPending) return <Skeleton className="h-32 w-full" />;
@@ -249,7 +249,11 @@ function LessonSubmissions({ problemId }: { problemId: string }) {
             {tCommon("noSubmissions")}
           </p>
         ) : (
-          <Accordion className="flex w-full flex-col gap-2" collapsible type="single">
+          <Accordion
+            className="flex w-full flex-col gap-2"
+            collapsible
+            type="single"
+          >
             {submissions.map((s) => (
               <AccordionItem
                 className={cn("rounded-md border px-3 last:border", {

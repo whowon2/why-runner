@@ -7,8 +7,8 @@ import type { UnmetRequirement } from "@/lib/actions/lessons/lesson-lock";
 export async function getRoadmap() {
   const currentUser = await getCurrentUser({});
 
-  const [lessons, completions, themeSkills, languageSkills] =
-    await Promise.all([
+  const [lessons, completions, themeSkills, languageSkills] = await Promise.all(
+    [
       db.query.lesson.findMany({
         orderBy: (lesson, { asc }) => [asc(lesson.order)],
         with: {
@@ -29,7 +29,8 @@ export async function getRoadmap() {
       db.query.userLanguageSkill.findMany({
         where: (skill, { eq }) => eq(skill.userId, currentUser.id),
       }),
-    ]);
+    ],
+  );
 
   const completedLessonIds = new Set(completions.map((c) => c.lessonId));
   const themeValues = new Map(themeSkills.map((s) => [s.theme, s.value]));

@@ -22,6 +22,7 @@ import { CreateProblemButton } from "@/app/[locale]/problems/_components/create-
 import { useAddProblemToContest } from "@/hooks/use-add-problem";
 import { useProblems } from "@/hooks/use-problems";
 import { useRemoveProblemToContest as useRemoveProblemFromContest } from "@/hooks/use-remove-problem";
+import { Link } from "@/i18n/navigation";
 import { reorderProblems } from "@/lib/actions/contest/reorder-problems";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -112,7 +113,16 @@ export function EditContestProblems({
               )
               .map((p) => (
                 <SelectItem className="w-full" key={p.id} value={String(p.id)}>
+                  <span className="font-mono text-xs text-muted-foreground">
+                    [{p.code}]
+                  </span>{" "}
                   {p.title}
+                  {p.creatorName && (
+                    <span className="text-xs text-muted-foreground">
+                      {" "}
+                      {t("by")} {p.creatorName}
+                    </span>
+                  )}
                 </SelectItem>
               ))}
           </SelectContent>
@@ -130,7 +140,20 @@ export function EditContestProblems({
               <span className="flex h-7 w-7 items-center justify-center rounded-none bg-muted font-bold text-sm">
                 {LETTERS[index] ?? index + 1}
               </span>
-              <p>{probOnCont.problem.title}</p>
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono text-xs text-muted-foreground">
+                  [{probOnCont.problem.code}]
+                </span>
+                <p>{probOnCont.problem.title}</p>
+                {probOnCont.problem.user && (
+                  <Link
+                    className="text-xs text-muted-foreground hover:underline"
+                    href={`/user/${probOnCont.problem.user.username}`}
+                  >
+                    {t("by")} {probOnCont.problem.user.name}
+                  </Link>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-1">
               {canReorder && (

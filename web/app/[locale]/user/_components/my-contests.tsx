@@ -12,17 +12,21 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useContests } from "@/hooks/use-contests";
 import { Link } from "@/i18n/navigation";
-import { authClient } from "@/lib/auth/client";
 import { CreateContestButton } from "../../contests/_components/create/button";
 
-export function MyContests() {
+export function MyContests({
+  userId,
+  isOwner,
+}: {
+  userId: string;
+  isOwner: boolean;
+}) {
   const t = useTranslations("UserPage.MyContests");
-  const { data: session } = authClient.useSession();
   const { data, isLoading } = useContests({
     page: 1,
     pageSize: 50,
     my: true,
-    userId: session?.user?.id ?? "",
+    userId,
   });
 
   const contests = data?.data || [];
@@ -36,9 +40,11 @@ export function MyContests() {
           </h1>
           <p className="text-muted-foreground text-lg">{t("subtitle")}</p>
         </div>
-        <div className="shrink-0">
-          <CreateContestButton />
-        </div>
+        {isOwner && (
+          <div className="shrink-0">
+            <CreateContestButton />
+          </div>
+        )}
       </div>
 
       <Separator className="w-full h-px bg-linear-to-r from-border to-transparent" />
@@ -60,12 +66,14 @@ export function MyContests() {
               {t("emptyDescription")}
             </CardDescription>
 
-            <div className="relative group">
-              <div className="absolute -inset-1 blur-lg bg-linear-to-r from-indigo-500 to-cyan-500 opacity-20 group-hover:opacity-40 transition duration-500 rounded-lg" />
-              <div className="relative">
-                <CreateContestButton />
+            {isOwner && (
+              <div className="relative group">
+                <div className="absolute -inset-1 blur-lg bg-linear-to-r from-indigo-500 to-cyan-500 opacity-20 group-hover:opacity-40 transition duration-500 rounded-lg" />
+                <div className="relative">
+                  <CreateContestButton />
+                </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       ) : (

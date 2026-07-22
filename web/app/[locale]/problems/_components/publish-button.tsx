@@ -42,7 +42,9 @@ export function PublishProblem({ problem }: { problem: Problem }) {
         toast.error(t("failed"), {
           description:
             missingFields.length > 0
-              ? missingFields.map((field) => t(`missingField.${field}`)).join(", ")
+              ? missingFields
+                  .map((field) => t(`missingField.${field}`))
+                  .join(", ")
               : error.message,
         });
       },
@@ -60,7 +62,10 @@ export function PublishProblem({ problem }: { problem: Problem }) {
   return (
     <>
       <div className="flex flex-col gap-2 items-start">
-        <Button onClick={handlePublish} disabled={isPending || missing.length > 0}>
+        <Button
+          onClick={handlePublish}
+          disabled={isPending || missing.length > 0}
+        >
           {isPending ? (
             <Loader className="animate-spin" />
           ) : (

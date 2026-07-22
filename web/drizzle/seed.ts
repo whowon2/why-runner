@@ -195,6 +195,7 @@ async function main() {
     .values({
       title: "Two Sum",
       slug: generateSlug("Two Sum"),
+      code: "0",
       description: "Given two integers separated by a space, print their sum.",
       difficulty: "easy",
       inputs: ["1 2", "5 10", "100 200", "-5 5"],

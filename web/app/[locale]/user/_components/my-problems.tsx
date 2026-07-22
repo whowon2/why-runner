@@ -14,12 +14,18 @@ import { useProblems } from "@/hooks/use-problems";
 import { Link } from "@/i18n/navigation";
 import { CreateProblemButton } from "../../problems/_components/create-button";
 
-export function MyProblems() {
+export function MyProblems({
+  userId,
+  isOwner,
+}: {
+  userId: string;
+  isOwner: boolean;
+}) {
   const t = useTranslations("UserPage.MyProblems");
   const { data, isLoading } = useProblems({
     page: 1,
     pageSize: 50,
-    my: true,
+    userId,
   });
 
   const problems = data?.data || [];
@@ -33,9 +39,11 @@ export function MyProblems() {
           </h1>
           <p className="text-muted-foreground text-lg">{t("subtitle")}</p>
         </div>
-        <div className="shrink-0">
-          <CreateProblemButton />
-        </div>
+        {isOwner && (
+          <div className="shrink-0">
+            <CreateProblemButton />
+          </div>
+        )}
       </div>
 
       <Separator className="w-full h-px bg-linear-to-r from-border to-transparent" />
@@ -57,12 +65,14 @@ export function MyProblems() {
               {t("emptyDescription")}
             </CardDescription>
 
-            <div className="relative group">
-              <div className="absolute -inset-1 blur-lg bg-linear-to-r from-indigo-500 to-cyan-500 opacity-20 group-hover:opacity-40 transition duration-500 rounded-lg" />
-              <div className="relative">
-                <CreateProblemButton />
+            {isOwner && (
+              <div className="relative group">
+                <div className="absolute -inset-1 blur-lg bg-linear-to-r from-indigo-500 to-cyan-500 opacity-20 group-hover:opacity-40 transition duration-500 rounded-lg" />
+                <div className="relative">
+                  <CreateProblemButton />
+                </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       ) : (

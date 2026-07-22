@@ -84,7 +84,10 @@ export function NewProblem({ problem }: { problem: Problem }) {
           title: values.title,
           difficulty: values.difficulty ?? null,
           description: values.description,
-          exampleCount: Math.min(values.exampleCount, values.inputs.length || 1),
+          exampleCount: Math.min(
+            values.exampleCount,
+            values.inputs.length || 1,
+          ),
           inputs: values.inputs,
           outputs: values.outputs,
         },

@@ -185,7 +185,9 @@
       }
     },
     "Table": {
+      "code": "Código",
       "name": "Nome",
+      "creator": "Criador",
       "solvedBy": "Resolvido por",
       "solved": "Resolvido",
       "yes": "Sim",
@@ -457,6 +459,7 @@
         },
         "Problems": {
           "placeholder": "Problema",
+          "by": "por",
           "create": "Criar",
           "saveOrder": "Salvar Ordem",
           "addSuccess": "Problema adicionado",
@@ -564,11 +567,21 @@
   "UserForm": {
     "title": "Perfil",
     "username": "Nome de usuário",
-    "usernamePlaceholder": "shadcn",
-    "usernameDescription": "Este é seu nome de exibição público.",
+    "usernamePlaceholder": "username",
+    "usernameDescription": "Este é seu nome de usuário público e único.",
     "saveProfile": "Salvar Perfil",
     "failedUpdate": "Falha ao atualizar perfil",
     "updated": "Perfil atualizado"
+  },
+  "OnboardingPage": {
+    "title": "Bem-vindo",
+    "subtitle": "Escolha um nome de usuário para finalizar sua conta.",
+    "usernameLabel": "Nome de usuário",
+    "usernamePlaceholder": "username",
+    "usernameDescription": "Apenas letras minúsculas, números e hífens.",
+    "submit": "Continuar",
+    "submitting": "Salvando...",
+    "failed": "Falha ao salvar nome de usuário"
   },
   "ProfilePage": {
     "avatarAlt": "avatar",

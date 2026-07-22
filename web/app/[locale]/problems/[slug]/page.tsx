@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getProblemBySlug } from "@/lib/actions/problems/get-problem-by-slug";
-import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
 import { ProblemPageHeader } from "../_components/header";
 import { ProblemWorkspace } from "../_components/workspace";
 
@@ -10,7 +10,7 @@ export default async function ProblemPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  await getCurrentUser({ redirectTo: "/auth/signin" });
+  await requireOnboardedUser({ redirectTo: "/auth/signin" });
   const problem = await getProblemBySlug(slug);
 
   if (!problem) notFound();

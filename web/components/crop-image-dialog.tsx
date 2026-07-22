@@ -38,9 +38,7 @@ export function CropImageDialog({
   const t = useTranslations("Common");
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(
-    null,
-  );
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onCropComplete = useCallback((_area: Area, areaPixels: Area) => {
@@ -102,11 +100,7 @@ export function CropImageDialog({
         />
         {extraControls}
         <DialogFooter>
-          <Button
-            variant="ghost"
-            onClick={handleClose}
-            disabled={isSubmitting}
-          >
+          <Button variant="ghost" onClick={handleClose} disabled={isSubmitting}>
             {t("cancel")}
           </Button>
           <Button

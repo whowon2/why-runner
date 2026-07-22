@@ -2,12 +2,18 @@ import { relations } from "drizzle-orm";
 import {
   integer,
   pgEnum,
+  pgSequence,
   pgTable,
   text,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
 import { problemOnContest, user } from "./users";
+
+export const problemCodeSeq = pgSequence("problem_code_seq", {
+  startWith: 0,
+  minValue: 0,
+});
 
 export const ProblemDifficulty = pgEnum("problem_difficulty", [
   "easy",
@@ -23,6 +29,7 @@ export const problem = pgTable("problem", {
   id: uuid("id").defaultRandom().primaryKey(),
   title: text("title").default("Untitled Problem").notNull(),
   slug: text("slug").notNull().unique(),
+  code: text("code").notNull().unique(),
   description: text("description").default("").notNull(),
   status: ProblemStatus().default("draft").notNull(),
   difficulty: ProblemDifficulty(),

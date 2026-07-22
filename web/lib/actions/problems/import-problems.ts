@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "@/drizzle/db";
 import { problem } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { generateProblemCode } from "@/lib/problem-code";
 import { generateSlug } from "@/lib/slug";
 
 const importSchema = z.array(
@@ -31,13 +32,16 @@ export async function importProblems(data: unknown): Promise<number> {
     throw new Error("File contains no problems");
   }
 
-  const values = parsed.data.map((p) => ({
-    ...p,
-    difficulty: p.difficulty ?? null,
-    slug: generateSlug(p.title),
-    createdBy: currentUser.id,
-    status: "published" as const,
-  }));
+  const values = await Promise.all(
+    parsed.data.map(async (p) => ({
+      ...p,
+      difficulty: p.difficulty ?? null,
+      slug: generateSlug(p.title),
+      code: await generateProblemCode(),
+      createdBy: currentUser.id,
+      status: "published" as const,
+    })),
+  );
 
   await db.insert(problem).values(values);
   return values.length;

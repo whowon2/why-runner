@@ -74,7 +74,9 @@ export function ProblemResultsTab({ problemId }: { problemId: string }) {
               </TableCell>
               <TableCell>{submission.language}</TableCell>
               <TableCell>
-                {t("chars", { count: submission.codeSize ?? submission.code.length })}
+                {t("chars", {
+                  count: submission.codeSize ?? submission.code.length,
+                })}
               </TableCell>
               <TableCell
                 className={cn({
@@ -128,15 +130,14 @@ function SubmissionDetailsDialog({
   // Judge's report only carries per-test input/output on failure; on a pass
   // there's nothing test-specific to show, so fall back to the problem's own
   // sample cases as a reference (only fetched when the dialog needs them).
-  const { data: tests } = useProblemTests(problemId, { enabled: !!report?.passed });
+  const { data: tests } = useProblemTests(problemId, {
+    enabled: !!report?.passed,
+  });
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button
-          className="text-sm underline underline-offset-2"
-          type="button"
-        >
+        <button className="text-sm underline underline-offset-2" type="button">
           {t("details")}
         </button>
       </DialogTrigger>

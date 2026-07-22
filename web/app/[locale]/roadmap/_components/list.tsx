@@ -36,9 +36,7 @@ export function RoadmapList() {
           <Card key={track.theme} className="bg-transparent shadow-none">
             <CardHeader>
               <CardTitle className="text-xl">
-                {t(
-                  `themes.${track.theme}` as Parameters<typeof t>[0],
-                )}
+                {t(`themes.${track.theme}` as Parameters<typeof t>[0])}
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">

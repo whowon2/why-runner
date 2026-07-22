@@ -43,13 +43,19 @@ function DateTimeField({
         type="date"
         className="flex-1"
         value={datePart}
-        onChange={(e) => onChange(e.target.value ? `${e.target.value}T${timePart || "00:00"}` : "")}
+        onChange={(e) =>
+          onChange(
+            e.target.value ? `${e.target.value}T${timePart || "00:00"}` : "",
+          )
+        }
       />
       <Input
         type="time"
         className="flex-1"
         value={timePart}
-        onChange={(e) => onChange(datePart ? `${datePart}T${e.target.value}` : "")}
+        onChange={(e) =>
+          onChange(datePart ? `${datePart}T${e.target.value}` : "")
+        }
       />
     </div>
   );
@@ -165,7 +171,10 @@ export function EditContestForm({ contest }: { contest: Contest }) {
               <FormItem>
                 <FormLabel>{t("startDateLabel")}</FormLabel>
                 <FormControl>
-                  <DateTimeField value={field.value ?? ""} onChange={field.onChange} />
+                  <DateTimeField
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -179,7 +188,10 @@ export function EditContestForm({ contest }: { contest: Contest }) {
               <FormItem>
                 <FormLabel>{t("endDateLabel")}</FormLabel>
                 <FormControl>
-                  <DateTimeField value={field.value ?? ""} onChange={field.onChange} />
+                  <DateTimeField
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

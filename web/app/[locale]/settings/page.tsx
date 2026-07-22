@@ -1,9 +1,9 @@
-import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
 import { AppearanceSection } from "./_components/appearance-section";
 import { SettingsNav } from "./_components/settings-nav";
 
 export default async function SettingsPage() {
-  await getCurrentUser({ redirectTo: "/auth/signin" });
+  await requireOnboardedUser({ redirectTo: "/auth/signin" });
 
   return (
     <div className="w-full min-h-screen bg-background">

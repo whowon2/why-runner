@@ -31,9 +31,7 @@ export function ContestSettings({ contestId }: { contestId: string }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <EditContestForm contest={contest as Contest} />
-            {contest.status === "draft" && (
-              <PublishContest contest={contest} />
-            )}
+            {contest.status === "draft" && <PublishContest contest={contest} />}
           </CardContent>
         </Card>
       </section>

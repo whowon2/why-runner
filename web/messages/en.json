@@ -186,7 +186,9 @@
       }
     },
     "Table": {
+      "code": "Code",
       "name": "Name",
+      "creator": "Creator",
       "solvedBy": "Solved by",
       "solved": "Solved",
       "yes": "Yes",
@@ -458,6 +460,7 @@
         },
         "Problems": {
           "placeholder": "Problem",
+          "by": "by",
           "create": "Create",
           "saveOrder": "Save Order",
           "addSuccess": "Problem added",
@@ -565,11 +568,21 @@
   "UserForm": {
     "title": "Profile",
     "username": "Username",
-    "usernamePlaceholder": "shadcn",
-    "usernameDescription": "This is your public display name.",
+    "usernamePlaceholder": "username",
+    "usernameDescription": "This is your unique public username.",
     "saveProfile": "Save Profile",
     "failedUpdate": "Failed to update profile",
     "updated": "Profile updated"
+  },
+  "OnboardingPage": {
+    "title": "Welcome",
+    "subtitle": "Choose a username to finish setting up your account.",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "username",
+    "usernameDescription": "Lowercase letters, numbers, and hyphens only.",
+    "submit": "Continue",
+    "submitting": "Saving...",
+    "failed": "Failed to save username"
   },
   "ProfilePage": {
     "avatarAlt": "avatar",

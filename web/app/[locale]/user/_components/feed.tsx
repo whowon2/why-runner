@@ -23,12 +23,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { getActivities } from "@/lib/actions/activity/get-activities";
 
-export function Feed() {
+export function Feed({ userId }: { userId: string }) {
   const t = useTranslations("UserPage.Feed");
   const { data: activities = [], isLoading: loading } = useQuery({
-    queryKey: ["activities"],
+    queryKey: ["activities", userId],
     queryFn: async () => {
-      return await getActivities();
+      return await getActivities(userId);
     },
   });
 

@@ -18,7 +18,8 @@ export async function publishProblem(problemId: string) {
 
   if (!found) throw new Error("Problem not found.");
   if (found.createdBy !== currentUser.id) throw new Error("Forbidden");
-  if (found.status !== "draft") throw new Error("Problem is already published.");
+  if (found.status !== "draft")
+    throw new Error("Problem is already published.");
 
   const fields = getMissingProblemFields(found);
 
