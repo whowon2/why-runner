@@ -28,6 +28,33 @@ function toDateTimeLocal(date: Date | string | null) {
   return new Date(date).toISOString().slice(0, 16);
 }
 
+function DateTimeField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [datePart, timePart] = value ? value.split("T") : ["", ""];
+
+  return (
+    <div className="flex gap-2">
+      <Input
+        type="date"
+        className="flex-1"
+        value={datePart}
+        onChange={(e) => onChange(e.target.value ? `${e.target.value}T${timePart || "00:00"}` : "")}
+      />
+      <Input
+        type="time"
+        className="flex-1"
+        value={timePart}
+        onChange={(e) => onChange(datePart ? `${datePart}T${e.target.value}` : "")}
+      />
+    </div>
+  );
+}
+
 function useSettingsFormSchema() {
   const t = useTranslations("ContestsPage.Tabs.Settings.Form");
 
@@ -138,7 +165,7 @@ export function EditContestForm({ contest }: { contest: Contest }) {
               <FormItem>
                 <FormLabel>{t("startDateLabel")}</FormLabel>
                 <FormControl>
-                  <Input type="datetime-local" {...field} />
+                  <DateTimeField value={field.value ?? ""} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -152,7 +179,7 @@ export function EditContestForm({ contest }: { contest: Contest }) {
               <FormItem>
                 <FormLabel>{t("endDateLabel")}</FormLabel>
                 <FormControl>
-                  <Input type="datetime-local" {...field} />
+                  <DateTimeField value={field.value ?? ""} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
