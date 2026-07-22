@@ -235,6 +235,7 @@
     "completed": "Completed",
     "notFound": "Lesson not found",
     "backToRoadmap": "Back to roadmap",
+    "nextLesson": "Next lesson",
     "locked": "Locked",
     "requirementsPrefix": "Requires:",
     "rewardsPrefix": "Rewards:",
@@ -248,7 +249,8 @@
       "primaryLanguage": "Suggested language: {language}",
       "anyLanguage": "You may submit in any language.",
       "submissionsTitle": "Submissions",
-      "lockedNotice": "Complete other lessons to reach the required skill level before attempting this one."
+      "lockedNotice": "Complete other lessons to reach the required skill level before attempting this one.",
+      "codeCopied": "Code copied to clipboard"
     }
   },
   "ImportProblems": {

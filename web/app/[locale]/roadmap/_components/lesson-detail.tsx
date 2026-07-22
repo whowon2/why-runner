@@ -2,14 +2,29 @@
 
 import Editor from "@monaco-editor/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Upload } from "lucide-react";
+import { CheckCircle2, Copy, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
 import { toast } from "sonner";
+import "katex/dist/katex.min.css";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import {
   Select,
   SelectContent,
@@ -46,52 +61,93 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
   }
 
   return (
-    <div className="grid w-full grid-cols-1 gap-8 lg:grid-cols-2">
-      <Card className="bg-transparent shadow-none">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-bold text-2xl">
-            {lesson.problem.title}
-            {lesson.completed && (
-              <Badge className="bg-green-500">{t("completed")}</Badge>
+    <ResizablePanelGroup className="min-h-[70vh]" direction="horizontal">
+      <ResizablePanel
+        className="flex flex-col gap-4 pr-4"
+        defaultSize={40}
+        minSize={25}
+      >
+        <Card className="bg-transparent shadow-none">
+          <CardHeader>
+            <p className="text-muted-foreground text-sm">
+              {lesson.primaryLanguage
+                ? t("Lesson.primaryLanguage", {
+                    language: lesson.primaryLanguage,
+                  })
+                : t("Lesson.anyLanguage")}
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <div className="prose dark:prose-invert max-w-none text-foreground prose-p:leading-relaxed prose-pre:bg-muted/50">
+              <ReactMarkdown
+                rehypePlugins={[rehypeKatex]}
+                remarkPlugins={[remarkMath]}
+              >
+                {lesson.problem.description}
+              </ReactMarkdown>
+            </div>
+            {!lesson.locked && lesson.rewards.themes.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className="text-muted-foreground">
+                  {t("rewardsPrefix")}
+                </span>
+                {lesson.rewards.themes.map((theme) => (
+                  <Badge key={theme} variant="secondary">
+                    +1 {t(`themes.${theme}` as Parameters<typeof t>[0])}
+                  </Badge>
+                ))}
+              </div>
             )}
-            {lesson.locked && <Badge variant="outline">{t("locked")}</Badge>}
-          </CardTitle>
-          <p className="text-muted-foreground text-sm">
-            {lesson.primaryLanguage
-              ? t("Lesson.primaryLanguage", {
-                  language: lesson.primaryLanguage,
-                })
-              : t("Lesson.anyLanguage")}
-          </p>
-        </CardHeader>
-        <CardContent>
-          <pre className="whitespace-pre-wrap">{lesson.problem.description}</pre>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <div className="flex flex-col gap-4">
-        {lesson.locked ? (
+        {lesson.locked && (
           <Card className="bg-transparent shadow-none">
-            <CardContent className="flex flex-col gap-2">
+            <CardContent className="flex flex-col gap-3">
               <p className="text-sm">{t("Lesson.lockedNotice")}</p>
-              <p className="text-muted-foreground text-xs">
-                {t("requirementsPrefix")}{" "}
-                {lesson.unmetRequirements
-                  .map((r) =>
+              <div className="flex flex-col gap-1">
+                {lesson.requirements.map((r) => {
+                  const key =
+                    r.kind === "theme" ? `theme-${r.theme}` : `lang-${r.language}`;
+                  const label =
                     r.kind === "theme"
-                      ? `${t(`themes.${r.theme}` as Parameters<typeof t>[0])} ${r.minValue} (${r.currentValue})`
-                      : `${r.language} ${r.minValue} (${r.currentValue})`,
-                  )
-                  .join(", ")}
-              </p>
+                      ? t(`themes.${r.theme}` as Parameters<typeof t>[0])
+                      : r.language;
+                  return (
+                    <div
+                      className={cn(
+                        "flex items-center justify-between text-xs",
+                        r.met ? "text-green-500" : "text-muted-foreground",
+                      )}
+                      key={key}
+                    >
+                      <span className="flex items-center gap-1">
+                        {r.met && <CheckCircle2 className="size-3" />}
+                        {label}
+                      </span>
+                      <span>
+                        {r.currentValue}/{r.minValue}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </CardContent>
           </Card>
-        ) : (
-          <LessonSubmit problemId={lesson.problem.id} />
         )}
+
         <LessonSubmissions problemId={lesson.problem.id} />
-      </div>
-    </div>
+      </ResizablePanel>
+
+      {!lesson.locked && (
+        <>
+          <ResizableHandle withHandle />
+          <ResizablePanel className="flex flex-col gap-4 pl-4" minSize={25}>
+            <LessonSubmit problemId={lesson.problem.id} />
+          </ResizablePanel>
+        </>
+      )}
+    </ResizablePanelGroup>
   );
 }
 
@@ -153,7 +209,7 @@ function LessonSubmit({ problemId }: { problemId: string }) {
         </div>
         <Editor
           className="rounded-none"
-          height={300}
+          height="min(600px, 60vh)"
           language={language || ""}
           onChange={(c) => c !== undefined && setCode(c)}
           theme={
@@ -187,30 +243,55 @@ function LessonSubmissions({ problemId }: { problemId: string }) {
       <CardHeader>
         <CardTitle>{t("submissionsTitle")}</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-2">
+      <CardContent>
         {!submissions || submissions.length === 0 ? (
           <p className="text-muted-foreground text-sm">
             {tCommon("noSubmissions")}
           </p>
         ) : (
-          submissions.map((s) => (
-            <div
-              className={cn("flex items-center justify-between rounded-md border px-3 py-2 text-sm", {
-                "text-green-500 border-green-500": s.status === "PASSED",
-                "text-red-500 border-red-500": s.status === "FAILED",
-                "text-orange-500 border-orange-500": s.status === "ERROR",
-                "text-gray-500 border-gray-500": s.status === "PENDING",
-                "text-blue-500 border-blue-500": s.status === "RUNNING",
-              })}
-              key={s.id}
-            >
-              <span>{s.createdAt.toLocaleTimeString()}</span>
-              <span className="flex items-center gap-1">
-                {s.status === "PASSED" && <CheckCircle2 className="size-4" />}
-                {s.language} · {s.status}
-              </span>
-            </div>
-          ))
+          <Accordion className="flex w-full flex-col gap-2" collapsible type="single">
+            {submissions.map((s) => (
+              <AccordionItem
+                className={cn("rounded-md border px-3 last:border", {
+                  "text-green-500 border-green-500": s.status === "PASSED",
+                  "text-red-500 border-red-500": s.status === "FAILED",
+                  "text-orange-500 border-orange-500": s.status === "ERROR",
+                  "text-gray-500 border-gray-500": s.status === "PENDING",
+                  "text-blue-500 border-blue-500": s.status === "RUNNING",
+                })}
+                key={s.id}
+                value={s.id}
+              >
+                <AccordionTrigger className="text-sm">
+                  <span>{s.createdAt.toLocaleTimeString()}</span>
+                  <span className="flex items-center gap-1">
+                    {s.status === "PASSED" && (
+                      <CheckCircle2 className="size-4" />
+                    )}
+                    {s.language} · {s.status}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="relative">
+                    <Button
+                      className="absolute top-2 right-2 size-7"
+                      onClick={() => {
+                        navigator.clipboard.writeText(s.code);
+                        toast.success(t("codeCopied"));
+                      }}
+                      size="icon"
+                      variant="outline"
+                    >
+                      <Copy className="size-3.5" />
+                    </Button>
+                    <pre className="max-h-60 w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 pr-10 font-mono text-xs text-foreground">
+                      {s.code}
+                    </pre>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         )}
       </CardContent>
     </Card>

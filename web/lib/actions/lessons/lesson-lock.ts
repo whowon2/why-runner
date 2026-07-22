@@ -12,8 +12,12 @@ export type Requirement =
   | { kind: "language"; language: Language; minValue: number };
 
 export type UnmetRequirement = Requirement & { currentValue: number };
+export type RequirementStatus = Requirement & {
+  currentValue: number;
+  met: boolean;
+};
 
-export async function getUnmetRequirements({
+export async function getRequirementsStatus({
   userId,
   themeRequirements,
   languageRequirements,
@@ -21,7 +25,7 @@ export async function getUnmetRequirements({
   userId: string;
   themeRequirements: { theme: LessonTheme; minValue: number }[];
   languageRequirements: { language: Language; minValue: number }[];
-}): Promise<UnmetRequirement[]> {
+}): Promise<RequirementStatus[]> {
   if (!themeRequirements.length && !languageRequirements.length) return [];
 
   const [themeSkills, languageSkills] = await Promise.all([
@@ -54,26 +58,36 @@ export async function getUnmetRequirements({
     languageSkills.map((s) => [s.language, s.value]),
   );
 
-  const unmet: UnmetRequirement[] = [];
+  const statuses: RequirementStatus[] = [];
 
   for (const req of themeRequirements) {
     const currentValue = themeValues.get(req.theme) ?? 0;
-    if (currentValue < req.minValue) {
-      unmet.push({ kind: "theme", theme: req.theme, minValue: req.minValue, currentValue });
-    }
+    statuses.push({
+      kind: "theme",
+      theme: req.theme,
+      minValue: req.minValue,
+      currentValue,
+      met: currentValue >= req.minValue,
+    });
   }
 
   for (const req of languageRequirements) {
     const currentValue = languageValues.get(req.language) ?? 0;
-    if (currentValue < req.minValue) {
-      unmet.push({
-        kind: "language",
-        language: req.language,
-        minValue: req.minValue,
-        currentValue,
-      });
-    }
+    statuses.push({
+      kind: "language",
+      language: req.language,
+      minValue: req.minValue,
+      currentValue,
+      met: currentValue >= req.minValue,
+    });
   }
 
-  return unmet;
+  return statuses;
+}
+
+export async function getUnmetRequirements(
+  args: Parameters<typeof getRequirementsStatus>[0],
+): Promise<UnmetRequirement[]> {
+  const statuses = await getRequirementsStatus(args);
+  return statuses.filter((s) => !s.met);
 }
