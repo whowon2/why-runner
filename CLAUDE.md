@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-WhyRunner — a competitive/judged code-execution platform (TCC / thesis project, IFMG). Two independent services, each its own git repository:
+WhyRunner — a competitive/judged code-execution platform (TCC / thesis project, IFMG). Two independent services, now folded into this single git repository (previously separate nested repos):
 
 - `web/` — Next.js 16 frontend + server actions + Postgres (Drizzle). See `web/CLAUDE.md`.
 - `judge/` — Rust worker that executes submitted code in sandboxed Docker containers and grades it. See `judge/CLAUDE.md`.
 
-This root directory is **not itself a git repo** — `web/` and `judge/` are separate repos nested here, plus non-code TCC material (below). Always work inside the relevant subdirectory's repo; there's no root-level build/test/lint command that spans both.
+This root directory is the git repo root for both `web/` and `judge/`, plus non-code TCC material (below). There's still no root-level build/test/lint command that spans both — run each subdirectory's own tooling from inside it.
 
 ## How the two services connect
 
