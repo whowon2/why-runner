@@ -50,7 +50,7 @@ export function MyContests() {
       ) : contests.length === 0 ? (
         <Card className="border-dashed shadow-sm bg-muted/20 transition-all hover:bg-muted/30 hover:shadow-md border-2">
           <CardContent className="flex flex-col items-center justify-center p-14 text-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-indigo-500/10 mb-6 transition-transform hover:scale-110 hover:bg-indigo-500/20 cursor-default">
+            <div className="flex h-20 w-20 items-center justify-center rounded-none bg-indigo-500/10 mb-6 transition-transform hover:scale-110 hover:bg-indigo-500/20 cursor-default">
               <Trophy className="h-10 w-10 text-indigo-500" />
             </div>
             <CardTitle className="mb-3 text-2xl font-semibold">

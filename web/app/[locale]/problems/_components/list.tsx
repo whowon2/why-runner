@@ -1,11 +1,30 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Loader, Search } from "lucide-react";
+import {
+  type ColumnDef,
+  type OnChangeFn,
+  type SortingState,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Code2,
+  Loader,
+  XCircle,
+} from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
+import { ListPageHeader } from "@/components/list-page-header";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -14,11 +33,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import type { ProblemDifficulty } from "@/drizzle/schema";
 import { useProblems } from "@/hooks/use-problems";
+import type {
+  getProblems,
+  ProblemSortBy,
+  SortDirection,
+} from "@/lib/actions/problems/get-problems";
 import { Link, useRouter } from "@/i18n/navigation";
 import { DifficultyBadge } from "./badge";
 import { ImportProblems } from "./import";
+
+type ProblemRow = Awaited<ReturnType<typeof getProblems>>["data"][number];
 
 interface ProblemFilters {
   my: boolean;
@@ -42,6 +76,11 @@ export function ProblemsList() {
     "difficulty",
   ) as ProblemFilters["difficulty"];
   const my = searchParams.get("my") === "true";
+  const sortBy = (searchParams.get("sortBy") || undefined) as
+    | ProblemSortBy
+    | undefined;
+  const sortDirection = (searchParams.get("sortDirection") ||
+    "desc") as SortDirection;
 
   // 2. Fetch Data (Server Side Filtered)
   const {
@@ -54,6 +93,8 @@ export function ProblemsList() {
     search,
     difficulty,
     my,
+    sortBy,
+    sortDirection,
   });
 
   const problems = queryData?.data || [];
@@ -86,72 +127,135 @@ export function ProblemsList() {
     router.replace(`?${newParams.toString()}`);
   };
 
-  return (
-    <div className="w-full max-w-7xl flex-1 flex flex-col gap-4">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="font-bold text-2xl">{t("title")}</h1>
-        <div className="flex gap-2">
-          <ImportProblems />
-          <Link href={"/problems/new"}>
-            <Button variant={"outline"}>{t("Create.button")}</Button>
+  const sorting: SortingState = useMemo(
+    () =>
+      sortBy === "solvedBy"
+        ? [{ id: "solvedByCount", desc: sortDirection === "desc" }]
+        : [],
+    [sortBy, sortDirection],
+  );
+
+  const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
+    const next = typeof updater === "function" ? updater(sorting) : updater;
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.delete("page");
+
+    const column = next[0];
+    if (!column) {
+      newParams.delete("sortBy");
+      newParams.delete("sortDirection");
+    } else {
+      newParams.set("sortBy", "solvedBy");
+      newParams.set("sortDirection", column.desc ? "desc" : "asc");
+    }
+
+    router.replace(`?${newParams.toString()}`);
+  };
+
+  const columns = useMemo<ColumnDef<ProblemRow>[]>(
+    () => [
+      {
+        accessorKey: "title",
+        header: t("Table.name"),
+        enableSorting: false,
+        cell: ({ row }) => (
+          <Link
+            className="flex items-center gap-2 font-medium hover:underline"
+            href={`/problems/${row.original.slug}`}
+          >
+            {row.original.title}
+            <DifficultyBadge difficulty={row.original.difficulty} />
           </Link>
-        </div>
-      </div>
+        ),
+      },
+      {
+        accessorKey: "solvedByCount",
+        header: t("Table.solvedBy"),
+        enableSorting: true,
+      },
+      {
+        id: "solved",
+        header: t("Table.solved"),
+        enableSorting: false,
+        cell: ({ row }) =>
+          row.original.solvedByMe ? (
+            <CheckCircle2 className="h-4 w-4 text-green-500" />
+          ) : (
+            <XCircle className="h-4 w-4 text-muted-foreground" />
+          ),
+      },
+    ],
+    [t],
+  );
 
-      {/* Filter Toolbar */}
-      <div className="flex flex-col md:flex-row gap-4 p-4 border rounded-lg bg-card text-card-foreground shadow-sm">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={t("Filters.searchPlaceholder")}
-            className="pl-9"
-            defaultValue={search} // Use defaultValue to prevent re-render on every keystroke
-            // Ideally, debounce this updateFilter call
-            onBlur={(e) => updateFilter("q", e.target.value)}
-            onKeyDown={(e) =>
-              e.key === "Enter" && updateFilter("q", e.currentTarget.value)
-            }
-          />
-        </div>
+  const table = useReactTable({
+    data: problems,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    manualSorting: true,
+    onSortingChange: handleSortingChange,
+    state: { sorting },
+  });
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Label htmlFor="difficulty" className="hidden sm:block">
-              {t("Filters.difficulty")}
-            </Label>
-            <Select
-              value={difficulty || "all"}
-              onValueChange={(e) => updateFilter("difficulty", e)}
-            >
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder={t("Filters.Difficults.all")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">
-                  {t("Filters.Difficults.all")}
-                </SelectItem>
-                {difficultyOptions.map((diff) => (
-                  <SelectItem key={diff} value={diff}>
-                    {t(`Filters.Difficults.${diff}`)}
+  return (
+    <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col gap-4 py-8">
+      <ListPageHeader
+        icon={Code2}
+        title={t("title")}
+        subtitle={t("subtitle")}
+        action={
+          <>
+            <ImportProblems />
+            <Link href={"/problems/new"}>
+              <Button variant={"outline"}>{t("Create.button")}</Button>
+            </Link>
+          </>
+        }
+        search={{
+          value: search,
+          onChange: (value) => updateFilter("q", value),
+          placeholder: t("Filters.searchPlaceholder"),
+        }}
+        filters={
+          <>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="difficulty" className="hidden sm:block">
+                {t("Filters.difficulty")}
+              </Label>
+              <Select
+                value={difficulty || "all"}
+                onValueChange={(e) => updateFilter("difficulty", e)}
+              >
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder={t("Filters.Difficults.all")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    {t("Filters.Difficults.all")}
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+                  {difficultyOptions.map((diff) => (
+                    <SelectItem key={diff} value={diff}>
+                      {t(`Filters.Difficults.${diff}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="flex items-center gap-2 border-l pl-4">
-            <Checkbox
-              id="my"
-              checked={my}
-              onCheckedChange={(v) => updateFilter("my", !!v)}
-            />
-            <Label htmlFor="my" className="cursor-pointer">
-              {t("Filters.my")}
-            </Label>
-          </div>
-        </div>
-      </div>
+            <div className="flex items-center gap-2 border-l pl-4">
+              <Checkbox
+                id="my"
+                checked={my}
+                onCheckedChange={(v) => updateFilter("my", !!v)}
+              />
+              <Label htmlFor="my" className="cursor-pointer">
+                {t("Filters.my")}
+              </Label>
+            </div>
+          </>
+        }
+      />
 
       {/* List Content */}
       {isPending ? (
@@ -159,22 +263,64 @@ export function ProblemsList() {
           <Loader className="animate-spin" />
         </div>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="rounded-lg border">
           {problems.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground border rounded-lg border-dashed">
+            <div className="text-center py-12 text-muted-foreground border-dashed">
               {t("noResults")}
             </div>
           ) : (
-            <div className={isPlaceholderData ? "opacity-50" : ""}>
-              {problems.map((problem) => (
-                <Link href={`/problems/${problem.slug}`} key={problem.id}>
-                  <div className="flex justify-between items-center rounded-lg border p-4 hover:bg-muted/50 transition-colors my-2">
-                    <h3 className="font-bold">{problem.title}</h3>
-                    <DifficultyBadge difficulty={problem.difficulty} />
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <Table className={isPlaceholderData ? "opacity-50" : ""}>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                          <button
+                            className="flex items-center gap-1 hover:text-foreground"
+                            onClick={header.column.getToggleSortingHandler()}
+                            type="button"
+                          >
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                            {{
+                              asc: <ArrowUp className="h-3.5 w-3.5" />,
+                              desc: <ArrowDown className="h-3.5 w-3.5" />,
+                            }[header.column.getIsSorted() as string] ?? (
+                              <ArrowUpDown className="h-3.5 w-3.5" />
+                            )}
+                          </button>
+                        ) : (
+                          flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )
+                        )}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    className="cursor-pointer"
+                    key={row.id}
+                    onClick={() =>
+                      router.push(`/problems/${row.original.slug}`)
+                    }
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </div>
       )}

@@ -46,16 +46,16 @@ export function ContestDescription({ contestId }: { contestId: string }) {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center gap-6 mt-6 mb-8 w-full max-w-6xl p-6 rounded-3xl bg-white/40 dark:bg-neutral-900/40 backdrop-blur-xl border border-white/20 shadow-2xl shadow-indigo-500/5">
+    <div className="relative flex flex-col items-center justify-center gap-6 mt-6 mb-8 w-full max-w-6xl p-6 rounded-none bg-white/40 dark:bg-neutral-900/40 backdrop-blur-xl border border-white/20 shadow-2xl shadow-indigo-500/5">
       {/* Status badges */}
       <div className="flex items-center gap-3 flex-wrap justify-center mt-2">
         <span
-          className={`text-xs uppercase font-bold tracking-widest px-3 py-1 rounded-full border ${status.color}`}
+          className={`text-xs uppercase font-bold tracking-widest px-3 py-1 rounded-none border ${status.color}`}
         >
           {t(`card.status.${status.badge}`)}
         </span>
         {c.isPrivate && (
-          <span className="flex items-center gap-1.5 text-xs uppercase font-bold tracking-widest px-3 py-1 rounded-full border border-muted text-muted-foreground bg-muted/40">
+          <span className="flex items-center gap-1.5 text-xs uppercase font-bold tracking-widest px-3 py-1 rounded-none border border-muted text-muted-foreground bg-muted/40">
             <Lock className="w-3.5 h-3.5" />
             {t("Tabs.Description.private")}
           </span>
@@ -82,8 +82,8 @@ export function ContestDescription({ contestId }: { contestId: string }) {
       {/* Stats & Info Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full mt-4">
         {/* Countdown */}
-        <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-muted/30 border border-muted/50 gap-2 transition-transform hover:scale-[1.02]">
-          <div className="p-2 rounded-full bg-indigo-500/10 text-indigo-500">
+        <div className="flex flex-col items-center justify-center p-4 rounded-none bg-muted/30 border border-muted/50 gap-2 transition-transform hover:scale-[1.02]">
+          <div className="p-2 rounded-none bg-indigo-500/10 text-indigo-500">
             <CalendarDays className="w-5 h-5" />
           </div>
           <span className="text-sm font-semibold text-center">
@@ -92,8 +92,8 @@ export function ContestDescription({ contestId }: { contestId: string }) {
         </div>
 
         {/* Date range */}
-        <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-muted/30 border border-muted/50 gap-2 transition-transform hover:scale-[1.02]">
-          <div className="p-2 rounded-full bg-emerald-500/10 text-emerald-500">
+        <div className="flex flex-col items-center justify-center p-4 rounded-none bg-muted/30 border border-muted/50 gap-2 transition-transform hover:scale-[1.02]">
+          <div className="p-2 rounded-none bg-emerald-500/10 text-emerald-500">
             <Calendar className="w-5 h-5" />
           </div>
           <div className="flex flex-col items-center text-xs font-medium text-muted-foreground text-center">
@@ -104,7 +104,7 @@ export function ContestDescription({ contestId }: { contestId: string }) {
         </div>
 
         {/* Participants stat card */}
-        <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-muted/30 border border-muted/50 gap-1 transition-transform hover:scale-[1.02]">
+        <div className="flex flex-col items-center justify-center p-4 rounded-none bg-muted/30 border border-muted/50 gap-1 transition-transform hover:scale-[1.02]">
           <div className="flex items-center gap-2 mb-1">
             <Users className="w-5 h-5 text-blue-500" />
             <span className="text-2xl font-bold">{c.users.length}</span>
@@ -115,7 +115,7 @@ export function ContestDescription({ contestId }: { contestId: string }) {
         </div>
 
         {/* Problems stat card */}
-        <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-muted/30 border border-muted/50 gap-1 transition-transform hover:scale-[1.02]">
+        <div className="flex flex-col items-center justify-center p-4 rounded-none bg-muted/30 border border-muted/50 gap-1 transition-transform hover:scale-[1.02]">
           <div className="flex items-center gap-2 mb-1">
             <ListOrdered className="w-5 h-5 text-purple-500" />
             <span className="text-2xl font-bold">{c.problems.length}</span>

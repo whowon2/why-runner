@@ -229,7 +229,7 @@ export function UploadCode({
           </div>
         </div>
         <Editor
-          className="rounded"
+          className="rounded-none"
           height={"100%"}
           language={language || ""}
           onChange={(c) => {

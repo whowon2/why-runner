@@ -21,13 +21,13 @@ export function Participants({ contestId }: { contestId: string }) {
         {participants.map((entry) => (
           <div
             key={entry.userId}
-            className="flex items-center gap-3 rounded border p-3"
+            className="flex items-center gap-3 rounded-none border p-3"
           >
             {entry.user.image && (
               <img
                 src={entry.user.image}
                 alt={entry.user.name}
-                className="h-8 w-8 rounded-full"
+                className="h-8 w-8 rounded-none"
               />
             )}
             <div>

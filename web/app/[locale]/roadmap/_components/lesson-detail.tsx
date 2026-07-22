@@ -152,7 +152,7 @@ function LessonSubmit({ problemId }: { problemId: string }) {
           </Button>
         </div>
         <Editor
-          className="rounded"
+          className="rounded-none"
           height={300}
           language={language || ""}
           onChange={(c) => c !== undefined && setCode(c)}

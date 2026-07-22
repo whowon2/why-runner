@@ -65,7 +65,7 @@ export function SelectProblem({
         return (
           <RadioGroup.Item
             className={cn(
-              "cursor-pointer rounded px-4 py-2 ring-[1px] ring-border transition-all duration-200 hover:bg-secondary data-[state=checked]:ring-2 data-[state=checked]:ring-secondary min-w-[60px]",
+              "cursor-pointer rounded-none px-4 py-2 ring-[1px] ring-border transition-all duration-200 hover:bg-secondary data-[state=checked]:ring-2 data-[state=checked]:ring-secondary min-w-[60px]",
               {
                 "bg-green-500 text-white": isAnswered,
               },

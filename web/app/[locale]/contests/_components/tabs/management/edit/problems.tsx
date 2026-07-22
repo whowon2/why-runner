@@ -126,11 +126,11 @@ export function EditContestProblems({
       <div className="flex flex-col gap-2">
         {orderedProblems.map((probOnCont, index) => (
           <div
-            className="flex items-center justify-between rounded border p-2"
+            className="flex items-center justify-between rounded-none border p-2"
             key={probOnCont.problemId}
           >
             <div className="flex items-center gap-3">
-              <span className="flex h-7 w-7 items-center justify-center rounded bg-muted font-bold text-sm">
+              <span className="flex h-7 w-7 items-center justify-center rounded-none bg-muted font-bold text-sm">
                 {LETTERS[index] ?? index + 1}
               </span>
               <p>{probOnCont.problem.title}</p>

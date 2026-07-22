@@ -76,7 +76,7 @@ export function Feed() {
                 />
                 <CardHeader className="flex flex-row items-center gap-4 space-y-0 pt-6">
                   <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-2xl shrink-0 transition-colors ${isContest ? "bg-indigo-500/10 group-hover:bg-indigo-500/20" : "bg-emerald-500/10 group-hover:bg-emerald-500/20"}`}
+                    className={`flex h-12 w-12 items-center justify-center rounded-none shrink-0 transition-colors ${isContest ? "bg-indigo-500/10 group-hover:bg-indigo-500/20" : "bg-emerald-500/10 group-hover:bg-emerald-500/20"}`}
                   >
                     {isContest ? (
                       <Trophy className="h-6 w-6 text-indigo-500" />
@@ -125,7 +125,7 @@ export function Feed() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 dark:hover:text-rose-400 rounded-full px-4"
+                      className="text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 dark:hover:text-rose-400 rounded-none px-4"
                     >
                       <Heart className="w-4 h-4 mr-2" />
                       {t("like")}
@@ -133,7 +133,7 @@ export function Feed() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-muted-foreground hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 dark:hover:text-blue-400 rounded-full px-4"
+                      className="text-muted-foreground hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 dark:hover:text-blue-400 rounded-none px-4"
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />
                       {t("discuss")}
@@ -142,7 +142,7 @@ export function Feed() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-muted-foreground hover:text-foreground rounded-full"
+                    className="text-muted-foreground hover:text-foreground rounded-none"
                   >
                     <Share2 className="w-4 h-4" />
                   </Button>
@@ -153,7 +153,7 @@ export function Feed() {
         )}
 
         <div className="flex flex-col items-center justify-center pt-8 pb-12 text-muted-foreground space-y-3">
-          <div className="p-4 rounded-full bg-muted/30">
+          <div className="p-4 rounded-none bg-muted/30">
             <Flame className="w-8 h-8 text-orange-500/70" />
           </div>
           <p className="text-sm font-medium">{t("caughtUp")}</p>

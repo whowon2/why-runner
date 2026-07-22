@@ -158,7 +158,7 @@ export function PasswordInputStrengthChecker() {
             <div
               key={i}
               className={cn(
-                "h-1 flex-1 rounded-full",
+                "h-1 flex-1 rounded-none",
                 strengthResult.score > i ? color : "bg-secondary",
               )}
             />

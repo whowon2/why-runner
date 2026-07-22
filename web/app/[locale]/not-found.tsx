@@ -11,7 +11,7 @@ export default async function NotFound() {
     <div className="flex items-center justify-center min-h-[60vh] p-8">
       <Card className="border-dashed border-2 bg-muted/20 max-w-lg w-full">
         <CardContent className="flex flex-col items-center p-10 text-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-red-500/10 mb-6">
+          <div className="flex h-20 w-20 items-center justify-center rounded-none bg-red-500/10 mb-6">
             <TerminalSquare className="h-10 w-10 text-red-500" />
           </div>
 
@@ -25,7 +25,7 @@ export default async function NotFound() {
           <div className="w-full rounded-lg bg-muted/40 border border-border p-4 text-left font-mono text-sm space-y-1.5 mb-8">
             <p className="text-muted-foreground">{t("promptLine")}</p>
             <p>
-              <span className="inline-block px-1.5 py-0.5 rounded bg-red-500/10 text-red-500 font-semibold mr-2">
+              <span className="inline-block px-1.5 py-0.5 rounded-none bg-red-500/10 text-red-500 font-semibold mr-2">
                 {t("verdict")}
               </span>
               <span className="text-muted-foreground">{t("statusLine")}</span>

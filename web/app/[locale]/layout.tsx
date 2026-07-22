@@ -1,3 +1,4 @@
+import { Geist_Mono } from "next/font/google";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { Footer } from "@/components/footer";
@@ -6,6 +7,11 @@ import { UserDock } from "@/components/user-dock";
 import { Providers } from "@/providers";
 import "../globals.css";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   description: "",
@@ -19,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={geistMono.variable}>
       <body className="flex flex-col min-h-screen justify-between scroll-smooth">
         <NextIntlClientProvider>
           <NuqsAdapter>

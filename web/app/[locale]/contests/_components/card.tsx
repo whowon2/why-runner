@@ -57,12 +57,12 @@ export function ContestCard({
           <div className="space-y-1.5 flex-1 pr-4">
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <span
-                className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border ${status.color}`}
+                className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-none border ${status.color}`}
               >
                 {t(`card.status.${status.badge}`)}
               </span>
               {contest.isPrivate && (
-                <span className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border border-muted text-muted-foreground bg-muted/40">
+                <span className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-none border border-muted text-muted-foreground bg-muted/40">
                   <Lock className="w-3 h-3" />
                   {t("card.private")}
                 </span>
@@ -124,7 +124,7 @@ export function ContestCard({
               </span>
             </div>
 
-            <div className="ml-auto w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors text-muted-foreground">
+            <div className="ml-auto w-8 h-8 rounded-none bg-muted/50 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors text-muted-foreground">
               <ChevronRight className="w-4 h-4" />
             </div>
           </div>

@@ -344,7 +344,7 @@ export function NewProblem() {
               </h1>
               <div className="shrink-0 mt-2 sm:mt-0">
                 <span
-                  className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+                  className={`px-4 py-1.5 rounded-none text-xs font-bold uppercase tracking-wider ${
                     formValues.difficulty === "easy"
                       ? "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400"
                       : formValues.difficulty === "medium"

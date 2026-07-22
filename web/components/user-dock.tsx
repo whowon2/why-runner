@@ -84,7 +84,7 @@ export function UserDock() {
                     aria-label={item.label}
                     className={cn(
                       buttonVariants({ variant: "ghost", size: "icon" }),
-                      "size-12 rounded-full",
+                      "size-12 rounded-none",
                       {
                         "text-secondary": pathname === item.href,
                       },
@@ -111,7 +111,7 @@ export function UserDock() {
                     referrerPolicy="no-referrer"
                     className={cn(
                       buttonVariants({ variant: "ghost", size: "icon" }),
-                      "size-12 rounded-full",
+                      "size-12 rounded-none",
                     )}
                   >
                     <social.icon className="size-4" />

@@ -36,7 +36,7 @@ export function ContestManagement({ contest }: { contest: Contest }) {
               <EditContest contestId={contest.id} />
             </div>
           ) : (
-            <div className="p-6 rounded-2xl border bg-muted/20 flex flex-col justify-center items-center text-center h-full min-h-[150px]">
+            <div className="p-6 rounded-none border bg-muted/20 flex flex-col justify-center items-center text-center h-full min-h-[150px]">
               <p className="text-muted-foreground font-medium">
                 {t("contestAlreadyStarted")}
               </p>
@@ -93,7 +93,7 @@ export function ContestManagement({ contest }: { contest: Contest }) {
               {t("dangerZone")}
             </h2>
           </div>
-          <div className="p-6 rounded-2xl border border-rose-500/30 bg-rose-500/5">
+          <div className="p-6 rounded-none border border-rose-500/30 bg-rose-500/5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="max-w-xl">
                 <h3 className="text-lg font-semibold text-rose-600 dark:text-rose-400 mb-1">

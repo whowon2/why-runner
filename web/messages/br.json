@@ -93,6 +93,7 @@
   },
   "ProblemsPage": {
     "title": "Problemas",
+    "subtitle": "Explore e resolva desafios de programação competitiva",
     "noResults": "Nenhum problema encontrado com os filtros atuais.",
     "notFound": "Problema não encontrado",
     "pagination": {
@@ -141,6 +142,62 @@
         "all": "todas",
         "undefined": "todas",
         "null": "todas"
+      }
+    },
+    "Table": {
+      "name": "Nome",
+      "solvedBy": "Resolvido por",
+      "solved": "Resolvido",
+      "yes": "Sim",
+      "no": "Não"
+    },
+    "Workspace": {
+      "tabs": {
+        "task": "Tarefa",
+        "submit": "Enviar",
+        "results": "Resultados",
+        "statistics": "Estatísticas",
+        "tests": "Testes"
+      },
+      "Task": {
+        "timeLimit": "Limite de tempo: {seconds, number, ::.00} s",
+        "memoryLimit": "Limite de memória: {mb} MB"
+      },
+      "Submit": {
+        "languagePlaceholder": "Selecione uma linguagem",
+        "submitButton": "Enviar",
+        "selectLanguage": "Selecione uma linguagem primeiro",
+        "emptyCode": "O código não pode estar vazio",
+        "submitted": "Envio criado",
+        "failedSubmit": "Falha ao enviar"
+      },
+      "Results": {
+        "title": "Envios",
+        "time": "Horário",
+        "language": "Linguagem",
+        "codeSize": "Tamanho do código",
+        "result": "Resultado",
+        "details": "Detalhes",
+        "noSubmissions": "Nenhum envio ainda",
+        "chars": "{count} car.",
+        "detailsTitle": "Detalhes do envio",
+        "code": "Código",
+        "inputOutput": "Entrada / Saída"
+      },
+      "Statistics": {
+        "title": "Resumo da tarefa",
+        "solvedBy": "Resolvido por",
+        "attemptedBy": "Tentado por",
+        "successRate": "Taxa de sucesso"
+      },
+      "Tests": {
+        "title": "Testes",
+        "sampleTitle": "Casos de teste de exemplo",
+        "fullTitle": "Todos os casos de teste",
+        "locked": "Resolva este problema para desbloquear o conjunto completo de testes e o download.",
+        "download": "Baixar todos os testes em um arquivo zip",
+        "input": "Entrada",
+        "output": "Saída"
       }
     }
   },

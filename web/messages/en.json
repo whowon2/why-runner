@@ -93,6 +93,7 @@
   },
   "ProblemsPage": {
     "title": "Problems",
+    "subtitle": "Browse and solve competitive programming challenges",
     "noResults": "No problems found matching your filters.",
     "notFound": "Problem not found",
     "pagination": {
@@ -142,6 +143,62 @@
         "all": "all",
         "undefined": "all",
         "null": "all"
+      }
+    },
+    "Table": {
+      "name": "Name",
+      "solvedBy": "Solved by",
+      "solved": "Solved",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "Workspace": {
+      "tabs": {
+        "task": "Task",
+        "submit": "Submit",
+        "results": "Results",
+        "statistics": "Statistics",
+        "tests": "Tests"
+      },
+      "Task": {
+        "timeLimit": "Time limit: {seconds, number, ::.00} s",
+        "memoryLimit": "Memory limit: {mb} MB"
+      },
+      "Submit": {
+        "languagePlaceholder": "Select a language",
+        "submitButton": "Submit",
+        "selectLanguage": "Select a language first",
+        "emptyCode": "Code cannot be empty",
+        "submitted": "Submission created",
+        "failedSubmit": "Failed to submit"
+      },
+      "Results": {
+        "title": "Submissions",
+        "time": "Time",
+        "language": "Language",
+        "codeSize": "Code size",
+        "result": "Result",
+        "details": "Details",
+        "noSubmissions": "No submissions yet",
+        "chars": "{count} ch.",
+        "detailsTitle": "Submission details",
+        "code": "Code",
+        "inputOutput": "Input / Output"
+      },
+      "Statistics": {
+        "title": "Task summary",
+        "solvedBy": "Solved by",
+        "attemptedBy": "Attempted by",
+        "successRate": "Success rate"
+      },
+      "Tests": {
+        "title": "Tests",
+        "sampleTitle": "Sample test cases",
+        "fullTitle": "All test cases",
+        "locked": "Solve this problem to unlock the full test set and download.",
+        "download": "Download all tests as a zip file",
+        "input": "Input",
+        "output": "Output"
       }
     }
   },

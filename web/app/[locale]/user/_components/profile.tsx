@@ -52,7 +52,7 @@ export default function Profile({ user }: { user: User }) {
       <Card className="w-full overflow-hidden border-none shadow-md">
         <Skeleton className="h-48 w-full rounded-none" />
         <CardContent className="relative px-6 pb-6">
-          <Skeleton className="absolute -top-16 left-6 h-32 w-32 rounded-full border-4 border-background" />
+          <Skeleton className="absolute -top-16 left-6 h-32 w-32 rounded-none border-4 border-background" />
           <div className="mt-20 space-y-4">
             <Skeleton className="h-8 w-48" />
             <Skeleton className="h-4 w-96" />
@@ -100,7 +100,7 @@ export default function Profile({ user }: { user: User }) {
           type="button"
           disabled={isUploading}
           onClick={() => coverInputRef.current?.click()}
-          className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-black/60 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-black/80 disabled:opacity-50 disabled:pointer-events-none"
+          className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-none bg-black/60 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-black/80 disabled:opacity-50 disabled:pointer-events-none"
         >
           <Camera className="h-4 w-4" />
           {t("changeCover")}
@@ -111,7 +111,7 @@ export default function Profile({ user }: { user: User }) {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           {/* Avatar breakout */}
           <div className="relative -mt-16 sm:-mt-20 inline-block shrink-0">
-            <div className="rounded-full border-4 border-background bg-background shadow-xl overflow-hidden h-32 w-32 sm:h-40 sm:w-40 relative z-10 transition-transform duration-500 group-hover:scale-105">
+            <div className="rounded-none border-4 border-background bg-background shadow-xl overflow-hidden h-32 w-32 sm:h-40 sm:w-40 relative z-10 transition-transform duration-500 group-hover:scale-105">
               <Image
                 src={
                   data.image ||
@@ -138,13 +138,13 @@ export default function Profile({ user }: { user: User }) {
               type="button"
               disabled={isUploading}
               onClick={() => avatarInputRef.current?.click()}
-              className="absolute bottom-1 right-1 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 disabled:opacity-50 disabled:pointer-events-none"
+              className="absolute bottom-1 right-1 z-20 flex h-9 w-9 items-center justify-center rounded-none bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 disabled:opacity-50 disabled:pointer-events-none"
             >
               <Camera className="h-4 w-4" />
               <span className="sr-only">{t("changeAvatar")}</span>
             </button>
             {/* Glow effect behind avatar */}
-            <div className="absolute inset-0 rounded-full bg-indigo-500/40 blur-xl -z-10 animate-pulse"></div>
+            <div className="absolute inset-0 rounded-none bg-indigo-500/40 blur-xl -z-10 animate-pulse"></div>
           </div>
 
           {/* Top Actions (Follow, Edit Profile, etc) can go here */}

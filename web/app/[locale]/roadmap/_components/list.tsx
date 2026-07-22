@@ -1,8 +1,9 @@
 "use client";
 
-import { CheckCircle2, Circle, Lock } from "lucide-react";
+import { CheckCircle2, Circle, Lock, Map } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,10 +27,7 @@ export function RoadmapList() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="font-bold text-3xl">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("subtitle")}</p>
-      </div>
+      <PageHeader icon={Map} title={t("title")} subtitle={t("subtitle")} />
 
       {!tracks || tracks.length === 0 ? (
         <p className="text-muted-foreground">{t("empty")}</p>

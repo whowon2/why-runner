@@ -25,7 +25,7 @@ export default function GlobalError({
         <button
           type="button"
           onClick={reset}
-          className="px-4 py-2 border rounded hover:bg-gray-100"
+          className="px-4 py-2 border rounded-none hover:bg-gray-100"
         >
           Try again
         </button>

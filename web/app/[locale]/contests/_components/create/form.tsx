@@ -100,7 +100,7 @@ function BasicInfoStep() {
         control={control}
         name="isPrivate"
         render={({ field }) => (
-          <FormItem className="flex items-center gap-3 rounded border p-3">
+          <FormItem className="flex items-center gap-3 rounded-none border p-3">
             <FormControl>
               <Checkbox
                 checked={field.value}
@@ -240,7 +240,7 @@ function ReviewStep() {
           <span className="font-medium text-muted-foreground">
             {t("form.questions")}
           </span>
-          <span className="font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+          <span className="font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-none">
             {values.problems?.length || 0} {t("form.selected")}
           </span>
         </div>
@@ -349,7 +349,7 @@ export function CreateContestForm({
               className="flex flex-col items-center flex-1 relative"
             >
               <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium z-10 transition-colors ${
+                className={`flex h-8 w-8 items-center justify-center rounded-none text-xs font-medium z-10 transition-colors ${
                   step === s.id
                     ? "bg-primary text-primary-foreground border-2 border-primary"
                     : step > s.id

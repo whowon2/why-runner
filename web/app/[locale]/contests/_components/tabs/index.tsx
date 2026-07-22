@@ -63,15 +63,15 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
         onValueChange={handleTabChange}
       >
         <div className="w-full overflow-x-auto pb-4 mb-2 scrollbar-hide">
-          <TabsList className="inline-flex min-w-max h-12 items-center justify-start rounded-full bg-muted/40 p-1 text-muted-foreground border border-muted/50">
+          <TabsList className="inline-flex min-w-max h-12 items-center justify-start rounded-none bg-muted/40 p-1 text-muted-foreground border border-muted/50">
             <TabsTrigger
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-full px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm"
               value="problems"
             >
               {t("Tabs.problems")}
             </TabsTrigger>
             <TabsTrigger
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-full px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-amber-600 dark:data-[state=active]:text-amber-400 data-[state=active]:shadow-sm gap-2"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-amber-600 dark:data-[state=active]:text-amber-400 data-[state=active]:shadow-sm gap-2"
               value="leaderboard"
             >
               {t("Tabs.leaderboard")}
@@ -79,7 +79,7 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
             </TabsTrigger>
             {contest.createdBy === user.id && (
               <TabsTrigger
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-full px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-rose-600 dark:data-[state=active]:text-rose-400 data-[state=active]:shadow-sm"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-rose-600 dark:data-[state=active]:text-rose-400 data-[state=active]:shadow-sm"
                 value="manage"
               >
                 {t("Tabs.manage")}
@@ -94,8 +94,8 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
             value="problems"
           >
             {contest.joinStatus === "pending" ? (
-              <div className="flex flex-col items-center justify-center w-full min-h-[30vh] gap-3 text-center p-8 rounded-3xl bg-muted/20 border border-dashed border-muted-foreground/30">
-                <div className="p-4 rounded-full bg-amber-500/10 text-amber-500">
+              <div className="flex flex-col items-center justify-center w-full min-h-[30vh] gap-3 text-center p-8 rounded-none bg-muted/20 border border-dashed border-muted-foreground/30">
+                <div className="p-4 rounded-none bg-amber-500/10 text-amber-500">
                   <Lock className="w-8 h-8" />
                 </div>
                 <p className="font-semibold text-xl">
