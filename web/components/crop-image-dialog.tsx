@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { useCallback, useState } from "react";
 import Cropper, { type Area } from "react-easy-crop";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ interface CropImageDialogProps {
   cropShape: "round" | "rect";
   title: string;
   onConfirm: (blob: Blob) => Promise<void>;
+  extraControls?: ReactNode;
 }
 
 export function CropImageDialog({
@@ -31,6 +33,7 @@ export function CropImageDialog({
   cropShape,
   title,
   onConfirm,
+  extraControls,
 }: CropImageDialogProps) {
   const t = useTranslations("Common");
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -97,6 +100,7 @@ export function CropImageDialog({
           className="w-full accent-primary"
           aria-label={t("zoom")}
         />
+        {extraControls}
         <DialogFooter>
           <Button
             variant="ghost"

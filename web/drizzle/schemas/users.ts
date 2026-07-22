@@ -20,6 +20,7 @@ export const user = pgTable("user", {
   emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),
   coverImage: text("cover_image"),
+  coverDim: integer("cover_dim").default(60).notNull(),
   bio: text("bio"),
   location: text("location"),
   website: text("website"),

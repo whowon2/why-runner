@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN "cover_dim" integer DEFAULT 60 NOT NULL;

@@ -15,7 +15,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 const DIMENSIONS = {
   avatar: { width: 512, height: 512 },
-  cover: { width: 1600, height: 400 },
+  cover: { width: 1600, height: 900 },
 } as const;
 
 export type ProfileImageKind = keyof typeof DIMENSIONS;
@@ -25,12 +25,20 @@ export async function uploadProfileImage(formData: FormData) {
 
   const file = formData.get("file");
   const kind = formData.get("kind");
+  const dimRaw = formData.get("dim");
 
   if (!(file instanceof File)) {
     throw new Error("No file provided");
   }
   if (kind !== "avatar" && kind !== "cover") {
     throw new Error("Invalid image kind");
+  }
+  let dim: number | undefined;
+  if (kind === "cover" && typeof dimRaw === "string" && dimRaw !== "") {
+    dim = Math.min(100, Math.max(0, Number(dimRaw)));
+    if (Number.isNaN(dim)) {
+      throw new Error("Invalid dim value");
+    }
   }
   if (!ALLOWED_TYPES.has(file.type)) {
     throw new Error("Unsupported file type");
@@ -55,7 +63,11 @@ export async function uploadProfileImage(formData: FormData) {
 
   await db
     .update(user)
-    .set(kind === "avatar" ? { image: url } : { coverImage: url })
+    .set(
+      kind === "avatar"
+        ? { image: url }
+        : { coverImage: url, ...(dim !== undefined ? { coverDim: dim } : {}) },
+    )
     .where(eq(user.id, currentUser.id));
 
   await deleteUploadedImage(
