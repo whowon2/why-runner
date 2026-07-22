@@ -428,7 +428,11 @@
     "logout": "Log out"
   },
   "NotFound": {
-    "title": "Page not found",
+    "verdict": "Runtime Error",
+    "promptLine": "$ ./judge run this_page",
+    "statusLine": "Status: 404",
+    "errorLine": "RuntimeError: page returned None",
+    "title": "404: Page Not Found",
     "description": "The page you are looking for does not exist or has been moved.",
     "goHome": "Go home"
   },

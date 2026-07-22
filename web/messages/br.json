@@ -427,7 +427,11 @@
     "logout": "Sair"
   },
   "NotFound": {
-    "title": "Página não encontrada",
+    "verdict": "Erro em Tempo de Execução",
+    "promptLine": "$ ./judge run esta_pagina",
+    "statusLine": "Status: 404",
+    "errorLine": "RuntimeError: página retornou None",
+    "title": "404: Página Não Encontrada",
     "description": "A página que você está procurando não existe ou foi movida.",
     "goHome": "Ir para o início"
   },
