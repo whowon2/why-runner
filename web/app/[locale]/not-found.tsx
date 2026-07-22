@@ -33,17 +33,12 @@ export default async function NotFound() {
             <p className="text-red-500">{t("errorLine")}</p>
           </div>
 
-          <div className="relative group">
-            <div className="absolute -inset-1 blur-lg bg-linear-to-r from-indigo-500 to-cyan-500 opacity-20 group-hover:opacity-40 transition duration-500 rounded-lg" />
-            <div className="relative">
-              <Link href="/">
-                <Button>
-                  <ArrowLeft />
-                  {t("goHome")}
-                </Button>
-              </Link>
-            </div>
-          </div>
+          <Link href="/">
+            <Button>
+              <ArrowLeft />
+              {t("goHome")}
+            </Button>
+          </Link>
         </CardContent>
       </Card>
     </div>
