@@ -13,6 +13,30 @@
     "genericError": "Ocorreu um erro inesperado.",
     "tryAgain": "Tentar novamente"
   },
+  "CommandPalette": {
+    "title": "Paleta de Comandos",
+    "searchPlaceholder": "Buscar um comando...",
+    "empty": "Nenhum resultado encontrado.",
+    "themeActive": "Ativo",
+    "groups": {
+      "navigation": "Navegação",
+      "create": "Criar",
+      "account": "Conta",
+      "theme": "Tema"
+    },
+    "commands": {
+      "goHome": "Ir para Início",
+      "goProblems": "Ir para Problemas",
+      "goContests": "Ir para Contests",
+      "goRoadmap": "Ir para Trilha",
+      "goSettings": "Ir para Configurações",
+      "goProfile": "Ir para Perfil",
+      "newProblem": "Novo problema",
+      "newContest": "Novo contest",
+      "logout": "Sair",
+      "changeTheme": "Mudar tema"
+    }
+  },
   "ToolTips": {
     "open-file": "Abrir Arquivo",
     "save": "Salvar no navegador",

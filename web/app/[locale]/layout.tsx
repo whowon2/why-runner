@@ -1,6 +1,7 @@
 import { Geist_Mono } from "next/font/google";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
+import { CommandPaletteMount } from "@/components/command-palette/command-palette-mount";
 import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/ui/sonner";
 import { UserDock } from "@/components/user-dock";
@@ -37,6 +38,7 @@ export default function RootLayout({
         <NextIntlClientProvider>
           <NuqsAdapter>
             <Providers>
+              <CommandPaletteMount />
               {children}
               <Toaster />
               <UserDock />

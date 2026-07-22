@@ -13,6 +13,30 @@
     "genericError": "An unexpected error occurred.",
     "tryAgain": "Try again"
   },
+  "CommandPalette": {
+    "title": "Command Palette",
+    "searchPlaceholder": "Search for a command...",
+    "empty": "No results found.",
+    "themeActive": "Active",
+    "groups": {
+      "navigation": "Navigation",
+      "create": "Create",
+      "account": "Account",
+      "theme": "Theme"
+    },
+    "commands": {
+      "goHome": "Go to Home",
+      "goProblems": "Go to Problems",
+      "goContests": "Go to Contests",
+      "goRoadmap": "Go to Roadmap",
+      "goSettings": "Go to Settings",
+      "goProfile": "Go to Profile",
+      "newProblem": "New problem",
+      "newContest": "New contest",
+      "logout": "Log out",
+      "changeTheme": "Change theme"
+    }
+  },
   "ToolTips": {
     "open-file": "Open File",
     "save": "Save on browser",

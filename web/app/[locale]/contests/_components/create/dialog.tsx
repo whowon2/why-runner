@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { parseAsBoolean, useQueryState } from "nuqs";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,10 +19,19 @@ export function CreateContestDialog({
   refetchAction?: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [openFromQuery, setOpenFromQuery] = useQueryState(
+    "createContest",
+    parseAsBoolean.withDefault(false),
+  );
   const t = useTranslations("ContestsPage.createDialog");
 
+  function handleOpenChange(next: boolean) {
+    setIsOpen(next);
+    if (!next && openFromQuery) setOpenFromQuery(null);
+  }
+
   return (
-    <Dialog onOpenChange={setIsOpen} open={isOpen}>
+    <Dialog onOpenChange={handleOpenChange} open={isOpen || openFromQuery}>
       <DialogTrigger asChild={true}>
         <Button variant="outline">{t("button")}</Button>
       </DialogTrigger>
