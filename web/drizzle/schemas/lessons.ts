@@ -27,7 +27,6 @@ export const lesson = pgTable("lesson", {
     .notNull()
     .references(() => problem.id, { onDelete: "cascade" })
     .unique(),
-  theme: LessonTheme().notNull(),
   order: integer("order").default(0).notNull(),
   primaryLanguage: Language("primary_language"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -46,7 +45,79 @@ export const lessonRelations = relations(lesson, ({ one, many }) => ({
     references: [problem.id],
   }),
   completions: many(lessonCompletion),
+  themes: many(lessonTheme),
+  themeRequirements: many(lessonThemeRequirement),
+  languageRequirements: many(lessonLanguageRequirement),
 }));
+
+export const lessonTheme = pgTable(
+  "lesson_themes",
+  {
+    lessonId: uuid("lesson_id")
+      .notNull()
+      .references(() => lesson.id, { onDelete: "cascade" }),
+    theme: LessonTheme().notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.lessonId, t.theme] })],
+);
+
+export type LessonThemeRow = typeof lessonTheme.$inferSelect;
+
+export const lessonThemeRelations = relations(lessonTheme, ({ one }) => ({
+  lesson: one(lesson, {
+    fields: [lessonTheme.lessonId],
+    references: [lesson.id],
+  }),
+}));
+
+export const lessonThemeRequirement = pgTable(
+  "lesson_theme_requirement",
+  {
+    lessonId: uuid("lesson_id")
+      .notNull()
+      .references(() => lesson.id, { onDelete: "cascade" }),
+    theme: LessonTheme().notNull(),
+    minValue: integer("min_value").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.lessonId, t.theme] })],
+);
+
+export type LessonThemeRequirement = typeof lessonThemeRequirement.$inferSelect;
+
+export const lessonThemeRequirementRelations = relations(
+  lessonThemeRequirement,
+  ({ one }) => ({
+    lesson: one(lesson, {
+      fields: [lessonThemeRequirement.lessonId],
+      references: [lesson.id],
+    }),
+  }),
+);
+
+export const lessonLanguageRequirement = pgTable(
+  "lesson_language_requirement",
+  {
+    lessonId: uuid("lesson_id")
+      .notNull()
+      .references(() => lesson.id, { onDelete: "cascade" }),
+    language: Language().notNull(),
+    minValue: integer("min_value").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.lessonId, t.language] })],
+);
+
+export type LessonLanguageRequirement =
+  typeof lessonLanguageRequirement.$inferSelect;
+
+export const lessonLanguageRequirementRelations = relations(
+  lessonLanguageRequirement,
+  ({ one }) => ({
+    lesson: one(lesson, {
+      fields: [lessonLanguageRequirement.lessonId],
+      references: [lesson.id],
+    }),
+  }),
+);
 
 export const lessonCompletion = pgTable(
   "lesson_completion",

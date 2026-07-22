@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2, Circle, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRoadmap } from "@/hooks/use-roadmap";
 import { cn } from "@/lib/utils";
+import type { UnmetRequirement } from "@/lib/actions/lessons/lesson-lock";
 
 export function RoadmapList() {
   const t = useTranslations("RoadmapPage");
@@ -46,22 +47,52 @@ export function RoadmapList() {
               {track.lessons.map((l) => (
                 <Link
                   className={cn(
-                    "flex items-center justify-between gap-2 rounded-md border px-4 py-3 transition-colors hover:bg-muted",
+                    "flex flex-col gap-2 rounded-md border px-4 py-3 transition-colors hover:bg-muted",
                     { "border-green-500/50": l.completed },
+                    { "opacity-60": l.locked },
                   )}
                   href={`/roadmap/${l.id}`}
                   key={l.id}
                 >
-                  <div className="flex items-center gap-2">
-                    {l.completed ? (
-                      <CheckCircle2 className="size-4 text-green-500" />
-                    ) : (
-                      <Circle className="size-4 text-muted-foreground" />
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      {l.locked ? (
+                        <Lock className="size-4 text-muted-foreground" />
+                      ) : l.completed ? (
+                        <CheckCircle2 className="size-4 text-green-500" />
+                      ) : (
+                        <Circle className="size-4 text-muted-foreground" />
+                      )}
+                      <span>{l.problem.title}</span>
+                    </div>
+                    {l.primaryLanguage && (
+                      <Badge variant="outline">{l.primaryLanguage}</Badge>
                     )}
-                    <span>{l.problem.title}</span>
                   </div>
-                  {l.primaryLanguage && (
-                    <Badge variant="outline">{l.primaryLanguage}</Badge>
+                  {l.locked && (
+                    <p className="text-muted-foreground text-xs">
+                      {t("requirementsPrefix")}{" "}
+                      {l.unmetRequirements
+                        .map((r: UnmetRequirement) =>
+                          r.kind === "theme"
+                            ? `${t(`themes.${r.theme}` as Parameters<typeof t>[0])} ${r.minValue} (${r.currentValue})`
+                            : `${r.language} ${r.minValue} (${r.currentValue})`,
+                        )
+                        .join(", ")}
+                    </p>
+                  )}
+                  {!l.completed && !l.locked && l.rewards.themes.length > 0 && (
+                    <p className="text-muted-foreground text-xs">
+                      {t("rewardsPrefix")}{" "}
+                      {l.rewards.themes
+                        .map(
+                          (theme) =>
+                            `+1 ${t(
+                              `themes.${theme}` as Parameters<typeof t>[0],
+                            )}`,
+                        )
+                        .join(", ")}
+                    </p>
                   )}
                 </Link>
               ))}

@@ -2,7 +2,13 @@ import "dotenv/config";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { db } from "@/drizzle/db";
-import { type LessonTheme, lesson, problem } from "@/drizzle/schema";
+import {
+  type LessonTheme,
+  lesson,
+  lessonTheme,
+  lessonThemeRequirement,
+  problem,
+} from "@/drizzle/schema";
 import { generateSlug } from "@/lib/slug";
 
 interface SeedProblem {
@@ -14,15 +20,29 @@ interface SeedProblem {
   outputs: string[];
 }
 
-const LESSON_MAP: Record<string, { theme: LessonTheme; order: number }> = {
-  "Even or Odd": { theme: "conditionals", order: 0 },
-  Factorial: { theme: "loops", order: 0 },
-  Fibonacci: { theme: "loops", order: 1 },
-  FizzBuzz: { theme: "loops", order: 2 },
-  "Reverse a String": { theme: "strings", order: 0 },
-  "Count Vowels": { theme: "strings", order: 1 },
-  "Palindrome Check": { theme: "strings", order: 2 },
-  "Maximum of an Array": { theme: "arrays", order: 0 },
+const LESSON_MAP: Record<
+  string,
+  {
+    themes: LessonTheme[];
+    order: number;
+    requirements?: { theme: LessonTheme; minValue: number }[];
+  }
+> = {
+  "Even or Odd": { themes: ["conditionals"], order: 0 },
+  Factorial: { themes: ["loops"], order: 0 },
+  Fibonacci: { themes: ["loops"], order: 1 },
+  FizzBuzz: { themes: ["loops", "conditionals"], order: 2 },
+  "Reverse a String": { themes: ["strings"], order: 0 },
+  "Count Vowels": { themes: ["strings"], order: 1 },
+  "Palindrome Check": {
+    themes: ["strings", "arrays", "conditionals"],
+    order: 2,
+    requirements: [
+      { theme: "strings", minValue: 20 },
+      { theme: "arrays", minValue: 15 },
+    ],
+  },
+  "Maximum of an Array": { themes: ["arrays"], order: 0 },
 };
 
 async function main() {
@@ -47,14 +67,33 @@ async function main() {
       })
       .returning();
 
-    await db.insert(lesson).values({
-      problemId: createdProblem.id,
-      theme: mapping.theme,
-      order: mapping.order,
-      primaryLanguage: null,
-    });
+    const [createdLesson] = await db
+      .insert(lesson)
+      .values({
+        problemId: createdProblem.id,
+        order: mapping.order,
+        primaryLanguage: null,
+      })
+      .returning();
 
-    console.log(`Seeded lesson: [${mapping.theme}] ${p.title}`);
+    await db.insert(lessonTheme).values(
+      mapping.themes.map((theme) => ({
+        lessonId: createdLesson.id,
+        theme,
+      })),
+    );
+
+    if (mapping.requirements?.length) {
+      await db.insert(lessonThemeRequirement).values(
+        mapping.requirements.map((req) => ({
+          lessonId: createdLesson.id,
+          theme: req.theme,
+          minValue: req.minValue,
+        })),
+      );
+    }
+
+    console.log(`Seeded lesson: [${mapping.themes.join(", ")}] ${p.title}`);
   }
 }
 

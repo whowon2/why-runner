@@ -149,6 +149,9 @@
     "completed": "Concluída",
     "notFound": "Lição não encontrada",
     "backToRoadmap": "Voltar para a trilha",
+    "locked": "Bloqueada",
+    "requirementsPrefix": "Requer:",
+    "rewardsPrefix": "Recompensas:",
     "themes": {
       "strings": "Strings",
       "arrays": "Vetores",
@@ -158,7 +161,8 @@
     "Lesson": {
       "primaryLanguage": "Linguagem sugerida: {language}",
       "anyLanguage": "Você pode enviar em qualquer linguagem.",
-      "submissionsTitle": "Envios"
+      "submissionsTitle": "Envios",
+      "lockedNotice": "Conclua outras lições para atingir o nível de habilidade necessário antes de tentar esta."
     }
   },
   "ImportProblems": {

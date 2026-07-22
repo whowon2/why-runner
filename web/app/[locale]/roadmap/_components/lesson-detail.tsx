@@ -54,6 +54,7 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
             {lesson.completed && (
               <Badge className="bg-green-500">{t("completed")}</Badge>
             )}
+            {lesson.locked && <Badge variant="outline">{t("locked")}</Badge>}
           </CardTitle>
           <p className="text-muted-foreground text-sm">
             {lesson.primaryLanguage
@@ -69,7 +70,25 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
       </Card>
 
       <div className="flex flex-col gap-4">
-        <LessonSubmit problemId={lesson.problem.id} />
+        {lesson.locked ? (
+          <Card className="bg-transparent shadow-none">
+            <CardContent className="flex flex-col gap-2">
+              <p className="text-sm">{t("Lesson.lockedNotice")}</p>
+              <p className="text-muted-foreground text-xs">
+                {t("requirementsPrefix")}{" "}
+                {lesson.unmetRequirements
+                  .map((r) =>
+                    r.kind === "theme"
+                      ? `${t(`themes.${r.theme}` as Parameters<typeof t>[0])} ${r.minValue} (${r.currentValue})`
+                      : `${r.language} ${r.minValue} (${r.currentValue})`,
+                  )
+                  .join(", ")}
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <LessonSubmit problemId={lesson.problem.id} />
+        )}
         <LessonSubmissions problemId={lesson.problem.id} />
       </div>
     </div>

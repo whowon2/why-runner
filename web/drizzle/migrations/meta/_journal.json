@@ -85,6 +85,20 @@
       "when": 1784677215079,
       "tag": "0011_faithful_stephen_strange",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1784680094504,
+      "tag": "0012_lonely_fixer",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1784681382482,
+      "tag": "0013_third_bushwacker",
+      "breakpoints": true
     }
   ]
 }

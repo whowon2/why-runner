@@ -6,6 +6,7 @@ import {
   type Language,
   lesson,
   lessonCompletion,
+  lessonTheme,
   userLanguageSkill,
   userThemeSkill,
 } from "@/drizzle/schema";
@@ -52,13 +53,19 @@ export async function awardLessonCompletionIfFirstPass({
       return;
     }
 
-    await tx
-      .insert(userThemeSkill)
-      .values({ userId, theme: linkedLesson.theme, value: 1 })
-      .onConflictDoUpdate({
-        target: [userThemeSkill.userId, userThemeSkill.theme],
-        set: { value: sql`${userThemeSkill.value} + 1` },
-      });
+    const themes = await tx.query.lessonTheme.findMany({
+      where: eq(lessonTheme.lessonId, linkedLesson.id),
+    });
+
+    for (const { theme } of themes) {
+      await tx
+        .insert(userThemeSkill)
+        .values({ userId, theme, value: 1 })
+        .onConflictDoUpdate({
+          target: [userThemeSkill.userId, userThemeSkill.theme],
+          set: { value: sql`${userThemeSkill.value} + 1` },
+        });
+    }
 
     await tx
       .insert(userLanguageSkill)

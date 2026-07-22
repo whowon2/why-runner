@@ -12,6 +12,13 @@ async function main() {
   const {
     userOnContest: _uoc,
     problemOnContest: _poc,
+    userThemeSkill: _uts,
+    userLanguageSkill: _uls,
+    lesson: _lesson,
+    lessonTheme: _lessonTheme,
+    lessonThemeRequirement: _ltr,
+    lessonLanguageRequirement: _llr,
+    lessonCompletion: _lc,
     ...seedableSchema
   } = schema;
   await seed(db, seedableSchema).refine((f) => ({
