@@ -8,7 +8,6 @@ import { useContest } from "@/hooks/use-contest";
 import { DeleteContest } from "./delete-contest";
 import { EditContestForm } from "./form";
 import { EditContestProblems } from "./problems";
-import { PublishContest } from "./publish-button";
 
 export function ContestSettings({ contestId }: { contestId: string }) {
   const { data: contest } = useContest(contestId);
@@ -26,9 +25,8 @@ export function ContestSettings({ contestId }: { contestId: string }) {
     <div className="flex flex-col gap-8 w-full mx-auto py-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <section className="space-y-4">
         <Card>
-          <CardHeader className="flex items-center justify-between">
+          <CardHeader>
             <CardTitle>{t("title")}</CardTitle>
-            {contest.status === "draft" && <PublishContest contest={contest} />}
           </CardHeader>
           <CardContent className="space-y-4">
             <EditContestForm contest={contest as Contest} />

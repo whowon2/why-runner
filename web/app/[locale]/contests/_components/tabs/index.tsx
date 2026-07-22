@@ -13,6 +13,7 @@ import { Leaderboard } from "./leaderboard";
 import { ContestManagement } from "./management";
 import { ProblemTab } from "./problem";
 import { ContestSettings } from "./settings";
+import { PublishContest } from "./settings/publish-button";
 
 export function ContestTabs({ id, user }: { id: string; user: User }) {
   const { data: contest, isPending } = useContest(id);
@@ -68,40 +69,48 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
         value={tab}
         onValueChange={handleTabChange}
       >
-        <div className="w-full overflow-x-auto pb-4 mb-2 scrollbar-hide">
-          <TabsList className="inline-flex min-w-max h-12 items-center justify-start rounded-none bg-muted/40 p-1 text-muted-foreground border border-muted/50">
-            <TabsTrigger
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm gap-2"
-              value="problems"
-            >
-              {t("Tabs.problems")}
-              <ListOrdered className="w-4 h-4" />
-            </TabsTrigger>
-            <TabsTrigger
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-amber-600 dark:data-[state=active]:text-amber-400 data-[state=active]:shadow-sm gap-2"
-              value="leaderboard"
-            >
-              {t("Tabs.leaderboard")}
-              <Trophy className="w-4 h-4" />
-            </TabsTrigger>
-            {isOwner && (
+        <div className="flex w-full items-center justify-between gap-4 pb-4 mb-2">
+          <div className="overflow-x-auto scrollbar-hide">
+            <TabsList className="inline-flex min-w-max h-12 items-center justify-start rounded-none bg-muted/40 p-1 text-muted-foreground border border-muted/50">
               <TabsTrigger
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:shadow-sm gap-2"
-                value="settings"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm gap-2"
+                value="problems"
               >
-                {t("Tabs.settings")}
-                <Settings className="w-4 h-4" />
+                {t("Tabs.problems")}
+                <ListOrdered className="w-4 h-4" />
               </TabsTrigger>
-            )}
-            {isOwner && isPublished && (
               <TabsTrigger
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-rose-600 dark:data-[state=active]:text-rose-400 data-[state=active]:shadow-sm"
-                value="manage"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-amber-600 dark:data-[state=active]:text-amber-400 data-[state=active]:shadow-sm gap-2"
+                value="leaderboard"
               >
-                {t("Tabs.manage")}
+                {t("Tabs.leaderboard")}
+                <Trophy className="w-4 h-4" />
               </TabsTrigger>
-            )}
-          </TabsList>
+              {isOwner && (
+                <TabsTrigger
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:shadow-sm gap-2"
+                  value="settings"
+                >
+                  {t("Tabs.settings")}
+                  <Settings className="w-4 h-4" />
+                </TabsTrigger>
+              )}
+              {isOwner && isPublished && (
+                <TabsTrigger
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-rose-600 dark:data-[state=active]:text-rose-400 data-[state=active]:shadow-sm"
+                  value="manage"
+                >
+                  {t("Tabs.manage")}
+                </TabsTrigger>
+              )}
+            </TabsList>
+          </div>
+
+          {isOwner && !isPublished && (
+            <div className="shrink-0">
+              <PublishContest contest={contest} />
+            </div>
+          )}
         </div>
 
         <div className="mt-4">
