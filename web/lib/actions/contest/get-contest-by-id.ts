@@ -24,6 +24,8 @@ export async function getContest(id: string) {
   });
 
   if (!found) return null;
+  if (found.status === "draft" && found.createdBy !== currentUser.id)
+    return null;
 
   const membership = await db.query.userOnContest.findFirst({
     where: and(

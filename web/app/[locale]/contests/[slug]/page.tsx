@@ -11,11 +11,12 @@ export default async function Page({
 }) {
   const { slug } = await params;
 
+  const user = await getCurrentUser({ redirectTo: "/auth/signin" });
+
   const contest = await getContestBySlug(slug);
 
   if (!contest) notFound();
-
-  const user = await getCurrentUser({ redirectTo: "/auth/signin" });
+  if (contest.status === "draft" && contest.createdBy !== user.id) notFound();
 
   return (
     <div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">

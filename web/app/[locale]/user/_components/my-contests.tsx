@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { useContests } from "@/hooks/use-contests";
 import { Link } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
-import { CreateContestDialog } from "../../contests/_components/create/dialog";
+import { CreateContestButton } from "../../contests/_components/create/button";
 
 export function MyContests() {
   const t = useTranslations("UserPage.MyContests");
@@ -37,7 +37,7 @@ export function MyContests() {
           <p className="text-muted-foreground text-lg">{t("subtitle")}</p>
         </div>
         <div className="shrink-0">
-          <CreateContestDialog />
+          <CreateContestButton />
         </div>
       </div>
 
@@ -63,7 +63,7 @@ export function MyContests() {
             <div className="relative group">
               <div className="absolute -inset-1 blur-lg bg-linear-to-r from-indigo-500 to-cyan-500 opacity-20 group-hover:opacity-40 transition duration-500 rounded-lg" />
               <div className="relative">
-                <CreateContestDialog />
+                <CreateContestButton />
               </div>
             </div>
           </CardContent>
@@ -71,11 +71,14 @@ export function MyContests() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {contests.map((contest) => {
-            const startDate = new Date(contest.startDate);
-            const endDate = new Date(contest.endDate);
-            const duration = Math.round(
-              (endDate.getTime() - startDate.getTime()) / 60000,
-            );
+            const startDate = contest.startDate
+              ? new Date(contest.startDate)
+              : null;
+            const endDate = contest.endDate ? new Date(contest.endDate) : null;
+            const duration =
+              startDate && endDate
+                ? Math.round((endDate.getTime() - startDate.getTime()) / 60000)
+                : null;
 
             return (
               <Card
@@ -91,13 +94,19 @@ export function MyContests() {
                       {contest.name}
                     </h3>
                     <div className="space-y-1 mt-2 text-sm text-muted-foreground">
-                      <p>
-                        <strong>{t("start")}</strong>{" "}
-                        {startDate.toLocaleString()}
-                      </p>
-                      <p>
-                        <strong>{t("duration")}</strong> {duration} minutes
-                      </p>
+                      {startDate && duration !== null ? (
+                        <>
+                          <p>
+                            <strong>{t("start")}</strong>{" "}
+                            {startDate.toLocaleString()}
+                          </p>
+                          <p>
+                            <strong>{t("duration")}</strong> {duration} minutes
+                          </p>
+                        </>
+                      ) : (
+                        <p>{t("draft")}</p>
+                      )}
                     </div>
                   </div>
                   <div className="pt-4 border-t mt-4">

@@ -33,13 +33,13 @@ export function EditContestProblems({
     problems: ProblemOnContest[];
   };
 }) {
-  const t = useTranslations("ContestsPage.Tabs.Management.Problems");
+  const t = useTranslations("ContestsPage.Tabs.Settings.Problems");
   const { data: problems } = useProblems({ page: 1, pageSize: 10 });
   const { mutate: addProblem, isPending: isAddPending } =
     useAddProblemToContest();
   const queryClient = useQueryClient();
   const pathname = usePathname();
-  const canReorder = new Date() < contest.startDate;
+  const canReorder = !contest.startDate || new Date() < contest.startDate;
 
   const sorted = [...contest.problems].sort((a, b) => a.order - b.order);
   const [localOrder, setLocalOrder] = useState<string[]>(
@@ -181,7 +181,7 @@ function RemoveProblemButton({
   problem: ProblemPreview;
   contest: Contest;
 }) {
-  const t = useTranslations("ContestsPage.Tabs.Management.Problems");
+  const t = useTranslations("ContestsPage.Tabs.Settings.Problems");
   const { mutate: removeProblem, isPending: isRemovePending } =
     useRemoveProblemFromContest();
   const queryClient = useQueryClient();

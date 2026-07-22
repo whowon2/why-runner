@@ -20,7 +20,7 @@ export async function reorderProblems(
     throw new Error("Forbidden");
   }
 
-  if (new Date() >= owned.startDate) {
+  if (owned.startDate && new Date() >= owned.startDate) {
     throw new Error("Contest has already started.");
   }
 

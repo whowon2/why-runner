@@ -34,29 +34,31 @@ export function SelectProblem({
     value: p.problemId,
   }));
 
+  const selectedSlug = searchParams.get("problem");
+  const selectedProblem = selectedSlug
+    ? contest.problems.find((p) => p.problem.slug === selectedSlug)
+    : undefined;
+
   function handleSelectProblem(value: string) {
     const prob = contest.problems.find((p) => p.problemId === value);
     if (prob) {
       setProblem(prob.problem);
       const params = new URLSearchParams(searchParams);
-      params.set("problem", value.toString());
+      params.set("problem", prob.problem.slug);
       router.replace(`?${params.toString()}`, { scroll: false });
     }
   }
 
   useEffect(() => {
-    const problemId = searchParams.get("problem");
-    if (problemId) {
-      const prob = contest.problems.find((p) => p.problemId === problemId);
-      if (prob) {
-        setProblem(prob.problem);
-      }
+    if (selectedProblem) {
+      setProblem(selectedProblem.problem);
     }
-  }, [searchParams, contest.problems, setProblem]);
+  }, [selectedProblem, setProblem]);
 
   return (
     <RadioGroup.Root
       className="flex flex-wrap gap-2"
+      value={selectedProblem?.problemId}
       onValueChange={handleSelectProblem}
     >
       {options.map((option) => {

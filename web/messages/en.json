@@ -288,44 +288,7 @@
     },
     "createDialog": {
       "button": "Create Contest",
-      "title": "Create Contest",
-      "name": "Name",
-      "namePlaceholder": "Do You Have Brio 2024",
-      "date": "Date and Time",
-      "duration": "Duration",
-      "nameMinError": "Name must be at least 2 characters",
-      "startDateFutureError": "Start Date must be in the future",
-      "durationRequiredError": "Duration must be set",
-      "problemsRequiredError": "You must select at least one problem",
-      "failedCreate": "Failed to create contest",
-      "created": "Contest Created",
-      "sharedToFeed": "Shared to your activity feed!",
-      "shareTitle": "Share your new Contest",
-      "shareDescription": "Let your followers know you've created \"{name}\"!",
-      "defaultName": "a new contest",
-      "steps": {
-        "basicInfo": "Basic Info",
-        "problems": "Problems",
-        "review": "Review"
-      },
-      "form": {
-        "privateContest": "Private contest",
-        "privateDescription": "Participants must be approved before joining.",
-        "selectProblemsTitle": "Select Problems",
-        "selectProblemsDescription": "Select the problems to include in this contest.",
-        "loadingProblems": "Loading problems...",
-        "noProblems": "No problems found.",
-        "difficulty": "Difficulty",
-        "normal": "Normal",
-        "reviewDetailsTitle": "Review Details",
-        "reviewDetailsDescription": "Verify your contest information before creation.",
-        "questions": "Questions",
-        "selected": "selected",
-        "back": "Back",
-        "next": "Next",
-        "creating": "Creating...",
-        "confirm": "Confirm"
-      }
+      "failedCreate": "Failed to create contest"
     },
     "JoinButton": {
       "Join": {
@@ -350,7 +313,8 @@
       "status": {
         "upcoming": "Upcoming",
         "active": "Active",
-        "past": "Past"
+        "past": "Past",
+        "draft": "Draft"
       }
     },
     "Tabs": {
@@ -404,7 +368,9 @@
             "loadSavedPrompt": "Do you want to load the saved code?",
             "load": "Load"
           }
-        }
+        },
+        "noProblems": "No problems have been added to this contest yet.",
+        "addProblemsLink": "Add problems in the Settings tab"
       },
       "Leaderboard": {
         "name": "Name",
@@ -425,14 +391,8 @@
       "pendingDescription": "The contest owner must approve your request before you can view problems.",
       "Management": {
         "id_copied": "ID copied to clipboard!",
-        "overviewAndSettings": "Overview & Settings",
-        "contestAlreadyStarted": "Contest has already started.",
-        "editingDisabled": "Editing is disabled to ensure fairness.",
         "peopleManagement": "People Management",
         "submissions": "Submissions",
-        "dangerZone": "Danger Zone",
-        "deleteContest": "Delete Contest",
-        "deleteWarning": "Once you delete a contest, there is no going back. Please be certain.",
         "PendingJoins": {
           "title": "Pending Join Requests ({count})",
           "approve": "Approve",
@@ -443,14 +403,42 @@
         "Participants": {
           "title": "Participants ({count})"
         },
-        "DeleteContest": {
-          "button": "Delete Contest",
-          "dialogTitle": "Delete this contest?",
-          "dialogDescription": "This action cannot be undone. All problems, submissions, and participants will be removed.",
-          "cancel": "Cancel",
-          "confirm": "Delete",
-          "success": "Contest deleted",
-          "error": "Failed to delete contest"
+        "SubmissionsTable": {
+          "title": "Submissions ({count})",
+          "id": "ID",
+          "user": "User",
+          "status": "Status",
+          "date": "Date",
+          "problem": "Problem",
+          "code": "Code"
+        },
+        "Export": {
+          "button": "Export Results (CSV)",
+          "success": "Results exported",
+          "failed": "Export failed",
+          "unknownError": "Unknown error"
+        },
+        "exportData": "Export Data"
+      },
+      "settings": "Settings",
+      "Settings": {
+        "title": "Settings",
+        "dangerZone": "Danger Zone",
+        "deleteContest": "Delete Contest",
+        "deleteWarning": "Once you delete a contest, there is no going back. Please be certain.",
+        "Form": {
+          "nameLabel": "Name",
+          "namePlaceholder": "Do You Have Brio 2024",
+          "descriptionLabel": "Description",
+          "startDateLabel": "Start Date",
+          "endDateLabel": "End Date",
+          "privateLabel": "Private contest",
+          "privateDescription": "Participants must be approved before joining.",
+          "save": "Save",
+          "failedUpdate": "Failed to update contest",
+          "updated": "Contest updated",
+          "nameMinError": "Name must be at least 2 characters",
+          "endDateAfterStartError": "End date must be after the start date"
         },
         "Problems": {
           "placeholder": "Problem",
@@ -463,27 +451,26 @@
           "orderSaved": "Order saved",
           "orderError": "Failed to save order"
         },
-        "SubmissionsTable": {
-          "title": "Submissions ({count})",
-          "id": "ID",
-          "user": "User",
-          "status": "Status",
-          "date": "Date",
-          "problem": "Problem",
-          "code": "Code"
+        "DeleteContest": {
+          "button": "Delete Contest",
+          "dialogTitle": "Delete this contest?",
+          "dialogDescription": "This action cannot be undone. All problems, submissions, and participants will be removed.",
+          "cancel": "Cancel",
+          "confirm": "Delete",
+          "success": "Contest deleted",
+          "error": "Failed to delete contest"
         },
-        "EditContest": {
-          "contestSection": "Contest",
-          "nameLabel": "Name",
-          "save": "Save",
-          "failedUpdate": "Failed to update contest",
-          "updated": "Contest updated"
-        },
-        "Export": {
-          "button": "Export Results (CSV)",
-          "success": "Results exported",
-          "failed": "Export failed",
-          "unknownError": "Unknown error"
+        "Publish": {
+          "button": "Publish",
+          "success": "Contest published",
+          "failed": "Failed to publish contest",
+          "missingSummary": "Missing",
+          "missingField": {
+            "name": "name",
+            "startDate": "start date",
+            "endDate": "end date",
+            "problems": "at least one problem"
+          }
         }
       }
     }
@@ -615,6 +602,7 @@
       "emptyDescription": "You haven't created any contests yet. Get started by creating your first coding contest to share with your students or peers.",
       "start": "Start:",
       "duration": "Duration:",
+      "draft": "Draft — not yet configured",
       "viewDashboard": "View Dashboard"
     },
     "MyProblems": {

@@ -34,7 +34,7 @@ export function JoinButton({
     return null;
   }
 
-  if (contest.startDate < new Date()) {
+  if (!contest.startDate || contest.startDate < new Date()) {
     return null;
   }
 

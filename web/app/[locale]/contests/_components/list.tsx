@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useContests } from "@/hooks/use-contests";
 import { Link } from "@/i18n/navigation";
 import { ContestCard } from "./card";
-import { CreateContestDialog } from "./create/dialog";
+import { CreateContestButton } from "./create/button";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -63,7 +63,7 @@ export function ContestList() {
             <Button asChild variant="outline">
               <Link href={"/user?tab=contests"}>{t("myContests")}</Link>
             </Button>
-            <CreateContestDialog refetchAction={() => refetch()} />
+            <CreateContestButton refetchAction={() => refetch()} />
           </>
         }
         search={{

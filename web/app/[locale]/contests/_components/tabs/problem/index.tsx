@@ -4,6 +4,7 @@ import type { User } from "better-auth";
 import { Fragment, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ProblemDescription } from "@/app/[locale]/problems/_components/description";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -16,6 +17,7 @@ import type {
   UserOnContest,
 } from "@/drizzle/schema";
 import { useUserContestStatus } from "@/hooks/use-user-contest-status";
+import { Link, usePathname } from "@/i18n/navigation";
 import { letters } from "@/lib/letters";
 import { SelectProblem } from "./select-problem";
 import { SubmissionList } from "./submission-list";
@@ -32,10 +34,12 @@ export function ProblemTab({
   };
 }) {
   const t = useTranslations("ContestsPage.Tabs.Problem");
+  const pathname = usePathname();
   const { data: liveAnswered } = useUserContestStatus(contest.id);
   const [problem, setProblem] = useState<ProblemPreview | null>(null);
+  const isOwner = contest.createdBy === user.id;
   const [isContestStarted, setIsContestStarted] = useState(
-    () => new Date() >= contest.startDate,
+    () => isOwner || (!!contest.startDate && new Date() >= contest.startDate),
   );
 
   const isUserOnContest = contest.users.find(
@@ -43,33 +47,62 @@ export function ProblemTab({
   );
 
   useEffect(() => {
-    if (isContestStarted) {
+    if (isOwner || isContestStarted || !contest.startDate) {
       return;
     }
 
     const interval = setInterval(() => {
-      if (new Date() >= contest.startDate) {
+      if (contest.startDate && new Date() >= contest.startDate) {
         setIsContestStarted(true);
         clearInterval(interval);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isContestStarted, contest.startDate]);
+  }, [isOwner, isContestStarted, contest.startDate]);
 
   if (!isContestStarted) {
     return (
-      <div className="w-full flex items-center justify-center mt-10 font-bold text-xl text-muted-foreground">
-        {t("notStarted")}
-      </div>
+      <Card className="w-full">
+        <CardContent className="flex items-center justify-center py-12 font-bold text-xl text-muted-foreground">
+          {t("notStarted")}
+        </CardContent>
+      </Card>
     );
   }
 
-  if (contest.endDate > new Date() && !isUserOnContest) {
+  if (
+    !isOwner &&
+    contest.endDate &&
+    contest.endDate > new Date() &&
+    !isUserOnContest
+  ) {
     return (
-      <div className="w-full flex items-center justify-center mt-10 font-bold text-xl text-muted-foreground">
-        {t("viewAfterEnd")}
-      </div>
+      <Card className="w-full">
+        <CardContent className="flex items-center justify-center py-12 font-bold text-xl text-muted-foreground">
+          {t("viewAfterEnd")}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (contest.problems.length === 0) {
+    return (
+      <Card className="w-full">
+        <CardContent className="flex flex-col items-center justify-center py-12 gap-3 text-center">
+          <p className="font-bold text-xl text-muted-foreground">
+            {t("noProblems")}
+          </p>
+          {isOwner && (
+            <Link
+              className="text-sm font-medium text-indigo-500 hover:underline"
+              href={`${pathname}?tab=settings`}
+            >
+              {t("addProblemsLink")}
+            </Link>
+          )}
+        </CardContent>
+      </Card>
     );
   }
 
@@ -81,39 +114,46 @@ export function ProblemTab({
     currentProblemLetter && answeredLetters.includes(currentProblemLetter);
 
   return (
-    <div className="flex flex-col w-full gap-4">
-      <SelectProblem
-        contest={contest}
-        setProblem={setProblem}
-        user={user}
-        answered={answeredLetters}
-      />
+    <Card className="w-full">
+      <CardContent className="flex flex-col w-full gap-4">
+        <SelectProblem
+          contest={contest}
+          setProblem={setProblem}
+          user={user}
+          answered={answeredLetters}
+        />
 
-      {problem && (
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel className="pr-4 gap-4 flex flex-col">
-            <ProblemDescription problemId={problem.id} />
-            {isUserOnContest && (
-              <SubmissionList problem={problem} contest={contest} user={user} />
-            )}
-          </ResizablePanel>
-          {isUserOnContest &&
-            contest.endDate > new Date() &&
-            !isCurrentProblemSolved && (
-              <Fragment>
-                <ResizableHandle withHandle />
-                <ResizablePanel className="pl-4">
-                  <UploadCode
-                    user={user}
-                    contest={contest}
-                    problem={problem}
-                    problemLetter={currentProblemLetter ?? ""}
-                  />
-                </ResizablePanel>
-              </Fragment>
-            )}
-        </ResizablePanelGroup>
-      )}
-    </div>
+        {problem && (
+          <ResizablePanelGroup direction="horizontal">
+            <ResizablePanel className="pr-4 gap-4 flex flex-col">
+              <ProblemDescription problemId={problem.id} />
+              {isUserOnContest && (
+                <SubmissionList
+                  problem={problem}
+                  contest={contest}
+                  user={user}
+                />
+              )}
+            </ResizablePanel>
+            {isUserOnContest &&
+              contest.endDate &&
+              contest.endDate > new Date() &&
+              !isCurrentProblemSolved && (
+                <Fragment>
+                  <ResizableHandle withHandle />
+                  <ResizablePanel className="pl-4">
+                    <UploadCode
+                      user={user}
+                      contest={contest}
+                      problem={problem}
+                      problemLetter={currentProblemLetter ?? ""}
+                    />
+                  </ResizablePanel>
+                </Fragment>
+              )}
+          </ResizablePanelGroup>
+        )}
+      </CardContent>
+    </Card>
   );
 }

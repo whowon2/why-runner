@@ -37,7 +37,8 @@ export function ContestCard({
     return () => clearInterval(interval);
   }, []);
 
-  function getStatusText(start: Date, end: Date) {
+  function getStatusText(start: Date | null, end: Date | null) {
+    if (!start || !end) return t("card.status.draft");
     if (now < new Date(start)) {
       return `${t("card.starts")}: ${formatDuration(new Date(start).getTime() - now.getTime())}`;
     }
@@ -67,14 +68,16 @@ export function ContestCard({
                   {t("card.private")}
                 </span>
               )}
-              <span className="text-xs text-muted-foreground flex items-center font-medium">
-                <Clock className="w-3.5 h-3.5 mr-1 opacity-70" />
-                {formatDuration(
-                  new Date(contest.endDate).getTime() -
-                    new Date(contest.startDate).getTime(),
-                )}{" "}
-                {t("card.duration")}
-              </span>
+              {contest.startDate && contest.endDate && (
+                <span className="text-xs text-muted-foreground flex items-center font-medium">
+                  <Clock className="w-3.5 h-3.5 mr-1 opacity-70" />
+                  {formatDuration(
+                    new Date(contest.endDate).getTime() -
+                      new Date(contest.startDate).getTime(),
+                  )}{" "}
+                  {t("card.duration")}
+                </span>
+              )}
             </div>
 
             <CardTitle className="text-xl font-bold group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
@@ -113,16 +116,18 @@ export function ContestCard({
               {t("card.problems")}
             </div>
 
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Calendar className="w-4 h-4 mr-2 text-indigo-500/70" />
-              <span className="font-medium">
-                {new Date(contest.startDate).toLocaleDateString(undefined, {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </span>
-            </div>
+            {contest.startDate && (
+              <div className="flex items-center text-sm text-muted-foreground">
+                <Calendar className="w-4 h-4 mr-2 text-indigo-500/70" />
+                <span className="font-medium">
+                  {new Date(contest.startDate).toLocaleDateString(undefined, {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+            )}
 
             <div className="ml-auto w-8 h-8 rounded-none bg-muted/50 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors text-muted-foreground">
               <ChevronRight className="w-4 h-4" />

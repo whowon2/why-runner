@@ -26,8 +26,8 @@ export function ContestDescription({ contestId }: { contestId: string }) {
   const c = contest;
   const isCreatedByUser = c.createdBy === user.id;
   const status = getContestStatus(c.startDate, c.endDate, now);
-  const startDate = new Date(c.startDate);
-  const endDate = new Date(c.endDate);
+  const startDate = c.startDate ? new Date(c.startDate) : null;
+  const endDate = c.endDate ? new Date(c.endDate) : null;
 
   const formatDate = (date: Date) =>
     new Intl.DateTimeFormat("en-US", {
@@ -36,6 +36,7 @@ export function ContestDescription({ contestId }: { contestId: string }) {
     }).format(date);
 
   function getCountdown() {
+    if (!startDate || !endDate) return t("card.status.draft");
     if (now < startDate) {
       return `${t("card.starts")}: ${formatDuration(startDate.getTime() - now.getTime())}`;
     }
@@ -80,9 +81,9 @@ export function ContestDescription({ contestId }: { contestId: string }) {
       </div>
 
       {/* Stats & Info Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full mt-4">
+      <div className="flex flex-wrap justify-center gap-4 w-full mt-4">
         {/* Countdown */}
-        <div className="flex flex-col items-center justify-center p-4 rounded-none bg-muted/30 border border-muted/50 gap-2 transition-transform hover:scale-[1.02]">
+        <div className="flex flex-col items-center justify-center p-4 rounded-none bg-muted/30 border border-muted/50 gap-2 transition-transform hover:scale-[1.02] w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)]">
           <div className="p-2 rounded-none bg-indigo-500/10 text-indigo-500">
             <CalendarDays className="w-5 h-5" />
           </div>
@@ -92,19 +93,21 @@ export function ContestDescription({ contestId }: { contestId: string }) {
         </div>
 
         {/* Date range */}
-        <div className="flex flex-col items-center justify-center p-4 rounded-none bg-muted/30 border border-muted/50 gap-2 transition-transform hover:scale-[1.02]">
-          <div className="p-2 rounded-none bg-emerald-500/10 text-emerald-500">
-            <Calendar className="w-5 h-5" />
+        {startDate && endDate && (
+          <div className="flex flex-col items-center justify-center p-4 rounded-none bg-muted/30 border border-muted/50 gap-2 transition-transform hover:scale-[1.02] w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)]">
+            <div className="p-2 rounded-none bg-emerald-500/10 text-emerald-500">
+              <Calendar className="w-5 h-5" />
+            </div>
+            <div className="flex flex-col items-center text-xs font-medium text-muted-foreground text-center">
+              <span>{formatDate(startDate)}</span>
+              <span className="my-0.5 opacity-50">↓</span>
+              <span>{formatDate(endDate)}</span>
+            </div>
           </div>
-          <div className="flex flex-col items-center text-xs font-medium text-muted-foreground text-center">
-            <span>{formatDate(startDate)}</span>
-            <span className="my-0.5 opacity-50">↓</span>
-            <span>{formatDate(endDate)}</span>
-          </div>
-        </div>
+        )}
 
         {/* Participants stat card */}
-        <div className="flex flex-col items-center justify-center p-4 rounded-none bg-muted/30 border border-muted/50 gap-1 transition-transform hover:scale-[1.02]">
+        <div className="flex flex-col items-center justify-center p-4 rounded-none bg-muted/30 border border-muted/50 gap-1 transition-transform hover:scale-[1.02] w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)]">
           <div className="flex items-center gap-2 mb-1">
             <Users className="w-5 h-5 text-blue-500" />
             <span className="text-2xl font-bold">{c.users.length}</span>
@@ -115,7 +118,7 @@ export function ContestDescription({ contestId }: { contestId: string }) {
         </div>
 
         {/* Problems stat card */}
-        <div className="flex flex-col items-center justify-center p-4 rounded-none bg-muted/30 border border-muted/50 gap-1 transition-transform hover:scale-[1.02]">
+        <div className="flex flex-col items-center justify-center p-4 rounded-none bg-muted/30 border border-muted/50 gap-1 transition-transform hover:scale-[1.02] w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)]">
           <div className="flex items-center gap-2 mb-1">
             <ListOrdered className="w-5 h-5 text-purple-500" />
             <span className="text-2xl font-bold">{c.problems.length}</span>

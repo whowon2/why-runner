@@ -10,12 +10,16 @@ export async function deleteContest(contestId: string) {
 
   const found = await db.query.contest.findFirst({
     where: eq(contest.id, contestId),
-    columns: { createdBy: true, startDate: true },
+    columns: { createdBy: true, startDate: true, status: true },
   });
 
   if (!found) throw new Error("Contest not found.");
   if (found.createdBy !== currentUser.id) throw new Error("Forbidden");
-  if (new Date() >= found.startDate)
+  if (
+    found.status === "published" &&
+    found.startDate &&
+    new Date() >= found.startDate
+  )
     throw new Error("Contest has already started.");
 
   await db.delete(contest).where(eq(contest.id, contestId));

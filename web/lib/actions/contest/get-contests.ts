@@ -1,8 +1,20 @@
 "use server";
 
-import { and, count, desc, eq, gt, gte, ilike, lt, lte } from "drizzle-orm";
+import {
+  and,
+  count,
+  desc,
+  eq,
+  gt,
+  gte,
+  ilike,
+  lt,
+  lte,
+  or,
+} from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { contest } from "@/drizzle/schema"; // Ensure this imports your contest table definition
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 export interface GetContestsParams {
   page: number;
@@ -22,8 +34,11 @@ export async function getContests({
   status,
 }: GetContestsParams) {
   const offset = (page - 1) * pageSize;
+  const currentUser = await getCurrentUser({});
 
-  const conditions = [];
+  const conditions = [
+    or(eq(contest.status, "published"), eq(contest.createdBy, currentUser.id)),
+  ];
 
   // Filter by title if search is present
   if (search) {

@@ -43,6 +43,8 @@ export function ContestStatus({ contest }: { contest: Contest }) {
     return hours;
   };
 
+  if (!contest.startDate || !contest.endDate) return null;
+
   return (
     <div className="flex flex-col items-center justify-center">
       {hoursDiff(new Date(), contest.startDate) < 24 ? (

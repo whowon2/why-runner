@@ -15,7 +15,8 @@ export async function joinContest(input: JoinContestInput) {
   });
 
   if (!found) throw new Error("Contest not found.");
-  if (new Date() > found.endDate) throw new Error("Contest has already ended.");
+  if (found.endDate && new Date() > found.endDate)
+    throw new Error("Contest has already ended.");
 
   const joinStatus = found.isPrivate ? "pending" : "accepted";
 

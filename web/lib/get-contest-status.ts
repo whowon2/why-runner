@@ -1,4 +1,16 @@
-export function getContestStatus(start: Date, end: Date, now: Date) {
+export function getContestStatus(
+  start: Date | null,
+  end: Date | null,
+  now: Date,
+) {
+  if (!start || !end) {
+    return {
+      badge: "draft" as const,
+      color:
+        "text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20",
+      gradient: "from-indigo-500 to-violet-400",
+    };
+  }
   if (now < new Date(start)) {
     return {
       badge: "upcoming" as const,

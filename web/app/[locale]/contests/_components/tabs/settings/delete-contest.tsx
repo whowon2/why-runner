@@ -19,7 +19,7 @@ import { useDeleteContest } from "@/hooks/use-delete-contest";
 import { useRouter } from "@/i18n/navigation";
 
 export function DeleteContest({ contestId }: { contestId: string }) {
-  const t = useTranslations("ContestsPage.Tabs.Management.DeleteContest");
+  const t = useTranslations("ContestsPage.Tabs.Settings.DeleteContest");
   const { mutate: deleteContest, isPending } = useDeleteContest();
   const router = useRouter();
 
