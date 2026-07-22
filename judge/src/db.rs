@@ -88,19 +88,25 @@ impl DbClient {
             .execute(&mut *tx)
             .await?;
 
-        // 2. If the submission PASSED, update the user's leaderboard entry for this contest
+        // 2. If the submission PASSED and is tied to a contest, update the
+        // user's leaderboard entry. Lesson submissions have no contest_id /
+        // question_letter and skip this step entirely.
         if status == SubmissionStatus::PASSED {
-            sqlx::query(
-                "UPDATE user_on_contest 
-                 SET answered = array_append(answered, $1) 
-                 WHERE user_id = $2 AND contest_id = $3 
-                 AND NOT ($1 = ANY(answered))",
-            )
-            .bind(&submission.question_letter)
-            .bind(&submission.user_id)
-            .bind(submission.contest_id)
-            .execute(&mut *tx)
-            .await?;
+            if let (Some(contest_id), Some(question_letter)) =
+                (submission.contest_id, &submission.question_letter)
+            {
+                sqlx::query(
+                    "UPDATE user_on_contest
+                     SET answered = array_append(answered, $1)
+                     WHERE user_id = $2 AND contest_id = $3
+                     AND NOT ($1 = ANY(answered))",
+                )
+                .bind(question_letter)
+                .bind(&submission.user_id)
+                .bind(contest_id)
+                .execute(&mut *tx)
+                .await?;
+            }
         }
 
         tx.commit().await?;

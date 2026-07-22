@@ -31,8 +31,8 @@ pub struct Submission {
     pub language: Language,
     pub problem_id: Uuid,
     pub user_id: String,
-    pub contest_id: Uuid,
-    pub question_letter: String,
+    pub contest_id: Option<Uuid>,
+    pub question_letter: Option<String>,
     pub retry_count: i32,
 }
 
