@@ -17,15 +17,18 @@ export const ProblemDifficulty = pgEnum("problem_difficulty", [
 
 export type ProblemDifficulty = (typeof ProblemDifficulty.enumValues)[number];
 
+export const ProblemStatus = pgEnum("problem_status", ["draft", "published"]);
+
 export const problem = pgTable("problem", {
   id: uuid("id").defaultRandom().primaryKey(),
-  title: text("title").notNull(),
+  title: text("title").default("Untitled Problem").notNull(),
   slug: text("slug").notNull().unique(),
-  description: text("description").notNull(),
+  description: text("description").default("").notNull(),
+  status: ProblemStatus().default("draft").notNull(),
   difficulty: ProblemDifficulty(),
   createdBy: text("created_by").notNull(),
-  inputs: text("inputs").array().notNull(),
-  outputs: text("outputs").array().notNull(),
+  inputs: text("inputs").array().default([]).notNull(),
+  outputs: text("outputs").array().default([]).notNull(),
   exampleCount: integer("example_count").default(1).notNull(),
   timeLimitMs: integer("time_limit_ms").default(1000).notNull(),
   memoryLimitMb: integer("memory_limit_mb").default(512).notNull(),
@@ -46,8 +49,3 @@ export const problemRelations = relations(problem, ({ many, one }) => ({
     references: [user.id],
   }),
 }));
-
-export type CreateProblemInput = Omit<
-  typeof problem.$inferInsert,
-  "createdBy" | "slug"
->;

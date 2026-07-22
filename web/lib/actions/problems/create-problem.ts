@@ -1,18 +1,18 @@
 "use server";
 
 import { db } from "@/drizzle/db";
-import { type CreateProblemInput, problem } from "@/drizzle/schema";
+import { problem } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { generateSlug } from "@/lib/slug";
 
-export async function createProblem(input: CreateProblemInput) {
+export async function createProblem() {
   const currentUser = await getCurrentUser({});
   const [createdProblem] = await db
     .insert(problem)
     .values({
-      ...input,
-      slug: generateSlug(input.title),
+      slug: generateSlug("untitled-problem"),
       createdBy: currentUser.id,
+      status: "draft",
     })
     .returning();
   return createdProblem;

@@ -127,7 +127,7 @@
     },
     "Create": {
       "button": "Novo Problema",
-      "pageTitle": "Criar Problema",
+      "pageTitle": "Editar Problema",
       "editTab": "Editar Problema",
       "previewTab": "Pré-visualização",
       "titleLabel": "Título",
@@ -143,18 +143,33 @@
       "outputLabel": "Saída {n}",
       "inputOutputPlaceholder": "1 2 3",
       "addInputOutput": "+ Adicionar Entrada / Saída",
-      "creating": "Criando...",
-      "submit": "Criar Problema",
+      "creating": "Salvando...",
+      "submit": "Salvar Rascunho",
       "untitled": "Problema Sem Título",
       "normal": "NORMAL",
       "examplesTitle": "Exemplos",
       "noDescription": "*(Nenhuma descrição fornecida. Edite o problema para adicionar instruções.)*",
       "errorOccurred": "Ocorreu um erro",
-      "createdSuccess": "Problema criado com sucesso!",
+      "createdSuccess": "Problema salvo com sucesso!",
       "sharedToFeed": "Compartilhado no seu feed de atividades!",
       "shareTitle": "Compartilhe seu novo Problema",
       "defaultTitle": "um novo problema"
     },
+    "Publish": {
+      "button": "Publicar",
+      "success": "Problema publicado",
+      "failed": "Falha ao publicar problema",
+      "missingSummary": "Faltando",
+      "missingField": {
+        "title": "título",
+        "description": "descrição",
+        "difficulty": "dificuldade",
+        "tests": "pelo menos um caso de teste"
+      }
+    },
+    "draftBadge": "Rascunho",
+    "creatingDraft": "Criando rascunho...",
+    "failedCreateDraft": "Falha ao criar rascunho de problema",
     "Filters": {
       "searchPlaceholder": "Pesquisar problemas...",
       "my": "Meus",
@@ -182,7 +197,8 @@
         "submit": "Enviar",
         "results": "Resultados",
         "statistics": "Estatísticas",
-        "tests": "Testes"
+        "tests": "Testes",
+        "edit": "Editar"
       },
       "Task": {
         "timeLimit": "Limite de tempo: {seconds, number, ::.00} s",
@@ -611,7 +627,9 @@
       "loading": "Carregando problemas...",
       "emptyTitle": "Nenhum problema ainda",
       "emptyDescription": "Você ainda não criou nenhum problema. Comece projetando seu primeiro problema de programação e definindo seus casos de teste!",
-      "viewDetails": "Ver Detalhes"
+      "viewDetails": "Ver Detalhes",
+      "editDraft": "Continuar Editando",
+      "draftBadge": "Rascunho"
     }
   },
   "SettingsPage": {

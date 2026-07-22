@@ -18,10 +18,10 @@ import type {
   ProblemOnContest,
   ProblemPreview,
 } from "@/drizzle/schema";
+import { CreateProblemButton } from "@/app/[locale]/problems/_components/create-button";
 import { useAddProblemToContest } from "@/hooks/use-add-problem";
 import { useProblems } from "@/hooks/use-problems";
 import { useRemoveProblemToContest as useRemoveProblemFromContest } from "@/hooks/use-remove-problem";
-import { Link, usePathname } from "@/i18n/navigation";
 import { reorderProblems } from "@/lib/actions/contest/reorder-problems";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -38,7 +38,6 @@ export function EditContestProblems({
   const { mutate: addProblem, isPending: isAddPending } =
     useAddProblemToContest();
   const queryClient = useQueryClient();
-  const pathname = usePathname();
   const canReorder = !contest.startDate || new Date() < contest.startDate;
 
   const sorted = [...contest.problems].sort((a, b) => a.order - b.order);
@@ -118,9 +117,7 @@ export function EditContestProblems({
               ))}
           </SelectContent>
         </Select>
-        <Link href={`/problems/new?callback=${pathname}`}>
-          <Button type="button">{t("create")}</Button>
-        </Link>
+        <CreateProblemButton />
       </div>
 
       <div className="flex flex-col gap-2">

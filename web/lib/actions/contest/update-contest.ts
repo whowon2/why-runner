@@ -10,8 +10,18 @@ import type { UpdateContestInput } from "@/hooks/use-update-contest";
 export async function updateContest(input: UpdateContestInput) {
   const currentUser = await getCurrentUser({});
 
+  const existing = await db.query.contest.findFirst({
+    where: and(
+      eq(contest.id, input.contestId),
+      eq(contest.createdBy, currentUser.id),
+    ),
+    columns: { name: true },
+  });
+
+  if (!existing) throw new Error("Contest not found.");
+
   const values = { ...input.contest };
-  if (values.name) {
+  if (values.name && values.name !== existing.name) {
     values.slug = generateSlug(values.name);
   }
 

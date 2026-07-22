@@ -49,7 +49,8 @@ import type {
   SortDirection,
 } from "@/lib/actions/problems/get-problems";
 import { Link, useRouter } from "@/i18n/navigation";
-import { DifficultyBadge } from "./badge";
+import { DifficultyBadge, DraftBadge } from "./badge";
+import { CreateProblemButton } from "./create-button";
 import { ImportProblems } from "./import";
 
 type ProblemRow = Awaited<ReturnType<typeof getProblems>>["data"][number];
@@ -161,10 +162,15 @@ export function ProblemsList() {
         cell: ({ row }) => (
           <Link
             className="flex items-center gap-2 font-medium hover:underline"
-            href={`/problems/${row.original.slug}`}
+            href={
+              row.original.status === "draft"
+                ? `/problems/${row.original.slug}?tab=edit`
+                : `/problems/${row.original.slug}`
+            }
           >
             {row.original.title}
             <DifficultyBadge difficulty={row.original.difficulty} />
+            {row.original.status === "draft" && <DraftBadge />}
           </Link>
         ),
       },
@@ -207,9 +213,7 @@ export function ProblemsList() {
         action={
           <>
             <ImportProblems />
-            <Link href={"/problems/new"}>
-              <Button variant={"outline"}>{t("Create.button")}</Button>
-            </Link>
+            <CreateProblemButton />
           </>
         }
         search={{
@@ -309,7 +313,11 @@ export function ProblemsList() {
                     className="cursor-pointer"
                     key={row.id}
                     onClick={() =>
-                      router.push(`/problems/${row.original.slug}`)
+                      router.push(
+                        row.original.status === "draft"
+                          ? `/problems/${row.original.slug}?tab=edit`
+                          : `/problems/${row.original.slug}`,
+                      )
                     }
                   >
                     {row.getVisibleCells().map((cell) => (

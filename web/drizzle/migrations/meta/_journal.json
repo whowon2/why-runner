@@ -127,6 +127,20 @@
       "when": 1784749878933,
       "tag": "0017_stormy_fabian_cortez",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1784752719178,
+      "tag": "0018_sweet_namora",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1784752786521,
+      "tag": "0019_brief_wendell_vaughn",
+      "breakpoints": true
     }
   ]
 }

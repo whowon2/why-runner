@@ -36,6 +36,7 @@ export async function importProblems(data: unknown): Promise<number> {
     difficulty: p.difficulty ?? null,
     slug: generateSlug(p.title),
     createdBy: currentUser.id,
+    status: "published" as const,
   }));
 
   await db.insert(problem).values(values);

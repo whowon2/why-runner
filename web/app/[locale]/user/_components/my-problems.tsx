@@ -1,6 +1,6 @@
 "use client";
 
-import { FileCode, PlusCircle } from "lucide-react";
+import { FileCode } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +12,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useProblems } from "@/hooks/use-problems";
 import { Link } from "@/i18n/navigation";
+import { CreateProblemButton } from "../../problems/_components/create-button";
 
 export function MyProblems() {
   const t = useTranslations("UserPage.MyProblems");
@@ -33,9 +34,7 @@ export function MyProblems() {
           <p className="text-muted-foreground text-lg">{t("subtitle")}</p>
         </div>
         <div className="shrink-0">
-          <Link href="/problems/new">
-            <Button variant="outline">{t("create")}</Button>
-          </Link>
+          <CreateProblemButton />
         </div>
       </div>
 
@@ -61,12 +60,7 @@ export function MyProblems() {
             <div className="relative group">
               <div className="absolute -inset-1 blur-lg bg-linear-to-r from-indigo-500 to-cyan-500 opacity-20 group-hover:opacity-40 transition duration-500 rounded-lg" />
               <div className="relative">
-                <Link href="/problems/new">
-                  <Button>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    {t("create")}
-                  </Button>
-                </Link>
+                <CreateProblemButton />
               </div>
             </div>
           </CardContent>
@@ -84,26 +78,41 @@ export function MyProblems() {
                     >
                       {prob.title}
                     </h3>
-                    <span
-                      className={`px-2 py-0.5 rounded-none text-xs font-semibold uppercase tracking-wide flex-shrink-0 ${
-                        prob.difficulty === "easy"
-                          ? "bg-green-100/50 text-green-700 dark:bg-green-500/20 dark:text-green-400"
-                          : prob.difficulty === "medium"
-                            ? "bg-orange-100/50 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400"
-                            : "bg-red-100/50 text-red-700 dark:bg-red-500/20 dark:text-red-400"
-                      }`}
-                    >
-                      {prob.difficulty}
-                    </span>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {prob.status === "draft" && (
+                        <span className="px-2 py-0.5 rounded-none text-xs font-semibold uppercase tracking-wide bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                          {t("draftBadge")}
+                        </span>
+                      )}
+                      <span
+                        className={`px-2 py-0.5 rounded-none text-xs font-semibold uppercase tracking-wide ${
+                          prob.difficulty === "easy"
+                            ? "bg-green-100/50 text-green-700 dark:bg-green-500/20 dark:text-green-400"
+                            : prob.difficulty === "medium"
+                              ? "bg-orange-100/50 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400"
+                              : "bg-red-100/50 text-red-700 dark:bg-red-500/20 dark:text-red-400"
+                        }`}
+                      >
+                        {prob.difficulty}
+                      </span>
+                    </div>
                   </div>
                   <p className="text-sm text-muted-foreground line-clamp-2">
                     {prob.description}
                   </p>
                 </div>
                 <div className="pt-2 border-t">
-                  <Link href={`/problems/${prob.slug}`}>
+                  <Link
+                    href={
+                      prob.status === "draft"
+                        ? `/problems/${prob.slug}?tab=edit`
+                        : `/problems/${prob.slug}`
+                    }
+                  >
                     <Button variant="secondary" className="w-full">
-                      {t("viewDetails")}
+                      {prob.status === "draft"
+                        ? t("editDraft")
+                        : t("viewDetails")}
                     </Button>
                   </Link>
                 </div>

@@ -1,6 +1,6 @@
 "use server";
 
-import { and, count, desc, eq, ilike, inArray, sql } from "drizzle-orm";
+import { and, count, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { type ProblemDifficulty, problem, submission } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
@@ -29,7 +29,11 @@ export async function getProblems({
 }: GetProblemsParams) {
   const offset = (page - 1) * pageSize;
 
-  const conditions = [];
+  const currentUser = await getCurrentUser({});
+
+  const conditions = [
+    or(eq(problem.status, "published"), eq(problem.createdBy, currentUser.id)),
+  ];
 
   if (search) {
     conditions.push(ilike(problem.title, `%${search}%`));
@@ -40,13 +44,10 @@ export async function getProblems({
   }
 
   if (my) {
-    const currentUser = await getCurrentUser({});
     conditions.push(eq(problem.createdBy, currentUser.id));
   }
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-
-  const currentUser = await getCurrentUser({});
 
   // Solved-by count needs to be joined in before pagination when sorting by
   // it, since it's computed from `submission`, not a column on `problem`.
@@ -81,6 +82,7 @@ export async function getProblems({
         slug: problem.slug,
         description: problem.description,
         difficulty: problem.difficulty,
+        status: problem.status,
         createdBy: problem.createdBy,
         exampleCount: problem.exampleCount,
         timeLimitMs: problem.timeLimitMs,

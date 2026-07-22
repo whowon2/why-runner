@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Delete } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
@@ -30,38 +30,34 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateProblem } from "@/hooks/use-create-problem";
+import type { Problem } from "@/drizzle/schema";
+import { useUpdateProblem } from "@/hooks/use-update-problem";
 import { useRouter } from "@/i18n/navigation";
 import "katex/dist/katex.min.css";
 import { Eye, Pencil } from "lucide-react";
-import { ShareToFeedModal } from "@/components/share-to-feed-modal";
-import { createActivity } from "@/lib/actions/activity/create-activity";
 
-export function NewProblem() {
+export function NewProblem({ problem }: { problem: Problem }) {
   const t = useTranslations("ProblemsPage.Create");
   const tDifficulty = useTranslations("Difficults");
   const queryClient = useQueryClient();
 
   const formSchema = z.object({
-    description: z.string().min(1),
-    difficulty: z.enum(["easy", "medium", "hard"], {
-      message: t("difficultyRequired"),
-    }),
+    description: z.string(),
+    difficulty: z.enum(["easy", "medium", "hard"]).optional(),
     exampleCount: z.number().int().min(1),
-    inputs: z.array(z.string().min(1)).min(1),
-    outputs: z.array(z.string().min(1)).min(1),
-    title: z.string().min(1),
+    inputs: z.array(z.string()),
+    outputs: z.array(z.string()),
+    title: z.string(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
-      description:
-        "Consider an algorithm that takes as input a positive integer n. If n is even, the algorithm divides it by two, and if n is odd, the algorithm multiplies it by three and adds one. The algorithm repeats this, until n is one. For example, the sequence for n=3 is as follows:",
-      difficulty: "easy",
-      exampleCount: 1,
-      inputs: [],
-      outputs: [],
-      title: "Weird Algorithm",
+      description: problem.description,
+      difficulty: problem.difficulty ?? undefined,
+      exampleCount: problem.exampleCount,
+      inputs: problem.inputs,
+      outputs: problem.outputs,
+      title: problem.title,
     },
     resolver: zodResolver(formSchema),
     shouldFocusError: false,
@@ -77,26 +73,24 @@ export function NewProblem() {
     name: "outputs" as never,
   });
 
+  const { mutate: updateProblem, isPending } = useUpdateProblem();
   const router = useRouter();
 
-  const { mutate: createProblem, isPending } = useCreateProblem();
-
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [createdProblem, setCreatedProblem] = useState<any>(null);
-
   function onSubmit(values: z.infer<typeof formSchema>) {
-    createProblem(
+    updateProblem(
       {
-        title: values.title,
-        difficulty: values.difficulty,
-        description: values.description,
-        exampleCount: Math.min(values.exampleCount, values.inputs.length),
-        inputs: values.inputs,
-        outputs: values.outputs,
+        problemId: problem.id,
+        problem: {
+          title: values.title,
+          difficulty: values.difficulty ?? null,
+          description: values.description,
+          exampleCount: Math.min(values.exampleCount, values.inputs.length || 1),
+          inputs: values.inputs,
+          outputs: values.outputs,
+        },
       },
       {
         onError(error) {
-          console.error(error);
           toast.error(t("errorOccurred"), {
             description: error.message,
           });
@@ -104,26 +98,19 @@ export function NewProblem() {
         onSettled() {
           queryClient.invalidateQueries({ queryKey: ["problems"] });
         },
-        onSuccess(data) {
+        onSuccess(updated) {
           toast.success(t("createdSuccess"));
-          setCreatedProblem(data);
-          setShowShareModal(true);
+          if (updated && updated.slug !== problem.slug) {
+            router.replace(`/problems/${updated.slug}?tab=edit`);
+          }
         },
       },
     );
   }
 
   function addInput() {
-    // update error state
-    form.trigger();
-    // if there are no errors, add a new input and output field
-    if (
-      form.formState.errors.inputs === undefined &&
-      form.formState.errors.outputs === undefined
-    ) {
-      inputs.append("");
-      outputs.append("");
-    }
+    inputs.append("");
+    outputs.append("");
   }
 
   useEffect(() => {
@@ -133,18 +120,13 @@ export function NewProblem() {
     if (outputs.fields.length === 0) {
       outputs.append("");
     }
-  }, [inputs, outputs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const formValues = form.watch();
 
   return (
-    <div className="flex flex-col p-8 w-full max-w-5xl mx-auto">
-      <div className="flex justify-between mb-8">
-        <h1 className="font-extrabold text-3xl tracking-tight">
-          {t("pageTitle")}
-        </h1>
-      </div>
-
+    <div className="flex flex-col w-full">
       <Tabs defaultValue="edit" className="w-full">
         <TabsList className="mb-6 grid w-full grid-cols-2 max-w-[400px]">
           <TabsTrigger value="edit" className="flex items-center gap-2">
@@ -401,30 +383,6 @@ export function NewProblem() {
           </div>
         </TabsContent>
       </Tabs>
-
-      <ShareToFeedModal
-        isOpen={showShareModal}
-        onClose={() => {
-          setShowShareModal(false);
-          router.back();
-        }}
-        onShare={async (description) => {
-          if (createdProblem) {
-            await createActivity({
-              type: "PROBLEM_CREATED",
-              description,
-              problemId: createdProblem.id,
-            });
-            toast.success(t("sharedToFeed"));
-          }
-          setShowShareModal(false);
-          router.back();
-        }}
-        title={t("shareTitle")}
-        descriptionText={t("shareDescription", {
-          title: createdProblem?.title || t("defaultTitle"),
-        })}
-      />
     </div>
   );
 }

@@ -1,12 +1,15 @@
 "use client";
 
+import { Pencil } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Language, Problem } from "@/drizzle/schema";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { authClient } from "@/lib/auth/client";
 import { ProblemDescription } from "../description";
+import { ProblemEditTab } from "./edit";
 import { ProblemResultsTab } from "./results";
 import { ProblemStatisticsTab } from "./statistics";
 import { ProblemSubmitTab } from "./submit";
@@ -17,7 +20,11 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const tab = searchParams.get("tab") || "task";
+  const { data: session } = authClient.useSession();
+  const isOwner = session?.user?.id === problem.createdBy;
+  const tab =
+    searchParams.get("tab") ||
+    (isOwner && problem.status === "draft" ? "edit" : "task");
 
   // Lifted out of ProblemSubmitTab: Radix unmounts inactive TabsContent, so
   // state living inside that tab's own component gets wiped on tab switch.
@@ -42,7 +49,7 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
   return (
     <div className="flex w-full flex-1 flex-col gap-4">
       <Tabs
-        className="w-full max-w-4xl mx-auto flex-1"
+        className="w-full max-w-6xl mx-auto flex-1"
         defaultValue={tab}
         onValueChange={handleTabChange}
       >
@@ -78,10 +85,19 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
             >
               {t("tabs.tests")}
             </TabsTrigger>
+            {isOwner && (
+              <TabsTrigger
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:shadow-sm gap-2"
+                value="edit"
+              >
+                {t("tabs.edit")}
+                <Pencil className="w-4 h-4" />
+              </TabsTrigger>
+            )}
           </TabsList>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 rounded-none bg-white/40 dark:bg-neutral-900/40 backdrop-blur-xl border border-white/20 shadow-2xl shadow-indigo-500/5 p-6">
           <TabsContent value="task">
             <ProblemDescription problemId={problem.id} />
           </TabsContent>
@@ -103,6 +119,11 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
           <TabsContent value="tests">
             <ProblemTestsTab problemId={problem.id} />
           </TabsContent>
+          {isOwner && (
+            <TabsContent value="edit">
+              <ProblemEditTab problemId={problem.id} />
+            </TabsContent>
+          )}
         </div>
       </Tabs>
     </div>

@@ -127,7 +127,7 @@
     },
     "Create": {
       "button": "New Problem",
-      "pageTitle": "Create Problem",
+      "pageTitle": "Edit Problem",
       "editTab": "Edit Problem",
       "previewTab": "Live Preview",
       "titleLabel": "Title",
@@ -143,19 +143,34 @@
       "outputLabel": "Output {n}",
       "inputOutputPlaceholder": "1 2 3",
       "addInputOutput": "+ Add Input / Output",
-      "creating": "Creating...",
-      "submit": "Create Problem",
+      "creating": "Saving...",
+      "submit": "Save Draft",
       "untitled": "Untitled Problem",
       "normal": "NORMAL",
       "examplesTitle": "Examples",
       "noDescription": "*(No description provided. Edit the problem to add instructions.)*",
       "errorOccurred": "An error occurred",
-      "createdSuccess": "Problem created successfully!",
+      "createdSuccess": "Problem saved successfully!",
       "sharedToFeed": "Shared to your activity feed!",
       "shareTitle": "Share your new Problem",
       "shareDescription": "Let your followers know you've created \"{title}\"!",
       "defaultTitle": "a new problem"
     },
+    "Publish": {
+      "button": "Publish",
+      "success": "Problem published",
+      "failed": "Failed to publish problem",
+      "missingSummary": "Missing",
+      "missingField": {
+        "title": "title",
+        "description": "description",
+        "difficulty": "difficulty",
+        "tests": "at least one test case"
+      }
+    },
+    "draftBadge": "Draft",
+    "creatingDraft": "Creating draft...",
+    "failedCreateDraft": "Failed to create problem draft",
     "Filters": {
       "searchPlaceholder": "Search problems...",
       "my": "My",
@@ -183,7 +198,8 @@
         "submit": "Submit",
         "results": "Results",
         "statistics": "Statistics",
-        "tests": "Tests"
+        "tests": "Tests",
+        "edit": "Edit"
       },
       "Task": {
         "timeLimit": "Time limit: {seconds, number, ::.00} s",
@@ -612,7 +628,9 @@
       "loading": "Loading problems...",
       "emptyTitle": "No problems yet",
       "emptyDescription": "You haven't authored any problems yet. Get started by designing your first coding problem and defining its test cases!",
-      "viewDetails": "View Details"
+      "viewDetails": "View Details",
+      "editDraft": "Continue Editing",
+      "draftBadge": "Draft"
     }
   },
   "SettingsPage": {
