@@ -5,7 +5,7 @@ export default async function ContestsPage() {
   const _user = await getCurrentUser({ redirectTo: "/auth/signin" });
 
   return (
-    <div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">
+    <div className="flex w-full flex-col flex-1 items-center gap-4 p-4">
       <ContestList />
     </div>
   );
