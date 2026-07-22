@@ -2,7 +2,10 @@
   "Common": {
     "close": "Fechar",
     "error": "Erro",
-    "loading": "Carregando..."
+    "loading": "Carregando...",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "zoom": "Zoom"
   },
   "ErrorPage": {
     "title": "Algo deu errado",
@@ -472,14 +475,20 @@
     "username": "Nome de usuário",
     "usernamePlaceholder": "shadcn",
     "usernameDescription": "Este é seu nome de exibição público.",
-    "avatarUrl": "URL do Avatar",
-    "avatarDescription": "Este é seu avatar público.",
     "saveProfile": "Salvar Perfil",
     "failedUpdate": "Falha ao atualizar perfil",
     "updated": "Perfil atualizado"
   },
   "ProfilePage": {
     "avatarAlt": "avatar",
+    "coverAlt": "imagem de capa",
+    "changeAvatar": "Alterar avatar",
+    "changeCover": "Alterar capa",
+    "adjustAvatar": "Ajustar avatar",
+    "adjustCover": "Ajustar capa",
+    "avatarUpdated": "Avatar atualizado",
+    "coverUpdated": "Capa atualizada",
+    "uploadFailed": "Falha ao enviar imagem",
     "defaultBio": "Programador competitivo e entusiasta de lógica algorítmica. Construindo o futuro um caso de teste de cada vez. Sempre disposto a aprender novas estruturas de dados e otimizar o tempo de execução.",
     "joined": "Entrou em",
     "contests": "Torneios",

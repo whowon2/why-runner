@@ -28,7 +28,6 @@ import {
 import { useUpdateProfile } from "@/hooks/user-update-profile";
 
 const updateProfileSchema = z.object({
-  image: z.union([z.string().url(), z.literal("")]),
   name: z.string(),
 });
 
@@ -36,7 +35,6 @@ export function UpdateForm({ user }: { user: User }) {
   const t = useTranslations("UserForm");
   const form = useForm<z.infer<typeof updateProfileSchema>>({
     defaultValues: {
-      image: user.image ?? "",
       name: user.name ?? "",
     },
     resolver: zodResolver(updateProfileSchema),
@@ -72,23 +70,6 @@ export function UpdateForm({ user }: { user: User }) {
                     <Input placeholder={t("usernamePlaceholder")} {...field} />
                   </FormControl>
                   <FormDescription>{t("usernameDescription")}</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="image"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("avatarUrl")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="https://example.com/avatar.png"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>{t("avatarDescription")}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

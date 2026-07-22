@@ -2,7 +2,10 @@
   "Common": {
     "close": "Close",
     "error": "Error",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "zoom": "Zoom"
   },
   "ErrorPage": {
     "title": "Something went wrong",
@@ -473,14 +476,20 @@
     "username": "Username",
     "usernamePlaceholder": "shadcn",
     "usernameDescription": "This is your public display name.",
-    "avatarUrl": "Avatar URL",
-    "avatarDescription": "This is your public avatar.",
     "saveProfile": "Save Profile",
     "failedUpdate": "Failed to update profile",
     "updated": "Profile updated"
   },
   "ProfilePage": {
     "avatarAlt": "avatar",
+    "coverAlt": "cover image",
+    "changeAvatar": "Change avatar",
+    "changeCover": "Change cover",
+    "adjustAvatar": "Adjust avatar",
+    "adjustCover": "Adjust cover",
+    "avatarUpdated": "Avatar updated",
+    "coverUpdated": "Cover updated",
+    "uploadFailed": "Failed to upload image",
     "defaultBio": "Competitive programmer and algorithmic logic enthusiast. Building the future one test case at a time. Always eager to learn new data structures and optimize runtime.",
     "joined": "Joined",
     "contests": "Contests",
