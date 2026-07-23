@@ -4,6 +4,7 @@ import { Newspaper } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useCallback } from "react";
+import { PageHeader } from "@/components/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { FeedList } from "./feed-list";
@@ -31,11 +32,12 @@ export function FeedTabs() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Newspaper className="w-5 h-5 text-primary" />
-        <h1 className="text-xl font-bold tracking-tight">{t("title")}</h1>
-      </div>
+    <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col gap-4 py-8">
+      <PageHeader
+        icon={Newspaper}
+        title={t("title")}
+        subtitle={t("subtitle")}
+      />
 
       <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="w-full h-12 justify-start rounded-none border-b bg-transparent p-0 flex gap-6">

@@ -65,6 +65,7 @@
   },
   "SocialFeed": {
     "title": "Feed",
+    "subtitle": "Veja o que as pessoas que você segue estão fazendo.",
     "followingTab": "Seguindo",
     "exploreTab": "Explorar",
     "emptyFollowing": "Seu feed de seguindo está vazio.",
