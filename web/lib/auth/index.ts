@@ -1,12 +1,9 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { Resend } from "resend";
 import { db } from "@/drizzle/db";
 import { env } from "@/env";
 import { generateUsername } from "@/lib/username";
-
-const resend = new Resend(env.RESEND_API_KEY);
 
 export const auth = betterAuth({
   user: {
@@ -37,18 +34,6 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
-  },
-  emailVerification: {
-    autoSignInAfterVerification: true,
-    sendOnSignUp: true,
-    sendVerificationEmail: async ({ user, url }) => {
-      await resend.emails.send({
-        from: env.EMAIL_FROM,
-        to: user.email,
-        subject: "Verify your email",
-        html: `<p>Click the link below to verify your account:</p><p><a href="${url}">${url}</a></p>`,
-      });
-    },
   },
   socialProviders: {
     github: {
