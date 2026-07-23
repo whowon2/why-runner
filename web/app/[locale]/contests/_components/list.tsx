@@ -39,7 +39,6 @@ export function ContestList() {
     data: queryData,
     isPending,
     isPlaceholderData,
-    refetch,
   } = useContests({
     page,
     pageSize: ITEMS_PER_PAGE,
@@ -63,7 +62,7 @@ export function ContestList() {
             <Button asChild variant="outline">
               <Link href={"/user?tab=contests"}>{t("myContests")}</Link>
             </Button>
-            <CreateContestButton refetchAction={() => refetch()} />
+            <CreateContestButton />
           </>
         }
         search={{

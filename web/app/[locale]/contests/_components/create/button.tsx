@@ -9,11 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useCreateContest } from "@/hooks/use-create-contest";
 import { useRouter } from "@/i18n/navigation";
 
-export function CreateContestButton({
-  refetchAction,
-}: {
-  refetchAction?: () => void;
-}) {
+export function CreateContestButton() {
   const t = useTranslations("ContestsPage.createDialog");
   const { mutate: createContest, isPending } = useCreateContest();
   const router = useRouter();
@@ -29,7 +25,6 @@ export function CreateContestButton({
         toast.error(t("failedCreate"), { description: error.message });
       },
       onSuccess: (data) => {
-        refetchAction?.();
         router.push(`/contests/${data.slug}?tab=settings`);
       },
     });

@@ -22,6 +22,10 @@ export function PendingJoins({ contestId }: { contestId: string }) {
     mutationFn: (userId: string) => approveJoin(contestId, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pending-joins", contestId] });
+      queryClient.invalidateQueries({ queryKey: ["participants", contestId] });
+      queryClient.invalidateQueries({
+        queryKey: ["user-contest-status", contestId],
+      });
       toast.success(t("approveSuccess"));
     },
   });
@@ -30,6 +34,10 @@ export function PendingJoins({ contestId }: { contestId: string }) {
     mutationFn: (userId: string) => rejectJoin(contestId, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pending-joins", contestId] });
+      queryClient.invalidateQueries({ queryKey: ["participants", contestId] });
+      queryClient.invalidateQueries({
+        queryKey: ["user-contest-status", contestId],
+      });
       toast.success(t("rejectSuccess"));
     },
   });

@@ -88,6 +88,9 @@ export function UploadCode({
           queryClient.invalidateQueries({
             queryKey: ["submissions", String(problem.id)],
           });
+          queryClient.invalidateQueries({
+            queryKey: ["submissions", { contestId: contest.id }],
+          });
         },
       },
     );

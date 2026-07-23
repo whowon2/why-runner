@@ -60,6 +60,9 @@ export function JoinButton({
                 queryClient.invalidateQueries({
                   queryKey: ["contests", String(contest.id)],
                 });
+                queryClient.invalidateQueries({
+                  queryKey: ["user-contest-status", contest.id],
+                });
               },
             },
           );

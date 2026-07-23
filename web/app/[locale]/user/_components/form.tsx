@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import type { User } from "better-auth";
 import { Save } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -41,6 +42,7 @@ export function UpdateForm({ user }: { user: User & { username?: string } }) {
   });
 
   const { mutate: updateUser } = useUpdateProfile();
+  const queryClient = useQueryClient();
 
   async function onSubmit(values: z.infer<typeof updateProfileSchema>) {
     updateUser(values, {
@@ -49,6 +51,7 @@ export function UpdateForm({ user }: { user: User & { username?: string } }) {
       },
       async onSuccess() {
         toast(t("updated"));
+        queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
       },
     });
   }

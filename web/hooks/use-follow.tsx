@@ -47,6 +47,7 @@ export const useToggleFollow = (targetUserId: string) => {
         queryKey: ["follow-state", targetUserId],
       });
       queryClient.invalidateQueries({ queryKey: ["feed"] });
+      queryClient.invalidateQueries({ queryKey: ["follow-list"] });
     },
   });
 };
