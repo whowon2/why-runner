@@ -5,11 +5,11 @@ Defines the presentation and behavior of the problems list view — a table-base
 ## Requirements
 
 ### Requirement: Problems list is displayed as a table
-The system SHALL display the problems list as a table with columns for problem name, number of users who have solved the problem, and whether the current user has solved it. The list SHALL exclude problems with `status = draft` unless the current user is the problem's creator, in which case their own draft problems SHALL be included and visually marked as "Draft".
+The system SHALL display the problems list as a table with columns for problem code, problem name, creator (linked to their profile), number of users who have solved the problem, and whether the current user has solved it. The list SHALL exclude problems with `status = draft` unless the current user is the problem's creator, in which case their own draft problems SHALL be included and visually marked as "Draft".
 
 #### Scenario: Table columns render
 - **WHEN** an authenticated user opens the problems list page
-- **THEN** the system SHALL render a table with one row per visible problem, showing the problem's name, its solved-by count, and a solved/unsolved indicator for the current user in that row
+- **THEN** the system SHALL render a table with one row per visible problem, showing the problem's code, name, creator (as a link to the creator's profile), its solved-by count, and a solved/unsolved indicator for the current user in that row
 
 #### Scenario: Existing filters still work
 - **WHEN** the user searches by name, filters by difficulty, filters to "my problems", or paginates

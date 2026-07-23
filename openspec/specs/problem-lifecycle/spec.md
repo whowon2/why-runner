@@ -9,7 +9,7 @@ Clicking "Create Problem" SHALL immediately create a persisted problem with `sta
 
 #### Scenario: User clicks Create Problem
 - **WHEN** an authenticated user clicks "Create Problem"
-- **THEN** a new problem row is created with `status = draft`, a generated unique slug, `createdBy` set to the current user, and default placeholder values for title/description
+- **THEN** a new problem row is created with `status = draft`, a generated unique slug, a generated unique code, `createdBy` set to the current user, and default placeholder values for title/description
 - **AND** the user is navigated to that problem's edit view
 
 ### Requirement: Draft problem visibility
@@ -51,3 +51,10 @@ Problems created via bulk import SHALL be created with `status = published` dire
 #### Scenario: Bulk import creates published problems
 - **WHEN** an authenticated user imports a batch of problems via the import feature
 - **THEN** each imported problem is created with `status = published` and is immediately visible per existing problem visibility rules
+
+### Requirement: Bulk import also assigns a code
+Problems created via bulk import SHALL also be assigned a unique `code` at creation time, following the same generation scheme as problems created through the standard "Create Problem" flow.
+
+#### Scenario: Bulk-imported problem has a code
+- **WHEN** an authenticated user imports a batch of problems via the import feature
+- **THEN** each imported problem is created with a non-empty, unique `code`

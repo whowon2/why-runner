@@ -16,11 +16,15 @@ A "Settings" tab SHALL be shown on a contest's page only to that contest's creat
 - **THEN** no "Settings" tab is rendered, and navigating directly to `?tab=settings` does not display settings content
 
 ### Requirement: Full contest configuration form
-The Settings tab SHALL expose an editable form covering name, description, start date, end date, private/public toggle, and attached problems — replacing the previous Manage-tab edit form that only exposed name.
+The Settings tab SHALL expose an editable form covering name, description, start date, end date, private/public toggle, and attached problems — replacing the previous Manage-tab edit form that only exposed name. The problem picker used to attach problems SHALL display each candidate problem's code and creator alongside its title, so problems sharing a title can be told apart.
 
 #### Scenario: Editing all fields on a draft
 - **WHEN** the creator changes name, description, start/end dates, privacy, and problem selection on a draft contest and saves
 - **THEN** all changed fields are persisted
+
+#### Scenario: Picking between same-titled problems
+- **WHEN** the creator opens the problem picker and two or more candidate problems share the same title
+- **THEN** each is shown with its distinct code and creator so the creator can identify the correct one before adding it
 
 ### Requirement: Publish action in Settings
 For a draft contest, the Settings tab SHALL show a "Publish" action. Once a contest is published, the Publish action SHALL no longer be shown.
