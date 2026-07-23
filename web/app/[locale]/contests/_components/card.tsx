@@ -38,7 +38,8 @@ export function ContestCard({
   }, []);
 
   function getStatusText(start: Date | null, end: Date | null) {
-    if (!start || !end) return t("card.status.draft");
+    if (contest.status === "draft" || !start || !end)
+      return t("card.status.draft");
     if (now < new Date(start)) {
       return `${t("card.starts")}: ${formatDuration(new Date(start).getTime() - now.getTime())}`;
     }
@@ -48,7 +49,12 @@ export function ContestCard({
     return t("card.finished");
   }
 
-  const status = getContestStatus(contest.startDate, contest.endDate, now);
+  const status = getContestStatus(
+    contest.status,
+    contest.startDate,
+    contest.endDate,
+    now,
+  );
   const statusText = getStatusText(contest.startDate, contest.endDate);
 
   return (

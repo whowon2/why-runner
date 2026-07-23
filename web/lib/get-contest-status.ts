@@ -1,9 +1,10 @@
 export function getContestStatus(
+  status: "draft" | "published",
   start: Date | null,
   end: Date | null,
   now: Date,
 ) {
-  if (!start || !end) {
+  if (status === "draft" || !start || !end) {
     return {
       badge: "draft" as const,
       color:

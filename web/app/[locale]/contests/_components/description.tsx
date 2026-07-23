@@ -25,7 +25,7 @@ export function ContestDescription({ contestId }: { contestId: string }) {
 
   const c = contest;
   const isCreatedByUser = c.createdBy === user.id;
-  const status = getContestStatus(c.startDate, c.endDate, now);
+  const status = getContestStatus(c.status, c.startDate, c.endDate, now);
   const startDate = c.startDate ? new Date(c.startDate) : null;
   const endDate = c.endDate ? new Date(c.endDate) : null;
 
@@ -36,7 +36,8 @@ export function ContestDescription({ contestId }: { contestId: string }) {
     }).format(date);
 
   function getCountdown() {
-    if (!startDate || !endDate) return t("card.status.draft");
+    if (c.status === "draft" || !startDate || !endDate)
+      return t("card.status.draft");
     if (now < startDate) {
       return `${t("card.starts")}: ${formatDuration(startDate.getTime() - now.getTime())}`;
     }

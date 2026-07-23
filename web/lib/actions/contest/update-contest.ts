@@ -15,7 +15,7 @@ export async function updateContest(input: UpdateContestInput) {
       eq(contest.id, input.contestId),
       eq(contest.createdBy, currentUser.id),
     ),
-    columns: { name: true },
+    columns: { name: true, startDate: true, endDate: true },
   });
 
   if (!existing) throw new Error("Contest not found.");
@@ -23,6 +23,14 @@ export async function updateContest(input: UpdateContestInput) {
   const values = { ...input.contest };
   if (values.name && values.name !== existing.name) {
     values.slug = generateSlug(values.name);
+  }
+
+  const nextStartDate =
+    values.startDate !== undefined ? values.startDate : existing.startDate;
+  const nextEndDate =
+    values.endDate !== undefined ? values.endDate : existing.endDate;
+  if (nextStartDate && nextEndDate && nextEndDate <= nextStartDate) {
+    throw new Error("End date must be after start date.");
   }
 
   const [result] = await db

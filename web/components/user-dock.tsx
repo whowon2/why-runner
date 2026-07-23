@@ -60,9 +60,13 @@ export function UserDock() {
   if (!mounted) return null;
 
   return (
-    <div className="flex flex-col items-center justify-center sticky bottom-4 mb-4 select-none">
+    <div className="flex flex-col items-center justify-center sticky bottom-4 mb-4 select-none pointer-events-none">
       <TooltipProvider>
-        <Dock direction="middle" iconMagnification={45}>
+        <Dock
+          direction="middle"
+          iconMagnification={45}
+          className="pointer-events-auto"
+        >
           {DATA.navbar.map((item) => (
             <DockIcon key={item.label}>
               <Tooltip>
