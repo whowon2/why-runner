@@ -50,6 +50,343 @@
     "login": "Login",
     "settings": "Settings"
   },
+  "Footer": {
+    "copyright": "© {year} Why Runner",
+    "githubLabel": "GitHub",
+    "links": {
+      "terms": "Terms of Use",
+      "privacy": "Privacy",
+      "cookies": "Cookies",
+      "guidelines": "Community Guidelines",
+      "copyright": "Copyright",
+      "moderation": "Moderation"
+    }
+  },
+  "Legal": {
+    "updatedAt": "July 22, 2026",
+    "Terms": {
+      "title": "Terms of Use",
+      "intro": "These Terms of Use govern access to and use of Why Runner (\"we\", \"our\"), a competitive programming and judged code-execution platform. By creating an account or using Why Runner, you agree to these terms.",
+      "sections": [
+        {
+          "heading": "1. Your account",
+          "blocks": [
+            { "type": "p", "text": "You are responsible for keeping your access credentials confidential and for all activity carried out under your account. You must meet the minimum age required by applicable law to create an account." }
+          ]
+        },
+        {
+          "heading": "2. Acceptable use",
+          "blocks": [
+            { "type": "p", "text": "You agree not to use Why Runner to publish illegal, defamatory, or hateful content, spam, or any material that infringes on the rights of others. See our [[Community Guidelines|/community-guidelines]] for detailed conduct rules." }
+          ]
+        },
+        {
+          "heading": "3. Submissions and content",
+          "blocks": [
+            { "type": "p", "text": "Submitted code, solutions, problems, and comments you create on Why Runner are your own work. You retain ownership of that content. By making a solution or problem public, you grant us a non-exclusive license to display it within the platform, as detailed in our [[Copyright Policy|/copyright]]." }
+          ]
+        },
+        {
+          "heading": "4. Contests and submissions",
+          "blocks": [
+            { "type": "p", "text": "Why Runner lets you create and join competitive programming contests. You are responsible for the integrity of the submissions you send and must follow each contest's specific rules." }
+          ]
+        },
+        {
+          "heading": "5. Code execution",
+          "blocks": [
+            { "type": "p", "text": "Submissions run in sandboxed, isolated environments with time and memory limits. You agree not to attempt to circumvent those limits or use the execution service for purposes other than solving the proposed problems." }
+          ]
+        },
+        {
+          "heading": "6. Moderation and suspension",
+          "blocks": [
+            { "type": "p", "text": "We may remove content or suspend accounts that violate these terms or our Community Guidelines, as described in our [[Moderation Policy|/moderation]]." }
+          ]
+        },
+        {
+          "heading": "7. Limitation of liability",
+          "blocks": [
+            { "type": "p", "text": "Why Runner is provided \"as is\". We do not guarantee the service will be uninterrupted or error-free. To the maximum extent permitted by law, we are not liable for indirect damages arising from use of the platform." }
+          ]
+        },
+        {
+          "heading": "8. Termination",
+          "blocks": [
+            { "type": "p", "text": "You may close your account at any time. We may suspend or terminate accounts that violate these terms, with notice when possible." }
+          ]
+        },
+        {
+          "heading": "9. Changes",
+          "blocks": [
+            { "type": "p", "text": "We may update these terms periodically. Significant changes will be communicated through the platform. Continued use of Why Runner after a change constitutes acceptance of the new terms." }
+          ]
+        },
+        {
+          "heading": "10. Contact",
+          "blocks": [
+            { "type": "p", "text": "Questions about these terms can be sent to Why Runner support." }
+          ]
+        }
+      ]
+    },
+    "Privacy": {
+      "title": "Privacy Policy",
+      "intro": "This Privacy Policy explains how Why Runner collects, uses, and protects your personal data, in accordance with the Brazilian General Data Protection Law (LGPD — Law No. 13.709/2018).",
+      "sections": [
+        {
+          "heading": "1. Data we collect",
+          "blocks": [
+            {
+              "type": "ul",
+              "items": [
+                "**Account data:** name, email, username, and profile picture (avatar).",
+                "**Content you generate:** code submissions, solutions, authored problems, and comments.",
+                "**Contest data:** contests you participate in, results, and submission history.",
+                "**Technical data:** IP address, device type, and usage information automatically collected for security and service improvement."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "2. Why we process your data",
+          "blocks": [
+            { "type": "p", "text": "We process your data to: provide and maintain your account and the platform's operation; execute and grade your code submissions; display contest scoreboards and results; send account-related notifications; and comply with legal obligations." }
+          ]
+        },
+        {
+          "heading": "3. Data sharing",
+          "blocks": [
+            { "type": "p", "text": "We do not sell your personal data. Results from public contests and profiles are visible to other users. We may share data with service providers (e.g. hosting, transactional email, AI services for submission feedback) strictly to operate Why Runner." }
+          ]
+        },
+        {
+          "heading": "4. Your rights (LGPD)",
+          "blocks": [
+            { "type": "p", "text": "As a data subject, you have the right to:" },
+            {
+              "type": "ul",
+              "items": [
+                "Confirm that processing exists and access your data;",
+                "Correct incomplete, inaccurate, or outdated data;",
+                "Request deletion of personal data processed with your consent;",
+                "Request portability of your data;",
+                "Withdraw your consent at any time."
+              ]
+            },
+            { "type": "p", "text": "You can exercise these rights directly in your account settings or by contacting Why Runner support." }
+          ]
+        },
+        {
+          "heading": "5. Retention",
+          "blocks": [
+            { "type": "p", "text": "We keep your data while your account is active. When you delete your account, we remove or anonymize your personal data, except where retention is required by legal obligation." }
+          ]
+        },
+        {
+          "heading": "6. Security",
+          "blocks": [
+            { "type": "p", "text": "We adopt reasonable technical and organizational measures to protect your data against unauthorized access, loss, or alteration. Code submissions run in isolated sandboxes with no network access." }
+          ]
+        },
+        {
+          "heading": "7. Cookies",
+          "blocks": [
+            { "type": "p", "text": "We use essential cookies for authentication and platform operation. See details in our [[Cookie Policy|/cookies]]." }
+          ]
+        },
+        {
+          "heading": "8. Changes",
+          "blocks": [
+            { "type": "p", "text": "We may update this policy periodically. Relevant changes will be communicated through the platform." }
+          ]
+        },
+        {
+          "heading": "9. Contact",
+          "blocks": [
+            { "type": "p", "text": "To exercise your rights or ask questions about this policy, contact Why Runner support." }
+          ]
+        }
+      ]
+    },
+    "Cookies": {
+      "title": "Cookie Policy",
+      "intro": "This page explains which cookies and local storage technologies Why Runner uses and for what purpose.",
+      "sections": [
+        {
+          "heading": "1. What cookies are",
+          "blocks": [
+            { "type": "p", "text": "Cookies are small files stored in your browser that let a site remember information about your visit." }
+          ]
+        },
+        {
+          "heading": "2. Cookies we use",
+          "blocks": [
+            {
+              "type": "ul",
+              "items": [
+                "**Session/authentication cookies:** essential to keep you signed in to your account while browsing Why Runner. Without them, you cannot use features that require login, such as sending submissions or joining contests.",
+                "**Preference cookies:** used to remember settings like light/dark theme and language."
+              ]
+            },
+            { "type": "p", "text": "We do not use advertising or third-party tracking cookies." }
+          ]
+        },
+        {
+          "heading": "3. Managing cookies",
+          "blocks": [
+            { "type": "p", "text": "Essential authentication cookies cannot be disabled without affecting the platform's operation. You can clear or block cookies through your browser settings, but this may prevent you from logging in to Why Runner." }
+          ]
+        },
+        {
+          "heading": "4. Changes",
+          "blocks": [
+            { "type": "p", "text": "We may update this policy if Why Runner's cookie usage changes." }
+          ]
+        },
+        {
+          "heading": "5. Contact",
+          "blocks": [
+            { "type": "p", "text": "Questions about this policy can be sent to Why Runner support." }
+          ]
+        }
+      ]
+    },
+    "Guidelines": {
+      "title": "Community Guidelines",
+      "intro": "Why Runner is a space for serious competitive programming practice and competition. These guidelines apply to solutions, problems, comments, and any public content on the platform.",
+      "sections": [
+        {
+          "heading": "1. What we expect from you",
+          "blocks": [
+            {
+              "type": "ul",
+              "items": [
+                "Treat other members with respect, even in technical disagreement;",
+                "Submit only your own original code during contests;",
+                "Cite sources when sharing solutions or study material outside of contests;",
+                "Report content that violates these guidelines using the report tools."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "2. Prohibited behavior",
+          "blocks": [
+            {
+              "type": "ul",
+              "items": [
+                "Harassment, threats, or personal attacks against other users;",
+                "Hate speech against any religious, ethnic, or social group;",
+                "Spam, excessive self-promotion, or abusive automated submissions;",
+                "Cheating in contests: sharing answers during competition, using multiple accounts, or exploiting judging-system flaws;",
+                "Sharing illegal content or content that infringes on others' copyright."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "3. Contests",
+          "blocks": [
+            { "type": "p", "text": "Contest organizers are responsible for defining and communicating additional rules specific to each competition. Why Runner may intervene in contests with recurring violations of these guidelines." }
+          ]
+        },
+        {
+          "heading": "4. Consequences",
+          "blocks": [
+            { "type": "p", "text": "Violations of these guidelines can result in content removal, contest disqualification, feature restrictions, or account suspension, per our [[Moderation Policy|/moderation]]." }
+          ]
+        },
+        {
+          "heading": "5. Reporting",
+          "blocks": [
+            { "type": "p", "text": "If you find content that violates these guidelines, use the platform's report tool or contact Why Runner support." }
+          ]
+        }
+      ]
+    },
+    "Copyright": {
+      "title": "Copyright Policy",
+      "intro": "This policy explains how Why Runner handles copyright over problems, solutions, and other content created by users on the platform.",
+      "sections": [
+        {
+          "heading": "1. Your content",
+          "blocks": [
+            { "type": "p", "text": "Problems, solutions, submissions, and comments you create are your own work. By making content public on Why Runner, you grant the platform a non-exclusive license to display it to other users. You retain copyright over what you create." }
+          ]
+        },
+        {
+          "heading": "2. Problems created by other users",
+          "blocks": [
+            { "type": "p", "text": "Problems and test cases published by other users or contest organizers belong to their respective authors. Use of this material is limited to solving it within the platform, unless the author gives express authorization." }
+          ]
+        },
+        {
+          "heading": "3. Using other users' content",
+          "blocks": [
+            { "type": "p", "text": "You may not copy or redistribute other users' problems or solutions without permission, except for normal use of the platform (viewing, referencing via link)." }
+          ]
+        },
+        {
+          "heading": "4. Reporting a copyright violation",
+          "blocks": [
+            { "type": "p", "text": "If you believe content published on Why Runner infringes your copyright, send a notice to support containing: identification of the protected work, the content's location on the platform (link), your contact details, and a good-faith statement that the use was unauthorized. We will review the report and may remove the content per our [[Moderation Policy|/moderation]]." }
+          ]
+        },
+        {
+          "heading": "5. Counter-notice",
+          "blocks": [
+            { "type": "p", "text": "Users whose content is removed following a copyright claim may dispute the removal by contacting support and providing justification for the use." }
+          ]
+        }
+      ]
+    },
+    "Moderation": {
+      "title": "Moderation Policy",
+      "intro": "This policy explains how Why Runner evaluates reports and moderates public content — problems, solutions, comments, and contests — to keep the platform aligned with our [[Terms of Use|/terms]] and [[Community Guidelines|/community-guidelines]].",
+      "sections": [
+        {
+          "heading": "1. How content is reviewed",
+          "blocks": [
+            { "type": "p", "text": "Content may be reviewed based on user reports or internal checks, including automated integrity checks on contest submissions. We evaluate context, including the reported content, the user's conduct history, and the severity of the violation." }
+          ]
+        },
+        {
+          "heading": "2. Possible actions",
+          "blocks": [
+            {
+              "type": "ul",
+              "items": [
+                "Removal of the specific content (problem, solution, comment);",
+                "Disqualification of submissions or contests for cheating;",
+                "Temporary restriction of features (e.g. creating problems, sending submissions);",
+                "Temporary account suspension;",
+                "Permanent ban in severe or repeat cases."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "3. Contests",
+          "blocks": [
+            { "type": "p", "text": "Contests with repeated guideline violations, even under their organizers' moderation, may be suspended or shut down by the Why Runner team." }
+          ]
+        },
+        {
+          "heading": "4. Notification",
+          "blocks": [
+            { "type": "p", "text": "When possible, we notify the affected user about the action taken and the reason. In cases of security risk or automated cheating, action may be taken without prior notice." }
+          ]
+        },
+        {
+          "heading": "5. Appeal",
+          "blocks": [
+            { "type": "p", "text": "If you believe a moderation action was applied incorrectly, you can appeal by contacting Why Runner support and explaining the context. We will review the case and respond with a final decision." }
+          ]
+        }
+      ]
+    }
+  },
   "HomePage": {
     "buttons": {
       "contests": "Contests",

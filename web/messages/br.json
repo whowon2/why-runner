@@ -50,6 +50,343 @@
     "login": "Entrar",
     "settings": "Configurações"
   },
+  "Footer": {
+    "copyright": "© {year} Why Runner",
+    "githubLabel": "GitHub",
+    "links": {
+      "terms": "Termos de Uso",
+      "privacy": "Privacidade",
+      "cookies": "Cookies",
+      "guidelines": "Diretrizes da Comunidade",
+      "copyright": "Direitos Autorais",
+      "moderation": "Moderação"
+    }
+  },
+  "Legal": {
+    "updatedAt": "22 de julho de 2026",
+    "Terms": {
+      "title": "Termos de Uso",
+      "intro": "Estes Termos de Uso regem o acesso e uso do Why Runner (\"nós\", \"nosso\"), uma plataforma de programação competitiva e execução de código julgado. Ao criar uma conta ou usar o Why Runner, você concorda com estes termos.",
+      "sections": [
+        {
+          "heading": "1. Sua conta",
+          "blocks": [
+            { "type": "p", "text": "Você é responsável por manter a confidencialidade de suas credenciais de acesso e por todas as atividades realizadas na sua conta. Você deve ter idade mínima permitida pela legislação aplicável para criar uma conta." }
+          ]
+        },
+        {
+          "heading": "2. Uso aceitável",
+          "blocks": [
+            { "type": "p", "text": "Você concorda em não usar o Why Runner para publicar conteúdo ilegal, difamatório, discurso de ódio, spam ou qualquer material que viole direitos de terceiros. Consulte nossas [[Diretrizes da Comunidade|/community-guidelines]] para regras detalhadas sobre conduta." }
+          ]
+        },
+        {
+          "heading": "3. Submissões e conteúdo",
+          "blocks": [
+            { "type": "p", "text": "Código submetido, soluções, problemas e comentários que você cria no Why Runner são de sua autoria. Você mantém a propriedade sobre esse conteúdo. Ao tornar uma solução ou problema público, você nos concede uma licença não exclusiva para exibi-lo dentro da plataforma, conforme detalhado na nossa [[Política de Direitos Autorais|/copyright]]." }
+          ]
+        },
+        {
+          "heading": "4. Contests e submissões",
+          "blocks": [
+            { "type": "p", "text": "O Why Runner permite criar e participar de contests de programação competitiva. Você é responsável pela integridade das submissões que envia e deve seguir as regras específicas de cada contest." }
+          ]
+        },
+        {
+          "heading": "5. Execução de código",
+          "blocks": [
+            { "type": "p", "text": "Submissões são executadas em ambientes isolados (sandboxed) com limites de tempo e memória. Você concorda em não tentar contornar esses limites ou usar o serviço de execução para fins diferentes de resolver os problemas propostos." }
+          ]
+        },
+        {
+          "heading": "6. Moderação e suspensão",
+          "blocks": [
+            { "type": "p", "text": "Podemos remover conteúdo ou suspender contas que violem estes termos ou nossas Diretrizes da Comunidade, conforme descrito na [[Política de Moderação|/moderation]]." }
+          ]
+        },
+        {
+          "heading": "7. Limitação de responsabilidade",
+          "blocks": [
+            { "type": "p", "text": "O Why Runner é fornecido \"como está\". Não garantimos que o serviço será ininterrupto ou livre de erros. Na máxima extensão permitida por lei, não nos responsabilizamos por danos indiretos decorrentes do uso da plataforma." }
+          ]
+        },
+        {
+          "heading": "8. Encerramento",
+          "blocks": [
+            { "type": "p", "text": "Você pode encerrar sua conta a qualquer momento. Podemos suspender ou encerrar contas que violem estes termos, mediante aviso quando possível." }
+          ]
+        },
+        {
+          "heading": "9. Alterações",
+          "blocks": [
+            { "type": "p", "text": "Podemos atualizar estes termos periodicamente. Mudanças significativas serão comunicadas através da plataforma. O uso continuado do Why Runner após uma alteração constitui aceitação dos novos termos." }
+          ]
+        },
+        {
+          "heading": "10. Contato",
+          "blocks": [
+            { "type": "p", "text": "Dúvidas sobre estes termos podem ser enviadas para o suporte do Why Runner." }
+          ]
+        }
+      ]
+    },
+    "Privacy": {
+      "title": "Política de Privacidade",
+      "intro": "Esta Política de Privacidade explica como o Why Runner coleta, usa e protege seus dados pessoais, em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018).",
+      "sections": [
+        {
+          "heading": "1. Dados que coletamos",
+          "blocks": [
+            {
+              "type": "ul",
+              "items": [
+                "**Dados de conta:** nome, e-mail, nome de usuário e foto de perfil (avatar).",
+                "**Conteúdo gerado por você:** submissões de código, soluções, problemas criados e comentários.",
+                "**Dados de contests:** contests que você participa, resultados e histórico de submissões.",
+                "**Dados técnicos:** endereço IP, tipo de dispositivo e informações de uso coletadas automaticamente para segurança e melhoria do serviço."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "2. Por que tratamos seus dados",
+          "blocks": [
+            { "type": "p", "text": "Tratamos seus dados para: fornecer e manter sua conta e o funcionamento da plataforma; executar e avaliar suas submissões de código; exibir placares e resultados de contests; enviar notificações relacionadas à sua conta; e cumprir obrigações legais." }
+          ]
+        },
+        {
+          "heading": "3. Compartilhamento de dados",
+          "blocks": [
+            { "type": "p", "text": "Não vendemos seus dados pessoais. Resultados de contests públicos e perfis são visíveis a outros usuários. Podemos compartilhar dados com prestadores de serviço (ex. hospedagem, e-mail transacional, serviços de IA para feedback de submissões) estritamente para operar o Why Runner." }
+          ]
+        },
+        {
+          "heading": "4. Seus direitos (LGPD)",
+          "blocks": [
+            { "type": "p", "text": "Como titular de dados, você tem direito a:" },
+            {
+              "type": "ul",
+              "items": [
+                "Confirmar a existência de tratamento e acessar seus dados;",
+                "Corrigir dados incompletos, inexatos ou desatualizados;",
+                "Solicitar a exclusão de dados pessoais tratados com seu consentimento;",
+                "Solicitar a portabilidade dos seus dados;",
+                "Revogar seu consentimento a qualquer momento."
+              ]
+            },
+            { "type": "p", "text": "Você pode exercer esses direitos diretamente nas configurações da sua conta ou entrando em contato com o suporte do Why Runner." }
+          ]
+        },
+        {
+          "heading": "5. Retenção",
+          "blocks": [
+            { "type": "p", "text": "Mantemos seus dados enquanto sua conta estiver ativa. Ao excluir sua conta, removemos ou anonimizamos seus dados pessoais, exceto quando a retenção for exigida por obrigação legal." }
+          ]
+        },
+        {
+          "heading": "6. Segurança",
+          "blocks": [
+            { "type": "p", "text": "Adotamos medidas técnicas e organizacionais razoáveis para proteger seus dados contra acesso não autorizado, perda ou alteração. Submissões de código são executadas em sandboxes isolados sem acesso à rede." }
+          ]
+        },
+        {
+          "heading": "7. Cookies",
+          "blocks": [
+            { "type": "p", "text": "Usamos cookies essenciais para autenticação e funcionamento da plataforma. Veja detalhes na nossa [[Política de Cookies|/cookies]]." }
+          ]
+        },
+        {
+          "heading": "8. Alterações",
+          "blocks": [
+            { "type": "p", "text": "Podemos atualizar esta política periodicamente. Alterações relevantes serão comunicadas através da plataforma." }
+          ]
+        },
+        {
+          "heading": "9. Contato",
+          "blocks": [
+            { "type": "p", "text": "Para exercer seus direitos ou tirar dúvidas sobre esta política, entre em contato com o suporte do Why Runner." }
+          ]
+        }
+      ]
+    },
+    "Cookies": {
+      "title": "Política de Cookies",
+      "intro": "Esta página explica quais cookies e tecnologias de armazenamento local o Why Runner utiliza e para qual finalidade.",
+      "sections": [
+        {
+          "heading": "1. O que são cookies",
+          "blocks": [
+            { "type": "p", "text": "Cookies são pequenos arquivos armazenados no seu navegador que permitem que um site lembre informações sobre sua visita." }
+          ]
+        },
+        {
+          "heading": "2. Cookies que usamos",
+          "blocks": [
+            {
+              "type": "ul",
+              "items": [
+                "**Cookies de sessão/autenticação:** essenciais para manter você conectado à sua conta enquanto navega pelo Why Runner. Sem eles, não é possível usar recursos que exigem login, como enviar submissões ou participar de contests.",
+                "**Cookies de preferência:** usados para lembrar configurações como tema claro/escuro e idioma."
+              ]
+            },
+            { "type": "p", "text": "Não usamos cookies de publicidade ou de rastreamento de terceiros." }
+          ]
+        },
+        {
+          "heading": "3. Como gerenciar cookies",
+          "blocks": [
+            { "type": "p", "text": "Cookies essenciais de autenticação não podem ser desativados sem afetar o funcionamento da plataforma. Você pode limpar ou bloquear cookies pelas configurações do seu navegador, mas isso pode impedir seu login no Why Runner." }
+          ]
+        },
+        {
+          "heading": "4. Alterações",
+          "blocks": [
+            { "type": "p", "text": "Podemos atualizar esta política caso o uso de cookies no Why Runner mude." }
+          ]
+        },
+        {
+          "heading": "5. Contato",
+          "blocks": [
+            { "type": "p", "text": "Dúvidas sobre esta política podem ser enviadas para o suporte do Why Runner." }
+          ]
+        }
+      ]
+    },
+    "Guidelines": {
+      "title": "Diretrizes da Comunidade",
+      "intro": "O Why Runner é um espaço para prática e competição sérias de programação. Estas diretrizes se aplicam a soluções, problemas, comentários e qualquer conteúdo público na plataforma.",
+      "sections": [
+        {
+          "heading": "1. O que esperamos de você",
+          "blocks": [
+            {
+              "type": "ul",
+              "items": [
+                "Trate outros membros com respeito, mesmo em discordância técnica;",
+                "Submeta apenas código de sua própria autoria durante contests;",
+                "Cite fontes ao compartilhar soluções ou material de estudo fora de contests;",
+                "Denuncie conteúdo que viole estas diretrizes usando as ferramentas de denúncia."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "2. Comportamento proibido",
+          "blocks": [
+            {
+              "type": "ul",
+              "items": [
+                "Assédio, ameaças ou ataques pessoais a outros usuários;",
+                "Discurso de ódio contra qualquer grupo religioso, étnico ou social;",
+                "Spam, autopromoção excessiva ou submissões automatizadas abusivas;",
+                "Trapaça em contests: compartilhar respostas durante a competição, usar múltiplas contas ou explorar falhas do sistema de julgamento;",
+                "Compartilhamento de conteúdo ilegal ou que viole direitos autorais de terceiros."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "3. Contests",
+          "blocks": [
+            { "type": "p", "text": "Organizadores de contest são responsáveis por definir e comunicar regras adicionais específicas de cada competição. O Why Runner pode intervir em contests que apresentem violações recorrentes destas diretrizes." }
+          ]
+        },
+        {
+          "heading": "4. Consequências",
+          "blocks": [
+            { "type": "p", "text": "Violações destas diretrizes podem resultar em remoção de conteúdo, desclassificação de contests, restrição de recursos ou suspensão de conta, conforme nossa [[Política de Moderação|/moderation]]." }
+          ]
+        },
+        {
+          "heading": "5. Denúncias",
+          "blocks": [
+            { "type": "p", "text": "Se você encontrar conteúdo que viole estas diretrizes, use a ferramenta de denúncia na plataforma ou entre em contato com o suporte do Why Runner." }
+          ]
+        }
+      ]
+    },
+    "Copyright": {
+      "title": "Política de Direitos Autorais",
+      "intro": "Esta política explica como o Why Runner trata direitos autorais sobre problemas, soluções e demais conteúdos criados por usuários na plataforma.",
+      "sections": [
+        {
+          "heading": "1. Seu conteúdo",
+          "blocks": [
+            { "type": "p", "text": "Problemas, soluções, submissões e comentários que você cria são de sua autoria. Ao tornar conteúdo público no Why Runner, você concede à plataforma uma licença não exclusiva para exibi-lo aos demais usuários. Você continua detendo os direitos autorais sobre o que cria." }
+          ]
+        },
+        {
+          "heading": "2. Problemas criados por outros usuários",
+          "blocks": [
+            { "type": "p", "text": "Problemas e casos de teste publicados por outros usuários ou organizadores de contest pertencem aos seus respectivos autores. O uso desse material é limitado ao propósito de resolvê-lo dentro da plataforma, salvo autorização expressa do autor." }
+          ]
+        },
+        {
+          "heading": "3. Uso de conteúdo de outros usuários",
+          "blocks": [
+            { "type": "p", "text": "Não é permitido copiar ou redistribuir problemas e soluções de outros usuários sem permissão, exceto pelo uso normal da plataforma (visualização, referência via link)." }
+          ]
+        },
+        {
+          "heading": "4. Denúncia de violação de direitos autorais",
+          "blocks": [
+            { "type": "p", "text": "Se você acredita que conteúdo publicado no Why Runner viola seus direitos autorais, envie uma notificação ao suporte contendo: identificação da obra protegida, localização do conteúdo na plataforma (link), seus dados de contato e uma declaração de boa-fé de que o uso não foi autorizado. Analisaremos a denúncia e poderemos remover o conteúdo conforme nossa [[Política de Moderação|/moderation]]." }
+          ]
+        },
+        {
+          "heading": "5. Contranotificação",
+          "blocks": [
+            { "type": "p", "text": "Usuários cujo conteúdo for removido por uma denúncia de direitos autorais podem contestar a remoção entrando em contato com o suporte, apresentando justificativa para o uso." }
+          ]
+        }
+      ]
+    },
+    "Moderation": {
+      "title": "Política de Moderação",
+      "intro": "Esta política explica como o Why Runner avalia denúncias e modera conteúdo público — problemas, soluções, comentários e contests — para manter a plataforma alinhada aos nossos [[Termos de Uso|/terms]] e [[Diretrizes da Comunidade|/community-guidelines]].",
+      "sections": [
+        {
+          "heading": "1. Como o conteúdo é analisado",
+          "blocks": [
+            { "type": "p", "text": "Conteúdo pode ser analisado a partir de denúncias de usuários ou de verificações internas, incluindo verificações automatizadas de integridade de submissões em contests. Avaliamos o contexto, incluindo o conteúdo denunciado, seu histórico de conduta e a gravidade da violação." }
+          ]
+        },
+        {
+          "heading": "2. Ações possíveis",
+          "blocks": [
+            {
+              "type": "ul",
+              "items": [
+                "Remoção do conteúdo específico (problema, solução, comentário);",
+                "Desclassificação de submissões ou contests por trapaça;",
+                "Restrição temporária de recursos (ex. criação de problemas, envio de submissões);",
+                "Suspensão temporária da conta;",
+                "Banimento permanente em casos graves ou reincidentes."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "3. Contests",
+          "blocks": [
+            { "type": "p", "text": "Contests com violações repetidas das diretrizes, mesmo sob moderação de seus organizadores, podem ser suspensos ou encerrados pela equipe do Why Runner." }
+          ]
+        },
+        {
+          "heading": "4. Notificação",
+          "blocks": [
+            { "type": "p", "text": "Quando possível, notificamos o usuário afetado sobre a ação tomada e o motivo. Em casos de risco à segurança ou trapaça automatizada, a ação pode ser tomada sem aviso prévio." }
+          ]
+        },
+        {
+          "heading": "5. Recurso",
+          "blocks": [
+            { "type": "p", "text": "Se você acredita que uma ação de moderação foi aplicada incorretamente, pode contestá-la entrando em contato com o suporte do Why Runner, explicando o contexto. Revisaremos o caso e responderemos com a decisão final." }
+          ]
+        }
+      ]
+    }
+  },
   "HomePage": {
     "buttons": {
       "contests": "Torneios",
