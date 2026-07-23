@@ -1,0 +1,2 @@
+ALTER TABLE "activity_comment" ADD COLUMN "parent_id" uuid;--> statement-breakpoint
+ALTER TABLE "activity_comment" ADD CONSTRAINT "activity_comment_parent_id_activity_comment_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."activity_comment"("id") ON DELETE cascade ON UPDATE no action;

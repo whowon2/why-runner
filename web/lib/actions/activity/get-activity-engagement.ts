@@ -34,13 +34,28 @@ export async function getActivityEngagement(activityIds: string[]) {
   const likedActivityIds = new Set(myLikes.map((l) => l.activityId));
 
   return Object.fromEntries(
-    activityIds.map((id) => [
-      id,
-      {
-        likeCount: likes.filter((l) => l.activityId === id).length,
-        isLiked: likedActivityIds.has(id),
-        comments: comments.filter((c) => c.activityId === id),
-      },
-    ]),
+    activityIds.map((id) => {
+      const activityComments = comments.filter((c) => c.activityId === id);
+      const topLevel = activityComments.filter((c) => !c.parentId);
+      const repliesByParent = new Map<string, typeof activityComments>();
+      for (const c of activityComments) {
+        if (!c.parentId) continue;
+        const bucket = repliesByParent.get(c.parentId) ?? [];
+        bucket.push(c);
+        repliesByParent.set(c.parentId, bucket);
+      }
+
+      return [
+        id,
+        {
+          likeCount: likes.filter((l) => l.activityId === id).length,
+          isLiked: likedActivityIds.has(id),
+          comments: topLevel.map((c) => ({
+            ...c,
+            replies: repliesByParent.get(c.id) ?? [],
+          })),
+        },
+      ];
+    }),
   );
 }

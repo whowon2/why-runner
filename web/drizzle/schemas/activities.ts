@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import {
+  type AnyPgColumn,
+  pgTable,
+  text,
+  timestamp,
+  unique,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { contest } from "./contests";
 import { problem } from "./problems";
 import { user } from "./users";
@@ -80,13 +87,17 @@ export const activityComment = pgTable("activity_comment", {
   activityId: uuid("activity_id")
     .notNull()
     .references(() => activityFeed.id, { onDelete: "cascade" }),
+  parentId: uuid("parent_id").references(
+    (): AnyPgColumn => activityComment.id,
+    { onDelete: "cascade" },
+  ),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const activityCommentRelations = relations(
   activityComment,
-  ({ one }) => ({
+  ({ one, many }) => ({
     user: one(user, {
       fields: [activityComment.userId],
       references: [user.id],
@@ -95,6 +106,12 @@ export const activityCommentRelations = relations(
       fields: [activityComment.activityId],
       references: [activityFeed.id],
     }),
+    parent: one(activityComment, {
+      fields: [activityComment.parentId],
+      references: [activityComment.id],
+      relationName: "commentReplies",
+    }),
+    replies: many(activityComment, { relationName: "commentReplies" }),
   }),
 );
 

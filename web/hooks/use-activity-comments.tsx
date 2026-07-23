@@ -6,7 +6,13 @@ export const useAddActivityComment = (activityId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (content: string) => addActivityComment(activityId, content),
+    mutationFn: ({
+      content,
+      parentId,
+    }: {
+      content: string;
+      parentId?: string;
+    }) => addActivityComment(activityId, content, parentId),
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["activity-engagement"] });
     },

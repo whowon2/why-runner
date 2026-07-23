@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteActivity } from "@/lib/actions/activity/delete-activity";
 import { getActivityEngagement } from "@/lib/actions/activity/get-activity-engagement";
 import { toggleActivityLike } from "@/lib/actions/activity/toggle-like";
 
@@ -16,6 +17,19 @@ export const useActivityLike = (activityId: string) => {
     mutationFn: () => toggleActivityLike(activityId),
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["activity-engagement"] });
+    },
+  });
+};
+
+export const useDeleteActivity = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (activityId: string) => deleteActivity(activityId),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["activity-engagement"] });
+      queryClient.invalidateQueries({ queryKey: ["feed"] });
+      queryClient.invalidateQueries({ queryKey: ["activities"] });
     },
   });
 };

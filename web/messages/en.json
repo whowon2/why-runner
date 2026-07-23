@@ -1080,7 +1080,17 @@
       "someone": "someone",
       "problemAction": "published a problem",
       "contestAction": "published a contest",
-      "commentPlaceholder": "Write a comment..."
+      "commentPlaceholder": "Write a comment...",
+      "reply": "Reply",
+      "replyPlaceholder": "Write a reply...",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "moreOptions": "More options",
+      "deleteComment": "Delete comment",
+      "deleteCommentError": "Failed to delete comment",
+      "deleteActivityTitle": "Delete this post?",
+      "deleteActivityDescription": "This will permanently remove the post along with its likes and comments.",
+      "deleteActivityError": "Failed to delete post"
     },
     "MyContests": {
       "title": "My Contests",

@@ -169,6 +169,13 @@
       "when": 1784765850913,
       "tag": "0023_exotic_sunset_bain",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1784776581094,
+      "tag": "0024_solid_mongoose",
+      "breakpoints": true
     }
   ]
 }

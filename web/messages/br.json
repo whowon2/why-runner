@@ -1080,7 +1080,17 @@
       "someone": "alguém",
       "problemAction": "publicou um problema",
       "contestAction": "publicou um torneio",
-      "commentPlaceholder": "Escreva um comentário..."
+      "commentPlaceholder": "Escreva um comentário...",
+      "reply": "Responder",
+      "replyPlaceholder": "Escreva uma resposta...",
+      "delete": "Excluir",
+      "cancel": "Cancelar",
+      "moreOptions": "Mais opções",
+      "deleteComment": "Excluir comentário",
+      "deleteCommentError": "Falha ao excluir comentário",
+      "deleteActivityTitle": "Excluir esta publicação?",
+      "deleteActivityDescription": "Isso removerá permanentemente a publicação junto com suas curtidas e comentários.",
+      "deleteActivityError": "Falha ao excluir publicação"
     },
     "MyContests": {
       "title": "Meus Torneios",
