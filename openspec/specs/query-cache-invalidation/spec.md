@@ -59,3 +59,10 @@ Creating a contest SHALL invalidate cached contest list queries, including list 
 #### Scenario: New contest appears in "My Contests"
 - **WHEN** a user creates a contest from the "My Contests" page
 - **THEN** the new contest appears in that page's list without requiring a manual page refresh
+
+### Requirement: Contest deletion refreshes contest lists
+Deleting a contest SHALL invalidate cached contest list queries so the deleted contest no longer appears in any list view, and this invalidation SHALL be guaranteed by the mutation itself rather than depending on the calling component to trigger it.
+
+#### Scenario: Deleted contest disappears from the contests list
+- **WHEN** the creator deletes a contest from the Danger Zone and is redirected to the contests list page
+- **THEN** the deleted contest is not shown in the list, without requiring a manual page refresh
