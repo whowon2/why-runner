@@ -3,7 +3,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, Loader, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +47,20 @@ export function EditContestProblems({
   );
   const [isSaving, setIsSaving] = useState(false);
 
+  const membershipKey = sorted
+    .map((p) => p.problemId)
+    .sort()
+    .join(",");
+  const prevMembershipKey = useRef(membershipKey);
+
+  useEffect(() => {
+    if (membershipKey !== prevMembershipKey.current) {
+      prevMembershipKey.current = membershipKey;
+      setLocalOrder(sorted.map((p) => p.problemId));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [membershipKey]);
+
   const orderedProblems = localOrder
     .map((id) => contest.problems.find((p) => p.problemId === id))
     .filter(Boolean) as ProblemOnContest[];
@@ -87,9 +101,6 @@ export function EditContestProblems({
         },
         onSuccess() {
           toast.success(t("addSuccess"));
-          queryClient.invalidateQueries({
-            queryKey: ["contest", String(contest.id)],
-          });
         },
       },
     );
@@ -141,10 +152,15 @@ export function EditContestProblems({
                 {LETTERS[index] ?? index + 1}
               </span>
               <div className="flex items-center gap-1.5">
-                <span className="font-mono text-xs text-muted-foreground">
-                  [{probOnCont.problem.code}]
-                </span>
-                <p>{probOnCont.problem.title}</p>
+                <Link
+                  className="flex items-center gap-1.5 hover:underline"
+                  href={`/problems/${probOnCont.problem.slug}`}
+                >
+                  <span className="font-mono text-xs text-muted-foreground">
+                    [{probOnCont.problem.code}]
+                  </span>
+                  <p>{probOnCont.problem.title}</p>
+                </Link>
                 {probOnCont.problem.user && (
                   <Link
                     className="text-xs text-muted-foreground hover:underline"
@@ -204,7 +220,6 @@ function RemoveProblemButton({
   const t = useTranslations("ContestsPage.Tabs.Settings.Problems");
   const { mutate: removeProblem, isPending: isRemovePending } =
     useRemoveProblemFromContest();
-  const queryClient = useQueryClient();
 
   function handleRemoveProblem(id: string) {
     removeProblem(
@@ -215,9 +230,6 @@ function RemoveProblemButton({
         },
         onSuccess() {
           toast.success(t("removeSuccess"));
-          queryClient.invalidateQueries({
-            queryKey: ["contest", String(contest.id)],
-          });
         },
       },
     );
