@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { FollowList } from "@/components/follow-list";
+import { FollowTabs } from "@/components/follow-tabs";
 import { getUserByUsername } from "@/lib/actions/get-user-by-username";
 import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
 
@@ -20,15 +21,17 @@ export default async function FollowersPage({
   const t = await getTranslations("FollowList");
 
   return (
-    <div className="max-w-lg mx-auto flex flex-col gap-6 p-4 py-8">
-      <h1 className="text-xl font-bold">
-        {t("followersTitle")} · @{username}
-      </h1>
-      <FollowList
-        username={username}
-        tab="followers"
-        currentUserId={currentUser.id}
-      />
+    <div className="w-full max-w-5xl mx-auto px-4 py-8 flex flex-col gap-6">
+      <h1 className="text-xl font-bold">@{username}</h1>
+      <FollowTabs username={username} active="followers" />
+      <div className="max-w-lg w-full mx-auto">
+        <h2 className="sr-only">{t("followersTitle")}</h2>
+        <FollowList
+          username={username}
+          tab="followers"
+          currentUserId={currentUser.id}
+        />
+      </div>
     </div>
   );
 }
