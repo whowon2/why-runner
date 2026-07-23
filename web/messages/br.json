@@ -1073,11 +1073,17 @@
     }
   },
   "UserPage": {
+    "Tabs": {
+      "posts": "Publicações",
+      "contests": "Torneios",
+      "problems": "Problemas"
+    },
     "Feed": {
-      "title": "Feed de Atividades",
-      "subtitle": "Veja o que você e seus colegas estão fazendo.",
       "empty": "Nenhuma atividade para mostrar ainda. Seja o primeiro a compartilhar algo!",
-      "caughtUp": "Você está em dia com tudo!",
+      "emptyTitleOwner": "Nenhuma publicação ainda",
+      "emptyDescriptionOwner": "Você ainda não publicou nada. Compartilhe uma atualização para começar.",
+      "emptyTitleVisitor": "Nenhuma publicação ainda",
+      "emptyDescriptionVisitor": "Este usuário ainda não publicou nada.",
       "someone": "alguém",
       "problemAction": "publicou um problema",
       "contestAction": "publicou um torneio",
@@ -1094,26 +1100,20 @@
       "deleteActivityError": "Falha ao excluir publicação"
     },
     "MyContests": {
-      "title": "Meus Torneios",
-      "subtitle": "Gerencie seus torneios criados e veja as submissões dos participantes.",
       "loading": "Carregando torneios...",
-      "emptyTitle": "Nenhum torneio encontrado",
-      "emptyDescription": "Você ainda não criou nenhum torneio. Comece criando seu primeiro torneio de programação para compartilhar com seus alunos ou colegas.",
-      "start": "Início:",
-      "duration": "Duração:",
-      "draft": "Rascunho — ainda não configurado",
-      "viewDashboard": "Ver Painel"
+      "emptyTitleOwner": "Nenhum torneio encontrado",
+      "emptyDescriptionOwner": "Você ainda não criou nenhum torneio. Comece criando seu primeiro torneio de programação para compartilhar com seus alunos ou colegas.",
+      "emptyTitleVisitor": "Nenhum torneio ainda",
+      "emptyDescriptionVisitor": "Este usuário ainda não criou nenhum torneio.",
+      "createAction": "Criar Torneio"
     },
     "MyProblems": {
-      "title": "Meus Problemas",
-      "subtitle": "Gerencie seus problemas algorítmicos e casos de teste.",
-      "create": "Criar Problema",
       "loading": "Carregando problemas...",
-      "emptyTitle": "Nenhum problema ainda",
-      "emptyDescription": "Você ainda não criou nenhum problema. Comece projetando seu primeiro problema de programação e definindo seus casos de teste!",
-      "viewDetails": "Ver Detalhes",
-      "editDraft": "Continuar Editando",
-      "draftBadge": "Rascunho"
+      "emptyTitleOwner": "Nenhum problema ainda",
+      "emptyDescriptionOwner": "Você ainda não criou nenhum problema. Comece projetando seu primeiro problema de programação e definindo seus casos de teste!",
+      "emptyTitleVisitor": "Nenhum problema ainda",
+      "emptyDescriptionVisitor": "Este usuário ainda não criou nenhum problema.",
+      "createAction": "Criar Problema"
     }
   },
   "SettingsPage": {

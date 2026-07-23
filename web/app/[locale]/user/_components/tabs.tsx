@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePathname, useRouter } from "@/i18n/navigation";
@@ -15,6 +16,7 @@ export function ProfileTabs({
   userId: string;
   isOwner: boolean;
 }) {
+  const t = useTranslations("UserPage.Tabs");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -43,25 +45,25 @@ export function ProfileTabs({
           value="feed"
           className="rounded-none border-b-2 border-transparent px-4 py-4 font-semibold text-muted-foreground data-[state=active]:border-indigo-500 data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none hover:text-foreground transition-all uppercase tracking-wider text-xs"
         >
-          Activity Feed
+          {t("posts")}
         </TabsTrigger>
         <TabsTrigger
           value="contests"
           className="rounded-none border-b-2 border-transparent px-4 py-4 font-semibold text-muted-foreground data-[state=active]:border-indigo-500 data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none hover:text-foreground transition-all uppercase tracking-wider text-xs"
         >
-          Live Contests
+          {t("contests")}
         </TabsTrigger>
         <TabsTrigger
           value="problems"
           className="rounded-none border-b-2 border-transparent px-4 py-4 font-semibold text-muted-foreground data-[state=active]:border-indigo-500 data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none hover:text-foreground transition-all uppercase tracking-wider text-xs"
         >
-          Algorithm Vault
+          {t("problems")}
         </TabsTrigger>
       </TabsList>
 
       <div className="mt-8">
         <TabsContent value="feed" className="mt-0 outline-none">
-          <Feed userId={userId} />
+          <Feed userId={userId} isOwner={isOwner} />
         </TabsContent>
         <TabsContent value="contests" className="mt-0 outline-none">
           <MyContests userId={userId} isOwner={isOwner} />

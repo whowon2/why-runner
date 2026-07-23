@@ -1073,11 +1073,17 @@
     }
   },
   "UserPage": {
+    "Tabs": {
+      "posts": "Posts",
+      "contests": "Contests",
+      "problems": "Problems"
+    },
     "Feed": {
-      "title": "Activity Feed",
-      "subtitle": "See what you and your peers are up to.",
       "empty": "No activity to show yet. Be the first to share something!",
-      "caughtUp": "You are all caught up!",
+      "emptyTitleOwner": "No posts yet",
+      "emptyDescriptionOwner": "You haven't posted anything yet. Share an update to get started.",
+      "emptyTitleVisitor": "No posts yet",
+      "emptyDescriptionVisitor": "This user hasn't posted anything yet.",
       "someone": "someone",
       "problemAction": "published a problem",
       "contestAction": "published a contest",
@@ -1094,26 +1100,20 @@
       "deleteActivityError": "Failed to delete post"
     },
     "MyContests": {
-      "title": "My Contests",
-      "subtitle": "Manage your created contests and view participant submissions.",
       "loading": "Loading contests...",
-      "emptyTitle": "No contests found",
-      "emptyDescription": "You haven't created any contests yet. Get started by creating your first coding contest to share with your students or peers.",
-      "start": "Start:",
-      "duration": "Duration:",
-      "draft": "Draft — not yet configured",
-      "viewDashboard": "View Dashboard"
+      "emptyTitleOwner": "No contests found",
+      "emptyDescriptionOwner": "You haven't created any contests yet. Get started by creating your first coding contest to share with your students or peers.",
+      "emptyTitleVisitor": "No contests yet",
+      "emptyDescriptionVisitor": "This user hasn't created any contests yet.",
+      "createAction": "Create Contest"
     },
     "MyProblems": {
-      "title": "My Problems",
-      "subtitle": "Manage your created algorithmic problems and test cases.",
-      "create": "Create Problem",
       "loading": "Loading problems...",
-      "emptyTitle": "No problems yet",
-      "emptyDescription": "You haven't authored any problems yet. Get started by designing your first coding problem and defining its test cases!",
-      "viewDetails": "View Details",
-      "editDraft": "Continue Editing",
-      "draftBadge": "Draft"
+      "emptyTitleOwner": "No problems yet",
+      "emptyDescriptionOwner": "You haven't authored any problems yet. Get started by designing your first coding problem and defining its test cases!",
+      "emptyTitleVisitor": "No problems yet",
+      "emptyDescriptionVisitor": "This user hasn't authored any problems yet.",
+      "createAction": "Create Problem"
     }
   },
   "SettingsPage": {
