@@ -19,13 +19,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { useCompleteOnboarding } from "@/hooks/use-complete-onboarding";
 import { useRouter } from "@/i18n/navigation";
+import { usernameSchema } from "@/lib/username";
 
 const onboardingSchema = z.object({
-  username: z
-    .string()
-    .min(3)
-    .max(20)
-    .regex(/^[a-z0-9-]+$/),
+  username: usernameSchema,
 });
 
 export function OnboardingForm() {
