@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
 import Profile from "./_components/profile";
 import { ProfileTabs } from "./_components/tabs";
@@ -14,7 +15,9 @@ export default async function ProfilePage() {
         <Profile userId={user.id} isOwner={true} />
 
         <div className="flex w-full flex-col gap-8 mt-4">
-          <ProfileTabs userId={user.id} isOwner={true} />
+          <Suspense fallback={null}>
+            <ProfileTabs userId={user.id} isOwner={true} />
+          </Suspense>
         </div>
       </div>
     </div>
