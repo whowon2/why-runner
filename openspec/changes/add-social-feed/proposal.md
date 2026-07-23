@@ -10,6 +10,7 @@ WhyRunner's only social surface today is a per-profile "Activity Feed" tab that 
   - **Following**: activity from users the current user follows, newest first, infinite-scroll.
   - **Explore**: activity from all users (not just follows), newest first, infinite-scroll, to help the user discover people to follow.
 - Add follow/unfollow controls on user profile pages (`/user/[username]`) and in Explore feed cards.
+- Add dedicated followers/following list pages (`/user/[username]/followers`, `/user/[username]/following`), modeled on davar's `FollowList`, with the profile's follower/following counts linking to them.
 - Wire like/comment UI into activity feed cards (profile "Activity Feed" tab and the new Feed page), backed by the new tables.
 - **BREAKING**: Remove the modal-based share step (`ShareToFeedModal`) from problem publish. Publishing a contest or problem no longer shows a dialog; the existing `activityFeed` row is created automatically at publish time (as contest publish already does implicitly via `createActivity`-style events), and a share icon/button appears next to the publish confirmation so the user can optionally copy/share the link afterward, without blocking navigation.
 - Confirm (no behavior change expected, but verify) that the profile "Activity Feed" tab continues to show only that profile's own activity — it already filters by `userId`, this change must not regress that.
@@ -31,7 +32,7 @@ WhyRunner's only social surface today is a per-profile "Activity Feed" tab that 
 
 - **Schema** (`web/drizzle/schemas/`): new `userFollow`, `activityLike`, `activityComment` tables + Drizzle relations; migration required.
 - **Server actions** (`web/lib/actions/`): new `follow/` and `activity/` (like, comment) actions; update `problems/publish-problem.ts` (or its shared helper) to stop requiring a client-driven share step.
-- **Components**: new `app/[locale]/feed/` page + tabs, follow button component, like/comment controls on activity cards, share-icon component; remove `share-to-feed-modal.tsx` and `user/_components/posts.tsx`.
-- **Hooks** (`web/hooks/`): new hooks for follow toggle, feed infinite query, like/comment mutations.
+- **Components**: new `app/[locale]/feed/` page + tabs, follow button component, followers/following list pages + `follow-list.tsx` component, like/comment controls on activity cards, share-icon component; remove `share-to-feed-modal.tsx` and `user/_components/posts.tsx`.
+- **Hooks** (`web/hooks/`): new hooks for follow toggle, follow list pagination, feed infinite query, like/comment mutations.
 - **i18n** (`web/messages/`): new strings for Feed tabs, follow, like/comment, share; removal of now-dead `ShareToFeed` strings tied to the removed modal (kept if still used elsewhere, otherwise pruned).
 - **No judge/Rust changes** — this is entirely within `web/`.

@@ -60,3 +60,11 @@
 - [ ] 8.4 Manual: confirm a profile's Activity Feed tab still shows only that profile owner's own activity
 
 Note: `bun lint`, `bun format`, `tsc --noEmit`, and `bun run build` all pass clean. 8.1-8.4 need a real logged-in click-through in a browser, which this session did not perform — left unchecked for a human/QA pass.
+
+## 9. Followers/following list pages
+
+- [x] 9.1 `web/lib/actions/follow/get-follow-list.ts` — cursor-paginated list of followers or following for a username, accepts optional `query` param filtering by name/username (`ilike`)
+- [x] 9.2 `web/hooks/use-follow-list.ts` — `useInfiniteQuery` wrapper, `query` as part of the query key so search resets pagination
+- [x] 9.3 `web/app/[locale]/user/[username]/followers/page.tsx` and `.../following/page.tsx`
+- [x] 9.4 `components/follow-list.tsx` — shared list rendering (mirror davar's `FollowList`) + debounced search input wired to `use-follow-list`'s `query` param
+- [x] 9.5 Make follower/following counts on profile header link to these pages

@@ -55,6 +55,14 @@
     "follow": "Follow",
     "following": "Following"
   },
+  "FollowList": {
+    "followersTitle": "Followers",
+    "followingTitle": "Following",
+    "searchPlaceholder": "Search by name or username",
+    "emptyFollowers": "No followers yet.",
+    "emptyFollowing": "Not following anyone yet.",
+    "emptySearch": "No users match your search."
+  },
   "SocialFeed": {
     "title": "Feed",
     "followingTab": "Following",

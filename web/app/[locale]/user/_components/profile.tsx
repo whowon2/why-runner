@@ -14,6 +14,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFollowState } from "@/hooks/use-follow";
 import { useProfile } from "@/hooks/use-profile";
+import { Link } from "@/i18n/navigation";
 import { useUploadProfileImage } from "@/hooks/use-upload-profile-image";
 import { useUserSkills } from "@/hooks/use-user-skills";
 
@@ -200,16 +201,22 @@ export default function Profile({
               </h1>
               {!isOwner && <FollowButton targetUserId={userId} />}
             </div>
-            {followState && (
+            {followState && data.username && (
               <div
                 className={`mt-1 flex gap-3 text-sm ${onCover ? `text-white/80 ${COVER_TEXT_SHADOW}` : "text-muted-foreground"}`}
               >
-                <span>
+                <Link
+                  href={`/user/${data.username}/followers`}
+                  className="hover:underline"
+                >
                   <strong>{followState.followerCount}</strong> {t("followers")}
-                </span>
-                <span>
+                </Link>
+                <Link
+                  href={`/user/${data.username}/following`}
+                  className="hover:underline"
+                >
                   <strong>{followState.followingCount}</strong> {t("following")}
-                </span>
+                </Link>
               </div>
             )}
             <div

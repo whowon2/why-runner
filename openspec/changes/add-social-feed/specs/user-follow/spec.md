@@ -32,3 +32,22 @@ A user profile page SHALL show follower and following counts, and, when viewed b
 #### Scenario: Viewing own profile
 - **WHEN** an authenticated user views their own profile
 - **THEN** the profile shows follower/following counts but no follow/unfollow control for themselves
+
+### Requirement: Dedicated followers/following list pages
+The system SHALL provide `/user/[username]/followers` and `/user/[username]/following` pages listing the relevant users, infinite-scroll, each row showing avatar, name, username, and a follow/unfollow control for the viewer (mirroring davar's `FollowList` pattern), and the profile's follower/following counts SHALL link to these pages. Each page SHALL include a search bar that filters the list by name or username.
+
+#### Scenario: Viewing a user's followers list
+- **WHEN** an authenticated user navigates to `/user/[username]/followers`
+- **THEN** a paginated list of users following that profile is shown, newest-follow first
+
+#### Scenario: Viewing a user's following list
+- **WHEN** an authenticated user navigates to `/user/[username]/following`
+- **THEN** a paginated list of users that profile follows is shown, newest-follow first
+
+#### Scenario: Authenticated viewer can follow from the list
+- **WHEN** an authenticated viewer sees another user's row on either list
+- **THEN** a follow/unfollow control reflecting current state is shown next to that row
+
+#### Scenario: Filtering a followers/following list by search
+- **WHEN** an authenticated user types text into the search bar on either list page
+- **THEN** the list narrows to users whose name or username matches the query (debounced, no full page reload)
