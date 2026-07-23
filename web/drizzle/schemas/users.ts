@@ -1,7 +1,8 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 import {
   boolean,
+  check,
   index,
   integer,
   pgTable,
@@ -179,6 +180,42 @@ export const problemOnContestRelations = relations(
     }),
   }),
 );
+
+export const userFollow = pgTable(
+  "user_follow",
+  {
+    followerId: text("follower_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    followingId: text("following_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.followerId, t.followingId] }),
+    index("user_follow_following_idx").on(t.followingId),
+    check(
+      "user_follow_no_self_follow",
+      sql`${t.followerId} != ${t.followingId}`,
+    ),
+  ],
+);
+
+export const userFollowRelations = relations(userFollow, ({ one }) => ({
+  follower: one(user, {
+    fields: [userFollow.followerId],
+    references: [user.id],
+    relationName: "follower",
+  }),
+  following: one(user, {
+    fields: [userFollow.followingId],
+    references: [user.id],
+    relationName: "following",
+  }),
+}));
+
+export type UserFollow = typeof userFollow.$inferSelect;
 
 export type UserOnContest = typeof userOnContest.$inferSelect;
 

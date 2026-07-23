@@ -2,7 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { contest } from "@/drizzle/schema";
+import { activityFeed, contest } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import {
   PUBLISH_MISSING_FIELDS_PREFIX,
@@ -38,6 +38,12 @@ export async function publishContest(contestId: string) {
     .set({ status: "published" })
     .where(eq(contest.id, contestId))
     .returning();
+
+  await db.insert(activityFeed).values({
+    userId: currentUser.id,
+    type: "CONTEST_CREATED",
+    contestId: result.id,
+  });
 
   return result;
 }

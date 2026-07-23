@@ -1,25 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  Code2,
-  Flame,
-  Heart,
-  Loader2,
-  MessageSquare,
-  Share2,
-  Trophy,
-} from "lucide-react";
+import { Flame, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { ActivityCard } from "@/components/activity-card";
 import { Separator } from "@/components/ui/separator";
 import { getActivities } from "@/lib/actions/activity/get-activities";
 
@@ -55,101 +39,9 @@ export function Feed({ userId }: { userId: string }) {
             {t("empty")}
           </div>
         ) : (
-          activities.map((activity) => {
-            const isContest = activity.type === "CONTEST_CREATED";
-            const isProblem = activity.type === "PROBLEM_CREATED";
-            const title = isContest
-              ? activity.contest?.name
-              : isProblem
-                ? t("newProblem")
-                : t("activity");
-            const targetName = isProblem ? activity.problem?.title : "";
-            const authorText = `${t("authoredBy")} ${activity.user?.name || t("someone")}`;
-
-            return (
-              <Card
-                key={activity.id}
-                className="hover:shadow-md transition-shadow overflow-hidden group"
-              >
-                <div
-                  className={`h-1.5 w-full bg-linear-to-r ${isContest ? "from-indigo-500 to-cyan-500" : "from-emerald-500 to-teal-500"}`}
-                />
-                <CardHeader className="flex flex-row items-center gap-4 space-y-0 pt-6">
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-none shrink-0 transition-colors ${isContest ? "bg-indigo-500/10 group-hover:bg-indigo-500/20" : "bg-emerald-500/10 group-hover:bg-emerald-500/20"}`}
-                  >
-                    {isContest ? (
-                      <Trophy className="h-6 w-6 text-indigo-500" />
-                    ) : (
-                      <Code2 className="h-6 w-6 text-emerald-500" />
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-xl">{title}</CardTitle>
-                    <CardDescription className="text-sm mt-1 font-medium text-muted-foreground">
-                      <span
-                        className={
-                          isContest
-                            ? "text-indigo-600 dark:text-indigo-400"
-                            : "text-emerald-600 dark:text-emerald-400"
-                        }
-                      >
-                        {isContest ? t("newContest") : t("newProblem")}
-                      </span>{" "}
-                      • {new Date(activity.createdAt).toLocaleDateString()}
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="p-5 bg-muted/30 rounded-xl border leading-relaxed text-[15px] dark:text-gray-300">
-                    <div className="mb-2 text-sm text-muted-foreground">
-                      {authorText}
-                    </div>
-                    {activity.description && (
-                      <p className="mb-3 italic opacity-90">
-                        "{activity.description}"
-                      </p>
-                    )}
-                    {isProblem && (
-                      <div>
-                        {t("problem")}{" "}
-                        <span className="font-bold px-2 py-1 bg-background rounded-md border ml-1 shadow-sm">
-                          {targetName}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between items-center bg-muted/10 px-6 py-4 border-t">
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 dark:hover:text-rose-400 rounded-none px-4"
-                    >
-                      <Heart className="w-4 h-4 mr-2" />
-                      {t("like")}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-muted-foreground hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 dark:hover:text-blue-400 rounded-none px-4"
-                    >
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      {t("discuss")}
-                    </Button>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-foreground rounded-none"
-                  >
-                    <Share2 className="w-4 h-4" />
-                  </Button>
-                </CardFooter>
-              </Card>
-            );
-          })
+          activities.map((activity) => (
+            <ActivityCard key={activity.id} activity={activity} />
+          ))
         )}
 
         <div className="flex flex-col items-center justify-center pt-8 pb-12 text-muted-foreground space-y-3">

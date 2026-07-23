@@ -2,7 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { problem } from "@/drizzle/schema";
+import { activityFeed, problem } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import {
   getMissingProblemFields,
@@ -31,6 +31,12 @@ export async function publishProblem(problemId: string) {
     .set({ status: "published" })
     .where(eq(problem.id, problemId))
     .returning();
+
+  await db.insert(activityFeed).values({
+    userId: currentUser.id,
+    type: "PROBLEM_CREATED",
+    problemId: result.id,
+  });
 
   return result;
 }

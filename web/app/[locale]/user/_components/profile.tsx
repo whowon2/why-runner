@@ -8,9 +8,11 @@ import type { ReactNode } from "react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { CropImageDialog } from "@/components/crop-image-dialog";
+import { FollowButton } from "@/components/follow-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useFollowState } from "@/hooks/use-follow";
 import { useProfile } from "@/hooks/use-profile";
 import { useUploadProfileImage } from "@/hooks/use-upload-profile-image";
 import { useUserSkills } from "@/hooks/use-user-skills";
@@ -66,6 +68,7 @@ export default function Profile({
   const { data: skills } = useUserSkills(userId);
   const { mutateAsync: uploadImage, isPending: isUploading } =
     useUploadProfileImage(userId);
+  const { data: followState } = useFollowState(userId);
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const [avatarImageSrc, setAvatarImageSrc] = useState<string | null>(null);
@@ -189,11 +192,26 @@ export default function Profile({
         {/* Fact-row list */}
         <div className="flex-1 flex flex-col gap-3 min-w-0">
           <div>
-            <h1
-              className={`text-2xl font-extrabold tracking-tight ${onCover ? `text-white ${COVER_TEXT_SHADOW}` : "text-foreground"}`}
-            >
-              {data.name}
-            </h1>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1
+                className={`text-2xl font-extrabold tracking-tight ${onCover ? `text-white ${COVER_TEXT_SHADOW}` : "text-foreground"}`}
+              >
+                {data.name}
+              </h1>
+              {!isOwner && <FollowButton targetUserId={userId} />}
+            </div>
+            {followState && (
+              <div
+                className={`mt-1 flex gap-3 text-sm ${onCover ? `text-white/80 ${COVER_TEXT_SHADOW}` : "text-muted-foreground"}`}
+              >
+                <span>
+                  <strong>{followState.followerCount}</strong> {t("followers")}
+                </span>
+                <span>
+                  <strong>{followState.followingCount}</strong> {t("following")}
+                </span>
+              </div>
+            )}
             <div
               className={`mt-2 border-t ${onCover ? "border-white/40" : ""}`}
             />

@@ -4,6 +4,7 @@ import { Loader, Rocket } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { ShareIconButton } from "@/components/share-icon-button";
 import { Button } from "@/components/ui/button";
 import type { Contest } from "@/drizzle/schema";
 import { usePublishContest } from "@/hooks/use-publish-contest";
@@ -26,7 +27,7 @@ export function PublishContest({
   contest: Contest & { problems: unknown[] };
 }) {
   const t = useTranslations("ContestsPage.Tabs.Settings.Publish");
-  const { mutate: publishContest, isPending } = usePublishContest();
+  const { mutate: publishContest, isPending, isSuccess } = usePublishContest();
   const queryClient = useQueryClient();
 
   const missing: PublishContestFieldError[] = [];
@@ -65,17 +66,25 @@ export function PublishContest({
 
   return (
     <div className="flex flex-col gap-2 items-start">
-      <Button
-        onClick={handlePublish}
-        disabled={isPending || missing.length > 0}
-      >
-        {isPending ? (
-          <Loader className="animate-spin" />
-        ) : (
-          <Rocket className="h-4 w-4" />
+      <div className="flex items-center gap-2">
+        <Button
+          onClick={handlePublish}
+          disabled={isPending || missing.length > 0}
+        >
+          {isPending ? (
+            <Loader className="animate-spin" />
+          ) : (
+            <Rocket className="h-4 w-4" />
+          )}
+          {t("button")}
+        </Button>
+        {(isSuccess || contest.status === "published") && (
+          <ShareIconButton
+            path={`/contests/${contest.slug}`}
+            title={contest.name}
+          />
         )}
-        {t("button")}
-      </Button>
+      </div>
       {missing.length > 0 && (
         <p className="text-xs text-muted-foreground">
           {t("missingSummary")}:{" "}

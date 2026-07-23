@@ -3,19 +3,16 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader, Rocket } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { toast } from "sonner";
+import { ShareIconButton } from "@/components/share-icon-button";
 import { Button } from "@/components/ui/button";
 import type { Problem } from "@/drizzle/schema";
 import { usePublishProblem } from "@/hooks/use-publish-problem";
-import { useRouter } from "@/i18n/navigation";
-import { createActivity } from "@/lib/actions/activity/create-activity";
 import {
   getMissingProblemFields,
   PUBLISH_MISSING_FIELDS_PREFIX,
   type PublishProblemFieldError,
 } from "@/lib/actions/problems/publish-problem-shared";
-import { ShareToFeedModal } from "@/components/share-to-feed-modal";
 
 function parseMissingFields(message: string): PublishProblemFieldError[] {
   if (!message.startsWith(PUBLISH_MISSING_FIELDS_PREFIX)) return [];
@@ -27,11 +24,8 @@ function parseMissingFields(message: string): PublishProblemFieldError[] {
 
 export function PublishProblem({ problem }: { problem: Problem }) {
   const t = useTranslations("ProblemsPage.Publish");
-  const tCreate = useTranslations("ProblemsPage.Create");
-  const { mutate: publishProblem, isPending } = usePublishProblem();
+  const { mutate: publishProblem, isPending, isSuccess } = usePublishProblem();
   const queryClient = useQueryClient();
-  const router = useRouter();
-  const [showShareModal, setShowShareModal] = useState(false);
 
   const missing = getMissingProblemFields(problem);
 
@@ -54,14 +48,13 @@ export function PublishProblem({ problem }: { problem: Problem }) {
           queryKey: ["problems", String(problem.id)],
         });
         queryClient.invalidateQueries({ queryKey: ["problems"] });
-        setShowShareModal(true);
       },
     });
   }
 
   return (
-    <>
-      <div className="flex flex-col gap-2 items-start">
+    <div className="flex flex-col gap-2 items-start">
+      <div className="flex items-center gap-2">
         <Button
           onClick={handlePublish}
           disabled={isPending || missing.length > 0}
@@ -73,33 +66,19 @@ export function PublishProblem({ problem }: { problem: Problem }) {
           )}
           {t("button")}
         </Button>
-        {missing.length > 0 && (
-          <p className="text-xs text-muted-foreground">
-            {t("missingSummary")}:{" "}
-            {missing.map((field) => t(`missingField.${field}`)).join(", ")}
-          </p>
+        {(isSuccess || problem.status === "published") && (
+          <ShareIconButton
+            path={`/problems/${problem.slug}`}
+            title={problem.title}
+          />
         )}
       </div>
-
-      <ShareToFeedModal
-        isOpen={showShareModal}
-        onClose={() => {
-          setShowShareModal(false);
-          router.push(`/problems/${problem.slug}`);
-        }}
-        onShare={async (description) => {
-          await createActivity({
-            type: "PROBLEM_CREATED",
-            description,
-            problemId: problem.id,
-          });
-          toast.success(tCreate("sharedToFeed"));
-          setShowShareModal(false);
-          router.push(`/problems/${problem.slug}`);
-        }}
-        title={tCreate("shareTitle")}
-        descriptionText={tCreate("shareDescription", { title: problem.title })}
-      />
-    </>
+      {missing.length > 0 && (
+        <p className="text-xs text-muted-foreground">
+          {t("missingSummary")}:{" "}
+          {missing.map((field) => t(`missingField.${field}`)).join(", ")}
+        </p>
+      )}
+    </div>
   );
 }
