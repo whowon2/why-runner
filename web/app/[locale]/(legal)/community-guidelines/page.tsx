@@ -12,7 +12,10 @@ export default async function CommunityGuidelinesPage() {
 
   return (
     <LegalPage title={t("Guidelines.title")} updatedAt={t("updatedAt")}>
-      <LegalContent intro={t("Guidelines.intro")} sections={t.raw("Guidelines.sections")} />
+      <LegalContent
+        intro={t("Guidelines.intro")}
+        sections={t.raw("Guidelines.sections")}
+      />
     </LegalPage>
   );
 }

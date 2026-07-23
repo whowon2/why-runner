@@ -12,7 +12,10 @@ export default async function TermsPage() {
 
   return (
     <LegalPage title={t("Terms.title")} updatedAt={t("updatedAt")}>
-      <LegalContent intro={t("Terms.intro")} sections={t.raw("Terms.sections")} />
+      <LegalContent
+        intro={t("Terms.intro")}
+        sections={t.raw("Terms.sections")}
+      />
     </LegalPage>
   );
 }

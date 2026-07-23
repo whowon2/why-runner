@@ -12,7 +12,10 @@ export default async function ModerationPage() {
 
   return (
     <LegalPage title={t("Moderation.title")} updatedAt={t("updatedAt")}>
-      <LegalContent intro={t("Moderation.intro")} sections={t.raw("Moderation.sections")} />
+      <LegalContent
+        intro={t("Moderation.intro")}
+        sections={t.raw("Moderation.sections")}
+      />
     </LegalPage>
   );
 }

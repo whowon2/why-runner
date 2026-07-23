@@ -12,7 +12,10 @@ export default async function CopyrightPage() {
 
   return (
     <LegalPage title={t("Copyright.title")} updatedAt={t("updatedAt")}>
-      <LegalContent intro={t("Copyright.intro")} sections={t.raw("Copyright.sections")} />
+      <LegalContent
+        intro={t("Copyright.intro")}
+        sections={t.raw("Copyright.sections")}
+      />
     </LegalPage>
   );
 }

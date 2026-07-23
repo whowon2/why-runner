@@ -1,9 +1,7 @@
 import type React from "react";
 import { Link } from "@/i18n/navigation";
 
-type Block =
-  | { type: "p"; text: string }
-  | { type: "ul"; items: string[] };
+type Block = { type: "p"; text: string } | { type: "ul"; items: string[] };
 
 type Section = { heading: string; blocks: Block[] };
 

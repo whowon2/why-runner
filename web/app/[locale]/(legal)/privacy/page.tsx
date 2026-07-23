@@ -12,7 +12,10 @@ export default async function PrivacyPage() {
 
   return (
     <LegalPage title={t("Privacy.title")} updatedAt={t("updatedAt")}>
-      <LegalContent intro={t("Privacy.intro")} sections={t.raw("Privacy.sections")} />
+      <LegalContent
+        intro={t("Privacy.intro")}
+        sections={t.raw("Privacy.sections")}
+      />
     </LegalPage>
   );
 }

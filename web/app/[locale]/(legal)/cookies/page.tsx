@@ -12,7 +12,10 @@ export default async function CookiesPage() {
 
   return (
     <LegalPage title={t("Cookies.title")} updatedAt={t("updatedAt")}>
-      <LegalContent intro={t("Cookies.intro")} sections={t.raw("Cookies.sections")} />
+      <LegalContent
+        intro={t("Cookies.intro")}
+        sections={t.raw("Cookies.sections")}
+      />
     </LegalPage>
   );
 }
