@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { LegalFooterLinks } from "@/components/legal-footer-links";
+import { Separator } from "@/components/ui/separator";
 
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -17,20 +18,23 @@ export async function Footer() {
   const t = await getTranslations("Footer");
 
   return (
-    <footer className="border-t p-4 text-center space-y-3">
-      <p className="text-sm text-muted-foreground">
-        {t("copyright", { year: new Date().getFullYear() })}
-      </p>
-      <LegalFooterLinks />
-      <a
-        href="https://github.com/whowon2/why-runner"
-        target="_blank"
-        rel="noreferrer"
-        aria-label={t("githubLabel")}
-        className="inline-flex text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <GithubIcon className="size-4" />
-      </a>
+    <footer className="text-center">
+      <Separator />
+      <div className="p-4 space-y-3">
+        <p className="text-sm text-muted-foreground">
+          {t("copyright", { year: new Date().getFullYear() })}
+        </p>
+        <LegalFooterLinks />
+        <a
+          href="https://github.com/whowon2/why-runner"
+          target="_blank"
+          rel="noreferrer"
+          aria-label={t("githubLabel")}
+          className="inline-flex text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <GithubIcon className="size-4" />
+        </a>
+      </div>
     </footer>
   );
 }

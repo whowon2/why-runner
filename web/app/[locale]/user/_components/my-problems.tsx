@@ -1,15 +1,9 @@
 "use client";
 
-import {
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  Code2,
-  XCircle,
-} from "lucide-react";
+import { CheckCircle2, Code2, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { PaginationControls } from "@/components/pagination-controls";
 import {
   Empty,
   EmptyDescription,
@@ -131,36 +125,19 @@ export function MyProblems({
       )}
 
       {!isPending && totalCount > 0 && (
-        <div className="flex items-center justify-between py-4">
-          <div className="text-sm text-muted-foreground">
-            {tProblems("pagination.showing", {
-              from: (page - 1) * ITEMS_PER_PAGE + 1,
-              to: Math.min(page * ITEMS_PER_PAGE, totalCount),
-              total: totalCount,
-            })}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={page <= 1}
-              onClick={() => setPage(page - 1)}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="text-sm font-medium">
-              {tProblems("pagination.page", { page, totalPages })}
-            </div>
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={page >= totalPages}
-              onClick={() => setPage(page + 1)}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        <PaginationControls
+          className="py-4"
+          page={page}
+          totalPages={totalPages}
+          showingLabel={tProblems("pagination.showing", {
+            from: (page - 1) * ITEMS_PER_PAGE + 1,
+            to: Math.min(page * ITEMS_PER_PAGE, totalCount),
+            total: totalCount,
+          })}
+          pageLabel={tProblems("pagination.page", { page, totalPages })}
+          onPrev={() => setPage(page - 1)}
+          onNext={() => setPage(page + 1)}
+        />
       )}
     </div>
   );

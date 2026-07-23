@@ -33,6 +33,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { FollowButton } from "@/components/follow-button";
 import {
   useAddActivityComment,
@@ -374,7 +375,8 @@ export function ActivityCard({
           </div>
 
           {commentsOpen && (
-            <div className="mt-2 space-y-3 border-t pt-3">
+            <div className="mt-2 space-y-3">
+              <Separator />
               {entry?.comments.map((comment) => (
                 <div key={comment.id} className="space-y-2">
                   <CommentRow

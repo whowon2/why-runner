@@ -1,11 +1,12 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader, Rocket } from "lucide-react";
+import { Rocket } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { ShareIconButton } from "@/components/share-icon-button";
 import { Button } from "@/components/ui/button";
+import { LoadingSwap } from "@/components/ui/loading-swap";
 import type { Problem } from "@/drizzle/schema";
 import { usePublishProblem } from "@/hooks/use-publish-problem";
 import {
@@ -59,12 +60,13 @@ export function PublishProblem({ problem }: { problem: Problem }) {
           onClick={handlePublish}
           disabled={isPending || missing.length > 0}
         >
-          {isPending ? (
-            <Loader className="animate-spin" />
-          ) : (
+          <LoadingSwap
+            isLoading={isPending}
+            className="inline-flex items-center gap-2"
+          >
             <Rocket className="h-4 w-4" />
-          )}
-          {t("button")}
+            {t("button")}
+          </LoadingSwap>
         </Button>
         {(isSuccess || problem.status === "published") && (
           <ShareIconButton

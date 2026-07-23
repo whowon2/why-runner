@@ -6,6 +6,13 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useContest } from "@/hooks/use-contest";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
@@ -119,17 +126,17 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
             value="problems"
           >
             {contest.joinStatus === "pending" ? (
-              <div className="flex flex-col items-center justify-center w-full min-h-[30vh] gap-3 text-center p-8 rounded-none bg-muted/20 border border-dashed border-muted-foreground/30">
-                <div className="p-4 rounded-none bg-amber-500/10 text-amber-500">
-                  <Lock className="w-8 h-8" />
-                </div>
-                <p className="font-semibold text-xl">
-                  {t("Tabs.pendingTitle")}
-                </p>
-                <p className="text-muted-foreground max-w-sm">
-                  {t("Tabs.pendingDescription")}
-                </p>
-              </div>
+              <Empty className="w-full min-h-[30vh]">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <Lock />
+                  </EmptyMedia>
+                  <EmptyTitle>{t("Tabs.pendingTitle")}</EmptyTitle>
+                  <EmptyDescription>
+                    {t("Tabs.pendingDescription")}
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
             ) : (
               <ProblemTab contest={contest} user={user} />
             )}

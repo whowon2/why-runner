@@ -13,18 +13,21 @@ import {
   ArrowUp,
   ArrowUpDown,
   CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
   Code2,
-  Loader,
   XCircle,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { ListPageHeader } from "@/components/list-page-header";
-import { Button } from "@/components/ui/button";
+import { PaginationControls } from "@/components/pagination-controls";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -33,6 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -285,15 +289,22 @@ export function ProblemsList() {
 
       {/* List Content */}
       {isPending ? (
-        <div className="flex justify-center py-8">
-          <Loader className="animate-spin" />
+        <div className="rounded-lg border p-4 flex flex-col gap-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-10 w-full" />
+          ))}
         </div>
       ) : (
         <div className="rounded-lg border">
           {problems.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground border-dashed">
-              {t("noResults")}
-            </div>
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Code2 />
+                </EmptyMedia>
+                <EmptyTitle>{t("noResults")}</EmptyTitle>
+              </EmptyHeader>
+            </Empty>
           ) : (
             <Table className={isPlaceholderData ? "opacity-50" : ""}>
               <TableHeader>
@@ -360,36 +371,20 @@ export function ProblemsList() {
 
       {/* Pagination Controls */}
       {totalCount > 0 && (
-        <div className="flex items-center justify-between py-4">
-          <div className="text-sm text-muted-foreground">
-            {t("pagination.showing", {
-              from: (page - 1) * ITEMS_PER_PAGE + 1,
-              to: Math.min(page * ITEMS_PER_PAGE, totalCount),
-              total: totalCount,
-            })}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={page <= 1 || isPending}
-              onClick={() => updateFilter("page", page - 1)}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="text-sm font-medium">
-              {t("pagination.page", { page, totalPages })}
-            </div>
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={page >= totalPages || isPending}
-              onClick={() => updateFilter("page", page + 1)}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        <PaginationControls
+          className="py-4"
+          page={page}
+          totalPages={totalPages}
+          disabled={isPending}
+          showingLabel={t("pagination.showing", {
+            from: (page - 1) * ITEMS_PER_PAGE + 1,
+            to: Math.min(page * ITEMS_PER_PAGE, totalCount),
+            total: totalCount,
+          })}
+          pageLabel={t("pagination.page", { page, totalPages })}
+          onPrev={() => updateFilter("page", page - 1)}
+          onNext={() => updateFilter("page", page + 1)}
+        />
       )}
     </div>
   );

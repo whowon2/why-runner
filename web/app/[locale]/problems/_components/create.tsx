@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type { Problem } from "@/drizzle/schema";
@@ -311,7 +312,8 @@ export function NewProblem({ problem }: { problem: Problem }) {
                 {t("addInputOutput")}
               </Button>
 
-              <div className="border-t pt-6 flex justify-end">
+              <Separator />
+              <div className="pt-6 flex justify-end">
                 <Button disabled={isPending} type="submit" size="lg">
                   {isPending ? t("creating") : t("submit")}
                 </Button>

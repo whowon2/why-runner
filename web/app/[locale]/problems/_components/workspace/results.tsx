@@ -1,5 +1,6 @@
 "use client";
 
+import { FileQuestion } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import {
@@ -9,6 +10,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -48,9 +55,14 @@ export function ProblemResultsTab({ problemId }: { problemId: string }) {
 
   if (!submissions || submissions.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground border rounded-lg border-dashed">
-        {t("noSubmissions")}
-      </div>
+      <Empty className="border rounded-lg">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <FileQuestion />
+          </EmptyMedia>
+          <EmptyTitle>{t("noSubmissions")}</EmptyTitle>
+        </EmptyHeader>
+      </Empty>
     );
   }
 

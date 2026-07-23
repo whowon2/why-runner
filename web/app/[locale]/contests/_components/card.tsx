@@ -17,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import type { Contest, UserOnContest } from "@/drizzle/schema";
 import { Link } from "@/i18n/navigation";
 import { formatDuration } from "@/lib/format-duration";
@@ -105,7 +106,8 @@ export function ContestCard({
         </CardHeader>
 
         <CardContent>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-2 pt-4 border-t border-muted/50">
+          <Separator className="mt-2" />
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-4">
             <div className="flex items-center text-sm text-muted-foreground">
               <Users className="w-4 h-4 mr-2 text-blue-500/70" />
               <span className="font-medium text-foreground/80 mr-1">

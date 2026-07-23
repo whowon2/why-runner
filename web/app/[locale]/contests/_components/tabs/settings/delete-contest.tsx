@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
@@ -15,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { LoadingSwap } from "@/components/ui/loading-swap";
 import { useDeleteContest } from "@/hooks/use-delete-contest";
 import { useRouter } from "@/i18n/navigation";
 
@@ -39,12 +40,13 @@ export function DeleteContest({ contestId }: { contestId: string }) {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="destructive" disabled={isPending}>
-          {isPending ? (
-            <Loader className="animate-spin" />
-          ) : (
-            <Trash2 className="mr-2 h-4 w-4" />
-          )}
-          {t("button")}
+          <LoadingSwap
+            isLoading={isPending}
+            className="inline-flex items-center gap-2"
+          >
+            <Trash2 className="h-4 w-4" />
+            {t("button")}
+          </LoadingSwap>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

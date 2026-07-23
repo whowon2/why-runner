@@ -1,9 +1,9 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Trophy } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { PaginationControls } from "@/components/pagination-controls";
 import {
   Empty,
   EmptyDescription,
@@ -11,6 +11,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useContests } from "@/hooks/use-contests";
 import { ContestCard } from "../../contests/_components/card";
@@ -86,38 +87,22 @@ export function MyContests({
       )}
 
       {!isPending && totalCount > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between py-6 border-t gap-4">
-          <div className="text-sm font-medium text-muted-foreground bg-muted/30 px-4 py-2 rounded-none">
-            {tContests("pagination.showing", {
+        <>
+          <Separator />
+          <PaginationControls
+            className="pt-6"
+            page={page}
+            totalPages={totalPages}
+            showingLabel={tContests("pagination.showing", {
               from: (page - 1) * ITEMS_PER_PAGE + 1,
               to: Math.min(page * ITEMS_PER_PAGE, totalCount),
               total: totalCount,
             })}
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-none h-10 w-10"
-              disabled={page <= 1}
-              onClick={() => setPage(page - 1)}
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </Button>
-            <div className="text-sm font-semibold min-w-24 text-center">
-              {tContests("pagination.page", { page, totalPages })}
-            </div>
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-none h-10 w-10"
-              disabled={page >= totalPages}
-              onClick={() => setPage(page + 1)}
-            >
-              <ChevronRight className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
+            pageLabel={tContests("pagination.page", { page, totalPages })}
+            onPrev={() => setPage(page - 1)}
+            onNext={() => setPage(page + 1)}
+          />
+        </>
       )}
     </div>
   );

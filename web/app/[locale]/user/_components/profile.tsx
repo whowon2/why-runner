@@ -11,6 +11,7 @@ import { CropImageDialog } from "@/components/crop-image-dialog";
 import { FollowButton } from "@/components/follow-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFollowState } from "@/hooks/use-follow";
 import { useProfile } from "@/hooks/use-profile";
@@ -219,9 +220,7 @@ export default function Profile({
                 </Link>
               </div>
             )}
-            <div
-              className={`mt-2 border-t ${onCover ? "border-white/40" : ""}`}
-            />
+            <Separator className={onCover ? "mt-2 bg-white/40" : "mt-2"} />
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -302,9 +301,8 @@ export default function Profile({
           </div>
 
           {/* Decorative color-swatch footer */}
-          <div
-            className={`flex gap-1.5 mt-2 pt-3 border-t ${onCover ? "border-white/40" : ""}`}
-          >
+          <Separator className={onCover ? "mt-2 bg-white/40" : "mt-2"} />
+          <div className="flex gap-1.5 pt-3">
             {SWATCH_CLASSES.map((cls) => (
               <span
                 key={cls}
