@@ -14,7 +14,11 @@ export function SettingsNav({
   onChange: (section: SettingsSection) => void;
 }) {
   const t = useTranslations("SettingsPage.nav");
-  const sections: { id: SettingsSection; label: string; icon: typeof Palette }[] = [
+  const sections: {
+    id: SettingsSection;
+    label: string;
+    icon: typeof Palette;
+  }[] = [
     { id: "appearance", label: t("appearance"), icon: Palette },
     { id: "notifications", label: t("notifications"), icon: Bell },
   ];

@@ -53,12 +53,8 @@
           "name": "activity_comment_user_id_user_id_fk",
           "tableFrom": "activity_comment",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -66,12 +62,8 @@
           "name": "activity_comment_activity_id_activity_feed_id_fk",
           "tableFrom": "activity_comment",
           "tableTo": "activity_feed",
-          "columnsFrom": [
-            "activity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["activity_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -79,12 +71,8 @@
           "name": "activity_comment_parent_id_activity_comment_id_fk",
           "tableFrom": "activity_comment",
           "tableTo": "activity_comment",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -150,12 +138,8 @@
           "name": "activity_feed_user_id_user_id_fk",
           "tableFrom": "activity_feed",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -163,12 +147,8 @@
           "name": "activity_feed_contest_id_contest_id_fk",
           "tableFrom": "activity_feed",
           "tableTo": "contest",
-          "columnsFrom": [
-            "contest_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["contest_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -176,12 +156,8 @@
           "name": "activity_feed_problem_id_problem_id_fk",
           "tableFrom": "activity_feed",
           "tableTo": "problem",
-          "columnsFrom": [
-            "problem_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["problem_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -229,12 +205,8 @@
           "name": "activity_like_user_id_user_id_fk",
           "tableFrom": "activity_like",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -242,12 +214,8 @@
           "name": "activity_like_activity_id_activity_feed_id_fk",
           "tableFrom": "activity_like",
           "tableTo": "activity_feed",
-          "columnsFrom": [
-            "activity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["activity_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -257,10 +225,7 @@
         "activity_like_user_activity_unique": {
           "name": "activity_like_user_activity_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id",
-            "activity_id"
-          ]
+          "columns": ["user_id", "activity_id"]
         }
       },
       "policies": {},
@@ -346,9 +311,7 @@
         "contest_slug_unique": {
           "name": "contest_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -407,12 +370,8 @@
           "name": "lesson_problem_id_problem_id_fk",
           "tableFrom": "lesson",
           "tableTo": "problem",
-          "columnsFrom": [
-            "problem_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["problem_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -422,9 +381,7 @@
         "lesson_problem_id_unique": {
           "name": "lesson_problem_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "problem_id"
-          ]
+          "columns": ["problem_id"]
         }
       },
       "policies": {},
@@ -468,12 +425,8 @@
           "name": "lesson_completion_user_id_user_id_fk",
           "tableFrom": "lesson_completion",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -481,12 +434,8 @@
           "name": "lesson_completion_lesson_id_lesson_id_fk",
           "tableFrom": "lesson_completion",
           "tableTo": "lesson",
-          "columnsFrom": [
-            "lesson_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["lesson_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -494,10 +443,7 @@
       "compositePrimaryKeys": {
         "lesson_completion_user_id_lesson_id_pk": {
           "name": "lesson_completion_user_id_lesson_id_pk",
-          "columns": [
-            "user_id",
-            "lesson_id"
-          ]
+          "columns": ["user_id", "lesson_id"]
         }
       },
       "uniqueConstraints": {},
@@ -535,12 +481,8 @@
           "name": "lesson_language_requirement_lesson_id_lesson_id_fk",
           "tableFrom": "lesson_language_requirement",
           "tableTo": "lesson",
-          "columnsFrom": [
-            "lesson_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["lesson_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -548,10 +490,7 @@
       "compositePrimaryKeys": {
         "lesson_language_requirement_lesson_id_language_pk": {
           "name": "lesson_language_requirement_lesson_id_language_pk",
-          "columns": [
-            "lesson_id",
-            "language"
-          ]
+          "columns": ["lesson_id", "language"]
         }
       },
       "uniqueConstraints": {},
@@ -583,12 +522,8 @@
           "name": "lesson_themes_lesson_id_lesson_id_fk",
           "tableFrom": "lesson_themes",
           "tableTo": "lesson",
-          "columnsFrom": [
-            "lesson_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["lesson_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -596,10 +531,7 @@
       "compositePrimaryKeys": {
         "lesson_themes_lesson_id_theme_pk": {
           "name": "lesson_themes_lesson_id_theme_pk",
-          "columns": [
-            "lesson_id",
-            "theme"
-          ]
+          "columns": ["lesson_id", "theme"]
         }
       },
       "uniqueConstraints": {},
@@ -637,12 +569,8 @@
           "name": "lesson_theme_requirement_lesson_id_lesson_id_fk",
           "tableFrom": "lesson_theme_requirement",
           "tableTo": "lesson",
-          "columnsFrom": [
-            "lesson_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["lesson_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -650,10 +578,7 @@
       "compositePrimaryKeys": {
         "lesson_theme_requirement_lesson_id_theme_pk": {
           "name": "lesson_theme_requirement_lesson_id_theme_pk",
-          "columns": [
-            "lesson_id",
-            "theme"
-          ]
+          "columns": ["lesson_id", "theme"]
         }
       },
       "uniqueConstraints": {},
@@ -692,12 +617,8 @@
           "name": "user_language_skill_user_id_user_id_fk",
           "tableFrom": "user_language_skill",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -705,10 +626,7 @@
       "compositePrimaryKeys": {
         "user_language_skill_user_id_language_pk": {
           "name": "user_language_skill_user_id_language_pk",
-          "columns": [
-            "user_id",
-            "language"
-          ]
+          "columns": ["user_id", "language"]
         }
       },
       "uniqueConstraints": {},
@@ -747,12 +665,8 @@
           "name": "user_theme_skill_user_id_user_id_fk",
           "tableFrom": "user_theme_skill",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -760,10 +674,7 @@
       "compositePrimaryKeys": {
         "user_theme_skill_user_id_theme_pk": {
           "name": "user_theme_skill_user_id_theme_pk",
-          "columns": [
-            "user_id",
-            "theme"
-          ]
+          "columns": ["user_id", "theme"]
         }
       },
       "uniqueConstraints": {},
@@ -964,12 +875,8 @@
           "name": "notification_recipient_id_user_id_fk",
           "tableFrom": "notification",
           "tableTo": "user",
-          "columnsFrom": [
-            "recipient_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["recipient_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -977,12 +884,8 @@
           "name": "notification_activity_id_activity_feed_id_fk",
           "tableFrom": "notification",
           "tableTo": "activity_feed",
-          "columnsFrom": [
-            "activity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["activity_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -990,12 +893,8 @@
           "name": "notification_contest_id_contest_id_fk",
           "tableFrom": "notification",
           "tableTo": "contest",
-          "columnsFrom": [
-            "contest_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["contest_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1003,12 +902,8 @@
           "name": "notification_submission_id_submission_id_fk",
           "tableFrom": "notification",
           "tableTo": "submission",
-          "columnsFrom": [
-            "submission_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["submission_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1016,12 +911,8 @@
           "name": "notification_problem_id_problem_id_fk",
           "tableFrom": "notification",
           "tableTo": "problem",
-          "columnsFrom": [
-            "problem_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["problem_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1029,12 +920,8 @@
           "name": "notification_lesson_id_lesson_id_fk",
           "tableFrom": "notification",
           "tableTo": "lesson",
-          "columnsFrom": [
-            "lesson_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["lesson_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1076,12 +963,8 @@
           "name": "notification_preference_user_id_user_id_fk",
           "tableFrom": "notification_preference",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1089,10 +972,7 @@
       "compositePrimaryKeys": {
         "notification_preference_user_id_type_pk": {
           "name": "notification_preference_user_id_type_pk",
-          "columns": [
-            "user_id",
-            "type"
-          ]
+          "columns": ["user_id", "type"]
         }
       },
       "uniqueConstraints": {},
@@ -1215,16 +1095,12 @@
         "problem_slug_unique": {
           "name": "problem_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         },
         "problem_code_unique": {
           "name": "problem_code_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "code"
-          ]
+          "columns": ["code"]
         }
       },
       "policies": {},
@@ -1339,12 +1215,8 @@
           "name": "submission_user_id_user_id_fk",
           "tableFrom": "submission",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -1352,12 +1224,8 @@
           "name": "submission_problem_id_problem_id_fk",
           "tableFrom": "submission",
           "tableTo": "problem",
-          "columnsFrom": [
-            "problem_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["problem_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1474,12 +1342,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1520,12 +1384,8 @@
           "name": "problem_on_contest_problem_id_problem_id_fk",
           "tableFrom": "problem_on_contest",
           "tableTo": "problem",
-          "columnsFrom": [
-            "problem_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["problem_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -1533,12 +1393,8 @@
           "name": "problem_on_contest_contest_id_contest_id_fk",
           "tableFrom": "problem_on_contest",
           "tableTo": "contest",
-          "columnsFrom": [
-            "contest_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["contest_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1546,10 +1402,7 @@
       "compositePrimaryKeys": {
         "problem_on_contest_problem_id_contest_id_pk": {
           "name": "problem_on_contest_problem_id_contest_id_pk",
-          "columns": [
-            "problem_id",
-            "contest_id"
-          ]
+          "columns": ["problem_id", "contest_id"]
         }
       },
       "uniqueConstraints": {},
@@ -1633,12 +1486,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1648,9 +1497,7 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -1758,16 +1605,12 @@
         "user_username_unique": {
           "name": "user_username_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "username"
-          ]
+          "columns": ["username"]
         },
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -1820,12 +1663,8 @@
           "name": "user_follow_follower_id_user_id_fk",
           "tableFrom": "user_follow",
           "tableTo": "user",
-          "columnsFrom": [
-            "follower_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["follower_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1833,12 +1672,8 @@
           "name": "user_follow_following_id_user_id_fk",
           "tableFrom": "user_follow",
           "tableTo": "user",
-          "columnsFrom": [
-            "following_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["following_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1846,10 +1681,7 @@
       "compositePrimaryKeys": {
         "user_follow_follower_id_following_id_pk": {
           "name": "user_follow_follower_id_following_id_pk",
-          "columns": [
-            "follower_id",
-            "following_id"
-          ]
+          "columns": ["follower_id", "following_id"]
         }
       },
       "uniqueConstraints": {},
@@ -1899,12 +1731,8 @@
           "name": "user_on_contest_user_id_user_id_fk",
           "tableFrom": "user_on_contest",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1912,12 +1740,8 @@
           "name": "user_on_contest_contest_id_contest_id_fk",
           "tableFrom": "user_on_contest",
           "tableTo": "contest",
-          "columnsFrom": [
-            "contest_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["contest_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1925,10 +1749,7 @@
       "compositePrimaryKeys": {
         "user_on_contest_user_id_contest_id_pk": {
           "name": "user_on_contest_user_id_contest_id_pk",
-          "columns": [
-            "user_id",
-            "contest_id"
-          ]
+          "columns": ["user_id", "contest_id"]
         }
       },
       "uniqueConstraints": {},
@@ -2008,20 +1829,12 @@
     "public.contest_status": {
       "name": "contest_status",
       "schema": "public",
-      "values": [
-        "draft",
-        "published"
-      ]
+      "values": ["draft", "published"]
     },
     "public.lesson_theme": {
       "name": "lesson_theme",
       "schema": "public",
-      "values": [
-        "strings",
-        "arrays",
-        "loops",
-        "conditionals"
-      ]
+      "values": ["strings", "arrays", "loops", "conditionals"]
     },
     "public.notification_type": {
       "name": "notification_type",
@@ -2041,42 +1854,22 @@
     "public.problem_difficulty": {
       "name": "problem_difficulty",
       "schema": "public",
-      "values": [
-        "easy",
-        "medium",
-        "hard"
-      ]
+      "values": ["easy", "medium", "hard"]
     },
     "public.problem_status": {
       "name": "problem_status",
       "schema": "public",
-      "values": [
-        "draft",
-        "published"
-      ]
+      "values": ["draft", "published"]
     },
     "public.language": {
       "name": "language",
       "schema": "public",
-      "values": [
-        "c",
-        "cpp",
-        "java",
-        "python",
-        "portugol",
-        "rust"
-      ]
+      "values": ["c", "cpp", "java", "python", "portugol", "rust"]
     },
     "public.submission_status": {
       "name": "submission_status",
       "schema": "public",
-      "values": [
-        "PENDING",
-        "PASSED",
-        "FAILED",
-        "ERROR",
-        "RUNNING"
-      ]
+      "values": ["PENDING", "PASSED", "FAILED", "ERROR", "RUNNING"]
     }
   },
   "schemas": {},

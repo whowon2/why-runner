@@ -2,7 +2,10 @@
 
 import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { type NotificationType, notificationPreference } from "@/drizzle/schema";
+import {
+  type NotificationType,
+  notificationPreference,
+} from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 export async function updateNotificationPreference(

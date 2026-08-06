@@ -71,7 +71,7 @@ Better Auth with email/password + GitHub + Google OAuth. Session access:
 
 ### AI Help
 
-`getAIHelp()` server action calls Gemini 2.0 Flash to explain submission failures. Parses JSON output from Judge to identify which test cases failed.
+`getAIHelp()` server action calls Gemini 2.5 Flash to explain submission failures. Parses JSON output from Judge to identify which test cases failed.
 
 ## Environment Variables
 

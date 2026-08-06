@@ -1,6 +1,12 @@
 "use client";
 
-import { CheckCircle2, CircleDashed, TriangleAlert, XCircle } from "lucide-react";
+import {
+  Brain,
+  CheckCircle2,
+  CircleDashed,
+  TriangleAlert,
+  XCircle,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -15,6 +21,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import type { Language } from "@/drizzle/schema";
+import { useGenerateReferenceSolution } from "@/hooks/use-generate-reference-solution";
 import { useProblemValidation } from "@/hooks/use-problem-validation";
 import { useTriggerProblemValidation } from "@/hooks/use-trigger-problem-validation";
 import { useUpdateProblemReferenceSolution } from "@/hooks/use-update-problem-reference-solution";
@@ -39,6 +46,8 @@ export function ProblemValidationPanel({ problemId }: { problemId: string }) {
     useUpdateProblemReferenceSolution();
   const { mutate: triggerValidation, isPending: isTriggering } =
     useTriggerProblemValidation();
+  const { mutate: generateReference, isPending: isGenerating } =
+    useGenerateReferenceSolution();
 
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState<Language | null>(null);
@@ -92,6 +101,25 @@ export function ProblemValidationPanel({ problemId }: { problemId: string }) {
     );
   }
 
+  function handleGenerate() {
+    if (!language) {
+      toast.warning(t("selectLanguage"));
+      return;
+    }
+
+    generateReference(
+      { problemId, language },
+      {
+        onError: (error) => {
+          toast.error(t("generateFailed"), { description: error.message });
+        },
+        onSuccess: (generated) => {
+          setCode(generated);
+        },
+      },
+    );
+  }
+
   if (isLoadingState) {
     return <Skeleton className="h-40 w-full" />;
   }
@@ -103,7 +131,7 @@ export function ProblemValidationPanel({ problemId }: { problemId: string }) {
         <p className="text-muted-foreground text-sm">{t("description")}</p>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Select
           onValueChange={(v) => setLanguage(v as Language)}
           value={language ?? undefined}
@@ -120,7 +148,17 @@ export function ProblemValidationPanel({ problemId }: { problemId: string }) {
             <SelectItem value="portugol">portugol</SelectItem>
           </SelectContent>
         </Select>
+        <Button
+          disabled={!language || isGenerating}
+          onClick={handleGenerate}
+          type="button"
+          variant="outline"
+        >
+          <Brain className="h-4 w-4" />
+          {isGenerating ? t("generating") : t("generateWithAi")}
+        </Button>
       </div>
+      <p className="text-muted-foreground text-xs">{t("generateUsesSaved")}</p>
 
       <Textarea
         className="min-h-[180px] font-mono text-sm"

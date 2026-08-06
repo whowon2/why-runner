@@ -41,16 +41,19 @@ const relativeFormatter = new Intl.RelativeTimeFormat(undefined, {
 function formatRelative(date: string | Date) {
   const diffMs = new Date(date).getTime() - Date.now();
   const diffMinutes = Math.round(diffMs / 60000);
-  if (Math.abs(diffMinutes) < 60) return relativeFormatter.format(diffMinutes, "minute");
+  if (Math.abs(diffMinutes) < 60)
+    return relativeFormatter.format(diffMinutes, "minute");
   const diffHours = Math.round(diffMinutes / 60);
-  if (Math.abs(diffHours) < 24) return relativeFormatter.format(diffHours, "hour");
+  if (Math.abs(diffHours) < 24)
+    return relativeFormatter.format(diffHours, "hour");
   const diffDays = Math.round(diffHours / 24);
   return relativeFormatter.format(diffDays, "day");
 }
 
 function NotificationIcon({ type }: { type: NotificationType }) {
   if (type === "FOLLOW") return <UserPlus className="size-4 text-primary" />;
-  if (type === "ACTIVITY_LIKE") return <Heart className="size-4 text-red-400" />;
+  if (type === "ACTIVITY_LIKE")
+    return <Heart className="size-4 text-red-400" />;
   if (type === "ACTIVITY_COMMENT")
     return <MessageCircle className="size-4 text-primary" />;
   if (
@@ -82,7 +85,9 @@ function useDescribeNotification() {
             n.count > 1
               ? t("FOLLOW_others", { name: actorName, count: n.count - 1 })
               : t("FOLLOW", { name: actorName }),
-          href: primaryActor?.username ? `/user/${primaryActor.username}` : "/user",
+          href: primaryActor?.username
+            ? `/user/${primaryActor.username}`
+            : "/user",
         };
       case "ACTIVITY_LIKE":
         return {
@@ -223,7 +228,9 @@ export function NotificationBell() {
                     <NotificationIcon type={n.type} />
                   </span>
                   <span className="flex-1 min-w-0">
-                    <span className="text-xs text-foreground/90 block">{text}</span>
+                    <span className="text-xs text-foreground/90 block">
+                      {text}
+                    </span>
                     <span className="text-[10px] text-muted-foreground/60">
                       {formatRelative(n.updatedAt)}
                     </span>

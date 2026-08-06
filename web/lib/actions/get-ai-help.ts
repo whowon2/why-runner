@@ -16,7 +16,7 @@ export async function getAIHelp(
   const ai = new GoogleGenAI({ apiKey: env.GEMINI_KEY });
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.0-flash",
+    model: "gemini-2.5-flash",
     config: { systemInstruction: SYSTEM_INSTRUCTION },
     contents: getUserPrompt({ problem, submission, locale }),
   });
