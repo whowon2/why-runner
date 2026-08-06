@@ -619,7 +619,27 @@
       "examplesTitle": "Exemplos",
       "noDescription": "*(Nenhuma descrição fornecida. Edite o problema para adicionar instruções.)*",
       "errorOccurred": "Ocorreu um erro",
-      "createdSuccess": "Problema salvo com sucesso!"
+      "createdSuccess": "Problema salvo com sucesso!",
+      "Validation": {
+        "title": "Validar antes de publicar",
+        "description": "Execute uma solução de referência contra os casos de teste declarados para confirmar que as saídas esperadas estão corretas.",
+        "selectLanguage": "Selecione uma linguagem",
+        "codePlaceholder": "Cole aqui uma solução de referência correta",
+        "emptyCode": "O código da solução de referência não pode estar vazio",
+        "validate": "Validar",
+        "running": "Executando...",
+        "neverRun": "Ainda não validado",
+        "passed": "Validação aprovada",
+        "stale": "Validação desatualizada — a entrada/saída mudou desde a última aprovação",
+        "failedWithCount": "Falhou ({passed}/{total} casos de teste aprovados)",
+        "errored": "Erro na validação",
+        "saveFailed": "Falha ao salvar a solução de referência",
+        "failed": "Falha ao iniciar a validação",
+        "expected": "Saída esperada",
+        "actual": "Saída obtida",
+        "error": "Erro",
+        "noOutput": "(sem saída)"
+      }
     },
     "Publish": {
       "button": "Publicar",
@@ -630,7 +650,8 @@
         "title": "título",
         "description": "descrição",
         "difficulty": "dificuldade",
-        "tests": "pelo menos um caso de teste"
+        "tests": "pelo menos um caso de teste",
+        "validation": "uma validação aprovada"
       }
     },
     "draftBadge": "Rascunho",

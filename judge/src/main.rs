@@ -8,7 +8,10 @@ use tokio::time::{Duration, timeout};
 
 use crate::{
     db::DbClient,
-    models::{JudgeReport, Submission, SubmissionStatus, TestCaseResult},
+    models::{
+        JudgeReport, Language, Problem, ProblemValidation, Submission, SubmissionStatus,
+        TestCaseResult,
+    },
 };
 
 #[tokio::main]
@@ -26,7 +29,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // PgListener
     let mut listener = PgListener::connect(&database_url).await?;
     listener.listen("new_submission").await?;
-    println!("Listening for 'new_submission' notifications...");
+    listener.listen("new_validation").await?;
+    println!("Listening for 'new_submission' and 'new_validation' notifications...");
 
     loop {
         // 0. Dead-letter submissions abandoned by a crashed/killed worker that
@@ -57,6 +61,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Ok(None) => break,
                 Err(e) => {
                     eprintln!("Failed to fetch next submission: {}", e);
+                    break;
+                }
+            }
+        }
+
+        // 1b. Same drain, for pending problem validation runs.
+        println!("Checking for pending validation jobs...");
+        loop {
+            match db.get_next_validation().await {
+                Ok(Some(validation)) => {
+                    println!("Processing validation: {}", validation.id);
+                    process_validation_job(&db, validation).await;
+                }
+                Ok(None) => break,
+                Err(e) => {
+                    eprintln!("Failed to fetch next validation: {}", e);
                     break;
                 }
             }
@@ -99,6 +119,69 @@ async fn process_job(db: &DbClient, sub: Submission) {
         sub.id, sub.language
     );
 
+    let (report, runtime_ms, memory_kb) = grade(&sub.code, sub.language, &problem).await;
+
+    let output_json = serde_json::to_string(&report).unwrap_or_default();
+    let status = if report.passed {
+        SubmissionStatus::PASSED
+    } else {
+        SubmissionStatus::FAILED
+    };
+
+    if let Err(e) = db
+        .update_submission_result(&sub, status, &output_json, runtime_ms, memory_kb)
+        .await
+    {
+        eprintln!("❌ Failed to update DB: {}", e);
+    } else {
+        println!("\t💾 Result Saved.");
+    }
+}
+
+async fn process_validation_job(db: &DbClient, validation: ProblemValidation) {
+    let problem = match db.get_problem(validation.problem_id).await {
+        Ok(problem) => problem,
+        Err(err) => {
+            eprintln!("Failed to fetch problem: {}", err);
+            return;
+        }
+    };
+
+    println!(
+        "\tValidating Problem {} (Language: {:?})",
+        validation.problem_id, validation.language
+    );
+
+    let (report, runtime_ms, _memory_kb) =
+        grade(&validation.code, validation.language, &problem).await;
+
+    let output_json = serde_json::to_string(&report).unwrap_or_default();
+    let status = if report.passed {
+        SubmissionStatus::PASSED
+    } else {
+        SubmissionStatus::FAILED
+    };
+
+    if let Err(e) = db
+        .update_validation_result(validation.id, status, &output_json, runtime_ms)
+        .await
+    {
+        eprintln!("❌ Failed to update DB: {}", e);
+    } else {
+        println!("\t💾 Validation result saved.");
+    }
+}
+
+/// Shared grading core: runs `code` against every declared input/output pair
+/// of `problem`, stopping at the first TLE / compile error / runtime error /
+/// wrong answer, same as the student-submission path. Used by both real
+/// submissions and pre-publish validation runs so the two can never grade
+/// differently.
+async fn grade(
+    code: &str,
+    language: Language,
+    problem: &Problem,
+) -> (JudgeReport, i64, Option<i64>) {
     let total_tests = problem.inputs.len();
     let mut passed_count = 0;
     let mut failure_details: Option<TestCaseResult> = None;
@@ -110,11 +193,7 @@ async fn process_job(db: &DbClient, sub: Submission) {
         let expected = match problem.outputs.get(i) {
             Some(o) => o,
             None => {
-                eprintln!(
-                    "Problem {} missing expected output for test case {}",
-                    sub.problem_id,
-                    i + 1
-                );
+                eprintln!("Missing expected output for test case {}", i + 1);
                 all_passed = false;
                 break;
             }
@@ -122,7 +201,7 @@ async fn process_job(db: &DbClient, sub: Submission) {
         let time_limit = 20;
 
         // Run code
-        let result = runner::run(&sub.code, input, sub.language, time_limit).await;
+        let result = runner::run(code, input, language, time_limit).await;
         let actual = result.stdout.trim().to_string();
         runtime_ms += result.duration_ms;
         if let Some(kb) = result.peak_memory_kb {
@@ -190,21 +269,5 @@ async fn process_job(db: &DbClient, sub: Submission) {
         failure_details,
     };
 
-    // Serialize to JSON String
-    let output_json = serde_json::to_string(&report).unwrap_or_default();
-    let status = if all_passed {
-        SubmissionStatus::PASSED
-    } else {
-        SubmissionStatus::FAILED
-    };
-
-    // Save to DB
-    if let Err(e) = db
-        .update_submission_result(&sub, status, &output_json, runtime_ms, memory_kb)
-        .await
-    {
-        eprintln!("❌ Failed to update DB: {}", e);
-    } else {
-        println!("\t💾 Result Saved.");
-    }
+    (report, runtime_ms, memory_kb)
 }

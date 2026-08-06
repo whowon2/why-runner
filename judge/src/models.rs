@@ -41,6 +41,19 @@ pub struct Problem {
     pub outputs: Vec<String>,
 }
 
+/// A pre-publish validation run: a professor's reference solution graded
+/// against a draft problem's declared I/O. Deliberately has no
+/// `retry_count`/contest fields — unlike `Submission`, a stuck/crashed run is
+/// just abandoned rather than retried, since re-validating is a single click
+/// away and there's no student-facing consequence to a stale RUNNING row.
+#[derive(Debug, FromRow)]
+pub struct ProblemValidation {
+    pub id: Uuid,
+    pub code: String,
+    pub language: Language,
+    pub problem_id: Uuid,
+}
+
 #[derive(Serialize)]
 pub struct TestCaseResult {
     pub input: String,

@@ -619,7 +619,27 @@
       "examplesTitle": "Examples",
       "noDescription": "*(No description provided. Edit the problem to add instructions.)*",
       "errorOccurred": "An error occurred",
-      "createdSuccess": "Problem saved successfully!"
+      "createdSuccess": "Problem saved successfully!",
+      "Validation": {
+        "title": "Validate before publishing",
+        "description": "Run a reference solution against your declared test cases to confirm the expected outputs are correct.",
+        "selectLanguage": "Select a language",
+        "codePlaceholder": "Paste a correct reference solution here",
+        "emptyCode": "Reference solution code cannot be empty",
+        "validate": "Validate",
+        "running": "Running...",
+        "neverRun": "Not validated yet",
+        "passed": "Validation passed",
+        "stale": "Validation is stale — I/O changed since last pass",
+        "failedWithCount": "Failed ({passed}/{total} test cases passed)",
+        "errored": "Validation errored",
+        "saveFailed": "Failed to save reference solution",
+        "failed": "Validation failed to start",
+        "expected": "Expected output",
+        "actual": "Actual output",
+        "error": "Error",
+        "noOutput": "(no output)"
+      }
     },
     "Publish": {
       "button": "Publish",
@@ -630,7 +650,8 @@
         "title": "title",
         "description": "description",
         "difficulty": "difficulty",
-        "tests": "at least one test case"
+        "tests": "at least one test case",
+        "validation": "a passing validation run"
       }
     },
     "draftBadge": "Draft",
