@@ -2,7 +2,11 @@
 
 import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { type Language, problem, problemReferenceSolution } from "@/drizzle/schema";
+import {
+  type Language,
+  problem,
+  problemReferenceSolution,
+} from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 export async function updateProblemReferenceSolution(input: {

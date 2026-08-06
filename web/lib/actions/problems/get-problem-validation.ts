@@ -45,9 +45,7 @@ export async function getProblemValidation(
 
   const currentIoHash = computeIoHash(found.inputs, found.outputs);
   const isStale =
-    !latest ||
-    latest.status !== "PASSED" ||
-    latest.ioHash !== currentIoHash;
+    !latest || latest.status !== "PASSED" || latest.ioHash !== currentIoHash;
 
   return {
     reference: reference

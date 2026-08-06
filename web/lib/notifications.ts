@@ -140,8 +140,7 @@ export async function notifyActivityComment(
 ) {
   if (actorId === recipientId) return;
   try {
-    if (!(await isNotificationEnabled(recipientId, "ACTIVITY_COMMENT")))
-      return;
+    if (!(await isNotificationEnabled(recipientId, "ACTIVITY_COMMENT"))) return;
 
     await db.insert(notification).values({
       recipientId,
