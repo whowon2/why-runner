@@ -1,4 +1,4 @@
-use crate::models::{Problem, Submission, SubmissionStatus};
+use crate::models::{Problem, ProblemValidation, Submission, SubmissionStatus};
 use sqlx::{PgPool, Result};
 use uuid::Uuid;
 
@@ -114,6 +114,49 @@ impl DbClient {
         }
 
         tx.commit().await?;
+        Ok(())
+    }
+
+    /// Claims one PENDING `problem_validation` row, same atomic
+    /// claim-and-lock shape as `get_next_submission` (safe for multiple
+    /// judge-worker replicas). No stale-`RUNNING` reclaim: unlike student
+    /// submissions, an abandoned validation run has no retry budget — the
+    /// professor just clicks "Validate" again, which creates a fresh row.
+    pub async fn get_next_validation(&self) -> Result<Option<ProblemValidation>> {
+        sqlx::query_as::<_, ProblemValidation>(
+            "UPDATE problem_validation
+             SET status = 'RUNNING',
+                 updated_at = now()
+             WHERE id = (
+                 SELECT id FROM problem_validation
+                 WHERE status = 'PENDING'
+                 ORDER BY created_at ASC
+                 FOR UPDATE SKIP LOCKED
+                 LIMIT 1
+             )
+             RETURNING id, code, language, problem_id",
+        )
+        .fetch_optional(&self.pool)
+        .await
+    }
+
+    pub async fn update_validation_result(
+        &self,
+        validation_id: Uuid,
+        status: SubmissionStatus,
+        output: &str,
+        runtime_ms: i64,
+    ) -> Result<()> {
+        sqlx::query(
+            "UPDATE problem_validation SET status = $1, output = $2, runtime_ms = $3 WHERE id = $4",
+        )
+        .bind(status)
+        .bind(output)
+        .bind(runtime_ms)
+        .bind(validation_id)
+        .execute(&self.pool)
+        .await?;
+
         Ok(())
     }
 }

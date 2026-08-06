@@ -2,7 +2,8 @@ export type PublishProblemFieldError =
   | "title"
   | "description"
   | "difficulty"
-  | "tests";
+  | "tests"
+  | "validation";
 
 export const PUBLISH_MISSING_FIELDS_PREFIX = "MISSING_FIELDS:";
 

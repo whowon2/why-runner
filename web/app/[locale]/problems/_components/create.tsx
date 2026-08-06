@@ -36,6 +36,7 @@ import { useUpdateProblem } from "@/hooks/use-update-problem";
 import { useRouter } from "@/i18n/navigation";
 import "katex/dist/katex.min.css";
 import { Eye, Pencil } from "lucide-react";
+import { ProblemValidationPanel } from "./workspace/validation";
 
 export function NewProblem({ problem }: { problem: Problem }) {
   const t = useTranslations("ProblemsPage.Create");
@@ -101,11 +102,23 @@ export function NewProblem({ problem }: { problem: Problem }) {
         },
         onSettled() {
           queryClient.invalidateQueries({ queryKey: ["problems"] });
+          // I/O pairs may have changed; a previously-passing validation run
+          // could now be stale, so refetch its state.
+          queryClient.invalidateQueries({
+            queryKey: ["problem-validation", problem.id],
+          });
         },
         onSuccess(updated) {
           toast.success(t("createdSuccess"));
           if (updated && updated.slug !== problem.slug) {
             router.replace(`/problems/${updated.slug}?tab=edit`);
+          } else {
+            // `problem` (title/description/difficulty/tests) is fetched
+            // server-side once in page.tsx and passed down as a prop —
+            // it won't pick up this save on its own. Refresh so
+            // PublishProblem's missing-fields check reflects what was just
+            // saved instead of the page's stale initial state.
+            router.refresh();
           }
         },
       },
@@ -311,6 +324,10 @@ export function NewProblem({ problem }: { problem: Problem }) {
               >
                 {t("addInputOutput")}
               </Button>
+
+              <Separator />
+
+              <ProblemValidationPanel problemId={problem.id} />
 
               <Separator />
               <div className="pt-6 flex justify-end">

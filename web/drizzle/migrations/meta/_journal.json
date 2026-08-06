@@ -183,6 +183,13 @@
       "when": 1784937113347,
       "tag": "0025_add_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1786040036588,
+      "tag": "0026_nostalgic_leo",
+      "breakpoints": true
     }
   ]
 }

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import type { Problem } from "@/drizzle/schema";
 import { usePublishProblem } from "@/hooks/use-publish-problem";
+import { useProblemValidation } from "@/hooks/use-problem-validation";
 import {
   getMissingProblemFields,
   PUBLISH_MISSING_FIELDS_PREFIX,
@@ -27,8 +28,10 @@ export function PublishProblem({ problem }: { problem: Problem }) {
   const t = useTranslations("ProblemsPage.Publish");
   const { mutate: publishProblem, isPending, isSuccess } = usePublishProblem();
   const queryClient = useQueryClient();
+  const { data: validation } = useProblemValidation(problem.id);
 
   const missing = getMissingProblemFields(problem);
+  if (validation?.isStale) missing.push("validation");
 
   function handlePublish() {
     publishProblem(problem.id, {
