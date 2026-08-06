@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { userFollow } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { notifyFollow } from "@/lib/notifications";
 
 export async function toggleFollow(targetUserId: string) {
   const currentUser = await getCurrentUser({});
@@ -35,6 +36,8 @@ export async function toggleFollow(targetUserId: string) {
     .insert(userFollow)
     .values({ followerId: currentUser.id, followingId: targetUserId })
     .onConflictDoNothing();
+
+  await notifyFollow(currentUser.id, targetUserId);
 
   return { following: true };
 }

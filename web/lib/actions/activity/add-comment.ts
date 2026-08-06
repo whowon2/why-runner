@@ -2,8 +2,9 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { activityComment } from "@/drizzle/schema";
+import { activityComment, activityFeed } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { notifyActivityComment } from "@/lib/notifications";
 
 export async function addActivityComment(
   activityId: string,
@@ -27,6 +28,14 @@ export async function addActivityComment(
     .insert(activityComment)
     .values({ userId: currentUser.id, activityId, content: trimmed, parentId })
     .returning();
+
+  const activity = await db.query.activityFeed.findFirst({
+    where: eq(activityFeed.id, activityId),
+    columns: { userId: true },
+  });
+  if (activity) {
+    await notifyActivityComment(currentUser.id, activity.userId, activityId);
+  }
 
   return db.query.activityComment.findFirst({
     where: (c, { eq }) => eq(c.id, comment.id),

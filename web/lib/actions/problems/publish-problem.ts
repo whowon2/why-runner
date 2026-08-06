@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { activityFeed, problem } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { notifyFollowedUserPublishedProblem } from "@/lib/notifications";
 import {
   getMissingProblemFields,
   PUBLISH_MISSING_FIELDS_PREFIX,
@@ -37,6 +38,8 @@ export async function publishProblem(problemId: string) {
     type: "PROBLEM_CREATED",
     problemId: result.id,
   });
+
+  await notifyFollowedUserPublishedProblem(currentUser.id, result.id);
 
   return result;
 }

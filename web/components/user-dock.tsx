@@ -26,6 +26,7 @@ import { usePathname } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { AvatarButton } from "./header/avatar-button";
+import { NotificationBell } from "./notifications/notification-bell";
 import { Dock, DockIcon } from "./ui/dock";
 
 export function UserDock() {
@@ -97,6 +98,9 @@ export function UserDock() {
           </DockIcon>
           {session ? (
             <>
+              <DockIcon>
+                <NotificationBell />
+              </DockIcon>
               <DockIcon>
                 <Tooltip>
                   <TooltipTrigger asChild>

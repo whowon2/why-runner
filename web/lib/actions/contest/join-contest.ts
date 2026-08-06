@@ -5,13 +5,14 @@ import { db } from "@/drizzle/db";
 import { contest, userOnContest } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import type { JoinContestInput } from "@/hooks/use-join-contest";
+import { notifyContestJoinRequest } from "@/lib/notifications";
 
 export async function joinContest(input: JoinContestInput) {
   const currentUser = await getCurrentUser({});
 
   const found = await db.query.contest.findFirst({
     where: eq(contest.id, input.contestId),
-    columns: { endDate: true, isPrivate: true },
+    columns: { endDate: true, isPrivate: true, createdBy: true },
   });
 
   if (!found) throw new Error("Contest not found.");
@@ -24,6 +25,14 @@ export async function joinContest(input: JoinContestInput) {
     .insert(userOnContest)
     .values({ userId: currentUser.id, contestId: input.contestId, joinStatus })
     .onConflictDoNothing();
+
+  if (found.isPrivate) {
+    await notifyContestJoinRequest(
+      currentUser.id,
+      found.createdBy,
+      input.contestId,
+    );
+  }
 
   return { pending: found.isPrivate };
 }
