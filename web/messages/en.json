@@ -49,7 +49,8 @@
     "roadmap": "Roadmap",
     "feed": "Feed",
     "login": "Login",
-    "settings": "Settings"
+    "settings": "Settings",
+    "notifications": "Notifications"
   },
   "Follow": {
     "follow": "Follow",
@@ -1118,7 +1119,8 @@
   },
   "SettingsPage": {
     "nav": {
-      "appearance": "Appearance"
+      "appearance": "Appearance",
+      "notifications": "Notifications"
     },
     "appearance": {
       "mode": "mode",
@@ -1128,6 +1130,49 @@
       "description": "Completely change the look and feel of the website by picking one of the presets, or by creating your own custom theme.",
       "preset": "preset",
       "custom": "custom"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Choose which notifications you want to receive. All notifications are on by default.",
+      "groups": {
+        "social": "Social",
+        "contests": "Contests",
+        "submissions": "Submissions",
+        "problems": "Problems",
+        "lessons": "Lessons"
+      },
+      "types": {
+        "FOLLOW": "New followers",
+        "ACTIVITY_LIKE": "Likes on your posts",
+        "ACTIVITY_COMMENT": "Comments on your posts",
+        "CONTEST_JOIN_REQUEST": "Join requests on your private contests",
+        "CONTEST_JOIN_APPROVED": "Your join requests get approved",
+        "CONTEST_JOIN_REJECTED": "Your join requests get rejected",
+        "SUBMISSION_GRADED": "Your submissions finish grading",
+        "FOLLOWED_USER_PUBLISHED_PROBLEM": "People you follow publish a problem",
+        "LESSON_UNLOCKED": "A new roadmap lesson unlocks for you"
+      }
+    }
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "loading": "Loading...",
+    "empty": "No notifications yet.",
+    "types": {
+      "FOLLOW": "{name} started following you",
+      "FOLLOW_others": "{name} and {count, plural, one {# other} other {# others}} started following you",
+      "ACTIVITY_LIKE": "{name} liked your post",
+      "ACTIVITY_LIKE_others": "{count, plural, one {# person} other {# people}} liked your post",
+      "ACTIVITY_COMMENT": "{name} commented on your post",
+      "CONTEST_JOIN_REQUEST": "{name} requested to join \"{contest}\"",
+      "CONTEST_JOIN_APPROVED": "Your request to join \"{contest}\" was approved",
+      "CONTEST_JOIN_REJECTED": "Your request to join \"{contest}\" was rejected",
+      "SUBMISSION_GRADED_PASSED": "Your submission for \"{problem}\" passed",
+      "SUBMISSION_GRADED_FAILED": "Your submission for \"{problem}\" failed",
+      "SUBMISSION_GRADED_ERROR": "Your submission for \"{problem}\" had an error",
+      "FOLLOWED_USER_PUBLISHED_PROBLEM": "{name} published a new problem: \"{problem}\"",
+      "LESSON_UNLOCKED": "A new lesson is now available on your roadmap"
     }
   }
 }

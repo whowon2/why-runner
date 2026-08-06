@@ -176,6 +176,13 @@
       "when": 1784776581094,
       "tag": "0024_solid_mongoose",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1784937113347,
+      "tag": "0025_add_notifications",
+      "breakpoints": true
     }
   ]
 }

@@ -49,7 +49,8 @@
     "roadmap": "Trilha",
     "feed": "Feed",
     "login": "Entrar",
-    "settings": "Configurações"
+    "settings": "Configurações",
+    "notifications": "Notificações"
   },
   "Follow": {
     "follow": "Seguir",
@@ -1118,7 +1119,8 @@
   },
   "SettingsPage": {
     "nav": {
-      "appearance": "Aparência"
+      "appearance": "Aparência",
+      "notifications": "Notificações"
     },
     "appearance": {
       "mode": "modo",
@@ -1128,6 +1130,49 @@
       "description": "Mude completamente o visual do site escolhendo um dos temas prontos, ou criando seu próprio tema personalizado.",
       "preset": "predefinido",
       "custom": "personalizado"
+    },
+    "notifications": {
+      "title": "Notificações",
+      "description": "Escolha quais notificações você quer receber. Todas as notificações vêm ativadas por padrão.",
+      "groups": {
+        "social": "Social",
+        "contests": "Contests",
+        "submissions": "Submissões",
+        "problems": "Problemas",
+        "lessons": "Lições"
+      },
+      "types": {
+        "FOLLOW": "Novos seguidores",
+        "ACTIVITY_LIKE": "Curtidas nos seus posts",
+        "ACTIVITY_COMMENT": "Comentários nos seus posts",
+        "CONTEST_JOIN_REQUEST": "Pedidos de entrada nos seus contests privados",
+        "CONTEST_JOIN_APPROVED": "Seus pedidos de entrada são aprovados",
+        "CONTEST_JOIN_REJECTED": "Seus pedidos de entrada são rejeitados",
+        "SUBMISSION_GRADED": "Suas submissões terminam de ser corrigidas",
+        "FOLLOWED_USER_PUBLISHED_PROBLEM": "Pessoas que você segue publicam um problema",
+        "LESSON_UNLOCKED": "Uma nova lição do roadmap é desbloqueada para você"
+      }
+    }
+  },
+  "Notifications": {
+    "title": "Notificações",
+    "markAllRead": "Marcar tudo como lido",
+    "loading": "Carregando...",
+    "empty": "Nenhuma notificação ainda.",
+    "types": {
+      "FOLLOW": "{name} começou a seguir você",
+      "FOLLOW_others": "{name} e mais {count, plural, one {# pessoa} other {# pessoas}} começaram a seguir você",
+      "ACTIVITY_LIKE": "{name} curtiu seu post",
+      "ACTIVITY_LIKE_others": "{count, plural, one {# pessoa curtiu} other {# pessoas curtiram}} seu post",
+      "ACTIVITY_COMMENT": "{name} comentou no seu post",
+      "CONTEST_JOIN_REQUEST": "{name} pediu para entrar em \"{contest}\"",
+      "CONTEST_JOIN_APPROVED": "Seu pedido para entrar em \"{contest}\" foi aprovado",
+      "CONTEST_JOIN_REJECTED": "Seu pedido para entrar em \"{contest}\" foi rejeitado",
+      "SUBMISSION_GRADED_PASSED": "Sua submissão para \"{problem}\" passou",
+      "SUBMISSION_GRADED_FAILED": "Sua submissão para \"{problem}\" falhou",
+      "SUBMISSION_GRADED_ERROR": "Sua submissão para \"{problem}\" teve um erro",
+      "FOLLOWED_USER_PUBLISHED_PROBLEM": "{name} publicou um novo problema: \"{problem}\"",
+      "LESSON_UNLOCKED": "Uma nova lição está disponível no seu roadmap"
     }
   }
 }

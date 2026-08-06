@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { contest, userOnContest } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { notifyContestJoinApproved } from "@/lib/notifications";
 
 export async function approveJoin(contestId: string, userId: string) {
   const currentUser = await getCurrentUser({});
@@ -26,4 +27,6 @@ export async function approveJoin(contestId: string, userId: string) {
         eq(userOnContest.userId, userId),
       ),
     );
+
+  await notifyContestJoinApproved(currentUser.id, userId, contestId);
 }
