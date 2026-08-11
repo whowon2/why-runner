@@ -17,7 +17,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -86,74 +85,34 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
                 {lesson.problem.description}
               </ReactMarkdown>
             </div>
-            {!lesson.locked && lesson.rewards.themes.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2 text-xs">
-                <span className="text-muted-foreground">
-                  {t("rewardsPrefix")}
-                </span>
-                {lesson.rewards.themes.map((theme) => (
-                  <Badge key={theme} variant="secondary">
-                    +1 {t(`themes.${theme}` as Parameters<typeof t>[0])}
-                  </Badge>
-                ))}
-              </div>
-            )}
           </CardContent>
         </Card>
-
-        {lesson.locked && (
-          <Card className="bg-transparent shadow-none">
-            <CardContent className="flex flex-col gap-3">
-              <p className="text-sm">{t("Lesson.lockedNotice")}</p>
-              <div className="flex flex-col gap-1">
-                {lesson.requirements.map((r) => {
-                  const key =
-                    r.kind === "theme"
-                      ? `theme-${r.theme}`
-                      : `lang-${r.language}`;
-                  const label =
-                    r.kind === "theme"
-                      ? t(`themes.${r.theme}` as Parameters<typeof t>[0])
-                      : r.language;
-                  return (
-                    <div
-                      className={cn(
-                        "flex items-center justify-between text-xs",
-                        r.met ? "text-green-500" : "text-muted-foreground",
-                      )}
-                      key={key}
-                    >
-                      <span className="flex items-center gap-1">
-                        {r.met && <CheckCircle2 className="size-3" />}
-                        {label}
-                      </span>
-                      <span>
-                        {r.currentValue}/{r.minValue}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         <LessonSubmissions problemId={lesson.problem.id} />
       </ResizablePanel>
 
-      {!lesson.locked && (
-        <>
-          <ResizableHandle withHandle />
-          <ResizablePanel className="flex flex-col gap-4 pl-4" minSize={25}>
-            <LessonSubmit problemId={lesson.problem.id} />
-          </ResizablePanel>
-        </>
-      )}
+      <ResizableHandle withHandle />
+      <ResizablePanel className="flex flex-col gap-4 pl-4" minSize={25}>
+        <LessonSubmit
+          lessonId={lesson.id}
+          locked={lesson.trackSubmitted}
+          problemId={lesson.problem.id}
+        />
+      </ResizablePanel>
     </ResizablePanelGroup>
   );
 }
 
-function LessonSubmit({ problemId }: { problemId: string }) {
+function LessonSubmit({
+  lessonId,
+  problemId,
+  locked,
+}: {
+  lessonId: string;
+  problemId: string;
+  locked: boolean;
+}) {
+  const t = useTranslations("RoadmapPage");
   const tUpload = useTranslations(
     "ContestsPage.Tabs.Problem.Submissions.Upload",
   );
@@ -162,6 +121,16 @@ function LessonSubmit({ problemId }: { problemId: string }) {
   const { theme, systemTheme } = useTheme();
   const { mutate, isPending } = useCreateLessonSubmission();
   const queryClient = useQueryClient();
+
+  if (locked) {
+    return (
+      <Card className="bg-transparent shadow-none">
+        <CardContent>
+          <p className="text-muted-foreground text-sm">{t("trackLocked")}</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   function handleSubmit() {
     if (!language) {
@@ -174,7 +143,7 @@ function LessonSubmit({ problemId }: { problemId: string }) {
     }
 
     mutate(
-      { problemId, code, language },
+      { lessonId, code, language },
       {
         onError: (error) => {
           toast.error(tUpload("failedSubmit"), { description: error.message });
@@ -288,7 +257,7 @@ function LessonSubmissions({ problemId }: { problemId: string }) {
                     >
                       <Copy className="size-3.5" />
                     </Button>
-                    <pre className="max-h-60 w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 pr-10 font-mono text-xs text-foreground">
+                    <pre className="min-h-11 max-h-60 w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 pr-10 font-mono text-xs text-foreground">
                       {s.code}
                     </pre>
                   </div>

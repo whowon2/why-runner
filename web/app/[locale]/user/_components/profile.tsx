@@ -9,7 +9,6 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { CropImageDialog } from "@/components/crop-image-dialog";
 import { FollowButton } from "@/components/follow-button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,7 +16,6 @@ import { useFollowState } from "@/hooks/use-follow";
 import { useProfile } from "@/hooks/use-profile";
 import { Link } from "@/i18n/navigation";
 import { useUploadProfileImage } from "@/hooks/use-upload-profile-image";
-import { useUserSkills } from "@/hooks/use-user-skills";
 
 const COVER_TEXT_SHADOW =
   "[text-shadow:0_1px_3px_rgba(0,0,0,0.95),0_0_10px_rgba(0,0,0,0.75)]";
@@ -67,7 +65,6 @@ export default function Profile({
 }) {
   const t = useTranslations("ProfilePage");
   const { data, isPending } = useProfile(userId);
-  const { data: skills } = useUserSkills(userId);
   const { mutateAsync: uploadImage, isPending: isUploading } =
     useUploadProfileImage(userId);
   const { data: followState } = useFollowState(userId);
@@ -252,52 +249,6 @@ export default function Profile({
             )}
             <FactRow onCover={onCover} label={t("contests")} value="4" />
             <FactRow onCover={onCover} label={t("problems")} value="12" />
-            {skills && skills.themeSkills.length > 0 && (
-              <FactRow
-                onCover={onCover}
-                label={t("Skills.themesTitle")}
-                value={
-                  <span className="flex flex-wrap gap-1.5">
-                    {skills.themeSkills.map((s) => (
-                      <Badge
-                        key={s.theme}
-                        variant="outline"
-                        className={
-                          onCover
-                            ? `text-white border-white/50 ${COVER_TEXT_SHADOW}`
-                            : undefined
-                        }
-                      >
-                        {s.theme}: {s.value}
-                      </Badge>
-                    ))}
-                  </span>
-                }
-              />
-            )}
-            {skills && skills.languageSkills.length > 0 && (
-              <FactRow
-                onCover={onCover}
-                label={t("Skills.languagesTitle")}
-                value={
-                  <span className="flex flex-wrap gap-1.5">
-                    {skills.languageSkills.map((s) => (
-                      <Badge
-                        key={s.language}
-                        variant="outline"
-                        className={
-                          onCover
-                            ? `text-white border-white/50 ${COVER_TEXT_SHADOW}`
-                            : undefined
-                        }
-                      >
-                        {s.language}: {s.value}
-                      </Badge>
-                    ))}
-                  </span>
-                }
-              />
-            )}
           </div>
 
           {/* Decorative color-swatch footer */}

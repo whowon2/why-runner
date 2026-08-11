@@ -1,5 +1,5 @@
-import { LessonDetail } from "../_components/lesson-detail";
-import { LessonHeader } from "../_components/lesson-header";
+import { LessonDetail } from "../../_components/lesson-detail";
+import { LessonHeader } from "../../_components/lesson-header";
 
 export default async function LessonPage({
   params,

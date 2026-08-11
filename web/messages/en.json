@@ -758,29 +758,42 @@
   },
   "RoadmapPage": {
     "title": "Roadmap",
-    "subtitle": "Learn competitive programming step by step. Pass a lesson in any language to earn skill.",
-    "loading": "Loading roadmap...",
-    "empty": "No lessons available yet.",
+    "subtitle": "Assignments from classes you own or joined.",
+    "loading": "Loading...",
+    "empty": "No exercises yet.",
     "completed": "Completed",
     "notFound": "Lesson not found",
-    "backToRoadmap": "Back to roadmap",
-    "nextLesson": "Next lesson",
-    "locked": "Locked",
-    "requirementsPrefix": "Requires:",
-    "rewardsPrefix": "Rewards:",
-    "themes": {
-      "strings": "Strings",
-      "arrays": "Arrays",
-      "loops": "Loops",
-      "conditionals": "Conditionals"
-    },
+    "backToRoadmap": "Back to assignment",
+    "nextLesson": "Next",
+    "previousLesson": "Previous",
+    "dueDatePrefix": "Due",
+    "reviewAnswers": "Review answers",
+    "publish": "Publish",
+    "unpublish": "Unpublish",
+    "addLesson": "Add exercise",
+    "manageTrack": "Manage assignment",
     "Lesson": {
       "primaryLanguage": "Suggested language: {language}",
       "anyLanguage": "You may submit in any language.",
       "submissionsTitle": "Submissions",
-      "lockedNotice": "Complete other lessons to reach the required skill level before attempting this one.",
       "codeCopied": "Code copied to clipboard"
-    }
+    },
+    "Review": {
+      "backToTrack": "Back to assignment",
+      "title": "Review: {track}",
+      "noStudents": "No students have joined this class yet.",
+      "notSent": "Not sent",
+      "noJudgeStatus": "No judge result",
+      "copied": "Code copied to clipboard",
+      "submittedAt": "Submitted {date}",
+      "notSubmitted": "Not submitted",
+      "noAnswer": "No answer for this exercise"
+    },
+    "submittedAt": "Submitted {date}",
+    "submitTrack": "Submit assignment",
+    "resubmitTrack": "Resubmit assignment",
+    "submitTrackSuccess": "Assignment submitted",
+    "trackLocked": "This assignment has already been submitted — exercises are locked."
   },
   "ImportProblems": {
     "button": "Import JSON",
@@ -1220,5 +1233,40 @@
       "FOLLOWED_USER_PUBLISHED_PROBLEM": "{name} published a new problem: \"{problem}\"",
       "LESSON_UNLOCKED": "A new lesson is now available on your roadmap"
     }
+  },
+  "TracksPage": {
+    "title": "Assignments",
+    "subtitle": "Assignments in this class.",
+    "empty": "No assignments yet.",
+    "createTrack": "Create assignment",
+    "titleLabel": "Title",
+    "descriptionLabel": "Description",
+    "create": "Create",
+    "myTracks": "My assignments",
+    "published": "Assigned",
+    "unpublished": "Draft",
+    "shareWithStudents": "Share with students",
+    "linkCopied": "Join link copied to clipboard",
+    "defaultSubtitle": "Exercises for this assignment, in order.",
+    "publish": "Publish",
+    "publishNeedsExercise": "Add at least one exercise before publishing."
+  },
+  "ClassesPage": {
+    "title": "Classes",
+    "subtitle": "Create a class for your students, or join one with a code.",
+    "empty": "You have no classes yet.",
+    "createClass": "Create class",
+    "joinCodePlaceholder": "Enter class code",
+    "join": "Join",
+    "myClasses": "Classes you teach",
+    "joinedClasses": "Classes you're in",
+    "joinCode": "Class code",
+    "codeCopied": "Class code copied to clipboard",
+    "memberCount": "{count} students",
+    "joinFailed": "Couldn't join that class — check the code and try again.",
+    "students": "Students",
+    "noStudentsYet": "No students have joined yet.",
+    "editClass": "Edit class",
+    "classNameLabel": "Class name"
   }
 }
