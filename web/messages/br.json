@@ -822,7 +822,10 @@
     "submitTrack": "Enviar atividade",
     "resubmitTrack": "Reenviar atividade",
     "submitTrackSuccess": "Atividade enviada",
-    "trackLocked": "O prazo final dessa atividade passou — os exercícios estão bloqueados."
+    "trackLocked": "O prazo final dessa atividade passou — os exercícios estão bloqueados.",
+    "incompleteSubmitTitle": "Enviar com exercícios não resolvidos?",
+    "incompleteSubmitDescription": "{count, plural, one {# exercício ainda não foi} other {# exercícios ainda não foram}} resolvido(s). Você pode reenviar quantas vezes quiser até o prazo final.",
+    "submitAnyway": "Enviar mesmo assim"
   },
   "ImportProblems": {
     "button": "Importar JSON",
