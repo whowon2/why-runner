@@ -1,11 +1,7 @@
-import { RoadmapList } from "./_components/list";
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
 
-export default function RoadmapPage() {
-  return (
-    <div className="flex w-full flex-col flex-1 items-center gap-4 p-4">
-      <div className="flex w-full max-w-5xl flex-1 flex-col gap-8 py-8">
-        <RoadmapList />
-      </div>
-    </div>
-  );
+export default async function RoadmapPage() {
+  const locale = await getLocale();
+  redirect({ href: "/classes", locale });
 }

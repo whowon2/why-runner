@@ -2,7 +2,7 @@
 
 import { db } from "@/drizzle/db";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
-import { getRequirementsStatus } from "@/lib/actions/lessons/lesson-lock";
+import { assertClassMember } from "@/lib/actions/classes/assert-class-member";
 
 export async function getLesson(lessonId: string) {
   const currentUser = await getCurrentUser({});
@@ -11,35 +11,32 @@ export async function getLesson(lessonId: string) {
     where: (lesson, { eq }) => eq(lesson.id, lessonId),
     with: {
       problem: true,
-      themes: true,
-      themeRequirements: true,
-      languageRequirements: true,
+      track: { with: { classroom: true } },
     },
   });
 
   if (!found) throw new Error("Lesson not found");
+  await assertClassMember(found.track.classroomId, currentUser.id);
 
-  const [completion, requirements] = await Promise.all([
-    db.query.lessonCompletion.findFirst({
-      where: (c, { and, eq }) =>
-        and(eq(c.userId, currentUser.id), eq(c.lessonId, lessonId)),
+  const [passed, trackSubmission] = await Promise.all([
+    db.query.submission.findFirst({
+      where: (submission, { and, eq }) =>
+        and(
+          eq(submission.userId, currentUser.id),
+          eq(submission.problemId, found.problemId),
+          eq(submission.status, "PASSED"),
+        ),
     }),
-    getRequirementsStatus({
-      userId: currentUser.id,
-      themeRequirements: found.themeRequirements,
-      languageRequirements: found.languageRequirements,
+    db.query.lessonTrackSubmission.findFirst({
+      where: (s, { and, eq }) =>
+        and(eq(s.userId, currentUser.id), eq(s.trackId, found.trackId)),
     }),
   ]);
 
-  const unmetRequirements = requirements.filter((r) => !r.met);
-
   return {
     ...found,
-    completed: !!completion,
-    locked: unmetRequirements.length > 0,
-    requirements,
-    unmetRequirements,
-    rewards: { themes: found.themes.map((t) => t.theme) },
+    done: !!passed,
+    trackSubmitted: !!trackSubmission,
   };
 }
 
@@ -47,18 +44,42 @@ export async function getNextLesson(lessonId: string) {
   const current = await db.query.lesson.findFirst({
     where: (lesson, { eq }) => eq(lesson.id, lessonId),
   });
-
   if (!current) return null;
 
   const next = await db.query.lesson.findFirst({
     where: (lesson, { gt, and, eq, or }) =>
-      or(
-        gt(lesson.order, current.order),
-        and(eq(lesson.order, current.order), gt(lesson.id, current.id)),
+      and(
+        eq(lesson.trackId, current.trackId),
+        or(
+          gt(lesson.order, current.order),
+          and(eq(lesson.order, current.order), gt(lesson.id, current.id)),
+        ),
       ),
     orderBy: (lesson, { asc }) => [asc(lesson.order), asc(lesson.id)],
     with: { problem: { columns: { id: true, title: true } } },
   });
 
   return next ?? null;
+}
+
+export async function getPreviousLesson(lessonId: string) {
+  const current = await db.query.lesson.findFirst({
+    where: (lesson, { eq }) => eq(lesson.id, lessonId),
+  });
+  if (!current) return null;
+
+  const previous = await db.query.lesson.findFirst({
+    where: (lesson, { lt, and, eq, or }) =>
+      and(
+        eq(lesson.trackId, current.trackId),
+        or(
+          lt(lesson.order, current.order),
+          and(eq(lesson.order, current.order), lt(lesson.id, current.id)),
+        ),
+      ),
+    orderBy: (lesson, { desc }) => [desc(lesson.order), desc(lesson.id)],
+    with: { problem: { columns: { id: true, title: true } } },
+  });
+
+  return previous ?? null;
 }
