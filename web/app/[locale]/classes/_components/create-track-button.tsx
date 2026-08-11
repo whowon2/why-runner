@@ -8,7 +8,13 @@ import { LoadingSwap } from "@/components/ui/loading-swap";
 import { useCreateTrack } from "@/hooks/use-create-track";
 import { useRouter } from "@/i18n/navigation";
 
-export function CreateTrackButton({ classroomId }: { classroomId: string }) {
+export function CreateTrackButton({
+  classroomId,
+  classSlug,
+}: {
+  classroomId: string;
+  classSlug: string;
+}) {
   const t = useTranslations("TracksPage");
   const { mutate: createTrack, isPending } = useCreateTrack();
   const router = useRouter();
@@ -18,7 +24,8 @@ export function CreateTrackButton({ classroomId }: { classroomId: string }) {
       { classroomId },
       {
         onError: (error: Error) => toast.error(error.message),
-        onSuccess: (data) => router.push(`/roadmap/${data.id}`),
+        onSuccess: (data) =>
+          router.push(`/classes/${classSlug}/tracks/${data.slug}`),
       },
     );
   }

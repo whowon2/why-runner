@@ -5,6 +5,7 @@ import { db } from "@/drizzle/db";
 import { classroom } from "@/drizzle/schema";
 import { generateClassCode } from "@/lib/class-code";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { generateSlug } from "@/lib/slug";
 
 async function uniqueJoinCode(): Promise<string> {
   for (let attempt = 0; attempt < 10; attempt++) {
@@ -22,7 +23,11 @@ export async function createClass() {
 
   const [created] = await db
     .insert(classroom)
-    .values({ createdBy: currentUser.id, joinCode: await uniqueJoinCode() })
+    .values({
+      createdBy: currentUser.id,
+      joinCode: await uniqueJoinCode(),
+      slug: generateSlug("untitled-class"),
+    })
     .returning();
 
   return created;

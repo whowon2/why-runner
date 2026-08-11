@@ -19,7 +19,7 @@ export function JoinClassClient({ code }: { code: string }) {
 
     joinClass(code, {
       onSuccess: (data) => {
-        router.replace(`/classes/${data.id}`);
+        router.replace(`/classes/${data.slug}`);
       },
       onError: () => {
         toast.error(t("joinFailed"));

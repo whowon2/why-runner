@@ -246,6 +246,20 @@
       "when": 1786484916961,
       "tag": "0034_gray_chimera",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1786485536805,
+      "tag": "0035_broken_vision",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1786485576316,
+      "tag": "0036_fuzzy_night_nurse",
+      "breakpoints": true
     }
   ]
 }

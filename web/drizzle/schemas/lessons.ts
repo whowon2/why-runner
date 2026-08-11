@@ -19,6 +19,7 @@ export const lessonTrack = pgTable("lesson_track", {
     .notNull()
     .references(() => classroom.id, { onDelete: "cascade" }),
   title: text("title").default("Untitled Assignment").notNull(),
+  slug: text("slug").notNull().unique(),
   description: text("description").default("").notNull(),
   dueDate: timestamp("due_date"),
   isPublished: boolean("is_published").default(false).notNull(),
@@ -86,6 +87,7 @@ export const lesson = pgTable("lesson", {
   problemId: uuid("problem_id")
     .notNull()
     .references(() => problem.id, { onDelete: "cascade" }),
+  slug: text("slug").notNull().unique(),
   order: integer("order").default(0).notNull(),
   primaryLanguage: Language("primary_language"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

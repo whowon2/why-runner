@@ -19,7 +19,13 @@ export function LessonHeader({ lessonId }: { lessonId: string }) {
   return (
     <div className="flex flex-col gap-3">
       <Button asChild className="w-fit px-0" variant="link">
-        <Link href={lesson ? `/roadmap/${lesson.trackId}` : "/roadmap"}>
+        <Link
+          href={
+            lesson
+              ? `/classes/${lesson.track.classroom.slug}/tracks/${lesson.track.slug}`
+              : "/classes"
+          }
+        >
           <ArrowLeft />
           {t("backToRoadmap")}
         </Link>
@@ -42,7 +48,9 @@ export function LessonHeader({ lessonId }: { lessonId: string }) {
           <div className="flex items-center gap-2">
             {previousLesson && (
               <Button asChild variant="outline">
-                <Link href={`/roadmap/lesson/${previousLesson.id}`}>
+                <Link
+                  href={`/classes/${lesson.track.classroom.slug}/lessons/${previousLesson.slug}`}
+                >
                   <ArrowLeft />
                   {t("previousLesson")}
                 </Link>
@@ -50,7 +58,9 @@ export function LessonHeader({ lessonId }: { lessonId: string }) {
             )}
             {nextLesson && (
               <Button asChild variant="outline">
-                <Link href={`/roadmap/lesson/${nextLesson.id}`}>
+                <Link
+                  href={`/classes/${lesson.track.classroom.slug}/lessons/${nextLesson.slug}`}
+                >
                   {t("nextLesson")}
                   <ArrowRight />
                 </Link>

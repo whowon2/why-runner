@@ -2,10 +2,18 @@
 
 import { eq, max } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { type CreateLessonInput, lesson, lessonTrack } from "@/drizzle/schema";
+import {
+  type CreateLessonInput,
+  lesson,
+  lessonTrack,
+  problem,
+} from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { generateSlug } from "@/lib/slug";
 
-export async function createLesson(input: CreateLessonInput) {
+export async function createLesson(
+  input: Omit<CreateLessonInput, "slug">,
+) {
   const currentUser = await getCurrentUser({});
 
   const track = await db.query.lessonTrack.findFirst({
@@ -14,6 +22,12 @@ export async function createLesson(input: CreateLessonInput) {
   if (!track) throw new Error("Track not found");
   if (track.createdBy !== currentUser.id)
     throw new Error("Not the track owner");
+
+  const linkedProblem = await db.query.problem.findFirst({
+    where: eq(problem.id, input.problemId),
+    columns: { title: true },
+  });
+  if (!linkedProblem) throw new Error("Problem not found");
 
   let order = input.order;
   if (order === undefined) {
@@ -26,7 +40,7 @@ export async function createLesson(input: CreateLessonInput) {
 
   const [created] = await db
     .insert(lesson)
-    .values({ ...input, order })
+    .values({ ...input, order, slug: generateSlug(linkedProblem.title) })
     .returning();
   return created;
 }

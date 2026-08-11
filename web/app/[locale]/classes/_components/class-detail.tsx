@@ -46,7 +46,10 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
                 classroomId={classroomId}
                 name={classroom.name}
               />
-              <CreateTrackButton classroomId={classroomId} />
+              <CreateTrackButton
+                classSlug={classroom.slug}
+                classroomId={classroomId}
+              />
             </>
           ) : undefined
         }
@@ -95,7 +98,10 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
             );
 
             return (
-              <Link href={`/roadmap/${track.id}`} key={track.id}>
+              <Link
+                href={`/classes/${classroom.slug}/tracks/${track.slug}`}
+                key={track.id}
+              >
                 <Card className="h-full bg-muted/30 transition-colors hover:bg-muted/60">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between gap-2 text-lg">
