@@ -24,6 +24,17 @@ export function ProblemDescription({ problemId }: { problemId: string }) {
     <div className="flex w-full flex-col gap-4">
       <Card className="bg-transparent shadow-none">
         <CardContent>
+          {problem.narrative && (
+            <div className="mb-6 border-l-2 border-muted-foreground/30 pl-4 italic text-muted-foreground">
+              <span className="not-italic text-[10px] font-semibold uppercase tracking-wider">
+                {tProblems("Workspace.Task.narrativeLabel")}
+              </span>
+              <pre className="mt-1 whitespace-pre-wrap font-sans">
+                {problem.narrative}
+              </pre>
+            </div>
+          )}
+
           <pre className="whitespace-pre-wrap rounded-md ">
             {problem.description}
           </pre>
