@@ -27,7 +27,7 @@ export async function listClassLessons(classroomId: string) {
 
   const exercises = await db.query.exercise.findMany({
     where: inArray(exercise.lessonId, lessonIds),
-    columns: { id: true, lessonId: true, problemId: true },
+    columns: { id: true, lessonId: true },
   });
   const exercisesByLesson = new Map<string, typeof exercises>();
   for (const e of exercises) {
@@ -48,16 +48,19 @@ export async function listClassLessons(classroomId: string) {
     }));
   }
 
-  const problemIds = exercises.map((e) => e.problemId);
+  const exerciseIds = exercises.map((e) => e.id);
+  // Scoped by exerciseId, not problemId: the same problem can back more
+  // than one exercise (across lessons), so a pass on one exercise must not
+  // count as a pass for every other exercise using that problem too.
   const [passedSubmissions, mySubmissions] = await Promise.all([
-    problemIds.length
+    exerciseIds.length
       ? db.query.submission.findMany({
           where: and(
             eq(submission.userId, currentUser.id),
             eq(submission.status, "PASSED"),
-            inArray(submission.problemId, problemIds),
+            inArray(submission.exerciseId, exerciseIds),
           ),
-          columns: { problemId: true },
+          columns: { exerciseId: true },
         })
       : [],
     db.query.lessonSubmission.findMany({
@@ -68,7 +71,9 @@ export async function listClassLessons(classroomId: string) {
     }),
   ]);
 
-  const passedProblemIds = new Set(passedSubmissions.map((s) => s.problemId));
+  const passedExerciseIds = new Set(
+    passedSubmissions.map((s) => s.exerciseId),
+  );
   const mySubmissionByLesson = new Map(
     mySubmissions.map((s) => [s.lessonId, s]),
   );
@@ -76,7 +81,7 @@ export async function listClassLessons(classroomId: string) {
   return lessons.map((l) => {
     const lessonExercises = exercisesByLesson.get(l.id) ?? [];
     const completedCount = lessonExercises.filter((e) =>
-      passedProblemIds.has(e.problemId),
+      passedExerciseIds.has(e.id),
     ).length;
 
     return {

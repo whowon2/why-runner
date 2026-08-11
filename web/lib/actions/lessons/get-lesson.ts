@@ -25,12 +25,16 @@ export async function getLesson(lessonId: string) {
       },
     }),
     db.query.submission.findMany({
-      where: (submission, { and, eq }) =>
+      // Scoped by exerciseId, not problemId: the same problem can back more
+      // than one exercise (across lessons), so a pass on one exercise must
+      // not mark every other exercise using that problem as done too.
+      where: (submission, { and, eq, isNotNull }) =>
         and(
           eq(submission.userId, currentUser.id),
           eq(submission.status, "PASSED"),
+          isNotNull(submission.exerciseId),
         ),
-      columns: { problemId: true },
+      columns: { exerciseId: true },
     }),
     db.query.lessonSubmission.findFirst({
       where: (s, { and, eq }) =>
@@ -38,7 +42,9 @@ export async function getLesson(lessonId: string) {
     }),
   ]);
 
-  const passedProblemIds = new Set(passedSubmissions.map((s) => s.problemId));
+  const passedExerciseIds = new Set(
+    passedSubmissions.map((s) => s.exerciseId),
+  );
 
   return {
     lesson,
@@ -47,7 +53,7 @@ export async function getLesson(lessonId: string) {
     submittedAt: lessonSubmission?.submittedAt ?? null,
     exercises: exercises.map((e) => ({
       ...e,
-      done: passedProblemIds.has(e.problemId),
+      done: passedExerciseIds.has(e.id),
     })),
   };
 }

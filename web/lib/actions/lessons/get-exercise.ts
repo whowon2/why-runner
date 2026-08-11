@@ -20,10 +20,13 @@ export async function getExercise(exerciseId: string) {
 
   const [passed, lessonSubmission] = await Promise.all([
     db.query.submission.findFirst({
+      // Scoped by exerciseId, not problemId: the same problem can back more
+      // than one exercise (across lessons), so a pass on one exercise must
+      // not mark every other exercise using that problem as done too.
       where: (submission, { and, eq }) =>
         and(
           eq(submission.userId, currentUser.id),
-          eq(submission.problemId, found.problemId),
+          eq(submission.exerciseId, exerciseId),
           eq(submission.status, "PASSED"),
         ),
     }),
