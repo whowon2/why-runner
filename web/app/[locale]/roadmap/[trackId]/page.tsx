@@ -1,3 +1,4 @@
+import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
 import { TrackRoadmap } from "../_components/track-roadmap";
 
 export default async function TrackPage({
@@ -5,6 +6,7 @@ export default async function TrackPage({
 }: {
   params: Promise<{ trackId: string }>;
 }) {
+  await requireOnboardedUser({ redirectTo: "/auth/signin" });
   const { trackId } = await params;
 
   return (

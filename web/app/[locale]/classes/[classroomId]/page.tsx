@@ -1,3 +1,4 @@
+import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
 import { ClassDetail } from "../_components/class-detail";
 
 export default async function ClassPage({
@@ -5,6 +6,7 @@ export default async function ClassPage({
 }: {
   params: Promise<{ classroomId: string }>;
 }) {
+  await requireOnboardedUser({ redirectTo: "/auth/signin" });
   const { classroomId } = await params;
 
   return (
