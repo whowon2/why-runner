@@ -30,7 +30,7 @@ export function TrackReview({ trackId }: { trackId: string }) {
     return (
       <div className="flex flex-col gap-6">
         <Button asChild className="w-fit px-0" variant="link">
-          <Link href={`/roadmap/${trackId}`}>
+          <Link href="/classes">
             <ArrowLeft />
             {t("backToTrack")}
           </Link>
@@ -50,7 +50,7 @@ export function TrackReview({ trackId }: { trackId: string }) {
   return (
     <div className="flex flex-col gap-6">
       <Button asChild className="w-fit px-0" variant="link">
-        <Link href={`/roadmap/${trackId}`}>
+        <Link href={`/classes/${track.classroom.slug}/tracks/${track.slug}`}>
           <ArrowLeft />
           {t("backToTrack")}
         </Link>

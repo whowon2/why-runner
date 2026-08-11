@@ -61,7 +61,7 @@ function ClassGrid({
   classes,
   role,
 }: {
-  classes: { id: string; name: string; memberCount: number }[];
+  classes: { id: string; slug: string; name: string; memberCount: number }[];
   role: "professor" | "student";
 }) {
   const t = useTranslations("ClassesPage");
@@ -69,7 +69,7 @@ function ClassGrid({
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {classes.map((c) => (
-        <Link href={`/classes/${c.id}`} key={c.id}>
+        <Link href={`/classes/${c.slug}`} key={c.id}>
           <Card className="h-full bg-muted/30 transition-colors hover:bg-muted/60">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">

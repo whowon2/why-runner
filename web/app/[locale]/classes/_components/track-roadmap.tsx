@@ -59,7 +59,7 @@ export function TrackRoadmap({ trackId }: { trackId: string }) {
 
   if (!data) return null;
 
-  const { track, lessons, isOwner, submittedAt } = data;
+  const { track, classroom, lessons, isOwner, submittedAt } = data;
   const dueDatePassed = !!(track.dueDate && new Date(track.dueDate) < new Date());
 
   return (
@@ -77,7 +77,7 @@ export function TrackRoadmap({ trackId }: { trackId: string }) {
               }
               variant="outline"
             >
-              <Link href={`/roadmap/${trackId}/review`}>
+              <Link href={`/classes/${classroom.slug}/tracks/${track.slug}/review`}>
                 <ClipboardList className="size-3.5" />
                 {t("reviewAnswers")}
               </Link>
@@ -138,7 +138,7 @@ export function TrackRoadmap({ trackId }: { trackId: string }) {
             >
               <Link
                 className="flex flex-1 items-center gap-3"
-                href={`/roadmap/lesson/${l.id}`}
+                href={`/classes/${classroom.slug}/lessons/${l.slug}`}
               >
                 <span className="text-muted-foreground text-sm tabular-nums">
                   {idx + 1}.

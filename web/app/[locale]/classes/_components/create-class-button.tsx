@@ -17,7 +17,7 @@ export function CreateClassButton() {
     createClass(undefined, {
       onError: (error: Error) => toast.error(error.message),
       onSuccess: (data) => {
-        router.push(`/classes/${data.id}`);
+        router.push(`/classes/${data.slug}`);
       },
     });
   }

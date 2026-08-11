@@ -11,6 +11,7 @@ export async function getTrackReview(trackId: string) {
 
   const track = await db.query.lessonTrack.findFirst({
     where: eq(lessonTrack.id, trackId),
+    with: { classroom: { columns: { slug: true } } },
   });
   if (!track) throw new Error("Track not found");
   if (track.createdBy !== currentUser.id)

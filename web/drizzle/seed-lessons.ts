@@ -37,6 +37,7 @@ async function main() {
     .insert(classroom)
     .values({
       name: "Sample Class",
+      slug: generateSlug("sample-class"),
       joinCode: generateClassCode(),
       createdBy: "system",
     })
@@ -46,6 +47,7 @@ async function main() {
     .insert(lessonTrack)
     .values({
       title: "Roadmap",
+      slug: generateSlug("roadmap"),
       classroomId: defaultClass.id,
       isPublished: true,
       createdBy: "system",
@@ -74,6 +76,7 @@ async function main() {
     await db.insert(lesson).values({
       trackId: defaultTrack.id,
       problemId: createdProblem.id,
+      slug: generateSlug(p.title),
       order: mapping.order,
       primaryLanguage: null,
     });

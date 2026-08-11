@@ -42,6 +42,7 @@ export async function getTrack(trackId: string) {
 
   return {
     track,
+    classroom,
     isOwner,
     submittedAt: trackSubmission?.submittedAt ?? null,
     lessons: lessons.map((l) => ({
