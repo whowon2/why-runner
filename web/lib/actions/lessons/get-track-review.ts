@@ -15,6 +15,13 @@ export async function getTrackReview(trackId: string) {
   if (!track) throw new Error("Track not found");
   if (track.createdBy !== currentUser.id)
     throw new Error("Not the track owner");
+  // Professor can only review after the due date — while it's still open,
+  // students may keep resubmitting, so any earlier "review" would just be a
+  // snapshot of in-progress work. No due date set means review is always
+  // open (matches the field's optional, non-blocking default elsewhere).
+  if (track.dueDate && track.dueDate > new Date()) {
+    throw new Error("REVIEW_NOT_YET_AVAILABLE");
+  }
 
   const [lessons, members, trackSubmissions] = await Promise.all([
     db.query.lesson.findMany({
@@ -40,15 +47,15 @@ export async function getTrackReview(trackId: string) {
     .filter((m) => m.userId !== track.createdBy)
     .map((m) => m.user);
 
-  const submittedAtByUser = new Map(
-    trackSubmissions.map((s) => [s.userId, s.submittedAt]),
-  );
+  const submissionByUser = new Map(trackSubmissions.map((s) => [s.userId, s]));
 
   return {
     track,
     students: students.map((student) => ({
       student,
-      submittedAt: submittedAtByUser.get(student.id) ?? null,
+      submittedAt: submissionByUser.get(student.id)?.submittedAt ?? null,
+      reviewedAt: submissionByUser.get(student.id)?.reviewedAt ?? null,
+      score: submissionByUser.get(student.id)?.score ?? null,
       answers: lessons.map((l) => {
         const completion = l.completions.find((c) => c.userId === student.id);
         return {

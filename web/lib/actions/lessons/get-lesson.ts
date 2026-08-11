@@ -33,10 +33,18 @@ export async function getLesson(lessonId: string) {
     }),
   ]);
 
+  const dueDatePassed = !!(
+    found.track.dueDate && found.track.dueDate < new Date()
+  );
+
   return {
     ...found,
     done: !!passed,
     trackSubmitted: !!trackSubmission,
+    // Students may resubmit freely before the due date — only a passed due
+    // date locks the editor (see `createLessonSubmission`, which enforces
+    // this same rule server-side).
+    submissionsLocked: dueDatePassed,
   };
 }
 

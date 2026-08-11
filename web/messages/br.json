@@ -47,7 +47,7 @@
     "home": "Página Inicial",
     "problems": "Problemas",
     "contests": "Torneios",
-    "roadmap": "Trilha",
+    "roadmap": "Turmas",
     "feed": "Feed",
     "login": "Entrar",
     "settings": "Configurações",
@@ -737,7 +737,8 @@
         "chars": "{count} car.",
         "detailsTitle": "Detalhes do envio",
         "code": "Código",
-        "inputOutput": "Entrada / Saída"
+        "inputOutput": "Entrada / Saída",
+        "constraintViolation": "Passou em todos os casos de teste, mas violou uma restrição de solução"
       },
       "Statistics": {
         "title": "Resumo da tarefa",
@@ -762,6 +763,27 @@
     "loading": "Carregando...",
     "empty": "Nenhum exercício ainda.",
     "completed": "Concluída",
+    "Constraints": {
+      "trigger": "Restrições",
+      "title": "Restrições de solução",
+      "description": "Regras estruturais e uma descrição opcional de algoritmo exigido, verificadas apenas nas submissões desta lição (nunca em contests ou prática avulsa).",
+      "structuralTitle": "Regras estruturais",
+      "addRule": "Adicionar regra",
+      "ruleType": "Tipo de regra",
+      "maxLoopNestingDepth": "Profundidade máxima de laços aninhados",
+      "forbiddenConstruct": "Construção proibida",
+      "requiredConstruct": "Construção exigida",
+      "maxDepth": "Profundidade máxima",
+      "constructsPlaceholder": "Tokens separados por vírgula (ex: cout, printf)",
+      "save": "Salvar",
+      "remove": "Remover",
+      "noStructuralRules": "Nenhuma regra estrutural ainda.",
+      "algorithmTitle": "Algoritmo exigido (no máximo um)",
+      "algorithmPlaceholder": "ex: Deve usar o algoritmo de Dijkstra para caminho mínimo",
+      "algorithmHint": "Verificado via classificação por IA depois que a submissão passa em todos os casos de teste.",
+      "addFailed": "Falha ao salvar restrição",
+      "removeFailed": "Falha ao remover restrição"
+    },
     "notFound": "Lição não encontrada",
     "backToRoadmap": "Voltar para a atividade",
     "nextLesson": "Próxima",
@@ -787,13 +809,20 @@
       "copied": "Código copiado para a área de transferência",
       "submittedAt": "Enviado em {date}",
       "notSubmitted": "Não enviado",
-      "noAnswer": "Sem resposta para esse exercício"
+      "noAnswer": "Sem resposta para esse exercício",
+      "notYetAvailable": "A revisão abre depois que o prazo final passar.",
+      "scoreLabel": "Nota: {score}",
+      "scorePlaceholder": "Nota",
+      "markReviewed": "Marcar como revisado",
+      "updateScore": "Atualizar nota",
+      "reviewSaved": "Revisão salva",
+      "reviewedAt": "Revisado em {date}"
     },
     "submittedAt": "Enviado em {date}",
     "submitTrack": "Enviar atividade",
     "resubmitTrack": "Reenviar atividade",
     "submitTrackSuccess": "Atividade enviada",
-    "trackLocked": "Essa atividade já foi enviada — os exercícios estão bloqueados."
+    "trackLocked": "O prazo final dessa atividade passou — os exercícios estão bloqueados."
   },
   "ImportProblems": {
     "button": "Importar JSON",
@@ -887,6 +916,8 @@
           "expectedOutputLabel": "Saída Esperada",
           "errorLog": "Log de Erro (Stderr)",
           "processing": "Processando...",
+          "constraintViolation": "Passou em todos os {count} testes, mas violou uma restrição de solução",
+          "pendingClassification": "Passou em todos os testes — verificando algoritmo exigido...",
           "AI": {
             "title": "Assistente de IA",
             "description": "Receba ajuda da nossa IA para entender por que sua solução pode estar falhando ou no que melhorar. A IA analisará seu código com base no problema e na sua solução e fornecerá sugestões.",
@@ -1249,7 +1280,13 @@
     "linkCopied": "Link de entrada copiado para a área de transferência",
     "defaultSubtitle": "Exercícios dessa atividade, em ordem.",
     "publish": "Publicar",
-    "publishNeedsExercise": "Adicione ao menos um exercício antes de publicar."
+    "publishNeedsExercise": "Adicione ao menos um exercício antes de publicar.",
+    "exerciseProgress": "{done}/{total} exercícios",
+    "exerciseCount": "{count} exercícios",
+    "dueDatePrefix": "Prazo",
+    "submittedAt": "Enviado em {date}",
+    "scoreLabel": "Nota: {score}",
+    "awaitingReview": "Aguardando revisão"
   },
   "ClassesPage": {
     "title": "Turmas",
@@ -1263,6 +1300,8 @@
     "joinCode": "Código da turma",
     "codeCopied": "Código da turma copiado para a área de transferência",
     "memberCount": "{count} alunos",
+    "roleProfessor": "Professor",
+    "roleStudent": "Aluno",
     "joinFailed": "Não foi possível entrar nessa turma — confira o código e tente de novo.",
     "students": "Alunos",
     "noStudentsYet": "Nenhum aluno entrou ainda.",

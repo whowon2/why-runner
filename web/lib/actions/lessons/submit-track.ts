@@ -18,6 +18,15 @@ import { getCurrentUser } from "@/lib/auth/get-current-user";
 export async function submitTrack(trackId: string) {
   const currentUser = await getCurrentUser({});
 
+  const track = await db.query.lessonTrack.findFirst({
+    where: (t, { eq }) => eq(t.id, trackId),
+    columns: { dueDate: true },
+  });
+  if (!track) throw new Error("Assignment not found");
+  if (track.dueDate && track.dueDate < new Date()) {
+    throw new Error("This assignment's due date has passed.");
+  }
+
   const lessons = await db.query.lesson.findMany({
     where: eq(lesson.trackId, trackId),
   });

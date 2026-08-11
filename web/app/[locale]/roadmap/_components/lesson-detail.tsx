@@ -35,6 +35,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { Language } from "@/drizzle/schema";
 import { useCreateLessonSubmission } from "@/hooks/use-create-lesson-submission";
 import { useLesson } from "@/hooks/use-lesson";
+import { useLessonConstraints } from "@/hooks/use-lesson-constraints";
 import { useLessonSubmissions } from "@/hooks/use-lesson-submissions";
 import { cn } from "@/lib/utils";
 
@@ -88,6 +89,8 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
           </CardContent>
         </Card>
 
+        <LessonConstraintsNotice lessonId={lesson.id} />
+
         <LessonSubmissions problemId={lesson.problem.id} />
       </ResizablePanel>
 
@@ -95,7 +98,7 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
       <ResizablePanel className="flex flex-col gap-4 pl-4" minSize={25}>
         <LessonSubmit
           lessonId={lesson.id}
-          locked={lesson.trackSubmitted}
+          locked={lesson.submissionsLocked}
           problemId={lesson.problem.id}
         />
       </ResizablePanel>
@@ -200,6 +203,61 @@ function LessonSubmit({
   );
 }
 
+// Read-only, shown to every class member so students know what's expected
+// *before* they submit, not just after a violation. Mutation UI (add/edit/
+// remove) stays in the owner-only dialog on the track page.
+function LessonConstraintsNotice({ lessonId }: { lessonId: string }) {
+  const t = useTranslations("RoadmapPage.Constraints");
+  const { data: constraints } = useLessonConstraints(lessonId);
+
+  if (!constraints || constraints.length === 0) return null;
+
+  return (
+    <Card className="bg-transparent shadow-none">
+      <CardHeader>
+        <CardTitle className="text-base">{t("title")}</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-2 text-sm">
+        {constraints.map((c) => {
+          if (c.kind === "algorithm_requirement") {
+            return (
+              <p key={c.id}>
+                <span className="font-medium">{t("algorithmTitle")}:</span>{" "}
+                {c.description}
+              </p>
+            );
+          }
+
+          let params: Record<string, unknown> = {};
+          try {
+            params = c.ruleParams ? JSON.parse(c.ruleParams) : {};
+          } catch {
+            params = {};
+          }
+
+          const constructs = Array.isArray(params.constructs)
+            ? params.constructs.join(", ")
+            : "?";
+
+          let label: string;
+          switch (c.ruleType) {
+            case "max_loop_nesting_depth":
+              label = `${t("maxLoopNestingDepth")}: ${params.maxDepth ?? "?"}`;
+              break;
+            case "required_construct":
+              label = `${t("requiredConstruct")}: ${constructs}`;
+              break;
+            default:
+              label = `${t("forbiddenConstruct")}: ${constructs}`;
+          }
+
+          return <p key={c.id}>{label}</p>;
+        })}
+      </CardContent>
+    </Card>
+  );
+}
+
 function LessonSubmissions({ problemId }: { problemId: string }) {
   const t = useTranslations("RoadmapPage.Lesson");
   const tCommon = useTranslations("ContestsPage.Tabs.Problem.Submissions");
@@ -231,6 +289,10 @@ function LessonSubmissions({ problemId }: { problemId: string }) {
                   "text-orange-500 border-orange-500": s.status === "ERROR",
                   "text-gray-500 border-gray-500": s.status === "PENDING",
                   "text-blue-500 border-blue-500": s.status === "RUNNING",
+                  "text-purple-500 border-purple-500":
+                    s.status === "CONSTRAINT_VIOLATION",
+                  "text-indigo-500 border-indigo-500":
+                    s.status === "PENDING_CONSTRAINT_CLASSIFICATION",
                 })}
                 key={s.id}
                 value={s.id}
@@ -261,6 +323,11 @@ function LessonSubmissions({ problemId }: { problemId: string }) {
                       {s.code}
                     </pre>
                   </div>
+                  {s.constraintViolationDetail && (
+                    <div className="mt-2 rounded-md border border-purple-200 bg-purple-50 p-2 font-mono text-purple-700 text-xs whitespace-pre-wrap dark:border-purple-900 dark:bg-purple-950/30 dark:text-purple-300">
+                      {s.constraintViolationDetail}
+                    </div>
+                  )}
                 </AccordionContent>
               </AccordionItem>
             ))}

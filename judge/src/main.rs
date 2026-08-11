@@ -1,3 +1,4 @@
+mod constraints;
 mod db;
 mod models;
 mod runner;
@@ -9,8 +10,8 @@ use tokio::time::{Duration, timeout};
 use crate::{
     db::DbClient,
     models::{
-        JudgeReport, Language, Problem, ProblemValidation, Submission, SubmissionStatus,
-        TestCaseResult,
+        ConstraintKind, JudgeReport, Language, Problem, ProblemConstraint, ProblemValidation,
+        Submission, SubmissionStatus, TestCaseResult,
     },
 };
 
@@ -114,22 +115,41 @@ async fn process_job(db: &DbClient, sub: Submission) {
         }
     };
 
+    // Solution constraints are a lesson-only feature: never checked for
+    // contest submissions or standalone/practice submissions, only when this
+    // submission was made against a lesson exercise. Skip the fetch entirely
+    // otherwise, matching the pre-constraints code path exactly.
+    let lesson_constraints = match sub.lesson_id {
+        Some(lesson_id) => match db.get_lesson_constraints(lesson_id).await {
+            Ok(constraints) => constraints,
+            Err(err) => {
+                eprintln!("Failed to fetch lesson constraints: {}", err);
+                return;
+            }
+        },
+        None => Vec::new(),
+    };
+
     println!(
         "\tJudging Submission {} (Language: {:?})",
         sub.id, sub.language
     );
 
-    let (report, runtime_ms, memory_kb) = grade(&sub.code, sub.language, &problem).await;
+    let (mut report, runtime_ms, memory_kb) = grade(&sub.code, sub.language, &problem).await;
+    let (status, violation_detail) =
+        resolve_constraint_status(&sub.code, sub.language, &mut report, &lesson_constraints);
 
     let output_json = serde_json::to_string(&report).unwrap_or_default();
-    let status = if report.passed {
-        SubmissionStatus::PASSED
-    } else {
-        SubmissionStatus::FAILED
-    };
 
     if let Err(e) = db
-        .update_submission_result(&sub, status, &output_json, runtime_ms, memory_kb)
+        .update_submission_result(
+            &sub,
+            status,
+            &output_json,
+            runtime_ms,
+            memory_kb,
+            violation_detail.as_deref(),
+        )
         .await
     {
         eprintln!("❌ Failed to update DB: {}", e);
@@ -169,6 +189,46 @@ async fn process_validation_job(db: &DbClient, validation: ProblemValidation) {
         eprintln!("❌ Failed to update DB: {}", e);
     } else {
         println!("\t💾 Validation result saved.");
+    }
+}
+
+/// Post-I/O-pass constraint check (tasks 3.2-3.4, 4.1). Only runs structural
+/// analysis when I/O grading already passed — no point classifying/analyzing
+/// code that got the wrong answer. On structural violation,
+/// `PENDING_CONSTRAINT_CLASSIFICATION`/algorithm-requirement classification
+/// is skipped entirely (spec: "skipping any algorithm-requirement
+/// classification step"). Reference-solution validation runs
+/// (`process_validation_job`) deliberately do NOT go through this — solution
+/// constraints are a lesson feature, and a validation run isn't tied to any
+/// specific lesson.
+fn resolve_constraint_status(
+    code: &str,
+    language: Language,
+    report: &mut JudgeReport,
+    lesson_constraints: &[ProblemConstraint],
+) -> (SubmissionStatus, Option<String>) {
+    if !report.passed {
+        return (SubmissionStatus::FAILED, None);
+    }
+
+    if lesson_constraints.is_empty() {
+        return (SubmissionStatus::PASSED, None);
+    }
+
+    if let Some(violation) = constraints::check(code, language, lesson_constraints) {
+        let detail = format!("{}: {}", violation.rule, violation.message);
+        report.constraint_violation = Some(violation);
+        return (SubmissionStatus::CONSTRAINT_VIOLATION, Some(detail));
+    }
+
+    let has_algorithm_requirement = lesson_constraints
+        .iter()
+        .any(|c| c.kind == ConstraintKind::AlgorithmRequirement);
+
+    if has_algorithm_requirement {
+        (SubmissionStatus::PENDING_CONSTRAINT_CLASSIFICATION, None)
+    } else {
+        (SubmissionStatus::PASSED, None)
     }
 }
 
@@ -267,6 +327,7 @@ async fn grade(
         total_tests,
         passed_count,
         failure_details,
+        constraint_violation: None,
     };
 
     (report, runtime_ms, memory_kb)
