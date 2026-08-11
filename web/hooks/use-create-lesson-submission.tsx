@@ -5,7 +5,7 @@ import { createLessonSubmission } from "@/lib/actions/lessons/create-lesson-subm
 export const useCreateLessonSubmission = () =>
   useMutation({
     mutationFn: async (input: {
-      problemId: string;
+      lessonId: string;
       code: string;
       language: Language;
     }) => {

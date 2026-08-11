@@ -758,29 +758,42 @@
   },
   "RoadmapPage": {
     "title": "Trilha",
-    "subtitle": "Aprenda programação competitiva passo a passo. Passe em uma lição em qualquer linguagem para ganhar habilidade.",
-    "loading": "Carregando trilha...",
-    "empty": "Nenhuma lição disponível ainda.",
+    "subtitle": "Atividades das turmas que você criou ou entrou.",
+    "loading": "Carregando...",
+    "empty": "Nenhum exercício ainda.",
     "completed": "Concluída",
     "notFound": "Lição não encontrada",
-    "backToRoadmap": "Voltar para a trilha",
-    "nextLesson": "Próxima lição",
-    "locked": "Bloqueada",
-    "requirementsPrefix": "Requer:",
-    "rewardsPrefix": "Recompensas:",
-    "themes": {
-      "strings": "Strings",
-      "arrays": "Vetores",
-      "loops": "Laços",
-      "conditionals": "Condicionais"
-    },
+    "backToRoadmap": "Voltar para a atividade",
+    "nextLesson": "Próxima",
+    "previousLesson": "Anterior",
+    "dueDatePrefix": "Prazo",
+    "reviewAnswers": "Revisar respostas",
+    "publish": "Publicar",
+    "unpublish": "Despublicar",
+    "addLesson": "Adicionar exercício",
+    "manageTrack": "Gerenciar atividade",
     "Lesson": {
       "primaryLanguage": "Linguagem sugerida: {language}",
       "anyLanguage": "Você pode enviar em qualquer linguagem.",
       "submissionsTitle": "Envios",
-      "lockedNotice": "Conclua outras lições para atingir o nível de habilidade necessário antes de tentar esta.",
       "codeCopied": "Código copiado para a área de transferência"
-    }
+    },
+    "Review": {
+      "backToTrack": "Voltar para a atividade",
+      "title": "Revisão: {track}",
+      "noStudents": "Nenhum aluno entrou nessa turma ainda.",
+      "notSent": "Não enviado",
+      "noJudgeStatus": "Sem resultado do juiz",
+      "copied": "Código copiado para a área de transferência",
+      "submittedAt": "Enviado em {date}",
+      "notSubmitted": "Não enviado",
+      "noAnswer": "Sem resposta para esse exercício"
+    },
+    "submittedAt": "Enviado em {date}",
+    "submitTrack": "Enviar atividade",
+    "resubmitTrack": "Reenviar atividade",
+    "submitTrackSuccess": "Atividade enviada",
+    "trackLocked": "Essa atividade já foi enviada — os exercícios estão bloqueados."
   },
   "ImportProblems": {
     "button": "Importar JSON",
@@ -1220,5 +1233,40 @@
       "FOLLOWED_USER_PUBLISHED_PROBLEM": "{name} publicou um novo problema: \"{problem}\"",
       "LESSON_UNLOCKED": "Uma nova lição está disponível no seu roadmap"
     }
+  },
+  "TracksPage": {
+    "title": "Atividades",
+    "subtitle": "Atividades dessa turma.",
+    "empty": "Nenhuma atividade ainda.",
+    "createTrack": "Criar atividade",
+    "titleLabel": "Título",
+    "descriptionLabel": "Descrição",
+    "create": "Criar",
+    "myTracks": "Minhas atividades",
+    "published": "Atribuída",
+    "unpublished": "Rascunho",
+    "shareWithStudents": "Compartilhar com alunos",
+    "linkCopied": "Link de entrada copiado para a área de transferência",
+    "defaultSubtitle": "Exercícios dessa atividade, em ordem.",
+    "publish": "Publicar",
+    "publishNeedsExercise": "Adicione ao menos um exercício antes de publicar."
+  },
+  "ClassesPage": {
+    "title": "Turmas",
+    "subtitle": "Crie uma turma para seus alunos, ou entre em uma com um código.",
+    "empty": "Você ainda não tem turmas.",
+    "createClass": "Criar turma",
+    "joinCodePlaceholder": "Digite o código da turma",
+    "join": "Entrar",
+    "myClasses": "Turmas que você leciona",
+    "joinedClasses": "Turmas que você participa",
+    "joinCode": "Código da turma",
+    "codeCopied": "Código da turma copiado para a área de transferência",
+    "memberCount": "{count} alunos",
+    "joinFailed": "Não foi possível entrar nessa turma — confira o código e tente de novo.",
+    "students": "Alunos",
+    "noStudentsYet": "Nenhum aluno entrou ainda.",
+    "editClass": "Editar turma",
+    "classNameLabel": "Nome da turma"
   }
 }

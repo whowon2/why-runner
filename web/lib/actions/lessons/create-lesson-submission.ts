@@ -4,13 +4,12 @@ import { and, count, eq, gte, sql } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { type Language, submission } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
-import { getUnmetRequirements } from "@/lib/actions/lessons/lesson-lock";
 
 const RATE_LIMIT_WINDOW_SECS = 30;
 const RATE_LIMIT_MAX = 5;
 
 export async function createLessonSubmission(input: {
-  problemId: string;
+  lessonId: string;
   code: string;
   language: Language;
 }) {
@@ -33,26 +32,30 @@ export async function createLessonSubmission(input: {
     );
   }
 
+  // Look up by lesson id, not problem id: a problem can back more than one
+  // lesson entry across tracks, so problemId alone is ambiguous.
   const linkedLesson = await db.query.lesson.findFirst({
-    where: (lesson, { eq }) => eq(lesson.problemId, input.problemId),
-    with: { themeRequirements: true, languageRequirements: true },
+    where: (lesson, { eq }) => eq(lesson.id, input.lessonId),
   });
 
-  if (linkedLesson) {
-    const unmetRequirements = await getUnmetRequirements({
-      userId: currentUser.id,
-      themeRequirements: linkedLesson.themeRequirements,
-      languageRequirements: linkedLesson.languageRequirements,
-    });
+  if (!linkedLesson) throw new Error("Lesson not found");
 
-    if (unmetRequirements.length > 0) {
-      throw new Error("You have not met the requirements for this lesson.");
-    }
+  const trackSubmission = await db.query.lessonTrackSubmission.findFirst({
+    where: (s, { and, eq }) =>
+      and(eq(s.userId, currentUser.id), eq(s.trackId, linkedLesson.trackId)),
+  });
+  if (trackSubmission) {
+    throw new Error("This assignment has already been submitted");
   }
 
   const [sub] = await db
     .insert(submission)
-    .values({ ...input, userId: currentUser.id })
+    .values({
+      problemId: linkedLesson.problemId,
+      code: input.code,
+      language: input.language,
+      userId: currentUser.id,
+    })
     .returning();
 
   await db.execute(sql`SELECT pg_notify('new_submission', ${sub.id})`);
