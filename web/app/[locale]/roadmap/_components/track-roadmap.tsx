@@ -9,9 +9,20 @@ import {
   Settings2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Link } from "@/i18n/navigation";
 import { PageHeader } from "@/components/page-header";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -98,24 +109,17 @@ export function TrackRoadmap({ trackId }: { trackId: string }) {
           like before the due date — the button stays visible (relabeled
           "resubmit") instead of disappearing after the first submit. */}
       {!isOwner && !dueDatePassed && lessons.length > 0 && (
-        <Button
-          className="w-fit"
-          disabled={isSubmitting}
-          onClick={() =>
+        <SubmitTrackButton
+          incompleteCount={lessons.filter((l) => !l.done).length}
+          isSubmitting={isSubmitting}
+          onSubmit={() =>
             submitTrack(trackId, {
               onError: (error: Error) => toast.error(error.message),
               onSuccess: () => toast.success(t("submitTrackSuccess")),
             })
           }
-        >
-          <LoadingSwap
-            className="inline-flex items-center gap-2"
-            isLoading={isSubmitting}
-          >
-            <Send className="size-4" />
-            {submittedAt ? t("resubmitTrack") : t("submitTrack")}
-          </LoadingSwap>
-        </Button>
+          submitted={!!submittedAt}
+        />
       )}
 
       {isOwner && <ManageTrack lessonCount={lessons.length} track={track} />}
@@ -157,6 +161,69 @@ export function TrackRoadmap({ trackId }: { trackId: string }) {
         </div>
       )}
     </div>
+  );
+}
+
+// Confirms before submitting an assignment that still has unsolved
+// exercises — a resubmit with everything done skips the dialog entirely.
+function SubmitTrackButton({
+  incompleteCount,
+  isSubmitting,
+  onSubmit,
+  submitted,
+}: {
+  incompleteCount: number;
+  isSubmitting: boolean;
+  onSubmit: () => void;
+  submitted: boolean;
+}) {
+  const t = useTranslations("RoadmapPage");
+  const tCommon = useTranslations("Common");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const label = submitted ? t("resubmitTrack") : t("submitTrack");
+  const buttonContent = (
+    <LoadingSwap
+      className="inline-flex items-center gap-2"
+      isLoading={isSubmitting}
+    >
+      <Send className="size-4" />
+      {label}
+    </LoadingSwap>
+  );
+
+  if (incompleteCount === 0) {
+    return (
+      <Button className="w-fit" disabled={isSubmitting} onClick={onSubmit}>
+        {buttonContent}
+      </Button>
+    );
+  }
+
+  return (
+    <AlertDialog onOpenChange={setConfirmOpen} open={confirmOpen}>
+      <Button
+        className="w-fit"
+        disabled={isSubmitting}
+        onClick={() => setConfirmOpen(true)}
+      >
+        {buttonContent}
+      </Button>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t("incompleteSubmitTitle")}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {t("incompleteSubmitDescription", { count: incompleteCount })}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+          <AlertDialogAction onClick={onSubmit}>
+            {t("submitAnyway")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 

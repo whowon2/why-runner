@@ -822,7 +822,10 @@
     "submitTrack": "Submit assignment",
     "resubmitTrack": "Resubmit assignment",
     "submitTrackSuccess": "Assignment submitted",
-    "trackLocked": "This assignment's due date has passed — exercises are locked."
+    "trackLocked": "This assignment's due date has passed — exercises are locked.",
+    "incompleteSubmitTitle": "Submit with unsolved exercises?",
+    "incompleteSubmitDescription": "{count, plural, one {# exercise hasn't} other {# exercises haven't}} been solved yet. You can keep resubmitting until the due date.",
+    "submitAnyway": "Submit anyway"
   },
   "ImportProblems": {
     "button": "Import JSON",
