@@ -260,6 +260,20 @@
       "when": 1786485576316,
       "tag": "0036_fuzzy_night_nurse",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1786486782132,
+      "tag": "0037_striped_shape",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1786486931043,
+      "tag": "0038_whole_shotgun",
+      "breakpoints": true
     }
   ]
 }

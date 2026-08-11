@@ -5,12 +5,12 @@ export const useUpsertAlgorithmRequirementConstraint = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { lessonId: string; description: string }) => {
+    mutationFn: async (input: { exerciseId: string; description: string }) => {
       return await upsertAlgorithmRequirementConstraint(input);
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["lesson-constraints", variables.lessonId],
+        queryKey: ["exercise-constraints", variables.exerciseId],
       });
     },
   });

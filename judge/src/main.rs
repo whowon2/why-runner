@@ -115,15 +115,15 @@ async fn process_job(db: &DbClient, sub: Submission) {
         }
     };
 
-    // Solution constraints are a lesson-only feature: never checked for
+    // Solution constraints are an exercise-only feature: never checked for
     // contest submissions or standalone/practice submissions, only when this
-    // submission was made against a lesson exercise. Skip the fetch entirely
-    // otherwise, matching the pre-constraints code path exactly.
-    let lesson_constraints = match sub.lesson_id {
-        Some(lesson_id) => match db.get_lesson_constraints(lesson_id).await {
+    // submission was made against a lesson's exercise. Skip the fetch
+    // entirely otherwise, matching the pre-constraints code path exactly.
+    let exercise_constraints = match sub.exercise_id {
+        Some(exercise_id) => match db.get_exercise_constraints(exercise_id).await {
             Ok(constraints) => constraints,
             Err(err) => {
-                eprintln!("Failed to fetch lesson constraints: {}", err);
+                eprintln!("Failed to fetch exercise constraints: {}", err);
                 return;
             }
         },
@@ -137,7 +137,7 @@ async fn process_job(db: &DbClient, sub: Submission) {
 
     let (mut report, runtime_ms, memory_kb) = grade(&sub.code, sub.language, &problem).await;
     let (status, violation_detail) =
-        resolve_constraint_status(&sub.code, sub.language, &mut report, &lesson_constraints);
+        resolve_constraint_status(&sub.code, sub.language, &mut report, &exercise_constraints);
 
     let output_json = serde_json::to_string(&report).unwrap_or_default();
 
@@ -199,29 +199,29 @@ async fn process_validation_job(db: &DbClient, validation: ProblemValidation) {
 /// is skipped entirely (spec: "skipping any algorithm-requirement
 /// classification step"). Reference-solution validation runs
 /// (`process_validation_job`) deliberately do NOT go through this — solution
-/// constraints are a lesson feature, and a validation run isn't tied to any
-/// specific lesson.
+/// constraints are an exercise feature, and a validation run isn't tied to
+/// any specific exercise.
 fn resolve_constraint_status(
     code: &str,
     language: Language,
     report: &mut JudgeReport,
-    lesson_constraints: &[ProblemConstraint],
+    exercise_constraints: &[ProblemConstraint],
 ) -> (SubmissionStatus, Option<String>) {
     if !report.passed {
         return (SubmissionStatus::FAILED, None);
     }
 
-    if lesson_constraints.is_empty() {
+    if exercise_constraints.is_empty() {
         return (SubmissionStatus::PASSED, None);
     }
 
-    if let Some(violation) = constraints::check(code, language, lesson_constraints) {
+    if let Some(violation) = constraints::check(code, language, exercise_constraints) {
         let detail = format!("{}: {}", violation.rule, violation.message);
         report.constraint_violation = Some(violation);
         return (SubmissionStatus::CONSTRAINT_VIOLATION, Some(detail));
     }
 
-    let has_algorithm_requirement = lesson_constraints
+    let has_algorithm_requirement = exercise_constraints
         .iter()
         .any(|c| c.kind == ConstraintKind::AlgorithmRequirement);
 

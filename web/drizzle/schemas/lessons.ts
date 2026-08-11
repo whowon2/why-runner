@@ -13,7 +13,8 @@ import { problem } from "./problems";
 import { Language, submission } from "./submissions";
 import { user } from "./users";
 
-export const lessonTrack = pgTable("lesson_track", {
+/** A professor-curated assignment: a classroom-scoped collection of exercises. */
+export const lesson = pgTable("lesson", {
   id: uuid("id").defaultRandom().primaryKey(),
   classroomId: uuid("classroom_id")
     .notNull()
@@ -31,59 +32,60 @@ export const lessonTrack = pgTable("lesson_track", {
     .notNull(),
 });
 
-export type LessonTrack = typeof lessonTrack.$inferSelect;
-export type CreateLessonTrackInput = typeof lessonTrack.$inferInsert;
+export type Lesson = typeof lesson.$inferSelect;
+export type CreateLessonInput = typeof lesson.$inferInsert;
 
-export const lessonTrackRelations = relations(lessonTrack, ({ one, many }) => ({
+export const lessonRelations = relations(lesson, ({ one, many }) => ({
   classroom: one(classroom, {
-    fields: [lessonTrack.classroomId],
+    fields: [lesson.classroomId],
     references: [classroom.id],
   }),
-  lessons: many(lesson),
-  submissions: many(lessonTrackSubmission),
+  exercises: many(exercise),
+  submissions: many(lessonSubmission),
 }));
 
-/** A student submitting the whole assignment (every exercise's current answer) to the professor at once. */
-export const lessonTrackSubmission = pgTable(
-  "lesson_track_submission",
+/** A student submitting the whole lesson (every exercise's current answer) to the professor at once. */
+export const lessonSubmission = pgTable(
+  "lesson_submission",
   {
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    trackId: uuid("track_id")
+    lessonId: uuid("lesson_id")
       .notNull()
-      .references(() => lessonTrack.id, { onDelete: "cascade" }),
+      .references(() => lesson.id, { onDelete: "cascade" }),
     submittedAt: timestamp("submitted_at").defaultNow().notNull(),
     // Set once the professor grades this student's submission (only
-    // possible after the track's due date, see `getTrackReview`). `score`
+    // possible after the lesson's due date, see `getLessonReview`). `score`
     // is a professor-assigned integer, not auto-computed from pass/fail.
     reviewedAt: timestamp("reviewed_at"),
     score: integer("score"),
   },
-  (t) => [primaryKey({ columns: [t.userId, t.trackId] })],
+  (t) => [primaryKey({ columns: [t.userId, t.lessonId] })],
 );
 
-export type LessonTrackSubmission = typeof lessonTrackSubmission.$inferSelect;
+export type LessonSubmission = typeof lessonSubmission.$inferSelect;
 
-export const lessonTrackSubmissionRelations = relations(
-  lessonTrackSubmission,
+export const lessonSubmissionRelations = relations(
+  lessonSubmission,
   ({ one }) => ({
     user: one(user, {
-      fields: [lessonTrackSubmission.userId],
+      fields: [lessonSubmission.userId],
       references: [user.id],
     }),
-    track: one(lessonTrack, {
-      fields: [lessonTrackSubmission.trackId],
-      references: [lessonTrack.id],
+    lesson: one(lesson, {
+      fields: [lessonSubmission.lessonId],
+      references: [lesson.id],
     }),
   }),
 );
 
-export const lesson = pgTable("lesson", {
+/** One problem entry inside a lesson. */
+export const exercise = pgTable("exercise", {
   id: uuid("id").defaultRandom().primaryKey(),
-  trackId: uuid("track_id")
+  lessonId: uuid("lesson_id")
     .notNull()
-    .references(() => lessonTrack.id, { onDelete: "cascade" }),
+    .references(() => lesson.id, { onDelete: "cascade" }),
   problemId: uuid("problem_id")
     .notNull()
     .references(() => problem.id, { onDelete: "cascade" }),
@@ -97,59 +99,59 @@ export const lesson = pgTable("lesson", {
     .notNull(),
 });
 
-export type Lesson = typeof lesson.$inferSelect;
-export type CreateLessonInput = typeof lesson.$inferInsert;
+export type Exercise = typeof exercise.$inferSelect;
+export type CreateExerciseInput = typeof exercise.$inferInsert;
 
-export const lessonRelations = relations(lesson, ({ one, many }) => ({
-  track: one(lessonTrack, {
-    fields: [lesson.trackId],
-    references: [lessonTrack.id],
+export const exerciseRelations = relations(exercise, ({ one, many }) => ({
+  lesson: one(lesson, {
+    fields: [exercise.lessonId],
+    references: [lesson.id],
   }),
   problem: one(problem, {
-    fields: [lesson.problemId],
+    fields: [exercise.problemId],
     references: [problem.id],
   }),
-  completions: many(lessonCompletion),
+  completions: many(exerciseCompletion),
 }));
 
 /**
- * Per-exercise snapshot of what a student sent, written by `submitTrack` when
- * the whole assignment is submitted — records which submission (if any) that
- * lesson's problem had at submit time, for the professor's review page.
+ * Per-exercise snapshot of what a student sent, written by `submitLesson`
+ * when the whole lesson is submitted — records which submission (if any)
+ * that exercise's problem had at submit time, for the professor's review page.
  */
-export const lessonCompletion = pgTable(
-  "lesson_completion",
+export const exerciseCompletion = pgTable(
+  "exercise_completion",
   {
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    lessonId: uuid("lesson_id")
+    exerciseId: uuid("exercise_id")
       .notNull()
-      .references(() => lesson.id, { onDelete: "cascade" }),
+      .references(() => exercise.id, { onDelete: "cascade" }),
     submissionId: uuid("submission_id").references(() => submission.id, {
       onDelete: "set null",
     }),
     language: Language(),
     completedAt: timestamp("completed_at").defaultNow().notNull(),
   },
-  (t) => [primaryKey({ columns: [t.userId, t.lessonId] })],
+  (t) => [primaryKey({ columns: [t.userId, t.exerciseId] })],
 );
 
-export type LessonCompletion = typeof lessonCompletion.$inferSelect;
+export type ExerciseCompletion = typeof exerciseCompletion.$inferSelect;
 
-export const lessonCompletionRelations = relations(
-  lessonCompletion,
+export const exerciseCompletionRelations = relations(
+  exerciseCompletion,
   ({ one }) => ({
     user: one(user, {
-      fields: [lessonCompletion.userId],
+      fields: [exerciseCompletion.userId],
       references: [user.id],
     }),
-    lesson: one(lesson, {
-      fields: [lessonCompletion.lessonId],
-      references: [lesson.id],
+    exercise: one(exercise, {
+      fields: [exerciseCompletion.exerciseId],
+      references: [exercise.id],
     }),
     submission: one(submission, {
-      fields: [lessonCompletion.submissionId],
+      fields: [exerciseCompletion.submissionId],
       references: [submission.id],
     }),
   }),

@@ -28,7 +28,7 @@ export const SubmissionStatus = pgEnum("submission_status", [
   "ERROR",
   "RUNNING",
   // Passed all test cases but violated a structural or algorithm-requirement
-  // solution constraint (see `lessonConstraint`). Distinct from PASSED so
+  // solution constraint (see `exerciseConstraint`). Distinct from PASSED so
   // leaderboard/history callsites that switch on status can't silently treat
   // it as passing; distinct from FAILED/ERROR since I/O grading succeeded.
   "CONSTRAINT_VIOLATION",
@@ -59,13 +59,13 @@ export const submission = pgTable("submission", {
     .notNull()
     .references(() => problem.id, { onDelete: "cascade" }),
   contestId: uuid("contest_id"),
-  // Set only when this submission was made against a lesson exercise (see
-  // `createLessonSubmission`) — bare uuid with no FK, same convention as
+  // Set only when this submission was made against an exercise (see
+  // `createExerciseSubmission`) — bare uuid with no FK, same convention as
   // `contestId` above (avoids a `submissions.ts` <-> `lessons.ts` circular
   // import, since `lessons.ts` already imports from this file). Solution
   // constraints only ever apply when this is set: never for contests, never
   // for standalone/practice submissions to the same problem.
-  lessonId: uuid("lesson_id"),
+  exerciseId: uuid("exercise_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()

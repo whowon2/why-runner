@@ -1,17 +1,17 @@
 import { relations, sql } from "drizzle-orm";
 import { pgEnum, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
-import { lesson } from "./lessons";
+import { exercise } from "./lessons";
 
-// Solution constraints are a *lesson* feature: they attach to a specific
-// `lesson` row (one problem inside one professor-curated track), never to
+// Solution constraints are an *exercise* feature: they attach to a specific
+// `exercise` row (one problem inside one professor-curated lesson), never to
 // the underlying `problem` directly, and never apply to contests. The same
-// problem can be reused in multiple lessons (or in a contest) without
+// problem can be reused as multiple exercises (or in a contest) without
 // carrying constraints along with it — see design.md decision on scope.
 //
 // Two kinds: `structural` rules are mechanically checked by judge-side
-// static analysis (one lesson may have many); `algorithm_requirement` is a
+// static analysis (one exercise may have many); `algorithm_requirement` is a
 // natural-language description classified by an LLM (at most one per
-// lesson, enforced by the partial unique index below).
+// exercise, enforced by the partial unique index below).
 export const ProblemConstraintKind = pgEnum("problem_constraint_kind", [
   "structural",
   "algorithm_requirement",
@@ -34,13 +34,13 @@ export const StructuralConstraintRuleType = pgEnum(
 export type StructuralConstraintRuleType =
   (typeof StructuralConstraintRuleType.enumValues)[number];
 
-export const lessonConstraint = pgTable(
-  "lesson_constraint",
+export const exerciseConstraint = pgTable(
+  "exercise_constraint",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    lessonId: uuid("lesson_id")
+    exerciseId: uuid("exercise_id")
       .notNull()
-      .references(() => lesson.id, { onDelete: "cascade" }),
+      .references(() => exercise.id, { onDelete: "cascade" }),
     kind: ProblemConstraintKind("kind").notNull(),
     // Only set when kind = 'structural'.
     ruleType: StructuralConstraintRuleType("rule_type"),
@@ -56,35 +56,35 @@ export const lessonConstraint = pgTable(
       .notNull(),
   },
   (table) => [
-    // Enforces "at most one algorithm-requirement constraint per lesson" at
+    // Enforces "at most one algorithm-requirement constraint per exercise" at
     // the DB level, not just in the server action.
-    uniqueIndex("lesson_constraint_one_algo_requirement")
-      .on(table.lessonId)
+    uniqueIndex("exercise_constraint_one_algo_requirement")
+      .on(table.exerciseId)
       .where(sql`${table.kind} = 'algorithm_requirement'`),
-    // At most one row per structural rule type per lesson — e.g. only one
+    // At most one row per structural rule type per exercise — e.g. only one
     // "max loop nesting depth" row (creator edits its depth, doesn't add a
     // second one); multiple tokens for forbidden/required construct rules
     // go in that one row's `ruleParams.constructs` list instead of separate
     // rows. `ruleType` is NULL for algorithm_requirement rows, and Postgres
     // treats NULLs as distinct for uniqueness, so this index only ever
     // constrains structural rows.
-    uniqueIndex("lesson_constraint_one_per_rule_type").on(
-      table.lessonId,
+    uniqueIndex("exercise_constraint_one_per_rule_type").on(
+      table.exerciseId,
       table.ruleType,
     ),
   ],
 );
 
-export type ProblemConstraint = typeof lessonConstraint.$inferSelect;
+export type ProblemConstraint = typeof exerciseConstraint.$inferSelect;
 export type CreateProblemConstraintInput =
-  typeof lessonConstraint.$inferInsert;
+  typeof exerciseConstraint.$inferInsert;
 
-export const lessonConstraintRelations = relations(
-  lessonConstraint,
+export const exerciseConstraintRelations = relations(
+  exerciseConstraint,
   ({ one }) => ({
-    lesson: one(lesson, {
-      fields: [lessonConstraint.lessonId],
-      references: [lesson.id],
+    exercise: one(exercise, {
+      fields: [exerciseConstraint.exerciseId],
+      references: [exercise.id],
     }),
   }),
 );

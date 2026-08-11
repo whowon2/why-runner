@@ -1,6 +1,6 @@
 import { eq, isNull } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { classroom, contest, lesson, lessonTrack, problem } from "@/drizzle/schema";
+import { classroom, contest, exercise, lesson, problem } from "@/drizzle/schema";
 import { generateSlug } from "@/lib/slug";
 
 async function main() {
@@ -40,30 +40,30 @@ async function main() {
   }
   console.log(`Backfilled ${classroomsMissingSlug.length} classroom slug(s).`);
 
-  const tracksMissingSlug = await db.query.lessonTrack.findMany({
-    where: isNull(lessonTrack.slug),
-    columns: { id: true, title: true },
-  });
-  for (const t of tracksMissingSlug) {
-    await db
-      .update(lessonTrack)
-      .set({ slug: generateSlug(t.title) })
-      .where(eq(lessonTrack.id, t.id));
-  }
-  console.log(`Backfilled ${tracksMissingSlug.length} lesson track slug(s).`);
-
   const lessonsMissingSlug = await db.query.lesson.findMany({
     where: isNull(lesson.slug),
-    columns: { id: true },
-    with: { problem: { columns: { title: true } } },
+    columns: { id: true, title: true },
   });
   for (const l of lessonsMissingSlug) {
     await db
       .update(lesson)
-      .set({ slug: generateSlug(l.problem.title) })
+      .set({ slug: generateSlug(l.title) })
       .where(eq(lesson.id, l.id));
   }
   console.log(`Backfilled ${lessonsMissingSlug.length} lesson slug(s).`);
+
+  const exercisesMissingSlug = await db.query.exercise.findMany({
+    where: isNull(exercise.slug),
+    columns: { id: true },
+    with: { problem: { columns: { title: true } } },
+  });
+  for (const e of exercisesMissingSlug) {
+    await db
+      .update(exercise)
+      .set({ slug: generateSlug(e.problem.title) })
+      .where(eq(exercise.id, e.id));
+  }
+  console.log(`Backfilled ${exercisesMissingSlug.length} exercise slug(s).`);
 }
 
 main().then(() => process.exit(0));

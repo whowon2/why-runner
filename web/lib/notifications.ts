@@ -257,7 +257,10 @@ export async function notifyFollowedUserPublishedProblem(
   }
 }
 
-export async function notifyLessonUnlocked(userId: string, lessonId: string) {
+export async function notifyExerciseUnlocked(
+  userId: string,
+  exerciseId: string,
+) {
   try {
     if (!(await isNotificationEnabled(userId, "LESSON_UNLOCKED"))) return;
 
@@ -265,7 +268,7 @@ export async function notifyLessonUnlocked(userId: string, lessonId: string) {
       where: and(
         eq(notification.recipientId, userId),
         eq(notification.type, "LESSON_UNLOCKED"),
-        eq(notification.lessonId, lessonId),
+        eq(notification.exerciseId, exerciseId),
       ),
     });
     if (existing) return;
@@ -273,11 +276,11 @@ export async function notifyLessonUnlocked(userId: string, lessonId: string) {
     await db.insert(notification).values({
       recipientId: userId,
       type: "LESSON_UNLOCKED",
-      lessonId,
+      exerciseId,
       actorIds: [],
       count: 1,
     });
   } catch (err) {
-    console.error("notifyLessonUnlocked failed", err);
+    console.error("notifyExerciseUnlocked failed", err);
   }
 }

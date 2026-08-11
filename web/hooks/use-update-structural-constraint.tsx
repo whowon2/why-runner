@@ -4,7 +4,7 @@ import { updateStructuralConstraint } from "@/lib/actions/lessons/update-structu
 
 type Input = {
   id: string;
-  lessonId: string;
+  exerciseId: string;
   ruleType: StructuralConstraintRuleType;
   ruleParams: Record<string, unknown>;
 };
@@ -18,7 +18,7 @@ export const useUpdateStructuralConstraint = () => {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["lesson-constraints", variables.lessonId],
+        queryKey: ["exercise-constraints", variables.exerciseId],
       });
     },
   });

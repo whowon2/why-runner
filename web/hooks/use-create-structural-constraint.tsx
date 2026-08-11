@@ -3,7 +3,7 @@ import type { StructuralConstraintRuleType } from "@/drizzle/schema";
 import { createStructuralConstraint } from "@/lib/actions/lessons/create-structural-constraint";
 
 type Input = {
-  lessonId: string;
+  exerciseId: string;
   ruleType: StructuralConstraintRuleType;
   ruleParams: Record<string, unknown>;
 };
@@ -17,7 +17,7 @@ export const useCreateStructuralConstraint = () => {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["lesson-constraints", variables.lessonId],
+        queryKey: ["exercise-constraints", variables.exerciseId],
       });
     },
   });

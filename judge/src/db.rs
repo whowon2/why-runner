@@ -55,7 +55,7 @@ impl DbClient {
                  FOR UPDATE SKIP LOCKED
                  LIMIT 1
              )
-             RETURNING id, code, language, problem_id, user_id, contest_id, question_letter, retry_count, lesson_id",
+             RETURNING id, code, language, problem_id, user_id, contest_id, question_letter, retry_count, exercise_id",
             STALE_RUNNING_THRESHOLD
         ))
         .bind(MAX_RETRIES)
@@ -70,17 +70,21 @@ impl DbClient {
             .await
     }
 
-    /// All active solution constraints for a lesson (structural rules, and
-    /// the at-most-one algorithm-requirement description). Empty for lessons
-    /// with no constraints configured. Constraints are a lesson-only
-    /// feature — never looked up by `problem_id`, see `Submission::lesson_id`.
-    pub async fn get_lesson_constraints(&self, lesson_id: Uuid) -> Result<Vec<ProblemConstraint>> {
+    /// All active solution constraints for an exercise (structural rules,
+    /// and the at-most-one algorithm-requirement description). Empty for
+    /// exercises with no constraints configured. Constraints are an
+    /// exercise-only feature — never looked up by `problem_id`, see
+    /// `Submission::exercise_id`.
+    pub async fn get_exercise_constraints(
+        &self,
+        exercise_id: Uuid,
+    ) -> Result<Vec<ProblemConstraint>> {
         sqlx::query_as::<_, ProblemConstraint>(
             "SELECT kind, rule_type, rule_params, description
-             FROM lesson_constraint
-             WHERE lesson_id = $1",
+             FROM exercise_constraint
+             WHERE exercise_id = $1",
         )
-        .bind(lesson_id)
+        .bind(exercise_id)
         .fetch_all(&self.pool)
         .await
     }

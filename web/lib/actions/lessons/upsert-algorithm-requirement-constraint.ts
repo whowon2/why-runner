@@ -2,26 +2,26 @@
 
 import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { lessonConstraint } from "@/drizzle/schema";
+import { exerciseConstraint } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 
-// Only one algorithm-requirement constraint is allowed per lesson (see
-// `lesson_constraint_one_algo_requirement` partial unique index). This
+// Only one algorithm-requirement constraint is allowed per exercise (see
+// `exercise_constraint_one_algo_requirement` partial unique index). This
 // action always upserts the single row rather than inserting a second one,
 // so "add" and "edit" are the same operation from the UI's point of view.
 export async function upsertAlgorithmRequirementConstraint(input: {
-  lessonId: string;
+  exerciseId: string;
   description: string;
 }) {
   const currentUser = await getCurrentUser({});
 
-  const owned = await db.query.lesson.findFirst({
-    where: (l, { eq }) => eq(l.id, input.lessonId),
-    with: { track: { columns: { createdBy: true } } },
+  const owned = await db.query.exercise.findFirst({
+    where: (e, { eq }) => eq(e.id, input.exerciseId),
+    with: { lesson: { columns: { createdBy: true } } },
   });
 
-  if (!owned || owned.track.createdBy !== currentUser.id) {
-    throw new Error("Lesson not found.");
+  if (!owned || owned.lesson.createdBy !== currentUser.id) {
+    throw new Error("Exercise not found.");
   }
 
   const description = input.description.trim();
@@ -29,27 +29,27 @@ export async function upsertAlgorithmRequirementConstraint(input: {
     throw new Error("Algorithm requirement description cannot be empty.");
   }
 
-  const existing = await db.query.lessonConstraint.findFirst({
+  const existing = await db.query.exerciseConstraint.findFirst({
     where: and(
-      eq(lessonConstraint.lessonId, input.lessonId),
-      eq(lessonConstraint.kind, "algorithm_requirement"),
+      eq(exerciseConstraint.exerciseId, input.exerciseId),
+      eq(exerciseConstraint.kind, "algorithm_requirement"),
     ),
     columns: { id: true },
   });
 
   if (existing) {
     const [updated] = await db
-      .update(lessonConstraint)
+      .update(exerciseConstraint)
       .set({ description })
-      .where(eq(lessonConstraint.id, existing.id))
+      .where(eq(exerciseConstraint.id, existing.id))
       .returning();
     return updated;
   }
 
   const [created] = await db
-    .insert(lessonConstraint)
+    .insert(exerciseConstraint)
     .values({
-      lessonId: input.lessonId,
+      exerciseId: input.exerciseId,
       kind: "algorithm_requirement",
       description,
     })
