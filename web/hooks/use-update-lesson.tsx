@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  deleteLesson,
   setLessonPublished,
   updateLesson,
 } from "@/lib/actions/lessons/update-lesson";
@@ -35,6 +36,20 @@ export const useSetLessonPublished = () => {
       queryClient.invalidateQueries({
         queryKey: ["lessons", variables.lessonId],
       });
+    },
+  });
+};
+
+export const useDeleteLesson = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (lessonId: string) => {
+      return await deleteLesson(lessonId);
+    },
+    onSuccess: () => {
+      // Class-detail's lesson cards need to drop the deleted one too.
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
     },
   });
 };
