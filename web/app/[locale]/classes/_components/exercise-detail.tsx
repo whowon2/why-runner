@@ -91,7 +91,7 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
 
         <ExerciseConstraintsNotice exerciseId={exercise.id} />
 
-        <ExerciseSubmissions problemId={exercise.problem.id} />
+        <ExerciseSubmissions exerciseId={exercise.id} />
       </ResizablePanel>
 
       <ResizableHandle withHandle />
@@ -99,7 +99,6 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
         <ExerciseSubmit
           exerciseId={exercise.id}
           locked={exercise.submissionsLocked}
-          problemId={exercise.problem.id}
         />
       </ResizablePanel>
     </ResizablePanelGroup>
@@ -108,11 +107,9 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
 
 function ExerciseSubmit({
   exerciseId,
-  problemId,
   locked,
 }: {
   exerciseId: string;
-  problemId: string;
   locked: boolean;
 }) {
   const t = useTranslations("RoadmapPage");
@@ -154,7 +151,7 @@ function ExerciseSubmit({
         onSuccess: () => {
           toast.success(tUpload("submitted"));
           queryClient.invalidateQueries({
-            queryKey: ["submissions", "exercise", problemId],
+            queryKey: ["submissions", "exercise", exerciseId],
           });
         },
       },
@@ -258,10 +255,10 @@ function ExerciseConstraintsNotice({ exerciseId }: { exerciseId: string }) {
   );
 }
 
-function ExerciseSubmissions({ problemId }: { problemId: string }) {
+function ExerciseSubmissions({ exerciseId }: { exerciseId: string }) {
   const t = useTranslations("RoadmapPage.Lesson");
   const tCommon = useTranslations("ContestsPage.Tabs.Problem.Submissions");
-  const { data: submissions, isPending } = useExerciseSubmissions(problemId);
+  const { data: submissions, isPending } = useExerciseSubmissions(exerciseId);
 
   if (isPending) return <Skeleton className="h-32 w-full" />;
 
