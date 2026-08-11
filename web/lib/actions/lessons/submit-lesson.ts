@@ -35,9 +35,12 @@ export async function submitLesson(lessonId: string) {
 
   await db.transaction(async (tx) => {
     for (const e of exercises) {
+      // Scoped by exerciseId, not problemId: the same problem can back more
+      // than one exercise (across lessons), so this must only ever pick up
+      // a submission made to *this* exercise.
       const latest = await tx.query.submission.findFirst({
         where: and(
-          eq(submission.problemId, e.problemId),
+          eq(submission.exerciseId, e.id),
           eq(submission.userId, currentUser.id),
         ),
         orderBy: desc(submission.createdAt),
