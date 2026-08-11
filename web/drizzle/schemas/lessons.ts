@@ -53,6 +53,11 @@ export const lessonTrackSubmission = pgTable(
       .notNull()
       .references(() => lessonTrack.id, { onDelete: "cascade" }),
     submittedAt: timestamp("submitted_at").defaultNow().notNull(),
+    // Set once the professor grades this student's submission (only
+    // possible after the track's due date, see `getTrackReview`). `score`
+    // is a professor-assigned integer, not auto-computed from pass/fail.
+    reviewedAt: timestamp("reviewed_at"),
+    score: integer("score"),
   },
   (t) => [primaryKey({ columns: [t.userId, t.trackId] })],
 );

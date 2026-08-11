@@ -1,5 +1,6 @@
 export * from "./schemas/activities";
 export * from "./schemas/classes";
+export * from "./schemas/constraints";
 export * from "./schemas/contests";
 export * from "./schemas/lessons";
 export * from "./schemas/notifications";

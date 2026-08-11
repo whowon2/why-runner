@@ -63,6 +63,11 @@ export function ContestSubmissions({ contest }: { contest: Contest }) {
                     "text-orange-500": submission.status === "ERROR",
                     "text-gray-500": submission.status === "PENDING",
                     "text-blue-500": submission.status === "RUNNING",
+                    "text-purple-500":
+                      submission.status === "CONSTRAINT_VIOLATION",
+                    "text-indigo-500":
+                      submission.status ===
+                      "PENDING_CONSTRAINT_CLASSIFICATION",
                   })}
                 >
                   {submission.status}

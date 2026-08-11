@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { count, eq, inArray } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { classroomMembership } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
@@ -24,5 +24,29 @@ export async function listMyClasses() {
     .map((m) => m.classroom)
     .filter((c) => c.createdBy !== currentUser.id);
 
-  return { owned, joined: joinedClasses };
+  const allIds = [...owned, ...joinedClasses].map((c) => c.id);
+  const memberCounts = allIds.length
+    ? await db
+        .select({
+          classroomId: classroomMembership.classroomId,
+          value: count(),
+        })
+        .from(classroomMembership)
+        .where(inArray(classroomMembership.classroomId, allIds))
+        .groupBy(classroomMembership.classroomId)
+    : [];
+  const memberCountById = new Map(
+    memberCounts.map((r) => [r.classroomId, r.value]),
+  );
+
+  return {
+    owned: owned.map((c) => ({
+      ...c,
+      memberCount: memberCountById.get(c.id) ?? 0,
+    })),
+    joined: joinedClasses.map((c) => ({
+      ...c,
+      memberCount: memberCountById.get(c.id) ?? 0,
+    })),
+  };
 }

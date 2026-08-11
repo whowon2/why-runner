@@ -6,6 +6,7 @@ import {
   ClipboardList,
   ListChecks,
   Send,
+  Settings2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -13,15 +14,24 @@ import { Link } from "@/i18n/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSubmitTrack } from "@/hooks/use-submit-track";
 import { useTrack } from "@/hooks/use-track";
 import { cn } from "@/lib/utils";
+import { LessonConstraintsPanel } from "./lesson-constraints";
 import { ManageTrack } from "./manage-track";
 
 export function TrackRoadmap({ trackId }: { trackId: string }) {
   const t = useTranslations("RoadmapPage");
+  const tReview = useTranslations("RoadmapPage.Review");
   const tTracks = useTranslations("TracksPage");
   const { data, isPending } = useTrack(trackId);
   const { mutate: submitTrack, isPending: isSubmitting } = useSubmitTrack();
@@ -39,13 +49,23 @@ export function TrackRoadmap({ trackId }: { trackId: string }) {
   if (!data) return null;
 
   const { track, lessons, isOwner, submittedAt } = data;
+  const dueDatePassed = !!(track.dueDate && new Date(track.dueDate) < new Date());
 
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
         action={
           isOwner ? (
-            <Button asChild size="sm" variant="outline">
+            <Button
+              asChild
+              size="sm"
+              title={
+                !dueDatePassed && track.dueDate
+                  ? tReview("notYetAvailable")
+                  : undefined
+              }
+              variant="outline"
+            >
               <Link href={`/roadmap/${trackId}/review`}>
                 <ClipboardList className="size-3.5" />
                 {t("reviewAnswers")}
@@ -74,7 +94,10 @@ export function TrackRoadmap({ trackId }: { trackId: string }) {
           ) : null)}
       </div>
 
-      {!isOwner && !submittedAt && lessons.length > 0 && (
+      {/* Students can resubmit the whole assignment as many times as they
+          like before the due date — the button stays visible (relabeled
+          "resubmit") instead of disappearing after the first submit. */}
+      {!isOwner && !dueDatePassed && lessons.length > 0 && (
         <Button
           className="w-fit"
           disabled={isSubmitting}
@@ -90,7 +113,7 @@ export function TrackRoadmap({ trackId }: { trackId: string }) {
             isLoading={isSubmitting}
           >
             <Send className="size-4" />
-            {t("submitTrack")}
+            {submittedAt ? t("resubmitTrack") : t("submitTrack")}
           </LoadingSwap>
         </Button>
       )}
@@ -102,15 +125,17 @@ export function TrackRoadmap({ trackId }: { trackId: string }) {
       ) : (
         <div className="flex flex-col gap-2">
           {lessons.map((l, idx) => (
-            <Link
+            <div
               className={cn(
                 "flex items-center justify-between gap-2 rounded-md border px-4 py-3 transition-colors hover:bg-muted",
                 { "border-green-500/50": l.done },
               )}
-              href={`/roadmap/lesson/${l.id}`}
               key={l.id}
             >
-              <div className="flex items-center gap-3">
+              <Link
+                className="flex flex-1 items-center gap-3"
+                href={`/roadmap/lesson/${l.id}`}
+              >
                 <span className="text-muted-foreground text-sm tabular-nums">
                   {idx + 1}.
                 </span>
@@ -120,14 +145,38 @@ export function TrackRoadmap({ trackId }: { trackId: string }) {
                   <Circle className="size-4 text-muted-foreground" />
                 )}
                 <span>{l.problem.title}</span>
+              </Link>
+              <div className="flex items-center gap-2">
+                {l.primaryLanguage && (
+                  <Badge variant="outline">{l.primaryLanguage}</Badge>
+                )}
+                {isOwner && <LessonConstraintsDialog lessonId={l.id} />}
               </div>
-              {l.primaryLanguage && (
-                <Badge variant="outline">{l.primaryLanguage}</Badge>
-              )}
-            </Link>
+            </div>
           ))}
         </div>
       )}
     </div>
+  );
+}
+
+function LessonConstraintsDialog({ lessonId }: { lessonId: string }) {
+  const t = useTranslations("RoadmapPage.Constraints");
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button size="sm" type="button" variant="outline">
+          <Settings2 className="size-3.5" />
+          {t("trigger")}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{t("title")}</DialogTitle>
+        </DialogHeader>
+        <LessonConstraintsPanel lessonId={lessonId} />
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -75,6 +75,10 @@ export function SubmissionList({
                   submission.status === "PENDING",
                 "text-blue-500 border-blue-500":
                   submission.status === "RUNNING",
+                "text-purple-500 border-purple-500":
+                  submission.status === "CONSTRAINT_VIOLATION",
+                "text-indigo-500 border-indigo-500":
+                  submission.status === "PENDING_CONSTRAINT_CLASSIFICATION",
               })}
               key={submission.id}
               value={`item-${submission.id}`}
@@ -89,7 +93,13 @@ export function SubmissionList({
               </AccordionTrigger>
               <AccordionContent className="flex justify-between">
                 {submission.output && (
-                  <SubmissionDetails output={submission.output} />
+                  <SubmissionDetails
+                    constraintViolationDetail={
+                      submission.constraintViolationDetail
+                    }
+                    output={submission.output}
+                    status={submission.status}
+                  />
                 )}
                 {["PASSED", "FAILED", "ERROR"].includes(submission.status) && (
                   <AIDialog problem={problem} submission={submission} />
@@ -118,7 +128,15 @@ interface JudgeReport {
   failure_details?: TestCaseResult;
 }
 
-export function SubmissionDetails({ output }: { output: string | null }) {
+export function SubmissionDetails({
+  output,
+  status,
+  constraintViolationDetail,
+}: {
+  output: string | null;
+  status?: string;
+  constraintViolationDetail?: string | null;
+}) {
   const t = useTranslations("ContestsPage.Tabs.Problem.Submissions");
 
   // 1. Safe JSON Parsing
@@ -141,6 +159,31 @@ export function SubmissionDetails({ output }: { output: string | null }) {
     return (
       <div className="bg-muted p-2 rounded-md text-xs font-mono whitespace-pre-wrap max-h-60 overflow-auto w-full">
         {output || t("noOutput")}
+      </div>
+    );
+  }
+
+  // Constraint violation: passed all test cases but broke a solution
+  // constraint — distinct from both a pass and a wrong-answer/error fail.
+  if (status === "CONSTRAINT_VIOLATION") {
+    return (
+      <div className="flex flex-col gap-2 w-full">
+        <div className="text-purple-500 font-medium">
+          {t("constraintViolation", { count: report.total_tests })}
+        </div>
+        {constraintViolationDetail && (
+          <div className="bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-900 p-2 rounded-md text-xs whitespace-pre-wrap">
+            {constraintViolationDetail}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (status === "PENDING_CONSTRAINT_CLASSIFICATION") {
+    return (
+      <div className="text-indigo-500 font-medium">
+        {t("pendingClassification")}
       </div>
     );
   }

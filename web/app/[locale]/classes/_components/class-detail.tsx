@@ -89,30 +89,85 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
         <p className="text-muted-foreground">{tTracks("empty")}</p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {tracks.map((track) => (
-            <Link href={`/roadmap/${track.id}`} key={track.id}>
-              <Card className="h-full bg-muted/30 transition-colors hover:bg-muted/60">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between gap-2 text-lg">
-                    {track.title}
-                    {!track.isPublished && (
-                      <Badge variant="outline">
-                        <Lock className="size-3" />
-                        {tTracks("unpublished")}
-                      </Badge>
+          {tracks.map((track) => {
+            const dueDatePassed = !!(
+              track.dueDate && new Date(track.dueDate) < new Date()
+            );
+
+            return (
+              <Link href={`/roadmap/${track.id}`} key={track.id}>
+                <Card className="h-full bg-muted/30 transition-colors hover:bg-muted/60">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between gap-2 text-lg">
+                      {track.title}
+                      {!track.isPublished && (
+                        <Badge variant="outline">
+                          <Lock className="size-3" />
+                          {tTracks("unpublished")}
+                        </Badge>
+                      )}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-2">
+                    {track.description && (
+                      <p className="text-muted-foreground text-sm">
+                        {track.description}
+                      </p>
                     )}
-                  </CardTitle>
-                </CardHeader>
-                {track.description && (
-                  <CardContent>
-                    <p className="text-muted-foreground text-sm">
-                      {track.description}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                      {!isOwner && (
+                        <Badge variant="outline">
+                          {tTracks("exerciseProgress", {
+                            done: track.completedCount ?? 0,
+                            total: track.exerciseCount,
+                          })}
+                        </Badge>
+                      )}
+                      {isOwner && (
+                        <Badge variant="outline">
+                          {tTracks("exerciseCount", {
+                            count: track.exerciseCount,
+                          })}
+                        </Badge>
+                      )}
+                      {track.dueDate && (
+                        <Badge variant="outline">
+                          {tTracks("dueDatePrefix")}{" "}
+                          {new Date(track.dueDate).toLocaleDateString()}
+                        </Badge>
+                      )}
+                      {!isOwner && track.mySubmission && (
+                        <Badge className="bg-blue-500">
+                          {tTracks("submittedAt", {
+                            date: new Date(
+                              track.mySubmission.submittedAt,
+                            ).toLocaleDateString(),
+                          })}
+                        </Badge>
+                      )}
+                      {!isOwner &&
+                        track.mySubmission?.reviewedAt &&
+                        track.mySubmission.score !== null && (
+                          <Badge className="bg-green-600">
+                            {tTracks("scoreLabel", {
+                              score: track.mySubmission.score,
+                            })}
+                          </Badge>
+                        )}
+                      {!isOwner &&
+                        track.mySubmission &&
+                        !track.mySubmission.reviewedAt &&
+                        dueDatePassed && (
+                          <Badge variant="outline">
+                            {tTracks("awaitingReview")}
+                          </Badge>
+                        )}
+                    </div>
                   </CardContent>
-                )}
-              </Card>
-            </Link>
-          ))}
+                </Card>
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
