@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import { db } from "@/drizzle/db";
 import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
-import { LessonDetail } from "../../../_components/lesson-detail";
-import { LessonHeader } from "../../../_components/lesson-header";
+import { LessonRoadmap } from "../../../_components/lesson-roadmap";
 
 export default async function LessonPage({
   params,
@@ -19,10 +18,9 @@ export default async function LessonPage({
   if (!lesson) notFound();
 
   return (
-    <div className="flex w-full flex-col flex-1 items-center gap-4 p-4">
-      <div className="flex w-full max-w-7xl flex-1 flex-col gap-6 py-8">
-        <LessonHeader lessonId={lesson.id} />
-        <LessonDetail lessonId={lesson.id} />
+    <div className="flex w-full flex-1 flex-col items-center gap-4 p-4">
+      <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col gap-4 py-8">
+        <LessonRoadmap lessonId={lesson.id} />
       </div>
     </div>
   );

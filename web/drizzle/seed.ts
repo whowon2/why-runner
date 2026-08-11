@@ -14,9 +14,11 @@ async function main() {
     problemOnContest: _poc,
     classroom: _classroom,
     classroomMembership: _classroomMembership,
-    lessonTrack: _lessonTrack,
     lesson: _lesson,
-    lessonCompletion: _lc,
+    lessonSubmission: _ls,
+    exercise: _exercise,
+    exerciseCompletion: _ec,
+    exerciseConstraint: _econstraint,
     ...seedableSchema
   } = schema;
   await seed(db, seedableSchema).refine((f) => ({

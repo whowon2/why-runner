@@ -17,7 +17,7 @@ export async function getNotifications() {
       contest: { columns: { id: true, name: true, slug: true } },
       submission: { columns: { id: true, status: true } },
       problem: { columns: { id: true, title: true, slug: true } },
-      lesson: { columns: { id: true, problemId: true } },
+      exercise: { columns: { id: true, problemId: true } },
     },
   });
 

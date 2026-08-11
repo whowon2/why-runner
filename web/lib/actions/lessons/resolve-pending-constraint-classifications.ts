@@ -2,20 +2,20 @@
 
 import { and, eq, inArray, isNotNull } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { lessonConstraint, submission } from "@/drizzle/schema";
+import { exerciseConstraint, submission } from "@/drizzle/schema";
 import { classifyAlgorithmRequirement } from "./classify-algorithm-requirement";
 
 // Web-side pickup of PENDING_CONSTRAINT_CLASSIFICATION rows (task 4.2). The
 // judge writes this status (never network-calling an LLM itself, see
 // design.md decision 1); this resolver is the web-side worker that does the
 // actual AI classification pass and writes the final verdict. It's invoked
-// lazily from `getLessonSubmissions` — the only read path that can ever
-// surface a lesson submission — so no separate cron/queue is needed.
+// lazily from `getExerciseSubmissions` — the only read path that can ever
+// surface an exercise submission — so no separate cron/queue is needed.
 //
-// Solution constraints are a lesson-only feature (never contests, never
+// Solution constraints are an exercise-only feature (never contests, never
 // standalone/practice submissions): the judge only ever writes
-// PENDING_CONSTRAINT_CLASSIFICATION for submissions with a `lessonId`, so
-// this resolver only ever looks at `submission.lessonId`, never `problemId`.
+// PENDING_CONSTRAINT_CLASSIFICATION for submissions with an `exerciseId`, so
+// this resolver only ever looks at `submission.exerciseId`, never `problemId`.
 export async function resolvePendingConstraintClassifications(
   submissionIds: string[],
 ) {
@@ -25,7 +25,7 @@ export async function resolvePendingConstraintClassifications(
     where: and(
       inArray(submission.id, submissionIds),
       eq(submission.status, "PENDING_CONSTRAINT_CLASSIFICATION"),
-      isNotNull(submission.lessonId),
+      isNotNull(submission.exerciseId),
     ),
   });
 
@@ -35,12 +35,12 @@ export async function resolvePendingConstraintClassifications(
 }
 
 async function resolveOne(sub: typeof submission.$inferSelect) {
-  if (!sub.lessonId) return;
+  if (!sub.exerciseId) return;
 
-  const requirement = await db.query.lessonConstraint.findFirst({
+  const requirement = await db.query.exerciseConstraint.findFirst({
     where: and(
-      eq(lessonConstraint.lessonId, sub.lessonId),
-      eq(lessonConstraint.kind, "algorithm_requirement"),
+      eq(exerciseConstraint.exerciseId, sub.exerciseId),
+      eq(exerciseConstraint.kind, "algorithm_requirement"),
     ),
   });
 
@@ -82,7 +82,7 @@ async function resolveOne(sub: typeof submission.$inferSelect) {
         .set({ status: "PASSED", constraintViolationDetail: null })
         .where(eq(submission.id, sub.id));
 
-      // Lesson submissions never carry contestId/questionLetter — they
+      // Exercise submissions never carry contestId/questionLetter — they
       // don't participate in contest leaderboard credit at all, so no
       // `user_on_contest` write is needed here.
     });

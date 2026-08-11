@@ -35,11 +35,11 @@ pub struct Submission {
     pub contest_id: Option<Uuid>,
     pub question_letter: Option<String>,
     pub retry_count: i32,
-    /// Set only when this submission was made against a lesson exercise.
-    /// Solution constraints are a lesson-only feature (never contests, never
-    /// standalone/practice submissions) — the judge only runs structural
-    /// analysis / requests classification when this is `Some`.
-    pub lesson_id: Option<Uuid>,
+    /// Set only when this submission was made against a lesson's exercise.
+    /// Solution constraints are an exercise-only feature (never contests,
+    /// never standalone/practice submissions) — the judge only runs
+    /// structural analysis / requests classification when this is `Some`.
+    pub exercise_id: Option<Uuid>,
 }
 
 #[derive(Debug, FromRow)]
@@ -66,11 +66,11 @@ pub enum StructuralRuleType {
     RequiredConstruct,
 }
 
-/// A single row of `lesson_constraint` (constraints are a lesson-only
-/// feature, never attached to `problem` directly — see `Submission::lesson_id`).
+/// A single row of `exercise_constraint` (constraints are an exercise-only
+/// feature, never attached to `problem` directly — see `Submission::exercise_id`).
 /// `rule_type`/`rule_params` are only set when `kind == Structural`;
 /// `description` only when `kind == AlgorithmRequirement`. Fetched
-/// separately, see `DbClient::get_lesson_constraints`.
+/// separately, see `DbClient::get_exercise_constraints`.
 #[derive(Debug, FromRow)]
 pub struct ProblemConstraint {
     pub kind: ConstraintKind,

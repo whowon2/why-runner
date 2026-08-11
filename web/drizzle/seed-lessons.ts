@@ -2,7 +2,7 @@ import "dotenv/config";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { db } from "@/drizzle/db";
-import { classroom, lesson, lessonTrack, problem } from "@/drizzle/schema";
+import { classroom, exercise, lesson, problem } from "@/drizzle/schema";
 import { generateClassCode } from "@/lib/class-code";
 import { generateProblemCode } from "@/lib/problem-code";
 import { generateSlug } from "@/lib/slug";
@@ -16,7 +16,7 @@ interface SeedProblem {
   outputs: string[];
 }
 
-const LESSON_MAP: Record<string, { order: number }> = {
+const EXERCISE_MAP: Record<string, { order: number }> = {
   "Even or Odd": { order: 0 },
   Factorial: { order: 1 },
   Fibonacci: { order: 2 },
@@ -43,8 +43,8 @@ async function main() {
     })
     .returning();
 
-  const [defaultTrack] = await db
-    .insert(lessonTrack)
+  const [defaultLesson] = await db
+    .insert(lesson)
     .values({
       title: "Roadmap",
       slug: generateSlug("roadmap"),
@@ -55,7 +55,7 @@ async function main() {
     .returning();
 
   for (const p of problems) {
-    const mapping = LESSON_MAP[p.title];
+    const mapping = EXERCISE_MAP[p.title];
     if (!mapping) continue;
 
     const [createdProblem] = await db
@@ -73,15 +73,15 @@ async function main() {
       })
       .returning();
 
-    await db.insert(lesson).values({
-      trackId: defaultTrack.id,
+    await db.insert(exercise).values({
+      lessonId: defaultLesson.id,
       problemId: createdProblem.id,
       slug: generateSlug(p.title),
       order: mapping.order,
       primaryLanguage: null,
     });
 
-    console.log(`Seeded lesson #${mapping.order}: ${p.title}`);
+    console.log(`Seeded exercise #${mapping.order}: ${p.title}`);
   }
 
   console.log(`Class join code: ${defaultClass.joinCode}`);

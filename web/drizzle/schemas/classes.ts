@@ -6,7 +6,7 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { lessonTrack } from "./lessons";
+import { lesson } from "./lessons";
 import { user } from "./users";
 
 export const classroom = pgTable("classroom", {
@@ -27,7 +27,7 @@ export type CreateClassroomInput = typeof classroom.$inferInsert;
 
 export const classroomRelations = relations(classroom, ({ many }) => ({
   members: many(classroomMembership),
-  tracks: many(lessonTrack),
+  lessons: many(lesson),
 }));
 
 export const classroomMembership = pgTable(
