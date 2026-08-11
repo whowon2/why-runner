@@ -31,6 +31,7 @@ export const problem = pgTable("problem", {
   slug: text("slug").notNull().unique(),
   code: text("code").notNull().unique(),
   description: text("description").default("").notNull(),
+  narrative: text("narrative"),
   status: ProblemStatus().default("draft").notNull(),
   difficulty: ProblemDifficulty(),
   createdBy: text("created_by").notNull(),

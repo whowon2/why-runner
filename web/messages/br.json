@@ -5,7 +5,8 @@
     "loading": "Carregando...",
     "cancel": "Cancelar",
     "confirm": "Confirmar",
-    "zoom": "Zoom"
+    "zoom": "Zoom",
+    "copied": "Copiado para a área de transferência"
   },
   "ErrorPage": {
     "title": "Algo deu errado",
@@ -643,7 +644,26 @@
         "actual": "Saída obtida",
         "error": "Erro",
         "noOutput": "(sem saída)"
-      }
+      },
+      "Review": {
+        "title": "Revisar com IA",
+        "description": "Receba feedback da IA sobre a clareza da descrição e sugestões de casos de borda para testar.",
+        "reviewWithAi": "Revisar com IA",
+        "reviewing": "Revisando...",
+        "reviewFailed": "Falha ao revisar o problema",
+        "suggestedEdgeCases": "Casos de borda sugeridos",
+        "input": "Entrada",
+        "output": "Saída",
+        "addTestCase": "Adicionar caso de teste",
+        "added": "Adicionado",
+        "edgeCaseAdded": "Caso de borda adicionado aos casos de teste",
+        "noFeedback": "Sem feedback — adicione uma descrição e casos de teste primeiro."
+      },
+      "narrativeLabel": "Narrativa",
+      "narrativePlaceholder": "Contextualize este problema com uma pequena história temática (opcional)",
+      "generateNarrativeWithAi": "Gerar com IA",
+      "generatingNarrative": "Gerando...",
+      "generateNarrativeFailed": "Falha ao gerar narrativa"
     },
     "Publish": {
       "button": "Publicar",
@@ -695,7 +715,8 @@
       },
       "Task": {
         "timeLimit": "Limite de tempo: {seconds, number, ::.00} s",
-        "memoryLimit": "Limite de memória: {mb} MB"
+        "memoryLimit": "Limite de memória: {mb} MB",
+        "narrativeLabel": "História"
       },
       "Submit": {
         "languagePlaceholder": "Selecione uma linguagem",

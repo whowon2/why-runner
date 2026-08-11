@@ -5,7 +5,8 @@
     "loading": "Loading...",
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "zoom": "Zoom"
+    "zoom": "Zoom",
+    "copied": "Copied to clipboard"
   },
   "ErrorPage": {
     "title": "Something went wrong",
@@ -643,7 +644,26 @@
         "actual": "Actual output",
         "error": "Error",
         "noOutput": "(no output)"
-      }
+      },
+      "Review": {
+        "title": "Review with AI",
+        "description": "Get AI feedback on your description's clarity and suggested edge cases to test.",
+        "reviewWithAi": "Review with AI",
+        "reviewing": "Reviewing...",
+        "reviewFailed": "Failed to review problem",
+        "suggestedEdgeCases": "Suggested edge cases",
+        "input": "Input",
+        "output": "Output",
+        "addTestCase": "Add test case",
+        "added": "Added",
+        "edgeCaseAdded": "Edge case added to test cases",
+        "noFeedback": "No feedback — add a description and test cases first."
+      },
+      "narrativeLabel": "Narrative",
+      "narrativePlaceholder": "Frame this problem with a short themed story (optional)",
+      "generateNarrativeWithAi": "Generate with AI",
+      "generatingNarrative": "Generating...",
+      "generateNarrativeFailed": "Failed to generate a narrative"
     },
     "Publish": {
       "button": "Publish",
@@ -695,7 +715,8 @@
       },
       "Task": {
         "timeLimit": "Time limit: {seconds, number, ::.00} s",
-        "memoryLimit": "Memory limit: {mb} MB"
+        "memoryLimit": "Memory limit: {mb} MB",
+        "narrativeLabel": "Story"
       },
       "Submit": {
         "languagePlaceholder": "Select a language",

@@ -73,6 +73,14 @@ Better Auth with email/password + GitHub + Google OAuth. Session access:
 
 `getAIHelp()` server action calls Gemini 2.5 Flash to explain submission failures. Parses JSON output from Judge to identify which test cases failed.
 
+### AI Problem Review
+
+`reviewProblem()` server action (`lib/actions/problems/review-problem.ts`) calls Gemini 2.5 Flash with structured JSON output (`responseSchema`) to critique a draft problem's description and suggest edge-case test cases (input/output/rationale). Nothing is persisted — the edit workspace's `ProblemReviewPanel` lets the author add any suggested edge case to the form's test cases with one click, saved only when the form is submitted normally.
+
+### Problem Narrative
+
+`problem.narrative` is an optional text field (nullable) shown above the description on the standalone problem page when set, styled as flavor text — never required for publish. `generateProblemNarrative()` (`lib/actions/problems/generate-problem-narrative.ts`) drafts an Advent-of-Code-style themed story via Gemini into the edit form's narrative field for the author to edit/save through the existing `updateProblem` action.
+
 ## Environment Variables
 
 Required in `.env`:

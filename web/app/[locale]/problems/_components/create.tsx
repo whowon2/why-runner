@@ -2,7 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Delete } from "lucide-react";
+import { Brain, Delete } from "lucide-react";
+import { CopyButton } from "@/components/copy-button";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -32,10 +33,12 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type { Problem } from "@/drizzle/schema";
+import { useGenerateProblemNarrative } from "@/hooks/use-generate-problem-narrative";
 import { useUpdateProblem } from "@/hooks/use-update-problem";
 import { useRouter } from "@/i18n/navigation";
 import "katex/dist/katex.min.css";
 import { Eye, Pencil } from "lucide-react";
+import { ProblemReviewPanel } from "./workspace/problem-review-panel";
 import { ProblemValidationPanel } from "./workspace/validation";
 
 export function NewProblem({ problem }: { problem: Problem }) {
@@ -48,6 +51,7 @@ export function NewProblem({ problem }: { problem: Problem }) {
     difficulty: z.enum(["easy", "medium", "hard"]).optional(),
     exampleCount: z.number().int().min(1),
     inputs: z.array(z.string()),
+    narrative: z.string(),
     outputs: z.array(z.string()),
     title: z.string(),
   });
@@ -58,6 +62,7 @@ export function NewProblem({ problem }: { problem: Problem }) {
       difficulty: problem.difficulty ?? undefined,
       exampleCount: problem.exampleCount,
       inputs: problem.inputs,
+      narrative: problem.narrative ?? "",
       outputs: problem.outputs,
       title: problem.title,
     },
@@ -76,6 +81,8 @@ export function NewProblem({ problem }: { problem: Problem }) {
   });
 
   const { mutate: updateProblem, isPending } = useUpdateProblem();
+  const { mutate: generateNarrative, isPending: isGeneratingNarrative } =
+    useGenerateProblemNarrative();
   const router = useRouter();
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -91,6 +98,7 @@ export function NewProblem({ problem }: { problem: Problem }) {
             values.inputs.length || 1,
           ),
           inputs: values.inputs,
+          narrative: values.narrative || null,
           outputs: values.outputs,
         },
       },
@@ -128,6 +136,24 @@ export function NewProblem({ problem }: { problem: Problem }) {
   function addInput() {
     inputs.append("");
     outputs.append("");
+  }
+
+  function addEdgeCase(input: string, output: string) {
+    inputs.append(input);
+    outputs.append(output);
+  }
+
+  function handleGenerateNarrative() {
+    generateNarrative(problem.id, {
+      onError: (error) => {
+        toast.error(t("generateNarrativeFailed"), {
+          description: error.message,
+        });
+      },
+      onSuccess: (narrative) => {
+        form.setValue("narrative", narrative, { shouldDirty: true });
+      },
+    });
   }
 
   useEffect(() => {
@@ -190,6 +216,38 @@ export function NewProblem({ problem }: { problem: Problem }) {
                       <Textarea
                         placeholder={t("descriptionPlaceholder")}
                         className="min-h-[250px] font-mono text-sm leading-relaxed"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="narrative"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <div className="flex items-center justify-between">
+                      <FormLabel>{t("narrativeLabel")}</FormLabel>
+                      <Button
+                        disabled={isGeneratingNarrative}
+                        onClick={handleGenerateNarrative}
+                        size="sm"
+                        type="button"
+                        variant="outline"
+                      >
+                        <Brain className="h-4 w-4" />
+                        {isGeneratingNarrative
+                          ? t("generatingNarrative")
+                          : t("generateNarrativeWithAi")}
+                      </Button>
+                    </div>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t("narrativePlaceholder")}
+                        className="min-h-[150px] font-mono text-sm leading-relaxed"
                         {...field}
                       />
                     </FormControl>
@@ -327,6 +385,13 @@ export function NewProblem({ problem }: { problem: Problem }) {
 
               <Separator />
 
+              <ProblemReviewPanel
+                onAddEdgeCaseAction={addEdgeCase}
+                problemId={problem.id}
+              />
+
+              <Separator />
+
               <ProblemValidationPanel problemId={problem.id} />
 
               <Separator />
@@ -363,6 +428,17 @@ export function NewProblem({ problem }: { problem: Problem }) {
               </div>
             </div>
 
+            {formValues.narrative && (
+              <div className="border-l-2 border-muted-foreground/30 pl-4 italic text-muted-foreground">
+                <span className="not-italic text-[10px] font-semibold uppercase tracking-wider">
+                  {t("narrativeLabel")}
+                </span>
+                <div className="prose dark:prose-invert prose-sm max-w-none mt-1">
+                  <ReactMarkdown>{formValues.narrative}</ReactMarkdown>
+                </div>
+              </div>
+            )}
+
             <div className="prose dark:prose-invert max-w-none text-foreground prose-p:leading-relaxed prose-pre:bg-muted/50">
               <ReactMarkdown
                 remarkPlugins={[remarkMath]}
@@ -382,18 +458,24 @@ export function NewProblem({ problem }: { problem: Problem }) {
                     key={idx}
                     className="flex flex-col md:flex-row gap-6 bg-muted/30 p-6 rounded-lg border"
                   >
-                    <div className="flex-1 space-y-3">
-                      <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
-                        {t("inputLabel", { n: idx + 1 })}
-                      </h4>
+                    <div className="min-w-0 flex-1 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                          {t("inputLabel", { n: idx + 1 })}
+                        </h4>
+                        <CopyButton value={input} />
+                      </div>
                       <pre className="p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">
                         {input || " "}
                       </pre>
                     </div>
-                    <div className="flex-1 space-y-3">
-                      <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
-                        {t("outputLabel", { n: idx + 1 })}
-                      </h4>
+                    <div className="min-w-0 flex-1 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                          {t("outputLabel", { n: idx + 1 })}
+                        </h4>
+                        <CopyButton value={formValues.outputs?.[idx] ?? ""} />
+                      </div>
                       <pre className="p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">
                         {formValues.outputs?.[idx] || " "}
                       </pre>

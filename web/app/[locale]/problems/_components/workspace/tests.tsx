@@ -2,6 +2,7 @@
 
 import { Download, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { CopyButton } from "@/components/copy-button";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProblemTests } from "@/hooks/use-problem-tests";
@@ -42,15 +43,21 @@ export function ProblemTestsTab({ problemId }: { problemId: string }) {
         <div className="space-y-4">
           {data.samples.map((testCase, i) => (
             <div className="flex gap-4" key={`sample-${i}-${testCase.input}`}>
-              <div className="w-full">
-                <span className="font-medium">{t("input")}:</span>
-                <pre className="mt-1 rounded-none border p-2">
+              <div className="min-w-0 w-full">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">{t("input")}:</span>
+                  <CopyButton value={testCase.input} />
+                </div>
+                <pre className="mt-1 overflow-x-auto rounded-none border p-2">
                   {testCase.input}
                 </pre>
               </div>
-              <div className="w-full">
-                <span className="font-medium">{t("output")}:</span>
-                <pre className="mt-1 rounded-none border p-2">
+              <div className="min-w-0 w-full">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">{t("output")}:</span>
+                  <CopyButton value={testCase.output} />
+                </div>
+                <pre className="mt-1 overflow-x-auto rounded-none border p-2">
                   {testCase.output}
                 </pre>
               </div>
