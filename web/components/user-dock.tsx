@@ -41,7 +41,7 @@ export function UserDock() {
       { href: "/", icon: HomeIcon, label: t("Dock.home") },
       { href: "/contests", icon: Trophy, label: t("Dock.contests") },
       { href: "/problems", icon: ScrollText, label: t("Dock.problems") },
-      { href: "/roadmap", icon: GraduationCap, label: t("Dock.roadmap") },
+      { href: "/classes", icon: GraduationCap, label: t("Dock.roadmap") },
       ...(session
         ? [{ href: "/feed", icon: Newspaper, label: t("Dock.feed") }]
         : []),

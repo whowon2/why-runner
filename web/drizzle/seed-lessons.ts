@@ -2,13 +2,8 @@ import "dotenv/config";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { db } from "@/drizzle/db";
-import {
-  type LessonTheme,
-  lesson,
-  lessonTheme,
-  lessonThemeRequirement,
-  problem,
-} from "@/drizzle/schema";
+import { classroom, lesson, lessonTrack, problem } from "@/drizzle/schema";
+import { generateClassCode } from "@/lib/class-code";
 import { generateProblemCode } from "@/lib/problem-code";
 import { generateSlug } from "@/lib/slug";
 
@@ -21,29 +16,15 @@ interface SeedProblem {
   outputs: string[];
 }
 
-const LESSON_MAP: Record<
-  string,
-  {
-    themes: LessonTheme[];
-    order: number;
-    requirements?: { theme: LessonTheme; minValue: number }[];
-  }
-> = {
-  "Even or Odd": { themes: ["conditionals"], order: 0 },
-  Factorial: { themes: ["loops"], order: 0 },
-  Fibonacci: { themes: ["loops"], order: 1 },
-  FizzBuzz: { themes: ["loops", "conditionals"], order: 2 },
-  "Reverse a String": { themes: ["strings"], order: 0 },
-  "Count Vowels": { themes: ["strings"], order: 1 },
-  "Palindrome Check": {
-    themes: ["strings", "arrays", "conditionals"],
-    order: 2,
-    requirements: [
-      { theme: "strings", minValue: 20 },
-      { theme: "arrays", minValue: 15 },
-    ],
-  },
-  "Maximum of an Array": { themes: ["arrays"], order: 0 },
+const LESSON_MAP: Record<string, { order: number }> = {
+  "Even or Odd": { order: 0 },
+  Factorial: { order: 1 },
+  Fibonacci: { order: 2 },
+  FizzBuzz: { order: 3 },
+  "Reverse a String": { order: 4 },
+  "Count Vowels": { order: 5 },
+  "Palindrome Check": { order: 6 },
+  "Maximum of an Array": { order: 7 },
 };
 
 async function main() {
@@ -51,6 +32,25 @@ async function main() {
   const problems: SeedProblem[] = JSON.parse(
     readFileSync(problemsPath, "utf-8"),
   );
+
+  const [defaultClass] = await db
+    .insert(classroom)
+    .values({
+      name: "Sample Class",
+      joinCode: generateClassCode(),
+      createdBy: "system",
+    })
+    .returning();
+
+  const [defaultTrack] = await db
+    .insert(lessonTrack)
+    .values({
+      title: "Roadmap",
+      classroomId: defaultClass.id,
+      isPublished: true,
+      createdBy: "system",
+    })
+    .returning();
 
   for (const p of problems) {
     const mapping = LESSON_MAP[p.title];
@@ -71,34 +71,17 @@ async function main() {
       })
       .returning();
 
-    const [createdLesson] = await db
-      .insert(lesson)
-      .values({
-        problemId: createdProblem.id,
-        order: mapping.order,
-        primaryLanguage: null,
-      })
-      .returning();
+    await db.insert(lesson).values({
+      trackId: defaultTrack.id,
+      problemId: createdProblem.id,
+      order: mapping.order,
+      primaryLanguage: null,
+    });
 
-    await db.insert(lessonTheme).values(
-      mapping.themes.map((theme) => ({
-        lessonId: createdLesson.id,
-        theme,
-      })),
-    );
-
-    if (mapping.requirements?.length) {
-      await db.insert(lessonThemeRequirement).values(
-        mapping.requirements.map((req) => ({
-          lessonId: createdLesson.id,
-          theme: req.theme,
-          minValue: req.minValue,
-        })),
-      );
-    }
-
-    console.log(`Seeded lesson: [${mapping.themes.join(", ")}] ${p.title}`);
+    console.log(`Seeded lesson #${mapping.order}: ${p.title}`);
   }
+
+  console.log(`Class join code: ${defaultClass.joinCode}`);
 }
 
 main().then(() => process.exit(0));

@@ -12,12 +12,10 @@ async function main() {
   const {
     userOnContest: _uoc,
     problemOnContest: _poc,
-    userThemeSkill: _uts,
-    userLanguageSkill: _uls,
+    classroom: _classroom,
+    classroomMembership: _classroomMembership,
+    lessonTrack: _lessonTrack,
     lesson: _lesson,
-    lessonTheme: _lessonTheme,
-    lessonThemeRequirement: _ltr,
-    lessonLanguageRequirement: _llr,
     lessonCompletion: _lc,
     ...seedableSchema
   } = schema;
