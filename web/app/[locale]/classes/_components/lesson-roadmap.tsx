@@ -122,7 +122,13 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
         />
       )}
 
-      {isOwner && <ManageLesson exerciseCount={exercises.length} lesson={lesson} />}
+      {isOwner && (
+        <ManageLesson
+          classSlug={classroom.slug}
+          exerciseCount={exercises.length}
+          lesson={lesson}
+        />
+      )}
 
       {exercises.length === 0 ? (
         <p className="text-muted-foreground">{t("empty")}</p>

@@ -1,9 +1,20 @@
 "use client";
 
-import { Plus, Rocket } from "lucide-react";
+import { Plus, Rocket, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,21 +29,31 @@ import {
 import type { Lesson } from "@/drizzle/schema";
 import { useCreateExerciseEntry } from "@/hooks/use-exercise-entry";
 import { useProblems } from "@/hooks/use-problems";
-import { useSetLessonPublished, useUpdateLesson } from "@/hooks/use-update-lesson";
+import {
+  useDeleteLesson,
+  useSetLessonPublished,
+  useUpdateLesson,
+} from "@/hooks/use-update-lesson";
+import { useRouter } from "@/i18n/navigation";
 import { ShareLessonLink } from "./share-lesson-link";
 
 export function ManageLesson({
   lesson,
   exerciseCount,
+  classSlug,
 }: {
   lesson: Lesson;
   exerciseCount: number;
+  classSlug: string;
 }) {
   const t = useTranslations("RoadmapPage");
   const tLessons = useTranslations("TracksPage");
+  const tCommon = useTranslations("Common");
+  const router = useRouter();
   const { mutate: setPublished, isPending: isPublishPending } =
     useSetLessonPublished();
   const { mutate: updateLesson } = useUpdateLesson();
+  const { mutate: deleteLesson, isPending: isDeleting } = useDeleteLesson();
 
   return (
     <div className="flex flex-col gap-4 rounded-md border p-4">
@@ -66,23 +87,63 @@ export function ManageLesson({
           {lesson.isPublished ? (
             <Badge>{tLessons("published")}</Badge>
           ) : (
-            <Button
-              disabled={isPublishPending || exerciseCount === 0}
-              onClick={() =>
-                setPublished(
-                  { lessonId: lesson.id, isPublished: true },
-                  { onError: (error) => toast.error(error.message) },
-                )
-              }
-            >
-              <LoadingSwap
-                className="inline-flex items-center gap-2"
-                isLoading={isPublishPending}
+            <>
+              <Button
+                disabled={isPublishPending || exerciseCount === 0}
+                onClick={() =>
+                  setPublished(
+                    { lessonId: lesson.id, isPublished: true },
+                    { onError: (error) => toast.error(error.message) },
+                  )
+                }
               >
-                <Rocket className="size-4" />
-                {tLessons("publish")}
-              </LoadingSwap>
-            </Button>
+                <LoadingSwap
+                  className="inline-flex items-center gap-2"
+                  isLoading={isPublishPending}
+                >
+                  <Rocket className="size-4" />
+                  {tLessons("publish")}
+                </LoadingSwap>
+              </Button>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    disabled={isDeleting}
+                    size="icon"
+                    variant="destructive"
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {tLessons("deleteLessonTitle")}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {tLessons("deleteLessonDescription")}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() =>
+                        deleteLesson(lesson.id, {
+                          onError: (error) => toast.error(error.message),
+                          onSuccess: () => {
+                            toast.success(tLessons("deleteLessonSuccess"));
+                            router.push(`/classes/${classSlug}`);
+                          },
+                        })
+                      }
+                    >
+                      {tCommon("confirm")}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
           )}
         </div>
       </div>

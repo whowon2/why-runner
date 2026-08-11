@@ -56,7 +56,14 @@ export async function setLessonPublished(input: {
 
 export async function deleteLesson(lessonId: string) {
   const currentUser = await getCurrentUser({});
-  await assertOwnsLesson(lessonId, currentUser.id);
+  const found = await assertOwnsLesson(lessonId, currentUser.id);
+
+  // Published lessons may already have student submissions/grades riding on
+  // them — unpublish first (setLessonPublished) if it truly needs deleting.
+  // Drafts are safe to delete outright.
+  if (found.isPublished) {
+    throw new Error("Unpublish this lesson before deleting it.");
+  }
 
   await db.delete(lesson).where(eq(lesson.id, lessonId));
 }
