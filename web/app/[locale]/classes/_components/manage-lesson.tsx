@@ -41,10 +41,12 @@ export function ManageLesson({
   lesson,
   exerciseCount,
   classSlug,
+  existingProblemIds,
 }: {
   lesson: Lesson;
   exerciseCount: number;
   classSlug: string;
+  existingProblemIds: string[];
 }) {
   const t = useTranslations("RoadmapPage");
   const tLessons = useTranslations("TracksPage");
@@ -153,16 +155,29 @@ export function ManageLesson({
         </p>
       )}
 
-      <AddExerciseForm lessonId={lesson.id} />
+      <AddExerciseForm
+        existingProblemIds={existingProblemIds}
+        lessonId={lesson.id}
+      />
     </div>
   );
 }
 
-function AddExerciseForm({ lessonId }: { lessonId: string }) {
+function AddExerciseForm({
+  lessonId,
+  existingProblemIds,
+}: {
+  lessonId: string;
+  existingProblemIds: string[];
+}) {
   const t = useTranslations("RoadmapPage");
   const { data: problems } = useProblems({ page: 1, pageSize: 50, my: true });
   const [problemId, setProblemId] = useState<string | null>(null);
   const { mutate: createExerciseEntry, isPending } = useCreateExerciseEntry();
+
+  const availableProblems = (problems?.data ?? []).filter(
+    (p) => !existingProblemIds.includes(p.id),
+  );
 
   function handleAdd() {
     if (!problemId) {
@@ -186,7 +201,7 @@ function AddExerciseForm({ lessonId }: { lessonId: string }) {
           <SelectValue placeholder={t("addLesson")} />
         </SelectTrigger>
         <SelectContent>
-          {problems?.data.map((p) => (
+          {availableProblems.map((p) => (
             <SelectItem key={p.id} value={p.id}>
               {p.title}
             </SelectItem>
