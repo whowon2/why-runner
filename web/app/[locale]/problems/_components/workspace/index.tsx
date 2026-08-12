@@ -54,8 +54,8 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
         defaultValue={tab}
         onValueChange={handleTabChange}
       >
-        <div className="flex w-full items-center justify-between gap-4 pb-4 mb-2">
-          <div className="overflow-x-auto scrollbar-hide">
+        <div className="flex w-full flex-col items-center gap-4 pb-4 mb-2">
+          <div className="w-full flex justify-center overflow-x-auto scrollbar-hide">
             <TabsList className="inline-flex min-w-max h-12 items-center justify-start rounded-none bg-muted/40 p-1 text-muted-foreground border border-muted/50">
               <TabsTrigger
                 className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
@@ -100,9 +100,7 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
           </div>
 
           {isOwner && problem.status === "draft" && (
-            <div className="shrink-0">
-              <PublishProblem problem={problem} />
-            </div>
+            <PublishProblem problem={problem} />
           )}
         </div>
 
