@@ -47,7 +47,7 @@
     "home": "Home",
     "problems": "Problems",
     "contests": "Contests",
-    "roadmap": "Roadmap",
+    "roadmap": "Classes",
     "feed": "Feed",
     "login": "Login",
     "settings": "Settings",
@@ -737,7 +737,8 @@
         "chars": "{count} ch.",
         "detailsTitle": "Submission details",
         "code": "Code",
-        "inputOutput": "Input / Output"
+        "inputOutput": "Input / Output",
+        "constraintViolation": "Passed all test cases but violated a solution constraint"
       },
       "Statistics": {
         "title": "Task summary",
@@ -762,6 +763,27 @@
     "loading": "Loading...",
     "empty": "No exercises yet.",
     "completed": "Completed",
+    "Constraints": {
+      "trigger": "Constraints",
+      "title": "Solution constraints",
+      "description": "Structural rules and an optional required-algorithm description, checked against this lesson's submissions only (never contests or standalone practice).",
+      "structuralTitle": "Structural rules",
+      "addRule": "Add rule",
+      "ruleType": "Rule type",
+      "maxLoopNestingDepth": "Max loop nesting depth",
+      "forbiddenConstruct": "Forbidden construct",
+      "requiredConstruct": "Required construct",
+      "maxDepth": "Max depth",
+      "constructsPlaceholder": "Comma-separated tokens (e.g. cout, printf)",
+      "save": "Save",
+      "remove": "Remove",
+      "noStructuralRules": "No structural rules yet.",
+      "algorithmTitle": "Algorithm requirement (at most one)",
+      "algorithmPlaceholder": "e.g. Must use Dijkstra's algorithm for shortest path",
+      "algorithmHint": "Checked via AI classification after a submission passes all test cases.",
+      "addFailed": "Failed to save constraint",
+      "removeFailed": "Failed to remove constraint"
+    },
     "notFound": "Lesson not found",
     "backToRoadmap": "Back to assignment",
     "nextLesson": "Next",
@@ -787,13 +809,23 @@
       "copied": "Code copied to clipboard",
       "submittedAt": "Submitted {date}",
       "notSubmitted": "Not submitted",
-      "noAnswer": "No answer for this exercise"
+      "noAnswer": "No answer for this exercise",
+      "notYetAvailable": "Review opens once the due date has passed.",
+      "scoreLabel": "Score: {score}",
+      "scorePlaceholder": "Score",
+      "markReviewed": "Mark reviewed",
+      "updateScore": "Update score",
+      "reviewSaved": "Review saved",
+      "reviewedAt": "Reviewed {date}"
     },
     "submittedAt": "Submitted {date}",
     "submitTrack": "Submit assignment",
     "resubmitTrack": "Resubmit assignment",
     "submitTrackSuccess": "Assignment submitted",
-    "trackLocked": "This assignment has already been submitted — exercises are locked."
+    "trackLocked": "This assignment's due date has passed — exercises are locked.",
+    "incompleteSubmitTitle": "Submit with unsolved exercises?",
+    "incompleteSubmitDescription": "{count, plural, one {# exercise hasn't} other {# exercises haven't}} been solved yet. You can keep resubmitting until the due date.",
+    "submitAnyway": "Submit anyway"
   },
   "ImportProblems": {
     "button": "Import JSON",
@@ -887,6 +919,8 @@
           "expectedOutputLabel": "Expected Output",
           "errorLog": "Error Log (Stderr)",
           "processing": "Processing...",
+          "constraintViolation": "Passed all {count} tests but violated a solution constraint",
+          "pendingClassification": "Passed all tests — checking algorithm requirement...",
           "AI": {
             "title": "AI Assistant",
             "description": "Get help from our AI to understand why your solution might be failing. The AI will analyze your code against the problem and your solution and provide suggestions.",
@@ -1249,7 +1283,16 @@
     "linkCopied": "Join link copied to clipboard",
     "defaultSubtitle": "Exercises for this assignment, in order.",
     "publish": "Publish",
-    "publishNeedsExercise": "Add at least one exercise before publishing."
+    "publishNeedsExercise": "Add at least one exercise before publishing.",
+    "deleteLessonTitle": "Delete this draft lesson?",
+    "deleteLessonDescription": "This permanently deletes the lesson and all its exercises. This can't be undone.",
+    "deleteLessonSuccess": "Lesson deleted",
+    "exerciseProgress": "{done}/{total} exercises",
+    "exerciseCount": "{count} exercises",
+    "dueDatePrefix": "Due",
+    "submittedAt": "Submitted {date}",
+    "scoreLabel": "Score: {score}",
+    "awaitingReview": "Awaiting review"
   },
   "ClassesPage": {
     "title": "Classes",
@@ -1263,6 +1306,8 @@
     "joinCode": "Class code",
     "codeCopied": "Class code copied to clipboard",
     "memberCount": "{count} students",
+    "roleProfessor": "Professor",
+    "roleStudent": "Student",
     "joinFailed": "Couldn't join that class — check the code and try again.",
     "students": "Students",
     "noStudentsYet": "No students have joined yet.",

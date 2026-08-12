@@ -1,0 +1,2 @@
+ALTER TYPE "public"."structural_constraint_rule_type" ADD VALUE 'required_construct';--> statement-breakpoint
+CREATE UNIQUE INDEX "lesson_constraint_one_per_rule_type" ON "lesson_constraint" USING btree ("lesson_id","rule_type");

@@ -12,7 +12,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { activityFeed } from "./activities";
 import { contest } from "./contests";
-import { lesson } from "./lessons";
+import { exercise } from "./lessons";
 import { problem } from "./problems";
 import { submission } from "./submissions";
 import { user } from "./users";
@@ -54,7 +54,7 @@ export const notification = pgTable(
     problemId: uuid("problem_id").references(() => problem.id, {
       onDelete: "cascade",
     }),
-    lessonId: uuid("lesson_id").references(() => lesson.id, {
+    exerciseId: uuid("exercise_id").references(() => exercise.id, {
       onDelete: "cascade",
     }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -69,7 +69,7 @@ export const notification = pgTable(
     index("notification_contest_idx").on(t.contestId),
     index("notification_submission_idx").on(t.submissionId),
     index("notification_problem_idx").on(t.problemId),
-    index("notification_lesson_idx").on(t.lessonId),
+    index("notification_exercise_idx").on(t.exerciseId),
   ],
 );
 
@@ -97,9 +97,9 @@ export const notificationRelations = relations(notification, ({ one }) => ({
     fields: [notification.problemId],
     references: [problem.id],
   }),
-  lesson: one(lesson, {
-    fields: [notification.lessonId],
-    references: [lesson.id],
+  exercise: one(exercise, {
+    fields: [notification.exerciseId],
+    references: [exercise.id],
   }),
 }));
 

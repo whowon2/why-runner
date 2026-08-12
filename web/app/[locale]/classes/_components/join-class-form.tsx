@@ -20,7 +20,7 @@ export function JoinClassForm() {
     joinClass(code, {
       onError: () => toast.error(t("joinFailed")),
       onSuccess: (data) => {
-        router.push(`/classes/${data.id}`);
+        router.push(`/classes/${data.slug}`);
       },
     });
   }

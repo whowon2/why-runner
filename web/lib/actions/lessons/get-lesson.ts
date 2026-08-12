@@ -1,85 +1,59 @@
 "use server";
 
 import { db } from "@/drizzle/db";
-import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { assertClassMember } from "@/lib/actions/classes/assert-class-member";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 export async function getLesson(lessonId: string) {
   const currentUser = await getCurrentUser({});
 
-  const found = await db.query.lesson.findFirst({
-    where: (lesson, { eq }) => eq(lesson.id, lessonId),
-    with: {
-      problem: true,
-      track: { with: { classroom: true } },
-    },
+  const lesson = await db.query.lesson.findFirst({
+    where: (l, { eq }) => eq(l.id, lessonId),
   });
+  if (!lesson) throw new Error("Lesson not found");
 
-  if (!found) throw new Error("Lesson not found");
-  await assertClassMember(found.track.classroomId, currentUser.id);
+  const classroom = await assertClassMember(lesson.classroomId, currentUser.id);
+  const isOwner = classroom.createdBy === currentUser.id;
+  if (!lesson.isPublished && !isOwner) throw new Error("Lesson not found");
 
-  const [passed, trackSubmission] = await Promise.all([
-    db.query.submission.findFirst({
-      where: (submission, { and, eq }) =>
+  const [exercises, passedSubmissions, lessonSubmission] = await Promise.all([
+    db.query.exercise.findMany({
+      where: (exercise, { eq }) => eq(exercise.lessonId, lessonId),
+      orderBy: (exercise, { asc }) => [asc(exercise.order)],
+      with: {
+        problem: { columns: { inputs: false, outputs: false } },
+      },
+    }),
+    db.query.submission.findMany({
+      // Scoped by exerciseId, not problemId: the same problem can back more
+      // than one exercise (across lessons), so a pass on one exercise must
+      // not mark every other exercise using that problem as done too.
+      where: (submission, { and, eq, isNotNull }) =>
         and(
           eq(submission.userId, currentUser.id),
-          eq(submission.problemId, found.problemId),
           eq(submission.status, "PASSED"),
+          isNotNull(submission.exerciseId),
         ),
+      columns: { exerciseId: true },
     }),
-    db.query.lessonTrackSubmission.findFirst({
+    db.query.lessonSubmission.findFirst({
       where: (s, { and, eq }) =>
-        and(eq(s.userId, currentUser.id), eq(s.trackId, found.trackId)),
+        and(eq(s.userId, currentUser.id), eq(s.lessonId, lessonId)),
     }),
   ]);
 
+  const passedExerciseIds = new Set(
+    passedSubmissions.map((s) => s.exerciseId),
+  );
+
   return {
-    ...found,
-    done: !!passed,
-    trackSubmitted: !!trackSubmission,
+    lesson,
+    classroom,
+    isOwner,
+    submittedAt: lessonSubmission?.submittedAt ?? null,
+    exercises: exercises.map((e) => ({
+      ...e,
+      done: passedExerciseIds.has(e.id),
+    })),
   };
-}
-
-export async function getNextLesson(lessonId: string) {
-  const current = await db.query.lesson.findFirst({
-    where: (lesson, { eq }) => eq(lesson.id, lessonId),
-  });
-  if (!current) return null;
-
-  const next = await db.query.lesson.findFirst({
-    where: (lesson, { gt, and, eq, or }) =>
-      and(
-        eq(lesson.trackId, current.trackId),
-        or(
-          gt(lesson.order, current.order),
-          and(eq(lesson.order, current.order), gt(lesson.id, current.id)),
-        ),
-      ),
-    orderBy: (lesson, { asc }) => [asc(lesson.order), asc(lesson.id)],
-    with: { problem: { columns: { id: true, title: true } } },
-  });
-
-  return next ?? null;
-}
-
-export async function getPreviousLesson(lessonId: string) {
-  const current = await db.query.lesson.findFirst({
-    where: (lesson, { eq }) => eq(lesson.id, lessonId),
-  });
-  if (!current) return null;
-
-  const previous = await db.query.lesson.findFirst({
-    where: (lesson, { lt, and, eq, or }) =>
-      and(
-        eq(lesson.trackId, current.trackId),
-        or(
-          lt(lesson.order, current.order),
-          and(eq(lesson.order, current.order), lt(lesson.id, current.id)),
-        ),
-      ),
-    orderBy: (lesson, { desc }) => [desc(lesson.order), desc(lesson.id)],
-    with: { problem: { columns: { id: true, title: true } } },
-  });
-
-  return previous ?? null;
 }

@@ -10,16 +10,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { useClass } from "@/hooks/use-class";
-import { useClassTracks } from "@/hooks/use-tracks";
-import { CreateTrackButton } from "./create-track-button";
+import { useClassLessons } from "@/hooks/use-lessons";
+import { CreateLessonButton } from "./create-lesson-button";
 import { EditClassDialog } from "./edit-class-dialog";
 
 export function ClassDetail({ classroomId }: { classroomId: string }) {
   const t = useTranslations("ClassesPage");
-  const tTracks = useTranslations("TracksPage");
+  const tLessons = useTranslations("TracksPage");
   const { data: classData, isPending: isClassPending } = useClass(classroomId);
-  const { data: tracks, isPending: isTracksPending } =
-    useClassTracks(classroomId);
+  const { data: lessons, isPending: isLessonsPending } =
+    useClassLessons(classroomId);
 
   if (isClassPending) return <Skeleton className="h-32 w-full" />;
   if (!classData) return null;
@@ -46,7 +46,10 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
                 classroomId={classroomId}
                 name={classroom.name}
               />
-              <CreateTrackButton classroomId={classroomId} />
+              <CreateLessonButton
+                classSlug={classroom.slug}
+                classroomId={classroomId}
+              />
             </>
           ) : undefined
         }
@@ -83,36 +86,94 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
         </Card>
       )}
 
-      {isTracksPending ? (
+      {isLessonsPending ? (
         <Skeleton className="h-24 w-full" />
-      ) : !tracks || tracks.length === 0 ? (
-        <p className="text-muted-foreground">{tTracks("empty")}</p>
+      ) : !lessons || lessons.length === 0 ? (
+        <p className="text-muted-foreground">{tLessons("empty")}</p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {tracks.map((track) => (
-            <Link href={`/roadmap/${track.id}`} key={track.id}>
-              <Card className="h-full bg-muted/30 transition-colors hover:bg-muted/60">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between gap-2 text-lg">
-                    {track.title}
-                    {!track.isPublished && (
-                      <Badge variant="outline">
-                        <Lock className="size-3" />
-                        {tTracks("unpublished")}
-                      </Badge>
+          {lessons.map((lesson) => {
+            const dueDatePassed = !!(
+              lesson.dueDate && new Date(lesson.dueDate) < new Date()
+            );
+
+            return (
+              <Link
+                href={`/classes/${classroom.slug}/lessons/${lesson.slug}`}
+                key={lesson.id}
+              >
+                <Card className="h-full bg-muted/30 transition-colors hover:bg-muted/60">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between gap-2 text-lg">
+                      {lesson.title}
+                      {!lesson.isPublished && (
+                        <Badge variant="outline">
+                          <Lock className="size-3" />
+                          {tLessons("unpublished")}
+                        </Badge>
+                      )}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-2">
+                    {lesson.description && (
+                      <p className="text-muted-foreground text-sm">
+                        {lesson.description}
+                      </p>
                     )}
-                  </CardTitle>
-                </CardHeader>
-                {track.description && (
-                  <CardContent>
-                    <p className="text-muted-foreground text-sm">
-                      {track.description}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                      {!isOwner && (
+                        <Badge variant="outline">
+                          {tLessons("exerciseProgress", {
+                            done: lesson.completedCount ?? 0,
+                            total: lesson.exerciseCount,
+                          })}
+                        </Badge>
+                      )}
+                      {isOwner && (
+                        <Badge variant="outline">
+                          {tLessons("exerciseCount", {
+                            count: lesson.exerciseCount,
+                          })}
+                        </Badge>
+                      )}
+                      {lesson.dueDate && (
+                        <Badge variant="outline">
+                          {tLessons("dueDatePrefix")}{" "}
+                          {new Date(lesson.dueDate).toLocaleDateString()}
+                        </Badge>
+                      )}
+                      {!isOwner && lesson.mySubmission && (
+                        <Badge className="bg-blue-500">
+                          {tLessons("submittedAt", {
+                            date: new Date(
+                              lesson.mySubmission.submittedAt,
+                            ).toLocaleDateString(),
+                          })}
+                        </Badge>
+                      )}
+                      {!isOwner &&
+                        lesson.mySubmission?.reviewedAt &&
+                        lesson.mySubmission.score !== null && (
+                          <Badge className="bg-green-600">
+                            {tLessons("scoreLabel", {
+                              score: lesson.mySubmission.score,
+                            })}
+                          </Badge>
+                        )}
+                      {!isOwner &&
+                        lesson.mySubmission &&
+                        !lesson.mySubmission.reviewedAt &&
+                        dueDatePassed && (
+                          <Badge variant="outline">
+                            {tLessons("awaitingReview")}
+                          </Badge>
+                        )}
+                    </div>
                   </CardContent>
-                )}
-              </Card>
-            </Link>
-          ))}
+                </Card>
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>

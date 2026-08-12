@@ -144,7 +144,7 @@ function useDescribeNotification() {
       case "LESSON_UNLOCKED":
         return {
           text: t("LESSON_UNLOCKED"),
-          href: "/roadmap",
+          href: "/classes",
         };
       default:
         return { text: "", href: "#" };

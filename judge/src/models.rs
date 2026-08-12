@@ -10,6 +10,8 @@ pub enum SubmissionStatus {
     FAILED,
     ERROR,
     RUNNING,
+    CONSTRAINT_VIOLATION,
+    PENDING_CONSTRAINT_CLASSIFICATION,
 }
 
 #[derive(Debug, Type, Serialize, PartialEq, Clone, Copy)]
@@ -33,12 +35,58 @@ pub struct Submission {
     pub contest_id: Option<Uuid>,
     pub question_letter: Option<String>,
     pub retry_count: i32,
+    /// Set only when this submission was made against a lesson's exercise.
+    /// Solution constraints are an exercise-only feature (never contests,
+    /// never standalone/practice submissions) — the judge only runs
+    /// structural analysis / requests classification when this is `Some`.
+    pub exercise_id: Option<Uuid>,
 }
 
 #[derive(Debug, FromRow)]
 pub struct Problem {
     pub inputs: Vec<String>,
     pub outputs: Vec<String>,
+}
+
+#[derive(Debug, Type, Clone, Copy, PartialEq)]
+#[sqlx(type_name = "problem_constraint_kind", rename_all = "snake_case")]
+pub enum ConstraintKind {
+    Structural,
+    AlgorithmRequirement,
+}
+
+#[derive(Debug, Type, Clone, Copy, PartialEq)]
+#[sqlx(
+    type_name = "structural_constraint_rule_type",
+    rename_all = "snake_case"
+)]
+pub enum StructuralRuleType {
+    MaxLoopNestingDepth,
+    ForbiddenConstruct,
+    RequiredConstruct,
+}
+
+/// A single row of `exercise_constraint` (constraints are an exercise-only
+/// feature, never attached to `problem` directly — see `Submission::exercise_id`).
+/// `rule_type`/`rule_params` are only set when `kind == Structural`;
+/// `description` only when `kind == AlgorithmRequirement`. Fetched
+/// separately, see `DbClient::get_exercise_constraints`.
+#[derive(Debug, FromRow)]
+pub struct ProblemConstraint {
+    pub kind: ConstraintKind,
+    pub rule_type: Option<StructuralRuleType>,
+    /// Raw JSON text, shape depends on `rule_type` (e.g. `{"maxDepth":1}` or
+    /// `{"constructs":["goto"]}`). Parsed on demand in `constraints.rs`.
+    pub rule_params: Option<String>,
+    pub description: Option<String>,
+}
+
+/// Result of judge-side structural static analysis: which rule (if any) the
+/// submitted source violated.
+#[derive(Debug, Serialize, Clone)]
+pub struct ConstraintViolation {
+    pub rule: String,
+    pub message: String,
 }
 
 /// A pre-publish validation run: a professor's reference solution graded
@@ -69,4 +117,9 @@ pub struct JudgeReport {
     pub total_tests: usize,
     pub passed_count: usize,
     pub failure_details: Option<TestCaseResult>, // None if all passed
+    /// Set when all test cases passed but a structural constraint was
+    /// violated. `None` when there were no structural constraints, or when
+    /// I/O grading already failed (structural analysis is skipped in that
+    /// case, see design.md "Keep the AI classification call cheap and rare").
+    pub constraint_violation: Option<ConstraintViolation>,
 }

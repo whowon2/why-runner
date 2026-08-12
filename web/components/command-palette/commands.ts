@@ -59,7 +59,7 @@ export function useCommands(): Command[] {
         group: "navigation",
         label: t("commands.goRoadmap"),
         icon: GraduationCap,
-        action: () => router.push("/roadmap"),
+        action: () => router.push("/classes"),
       },
       {
         id: "go-settings",
