@@ -97,6 +97,10 @@ export function ProblemResultsTab({ problemId }: { problemId: string }) {
                   "text-orange-500": submission.status === "ERROR",
                   "text-gray-500": submission.status === "PENDING",
                   "text-blue-500": submission.status === "RUNNING",
+                  "text-purple-500":
+                    submission.status === "CONSTRAINT_VIOLATION",
+                  "text-indigo-500":
+                    submission.status === "PENDING_CONSTRAINT_CLASSIFICATION",
                 })}
               >
                 {submission.status}
@@ -104,6 +108,9 @@ export function ProblemResultsTab({ problemId }: { problemId: string }) {
               <TableCell>
                 <SubmissionDetailsDialog
                   code={submission.code}
+                  constraintViolationDetail={
+                    submission.constraintViolationDetail
+                  }
                   output={submission.output}
                   problemId={problemId}
                 />
@@ -120,10 +127,12 @@ function SubmissionDetailsDialog({
   code,
   output,
   problemId,
+  constraintViolationDetail,
 }: {
   code: string;
   output: string | null;
   problemId: string;
+  constraintViolationDetail?: string | null;
 }) {
   const t = useTranslations("ProblemsPage.Workspace.Results");
   const tTests = useTranslations("ProblemsPage.Workspace.Tests");
@@ -166,6 +175,17 @@ function SubmissionDetailsDialog({
               {code}
             </pre>
           </div>
+
+          {constraintViolationDetail && (
+            <div>
+              <span className="text-xs font-semibold text-purple-500">
+                {t("constraintViolation")}
+              </span>
+              <pre className="mt-1 max-h-40 overflow-auto rounded-md border border-purple-200 bg-purple-50 p-2 font-mono text-xs whitespace-pre-wrap dark:border-purple-900 dark:bg-purple-950/30">
+                {constraintViolationDetail}
+              </pre>
+            </div>
+          )}
 
           {report && !report.passed && report.failure_details && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

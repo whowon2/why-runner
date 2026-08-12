@@ -1,9 +1,10 @@
 "use client";
 
-import { GraduationCap, School } from "lucide-react";
+import { GraduationCap, School, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PageHeader } from "@/components/page-header";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMyClasses } from "@/hooks/use-my-classes";
@@ -36,7 +37,7 @@ export function ClassList() {
               <h2 className="font-medium text-muted-foreground text-sm">
                 {t("myClasses")}
               </h2>
-              <ClassGrid classes={data.owned} />
+              <ClassGrid classes={data.owned} role="professor" />
             </div>
           )}
           {data && data.joined.length > 0 && (
@@ -44,7 +45,7 @@ export function ClassList() {
               <h2 className="font-medium text-muted-foreground text-sm">
                 {t("joinedClasses")}
               </h2>
-              <ClassGrid classes={data.joined} />
+              <ClassGrid classes={data.joined} role="student" />
             </div>
           )}
           {data && data.owned.length === 0 && data.joined.length === 0 && (
@@ -56,11 +57,19 @@ export function ClassList() {
   );
 }
 
-function ClassGrid({ classes }: { classes: { id: string; name: string }[] }) {
+function ClassGrid({
+  classes,
+  role,
+}: {
+  classes: { id: string; slug: string; name: string; memberCount: number }[];
+  role: "professor" | "student";
+}) {
+  const t = useTranslations("ClassesPage");
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {classes.map((c) => (
-        <Link href={`/classes/${c.id}`} key={c.id}>
+        <Link href={`/classes/${c.slug}`} key={c.id}>
           <Card className="h-full bg-muted/30 transition-colors hover:bg-muted/60">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -68,7 +77,15 @@ function ClassGrid({ classes }: { classes: { id: string; name: string }[] }) {
                 {c.name}
               </CardTitle>
             </CardHeader>
-            <CardContent />
+            <CardContent className="flex flex-wrap items-center gap-2">
+              <Badge variant={role === "professor" ? "default" : "outline"}>
+                {role === "professor" ? t("roleProfessor") : t("roleStudent")}
+              </Badge>
+              <span className="flex items-center gap-1 text-muted-foreground text-xs">
+                <Users className="size-3.5" />
+                {t("memberCount", { count: c.memberCount })}
+              </span>
+            </CardContent>
           </Card>
         </Link>
       ))}
