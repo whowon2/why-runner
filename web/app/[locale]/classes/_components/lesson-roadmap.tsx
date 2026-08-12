@@ -126,6 +126,7 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
         <ManageLesson
           classSlug={classroom.slug}
           exerciseCount={exercises.length}
+          existingProblemIds={exercises.map((e) => e.problemId)}
           lesson={lesson}
         />
       )}

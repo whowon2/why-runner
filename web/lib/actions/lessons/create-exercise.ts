@@ -1,6 +1,6 @@
 "use server";
 
-import { eq, max } from "drizzle-orm";
+import { and, eq, max } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import {
   type CreateExerciseInput,
@@ -28,6 +28,17 @@ export async function createExercise(
     columns: { title: true },
   });
   if (!linkedProblem) throw new Error("Problem not found");
+
+  const existing = await db.query.exercise.findFirst({
+    where: and(
+      eq(exercise.lessonId, input.lessonId),
+      eq(exercise.problemId, input.problemId),
+    ),
+    columns: { id: true },
+  });
+  if (existing) {
+    throw new Error("This problem is already an exercise in this lesson.");
+  }
 
   let order = input.order;
   if (order === undefined) {

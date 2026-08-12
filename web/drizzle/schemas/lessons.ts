@@ -6,6 +6,7 @@ import {
   primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 import { classroom } from "./classes";
@@ -81,23 +82,33 @@ export const lessonSubmissionRelations = relations(
 );
 
 /** One problem entry inside a lesson. */
-export const exercise = pgTable("exercise", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  lessonId: uuid("lesson_id")
-    .notNull()
-    .references(() => lesson.id, { onDelete: "cascade" }),
-  problemId: uuid("problem_id")
-    .notNull()
-    .references(() => problem.id, { onDelete: "cascade" }),
-  slug: text("slug").notNull().unique(),
-  order: integer("order").default(0).notNull(),
-  primaryLanguage: Language("primary_language"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
+export const exercise = pgTable(
+  "exercise",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    lessonId: uuid("lesson_id")
+      .notNull()
+      .references(() => lesson.id, { onDelete: "cascade" }),
+    problemId: uuid("problem_id")
+      .notNull()
+      .references(() => problem.id, { onDelete: "cascade" }),
+    slug: text("slug").notNull().unique(),
+    order: integer("order").default(0).notNull(),
+    primaryLanguage: Language("primary_language"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    // Same problem can't be added to the same lesson twice.
+    uniqueIndex("exercise_lesson_id_problem_id_unique").on(
+      table.lessonId,
+      table.problemId,
+    ),
+  ],
+);
 
 export type Exercise = typeof exercise.$inferSelect;
 export type CreateExerciseInput = typeof exercise.$inferInsert;
