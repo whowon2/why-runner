@@ -9,6 +9,7 @@ import type { Language, Problem } from "@/drizzle/schema";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 import { ProblemDescription } from "../description";
+import { DeleteProblemButton } from "../delete-problem-button";
 import { PublishProblem } from "../publish-button";
 import { ProblemEditTab } from "./edit";
 import { ProblemResultsTab } from "./results";
@@ -100,7 +101,10 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
           </div>
 
           {isOwner && problem.status === "draft" && (
-            <PublishProblem problem={problem} />
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <PublishProblem problem={problem} />
+              <DeleteProblemButton problem={problem} />
+            </div>
           )}
         </div>
 
