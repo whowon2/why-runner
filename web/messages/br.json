@@ -678,6 +678,13 @@
         "validation": "uma validação aprovada"
       }
     },
+    "Delete": {
+      "button": "Excluir",
+      "title": "Excluir este rascunho?",
+      "description": "Isso exclui permanentemente o problema rascunho e seus casos de teste. Não pode ser desfeito.",
+      "success": "Rascunho excluído",
+      "failed": "Falha ao excluir rascunho"
+    },
     "draftBadge": "Rascunho",
     "creatingDraft": "Criando rascunho...",
     "failedCreateDraft": "Falha ao criar rascunho de problema",

@@ -678,6 +678,13 @@
         "validation": "a passing validation run"
       }
     },
+    "Delete": {
+      "button": "Delete",
+      "title": "Delete this draft?",
+      "description": "This permanently deletes the draft problem and its test cases. This can't be undone.",
+      "success": "Draft deleted",
+      "failed": "Failed to delete draft"
+    },
     "draftBadge": "Draft",
     "creatingDraft": "Creating draft...",
     "failedCreateDraft": "Failed to create problem draft",
