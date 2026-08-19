@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { classroomMembership, lesson } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { computeExerciseScore } from "@/lib/exercise-score";
 
 /** Professor-only: every class member's whole-lesson submission, exercise by exercise. */
 export async function getLessonReview(lessonId: string) {
@@ -54,12 +55,8 @@ export async function getLessonReview(lessonId: string) {
 
   return {
     lesson: found,
-    students: students.map((student) => ({
-      student,
-      submittedAt: submissionByUser.get(student.id)?.submittedAt ?? null,
-      reviewedAt: submissionByUser.get(student.id)?.reviewedAt ?? null,
-      score: submissionByUser.get(student.id)?.score ?? null,
-      answers: exercises.map((e) => {
+    students: students.map((student) => {
+      const answers = exercises.map((e) => {
         const completion = e.completions.find(
           (c) => c.userId === student.id,
         );
@@ -67,8 +64,24 @@ export async function getLessonReview(lessonId: string) {
           exerciseId: e.id,
           problem: e.problem,
           submission: completion?.submission ?? null,
+          feedback: completion?.feedback ?? null,
+          // Fraction of test cases passed for this exercise, in [0, 1] —
+          // derived from the snapshotted submission's judge result, never
+          // stored (see `computeExerciseScore`).
+          score: computeExerciseScore(completion?.submission?.output),
         };
-      }),
-    })),
+      });
+
+      return {
+        student,
+        submittedAt: submissionByUser.get(student.id)?.submittedAt ?? null,
+        reviewedAt: submissionByUser.get(student.id)?.reviewedAt ?? null,
+        // Sum of each exercise's normalized fraction — every exercise
+        // counts equally regardless of how many test cases its problem
+        // declares.
+        score: answers.reduce((sum, a) => sum + a.score, 0),
+        answers,
+      };
+    }),
   };
 }

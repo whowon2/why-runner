@@ -135,7 +135,14 @@ async fn process_job(db: &DbClient, sub: Submission) {
         sub.id, sub.language
     );
 
-    let (mut report, runtime_ms, memory_kb) = grade(&sub.code, sub.language, &problem).await;
+    // Lesson exercises run every declared test case instead of stopping at
+    // the first failure, so `passed_count`/`total_tests` reflect true
+    // correctness for per-exercise grading (see lesson-per-exercise-grading).
+    // Contests and standalone/practice submissions (`exercise_id: None`)
+    // keep the original stop-at-first-failure behavior.
+    let run_all = sub.exercise_id.is_some();
+    let (mut report, runtime_ms, memory_kb) =
+        grade(&sub.code, sub.language, &problem, run_all).await;
     let (status, violation_detail) =
         resolve_constraint_status(&sub.code, sub.language, &mut report, &exercise_constraints);
 
@@ -172,8 +179,10 @@ async fn process_validation_job(db: &DbClient, validation: ProblemValidation) {
         validation.problem_id, validation.language
     );
 
+    // Reference-solution validation isn't tied to any specific exercise —
+    // always stop at the first failure, same as contest/standalone grading.
     let (report, runtime_ms, _memory_kb) =
-        grade(&validation.code, validation.language, &problem).await;
+        grade(&validation.code, validation.language, &problem, false).await;
 
     let output_json = serde_json::to_string(&report).unwrap_or_default();
     let status = if report.passed {
@@ -233,14 +242,20 @@ fn resolve_constraint_status(
 }
 
 /// Shared grading core: runs `code` against every declared input/output pair
-/// of `problem`, stopping at the first TLE / compile error / runtime error /
-/// wrong answer, same as the student-submission path. Used by both real
-/// submissions and pre-publish validation runs so the two can never grade
-/// differently.
+/// of `problem`. When `run_all` is false (contests, standalone/practice,
+/// pre-publish validation), stops at the first TLE / compile error / runtime
+/// error / wrong answer, same as before this parameter existed. When
+/// `run_all` is true (lesson exercises), keeps running every remaining test
+/// case after a TLE/runtime-error/wrong-answer so `passed_count` reflects
+/// true correctness — only a compile error still stops immediately either
+/// way, since it applies identically to every test case. `failure_details`
+/// always captures just the first failure encountered, matching
+/// `JudgeReport`'s single-`Option<TestCaseResult>` shape.
 async fn grade(
     code: &str,
     language: Language,
     problem: &Problem,
+    run_all: bool,
 ) -> (JudgeReport, i64, Option<i64>) {
     let total_tests = problem.inputs.len();
     let mut passed_count = 0;
@@ -268,19 +283,10 @@ async fn grade(
             memory_kb = Some(memory_kb.map_or(kb, |current| current.max(kb)));
         }
 
-        if result.is_timeout {
-            all_passed = false;
-            failure_details = Some(TestCaseResult {
-                index: i + 1,
-                input: input.clone(),
-                expected: expected.clone(),
-                actual: "Execution timed out".to_string(),
-                error: Some(format!("Time Limit Exceeded ({}s)", time_limit)),
-            });
-
-            println!("\t⏳ TLE on Test {}", i + 1);
-            break;
-        } else if result.is_compile_error {
+        if result.is_compile_error {
+            // Always stops, even when run_all: a compile error is identical
+            // on every test case (the code never runs), so re-running it
+            // would only waste sandbox time for no new information.
             all_passed = false;
             failure_details = Some(TestCaseResult {
                 index: i + 1,
@@ -292,30 +298,54 @@ async fn grade(
 
             println!("\t🛠️ Compile Error on Test {}", i + 1);
             break;
+        } else if result.is_timeout {
+            all_passed = false;
+            if failure_details.is_none() {
+                failure_details = Some(TestCaseResult {
+                    index: i + 1,
+                    input: input.clone(),
+                    expected: expected.clone(),
+                    actual: "Execution timed out".to_string(),
+                    error: Some(format!("Time Limit Exceeded ({}s)", time_limit)),
+                });
+            }
+
+            println!("\t⏳ TLE on Test {}", i + 1);
+            if !run_all {
+                break;
+            }
         } else if result.exit_code != 0 {
             // CASE 1: Runtime Error (Crash)
             all_passed = false;
-            failure_details = Some(TestCaseResult {
-                index: i + 1,
-                input: input.clone(), // We save the input that killed it
-                expected: expected.clone(),
-                actual: actual,             // Sometimes partial output exists
-                error: Some(result.stderr), // The Traceback
-            });
+            if failure_details.is_none() {
+                failure_details = Some(TestCaseResult {
+                    index: i + 1,
+                    input: input.clone(), // We save the input that killed it
+                    expected: expected.clone(),
+                    actual: actual.clone(), // Sometimes partial output exists
+                    error: Some(result.stderr.clone()), // The Traceback
+                });
+            }
             println!("\t❌ Runtime Error on Test {}", i + 1);
-            break; // Stop testing
+            if !run_all {
+                break;
+            }
         } else if actual.trim() != expected.trim() {
             // CASE 2: Wrong Answer
             all_passed = false;
-            failure_details = Some(TestCaseResult {
-                index: i + 1,
-                input: input.clone(),
-                expected: expected.clone(),
-                actual: actual,
-                error: None,
-            });
+            if failure_details.is_none() {
+                failure_details = Some(TestCaseResult {
+                    index: i + 1,
+                    input: input.clone(),
+                    expected: expected.clone(),
+                    actual: actual.clone(),
+                    error: None,
+                });
+            }
             println!("\t❌ Wrong Answer on Test {}", i + 1);
-            break; // Stop testing
+            if !run_all {
+                break;
+            }
         } else {
             passed_count += 1;
         }
@@ -331,4 +361,63 @@ async fn grade(
     };
 
     (report, runtime_ms, memory_kb)
+}
+
+#[cfg(test)]
+mod grade_tests {
+    use super::*;
+
+    // A tiny Python script that reads one int per line and echoes it back —
+    // correct for `expected == input`, wrong otherwise. Cheap and fast to
+    // run through the real Python sandbox (needs Docker running locally,
+    // same as production).
+    const ECHO_CODE: &str = "print(input())";
+
+    fn problem(inputs: &[&str], outputs: &[&str]) -> Problem {
+        Problem {
+            inputs: inputs.iter().map(|s| s.to_string()).collect(),
+            outputs: outputs.iter().map(|s| s.to_string()).collect(),
+        }
+    }
+
+    #[tokio::test]
+    async fn run_all_keeps_going_past_a_mid_suite_failure() {
+        // Test 2 is wrong (expects "wrong", echo prints the input back), so
+        // a stop-at-first-failure grade would never see tests 3+.
+        let p = problem(&["1", "2", "3"], &["1", "wrong", "3"]);
+        let (report, _, _) = grade(ECHO_CODE, Language::Python, &p, true).await;
+
+        assert!(!report.passed);
+        assert_eq!(report.total_tests, 3);
+        assert_eq!(report.passed_count, 2, "should count tests 1 and 3 as passed despite the failure at test 2");
+        assert_eq!(report.failure_details.unwrap().index, 2, "failure_details should still capture only the first failure");
+    }
+
+    #[tokio::test]
+    async fn stop_at_first_failure_when_run_all_is_false() {
+        let p = problem(&["1", "2", "3"], &["1", "wrong", "3"]);
+        let (report, _, _) = grade(ECHO_CODE, Language::Python, &p, false).await;
+
+        assert!(!report.passed);
+        assert_eq!(report.total_tests, 3);
+        assert_eq!(report.passed_count, 1, "should stop after test 2 and never run test 3");
+    }
+
+    #[tokio::test]
+    async fn compile_error_stops_immediately_regardless_of_run_all() {
+        // Python has no compile step (see `run_python`), so this needs a
+        // compiled language to actually exercise `is_compile_error`.
+        let p = problem(&["1", "2"], &["1", "2"]);
+        let bad_code = "int main( { return 0; }"; // malformed C, won't compile
+
+        for run_all in [false, true] {
+            let (report, _, _) = grade(bad_code, Language::C, &p, run_all).await;
+            assert!(!report.passed);
+            assert_eq!(
+                report.passed_count, 0,
+                "compile error should short-circuit before any test case passes, run_all={run_all}"
+            );
+            assert!(report.failure_details.is_some());
+        }
+    }
 }

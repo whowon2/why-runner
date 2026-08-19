@@ -42,6 +42,14 @@ export async function getExercise(exerciseId: string) {
 
   return {
     ...found,
+    problem: {
+      ...found.problem,
+      // Test-case inputs are always visible so students can see the edge
+      // cases their solution is graded against; expected outputs are only
+      // included when the lesson's owner has opted in (`showOutputs`) — off
+      // by default.
+      outputs: found.lesson.showOutputs ? found.problem.outputs : [],
+    },
     done: !!passed,
     lessonSubmitted: !!lessonSubmission,
     // Students may resubmit freely before the due date — only a passed due

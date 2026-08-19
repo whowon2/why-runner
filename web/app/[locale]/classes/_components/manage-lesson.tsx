@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingSwap } from "@/components/ui/loading-swap";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -83,6 +84,22 @@ export function ManageLesson({
                 )
               }
               type="date"
+            />
+          </label>
+
+          <label
+            className="flex items-center gap-2 text-sm"
+            title={t("showOutputsHint")}
+          >
+            {t("showOutputs")}
+            <Switch
+              checked={lesson.showOutputs}
+              onCheckedChange={(checked) =>
+                updateLesson(
+                  { lessonId: lesson.id, showOutputs: checked },
+                  { onError: (error) => toast.error(error.message) },
+                )
+              }
             />
           </label>
 
