@@ -281,6 +281,13 @@
       "when": 1786492635777,
       "tag": "0039_rainy_elektra",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1787154898067,
+      "tag": "0040_stale_puck",
+      "breakpoints": true
     }
   ]
 }

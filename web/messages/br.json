@@ -794,11 +794,16 @@
     "unpublish": "Despublicar",
     "addLesson": "Adicionar exercício",
     "manageTrack": "Gerenciar atividade",
+    "showOutputs": "Mostrar saídas esperadas para os alunos",
+    "showOutputsHint": "Permite que os alunos vejam saídas de casos de borda, para você poder checar respostas com valores fixos (hardcoded) durante a revisão.",
     "Lesson": {
       "primaryLanguage": "Linguagem sugerida: {language}",
       "anyLanguage": "Você pode enviar em qualquer linguagem.",
       "submissionsTitle": "Envios",
-      "codeCopied": "Código copiado para a área de transferência"
+      "codeCopied": "Código copiado para a área de transferência",
+      "testCasesTitle": "Casos de teste",
+      "testCaseInput": "Entrada {index}",
+      "testCaseOutput": "Saída esperada {index}"
     },
     "Review": {
       "backToTrack": "Voltar para a atividade",
@@ -812,11 +817,13 @@
       "noAnswer": "Sem resposta para esse exercício",
       "notYetAvailable": "A revisão abre depois que o prazo final passar.",
       "scoreLabel": "Nota: {score}",
-      "scorePlaceholder": "Nota",
+      "exerciseScoreLabel": "{score}",
       "markReviewed": "Marcar como revisado",
-      "updateScore": "Atualizar nota",
       "reviewSaved": "Revisão salva",
-      "reviewedAt": "Revisado em {date}"
+      "reviewedAt": "Revisado em {date}",
+      "feedbackPlaceholder": "Feedback para este exercício",
+      "saveFeedback": "Salvar feedback",
+      "feedbackSaved": "Feedback salvo"
     },
     "submittedAt": "Enviado em {date}",
     "submitTrack": "Enviar atividade",

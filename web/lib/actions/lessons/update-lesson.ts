@@ -19,6 +19,7 @@ export async function updateLesson(input: {
   title?: string;
   description?: string;
   dueDate?: Date | null;
+  showOutputs?: boolean;
 }) {
   const currentUser = await getCurrentUser({});
   await assertOwnsLesson(input.lessonId, currentUser.id);
@@ -31,6 +32,9 @@ export async function updateLesson(input: {
         ? { description: input.description }
         : {}),
       ...(input.dueDate !== undefined ? { dueDate: input.dueDate } : {}),
+      ...(input.showOutputs !== undefined
+        ? { showOutputs: input.showOutputs }
+        : {}),
     })
     .where(eq(lesson.id, input.lessonId))
     .returning();

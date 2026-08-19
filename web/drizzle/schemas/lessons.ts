@@ -25,6 +25,11 @@ export const lesson = pgTable("lesson", {
   description: text("description").default("").notNull(),
   dueDate: timestamp("due_date"),
   isPublished: boolean("is_published").default(false).notNull(),
+  // When on, the exercise page also shows each test case's expected output
+  // alongside its input (inputs are always shown). Off by default — lets a
+  // professor opt a lesson into revealing edge cases for manual
+  // hardcode-detection review, at the cost of making answers visible.
+  showOutputs: boolean("show_outputs").default(false).notNull(),
   createdBy: text("created_by").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
@@ -56,11 +61,13 @@ export const lessonSubmission = pgTable(
       .notNull()
       .references(() => lesson.id, { onDelete: "cascade" }),
     submittedAt: timestamp("submitted_at").defaultNow().notNull(),
-    // Set once the professor grades this student's submission (only
-    // possible after the lesson's due date, see `getLessonReview`). `score`
-    // is a professor-assigned integer, not auto-computed from pass/fail.
+    // Set once the professor marks this student's submission as reviewed
+    // (only possible after the lesson's due date, see `getLessonReview`).
+    // There is no stored `score` column anymore — the lesson-total score is
+    // computed at read time as the sum of each exercise's passed-test-case
+    // fraction (see `getLessonReview`), so it can never drift from the
+    // underlying judge results.
     reviewedAt: timestamp("reviewed_at"),
-    score: integer("score"),
   },
   (t) => [primaryKey({ columns: [t.userId, t.lessonId] })],
 );
@@ -144,6 +151,11 @@ export const exerciseCompletion = pgTable(
     }),
     language: Language(),
     completedAt: timestamp("completed_at").defaultNow().notNull(),
+    // Professor-authored free-text feedback on this student's answer to this
+    // exercise, set during lesson review. This exercise's own score is never
+    // stored here — it's derived from `submissionId`'s judge result at read
+    // time (see `getLessonReview`).
+    feedback: text("feedback"),
   },
   (t) => [primaryKey({ columns: [t.userId, t.exerciseId] })],
 );

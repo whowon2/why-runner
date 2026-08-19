@@ -151,15 +151,13 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
                           })}
                         </Badge>
                       )}
-                      {!isOwner &&
-                        lesson.mySubmission?.reviewedAt &&
-                        lesson.mySubmission.score !== null && (
-                          <Badge className="bg-green-600">
-                            {tLessons("scoreLabel", {
-                              score: lesson.mySubmission.score,
-                            })}
-                          </Badge>
-                        )}
+                      {!isOwner && lesson.mySubmission?.reviewedAt && (
+                        <Badge className="bg-green-600">
+                          {tLessons("scoreLabel", {
+                            score: lesson.mySubmission.score.toFixed(2),
+                          })}
+                        </Badge>
+                      )}
                       {!isOwner &&
                         lesson.mySubmission &&
                         !lesson.mySubmission.reviewedAt &&

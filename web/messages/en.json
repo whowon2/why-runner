@@ -794,11 +794,16 @@
     "unpublish": "Unpublish",
     "addLesson": "Add exercise",
     "manageTrack": "Manage assignment",
+    "showOutputs": "Show expected outputs to students",
+    "showOutputsHint": "Lets students see edge-case outputs, so you can check submitted code for hardcoded answers during review.",
     "Lesson": {
       "primaryLanguage": "Suggested language: {language}",
       "anyLanguage": "You may submit in any language.",
       "submissionsTitle": "Submissions",
-      "codeCopied": "Code copied to clipboard"
+      "codeCopied": "Code copied to clipboard",
+      "testCasesTitle": "Test cases",
+      "testCaseInput": "Input {index}",
+      "testCaseOutput": "Expected output {index}"
     },
     "Review": {
       "backToTrack": "Back to assignment",
@@ -812,11 +817,13 @@
       "noAnswer": "No answer for this exercise",
       "notYetAvailable": "Review opens once the due date has passed.",
       "scoreLabel": "Score: {score}",
-      "scorePlaceholder": "Score",
+      "exerciseScoreLabel": "{score}",
       "markReviewed": "Mark reviewed",
-      "updateScore": "Update score",
       "reviewSaved": "Review saved",
-      "reviewedAt": "Reviewed {date}"
+      "reviewedAt": "Reviewed {date}",
+      "feedbackPlaceholder": "Feedback for this exercise",
+      "saveFeedback": "Save feedback",
+      "feedbackSaved": "Feedback saved"
     },
     "submittedAt": "Submitted {date}",
     "submitTrack": "Submit assignment",
