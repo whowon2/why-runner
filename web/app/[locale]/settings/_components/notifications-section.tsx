@@ -9,7 +9,6 @@ import {
 } from "@/hooks/use-notification-preferences";
 
 const GROUPS = [
-  { id: "social", types: ["FOLLOW", "ACTIVITY_LIKE", "ACTIVITY_COMMENT"] },
   {
     id: "contests",
     types: [
@@ -19,7 +18,6 @@ const GROUPS = [
     ],
   },
   { id: "submissions", types: ["SUBMISSION_GRADED"] },
-  { id: "problems", types: ["FOLLOWED_USER_PUBLISHED_PROBLEM"] },
   { id: "lessons", types: ["LESSON_UNLOCKED"] },
 ] as const satisfies { id: string; types: NotificationType[] }[];
 

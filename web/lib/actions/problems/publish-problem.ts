@@ -2,9 +2,8 @@
 
 import { desc, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { activityFeed, problem, problemValidation } from "@/drizzle/schema";
+import { problem, problemValidation } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
-import { notifyFollowedUserPublishedProblem } from "@/lib/notifications";
 import { computeIoHash } from "@/lib/problem-io-hash";
 import {
   getMissingProblemFields,
@@ -43,14 +42,6 @@ export async function publishProblem(problemId: string) {
     .set({ status: "published" })
     .where(eq(problem.id, problemId))
     .returning();
-
-  await db.insert(activityFeed).values({
-    userId: currentUser.id,
-    type: "PROBLEM_CREATED",
-    problemId: result.id,
-  });
-
-  await notifyFollowedUserPublishedProblem(currentUser.id, result.id);
 
   return result;
 }

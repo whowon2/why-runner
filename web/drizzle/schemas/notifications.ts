@@ -10,7 +10,6 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { activityFeed } from "./activities";
 import { contest } from "./contests";
 import { exercise } from "./lessons";
 import { problem } from "./problems";
@@ -18,14 +17,10 @@ import { submission } from "./submissions";
 import { user } from "./users";
 
 export const NotificationType = pgEnum("notification_type", [
-  "FOLLOW",
-  "ACTIVITY_LIKE",
-  "ACTIVITY_COMMENT",
   "CONTEST_JOIN_REQUEST",
   "CONTEST_JOIN_APPROVED",
   "CONTEST_JOIN_REJECTED",
   "SUBMISSION_GRADED",
-  "FOLLOWED_USER_PUBLISHED_PROBLEM",
   "LESSON_UNLOCKED",
 ]);
 
@@ -42,9 +37,6 @@ export const notification = pgTable(
     count: integer("count").default(1).notNull(),
     actorIds: text("actor_ids").array().default([]).notNull(),
     read: boolean("read").default(false).notNull(),
-    activityId: uuid("activity_id").references(() => activityFeed.id, {
-      onDelete: "cascade",
-    }),
     contestId: uuid("contest_id").references(() => contest.id, {
       onDelete: "cascade",
     }),
@@ -65,7 +57,6 @@ export const notification = pgTable(
   },
   (t) => [
     index("notification_recipient_read_idx").on(t.recipientId, t.read),
-    index("notification_activity_idx").on(t.activityId),
     index("notification_contest_idx").on(t.contestId),
     index("notification_submission_idx").on(t.submissionId),
     index("notification_problem_idx").on(t.problemId),
@@ -80,10 +71,6 @@ export const notificationRelations = relations(notification, ({ one }) => ({
   recipient: one(user, {
     fields: [notification.recipientId],
     references: [user.id],
-  }),
-  activity: one(activityFeed, {
-    fields: [notification.activityId],
-    references: [activityFeed.id],
   }),
   contest: one(contest, {
     fields: [notification.contestId],
