@@ -1,4 +1,3 @@
-export * from "./schemas/activities";
 export * from "./schemas/classes";
 export * from "./schemas/constraints";
 export * from "./schemas/contests";

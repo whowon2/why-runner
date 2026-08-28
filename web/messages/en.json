@@ -48,32 +48,9 @@
     "problems": "Problems",
     "contests": "Contests",
     "roadmap": "Classes",
-    "feed": "Feed",
     "login": "Login",
     "settings": "Settings",
     "notifications": "Notifications"
-  },
-  "Follow": {
-    "follow": "Follow",
-    "following": "Following"
-  },
-  "FollowList": {
-    "followersTitle": "Followers",
-    "followingTitle": "Following",
-    "searchPlaceholder": "Search by name or username",
-    "emptyFollowers": "No followers yet.",
-    "emptyFollowing": "Not following anyone yet.",
-    "emptySearch": "No users match your search."
-  },
-  "SocialFeed": {
-    "title": "Feed",
-    "subtitle": "See what people you follow are up to.",
-    "followingTab": "Following",
-    "exploreTab": "Explore",
-    "emptyFollowing": "Your following feed is empty.",
-    "emptyFollowingCta": "Follow people in Explore to see their activity here.",
-    "emptyExplore": "No activity to show yet.",
-    "exploreLinkLabel": "Explore"
   },
   "Footer": {
     "copyright": "© {year} Why Runner",
@@ -1172,8 +1149,6 @@
     "joined": "Joined",
     "contests": "Contests",
     "problems": "Problems",
-    "followers": "followers",
-    "following": "following",
     "globalRank": "Global Rank",
     "Skills": {
       "themesTitle": "Theme Skills",
@@ -1182,30 +1157,8 @@
   },
   "UserPage": {
     "Tabs": {
-      "posts": "Posts",
       "contests": "Contests",
       "problems": "Problems"
-    },
-    "Feed": {
-      "empty": "No activity to show yet. Be the first to share something!",
-      "emptyTitleOwner": "No posts yet",
-      "emptyDescriptionOwner": "You haven't posted anything yet. Share an update to get started.",
-      "emptyTitleVisitor": "No posts yet",
-      "emptyDescriptionVisitor": "This user hasn't posted anything yet.",
-      "someone": "someone",
-      "problemAction": "published a problem",
-      "contestAction": "published a contest",
-      "commentPlaceholder": "Write a comment...",
-      "reply": "Reply",
-      "replyPlaceholder": "Write a reply...",
-      "delete": "Delete",
-      "cancel": "Cancel",
-      "moreOptions": "More options",
-      "deleteComment": "Delete comment",
-      "deleteCommentError": "Failed to delete comment",
-      "deleteActivityTitle": "Delete this post?",
-      "deleteActivityDescription": "This will permanently remove the post along with its likes and comments.",
-      "deleteActivityError": "Failed to delete post"
     },
     "MyContests": {
       "loading": "Loading contests...",
@@ -1242,21 +1195,15 @@
       "title": "Notifications",
       "description": "Choose which notifications you want to receive. All notifications are on by default.",
       "groups": {
-        "social": "Social",
         "contests": "Contests",
         "submissions": "Submissions",
-        "problems": "Problems",
         "lessons": "Lessons"
       },
       "types": {
-        "FOLLOW": "New followers",
-        "ACTIVITY_LIKE": "Likes on your posts",
-        "ACTIVITY_COMMENT": "Comments on your posts",
         "CONTEST_JOIN_REQUEST": "Join requests on your private contests",
         "CONTEST_JOIN_APPROVED": "Your join requests get approved",
         "CONTEST_JOIN_REJECTED": "Your join requests get rejected",
         "SUBMISSION_GRADED": "Your submissions finish grading",
-        "FOLLOWED_USER_PUBLISHED_PROBLEM": "People you follow publish a problem",
         "LESSON_UNLOCKED": "A new roadmap lesson unlocks for you"
       }
     }
@@ -1267,18 +1214,12 @@
     "loading": "Loading...",
     "empty": "No notifications yet.",
     "types": {
-      "FOLLOW": "{name} started following you",
-      "FOLLOW_others": "{name} and {count, plural, one {# other} other {# others}} started following you",
-      "ACTIVITY_LIKE": "{name} liked your post",
-      "ACTIVITY_LIKE_others": "{count, plural, one {# person} other {# people}} liked your post",
-      "ACTIVITY_COMMENT": "{name} commented on your post",
       "CONTEST_JOIN_REQUEST": "{name} requested to join \"{contest}\"",
       "CONTEST_JOIN_APPROVED": "Your request to join \"{contest}\" was approved",
       "CONTEST_JOIN_REJECTED": "Your request to join \"{contest}\" was rejected",
       "SUBMISSION_GRADED_PASSED": "Your submission for \"{problem}\" passed",
       "SUBMISSION_GRADED_FAILED": "Your submission for \"{problem}\" failed",
       "SUBMISSION_GRADED_ERROR": "Your submission for \"{problem}\" had an error",
-      "FOLLOWED_USER_PUBLISHED_PROBLEM": "{name} published a new problem: \"{problem}\"",
       "LESSON_UNLOCKED": "A new lesson is now available on your roadmap"
     }
   },

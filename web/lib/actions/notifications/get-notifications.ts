@@ -13,7 +13,6 @@ export async function getNotifications() {
     orderBy: (n, { desc }) => desc(n.updatedAt),
     limit: 50,
     with: {
-      activity: { columns: { id: true } },
       contest: { columns: { id: true, name: true, slug: true } },
       submission: { columns: { id: true, status: true } },
       problem: { columns: { id: true, title: true, slug: true } },
