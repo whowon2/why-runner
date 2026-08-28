@@ -24,7 +24,7 @@ export function ContestSettings({ contestId }: { contestId: string }) {
   return (
     <div className="flex flex-col gap-8 w-full mx-auto py-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <section className="space-y-4">
-        <Card>
+        <Card className="bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
           <CardHeader>
             <CardTitle>{t("title")}</CardTitle>
           </CardHeader>
@@ -41,7 +41,7 @@ export function ContestSettings({ contestId }: { contestId: string }) {
             {tTabs("problems")}
           </h2>
         </div>
-        <Card>
+        <Card className="bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
           <CardContent className="pt-6">
             <EditContestProblems contest={contest} />
           </CardContent>

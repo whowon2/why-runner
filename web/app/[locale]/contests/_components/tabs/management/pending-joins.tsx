@@ -45,7 +45,7 @@ export function PendingJoins({ contestId }: { contestId: string }) {
   if (pending.length === 0) return null;
 
   return (
-    <Card>
+    <Card className="bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
       <CardHeader>
         <CardTitle>{t("title", { count: pending.length })}</CardTitle>
       </CardHeader>

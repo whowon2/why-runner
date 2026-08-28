@@ -51,7 +51,7 @@ export default function LoginPage() {
           </TabsList>
         )}
         <TabsContent value="signin">
-          <Card>
+          <Card className="bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
             <CardHeader className="text-2xl font-bold">
               <CardTitle>{t("signIn")}</CardTitle>
             </CardHeader>
@@ -71,7 +71,7 @@ export default function LoginPage() {
         </TabsContent>
 
         <TabsContent value="signup">
-          <Card>
+          <Card className="bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
             <CardHeader className="text-2xl font-bold">
               <CardTitle>{t("signUp")}</CardTitle>
             </CardHeader>
@@ -88,7 +88,7 @@ export default function LoginPage() {
         </TabsContent>
 
         <TabsContent value="email-verification">
-          <Card>
+          <Card className="bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
             <CardHeader className="text-2xl font-bold">
               <CardTitle>{t("verifyEmail")}</CardTitle>
             </CardHeader>
@@ -99,7 +99,7 @@ export default function LoginPage() {
         </TabsContent>
 
         <TabsContent value="forgot-password">
-          <Card>
+          <Card className="bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
             <CardHeader className="text-2xl font-bold">
               <CardTitle>{t("forgotPassword")}</CardTitle>
             </CardHeader>

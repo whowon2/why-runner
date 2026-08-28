@@ -13,7 +13,7 @@ export function Participants({ contestId }: { contestId: string }) {
   if (participants.length === 0) return null;
 
   return (
-    <Card>
+    <Card className="bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
       <CardHeader>
         <CardTitle>Participants ({participants.length})</CardTitle>
       </CardHeader>

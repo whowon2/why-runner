@@ -406,7 +406,7 @@ export function NewProblem({ problem }: { problem: Problem }) {
 
         {/* Live Preview Tab */}
         <TabsContent value="preview" className="mt-0">
-          <div className="border rounded-xl p-8 bg-card shadow-sm space-y-8 min-h-[500px]">
+          <div className="border rounded-xl p-8 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5 shadow-sm space-y-8 min-h-[500px]">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b pb-6">
               <h1 className="text-3xl font-extrabold tracking-tight">
                 {formValues.title || t("untitled")}
