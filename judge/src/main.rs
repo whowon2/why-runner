@@ -15,6 +15,38 @@ use crate::{
     },
 };
 
+/// DB may not be ready to accept connections yet on cold start (e.g. Postgres
+/// container still initializing). Retry with a capped backoff instead of
+/// failing on the first attempt.
+const DB_CONNECT_MAX_ATTEMPTS: u32 = 15;
+const DB_CONNECT_BACKOFF_CAP: Duration = Duration::from_secs(5);
+
+async fn connect_with_retry<T, F, Fut>(what: &str, connect: F) -> T
+where
+    F: Fn() -> Fut,
+    Fut: std::future::Future<Output = sqlx::Result<T>>,
+{
+    let mut attempt = 0u32;
+    loop {
+        attempt += 1;
+        match connect().await {
+            Ok(value) => return value,
+            Err(err) if attempt < DB_CONNECT_MAX_ATTEMPTS => {
+                let backoff = Duration::from_secs(attempt as u64).min(DB_CONNECT_BACKOFF_CAP);
+                println!(
+                    "{} connection attempt {}/{} failed: {}. Retrying in {:?}...",
+                    what, attempt, DB_CONNECT_MAX_ATTEMPTS, err, backoff
+                );
+                tokio::time::sleep(backoff).await;
+            }
+            Err(err) => panic!(
+                "{} failed to connect after {} attempts: {}",
+                what, DB_CONNECT_MAX_ATTEMPTS, err
+            ),
+        }
+    }
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
@@ -22,13 +54,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // DB
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     println!("Connecting to database...");
-    let db = DbClient::new(&database_url)
-        .await
-        .expect("Failed to connect to DB");
+    let db = connect_with_retry("Database", || DbClient::new(&database_url)).await;
     println!("Database connected");
 
     // PgListener
-    let mut listener = PgListener::connect(&database_url).await?;
+    let mut listener = connect_with_retry("PgListener", || PgListener::connect(&database_url)).await;
     listener.listen("new_submission").await?;
     listener.listen("new_validation").await?;
     println!("Listening for 'new_submission' and 'new_validation' notifications...");
