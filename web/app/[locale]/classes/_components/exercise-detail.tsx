@@ -89,6 +89,11 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
           </CardContent>
         </Card>
 
+        <ExerciseTestCases
+          inputs={exercise.problem.inputs}
+          outputs={exercise.problem.outputs}
+        />
+
         <ExerciseConstraintsNotice exerciseId={exercise.id} />
 
         <ExerciseSubmissions exerciseId={exercise.id} />
@@ -195,6 +200,52 @@ function ExerciseSubmit({
           value={code}
           width="100%"
         />
+      </CardContent>
+    </Card>
+  );
+}
+
+// Inputs are always shown so students can see the edge cases their solution
+// is graded against; expected outputs are only present when the lesson
+// owner turned `showOutputs` on (masked to an empty array server-side
+// otherwise — see `getExercise`), so this renders whichever the server sent.
+function ExerciseTestCases({
+  inputs,
+  outputs,
+}: {
+  inputs: string[];
+  outputs: string[];
+}) {
+  const t = useTranslations("RoadmapPage.Lesson");
+
+  if (inputs.length === 0) return null;
+
+  return (
+    <Card className="bg-transparent shadow-none">
+      <CardHeader>
+        <CardTitle className="text-base">{t("testCasesTitle")}</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        {inputs.map((input, i) => (
+          <div className="flex flex-col gap-1" key={`${i}-${input}`}>
+            <p className="text-muted-foreground text-xs">
+              {t("testCaseInput", { index: i + 1 })}
+            </p>
+            <pre className="w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 font-mono text-xs text-foreground">
+              {input}
+            </pre>
+            {outputs[i] !== undefined && (
+              <>
+                <p className="text-muted-foreground text-xs">
+                  {t("testCaseOutput", { index: i + 1 })}
+                </p>
+                <pre className="w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 font-mono text-xs text-foreground">
+                  {outputs[i]}
+                </pre>
+              </>
+            )}
+          </div>
+        ))}
       </CardContent>
     </Card>
   );

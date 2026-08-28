@@ -14,6 +14,7 @@ export const useUpdateLesson = () => {
       title?: string;
       description?: string;
       dueDate?: Date | null;
+      showOutputs?: boolean;
     }) => {
       return await updateLesson(input);
     },
