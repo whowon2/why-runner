@@ -2,9 +2,16 @@
 
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { exercise, lesson, lessonSubmission, submission } from "@/drizzle/schema";
+import {
+  exercise,
+  exerciseCompletion,
+  lesson,
+  lessonSubmission,
+  submission,
+} from "@/drizzle/schema";
 import { assertClassMember } from "@/lib/actions/classes/assert-class-member";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { computeExerciseScore } from "@/lib/exercise-score";
 
 /** Lessons (assignments) in a class, for a member or the class owner. */
 export async function listClassLessons(classroomId: string) {
@@ -52,7 +59,7 @@ export async function listClassLessons(classroomId: string) {
   // Scoped by exerciseId, not problemId: the same problem can back more
   // than one exercise (across lessons), so a pass on one exercise must not
   // count as a pass for every other exercise using that problem too.
-  const [passedSubmissions, mySubmissions] = await Promise.all([
+  const [passedSubmissions, mySubmissions, myCompletions] = await Promise.all([
     exerciseIds.length
       ? db.query.submission.findMany({
           where: and(
@@ -69,6 +76,17 @@ export async function listClassLessons(classroomId: string) {
         inArray(lessonSubmission.lessonId, lessonIds),
       ),
     }),
+    // For the score sum below — mirrors `getLessonReview`'s derivation, just
+    // scoped to the current student instead of every classroom member.
+    exerciseIds.length
+      ? db.query.exerciseCompletion.findMany({
+          where: and(
+            eq(exerciseCompletion.userId, currentUser.id),
+            inArray(exerciseCompletion.exerciseId, exerciseIds),
+          ),
+          with: { submission: true },
+        })
+      : [],
   ]);
 
   const passedExerciseIds = new Set(
@@ -77,18 +95,31 @@ export async function listClassLessons(classroomId: string) {
   const mySubmissionByLesson = new Map(
     mySubmissions.map((s) => [s.lessonId, s]),
   );
+  const scoreByExercise = new Map(
+    myCompletions.map((c) => [
+      c.exerciseId,
+      computeExerciseScore(c.submission?.output),
+    ]),
+  );
 
   return lessons.map((l) => {
     const lessonExercises = exercisesByLesson.get(l.id) ?? [];
     const completedCount = lessonExercises.filter((e) =>
       passedExerciseIds.has(e.id),
     ).length;
+    const mySubmission = mySubmissionByLesson.get(l.id) ?? null;
 
     return {
       ...l,
       exerciseCount: lessonExercises.length,
       completedCount,
-      mySubmission: mySubmissionByLesson.get(l.id) ?? null,
+      mySubmission: mySubmission && {
+        ...mySubmission,
+        score: lessonExercises.reduce(
+          (sum, e) => sum + (scoreByExercise.get(e.id) ?? 0),
+          0,
+        ),
+      },
     };
   });
 }

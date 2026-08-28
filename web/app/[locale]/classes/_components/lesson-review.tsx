@@ -6,7 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Accordion,
   AccordionContent,
@@ -15,7 +15,10 @@ import {
 } from "@/components/ui/accordion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
-import { useReviewLessonSubmission } from "@/hooks/use-review-lesson-submission";
+import {
+  useMarkLessonSubmissionReviewed,
+  useSetExerciseFeedback,
+} from "@/hooks/use-review-lesson-submission";
 import { useLessonReview } from "@/hooks/use-lesson-review";
 import { cn } from "@/lib/utils";
 
@@ -86,27 +89,35 @@ export function LessonReview({ lessonId }: { lessonId: string }) {
                   ) : (
                     <Badge variant="outline">{t("notSubmitted")}</Badge>
                   )}
-                  {reviewedAt && score !== null && (
-                    <Badge className="bg-green-600">
-                      {t("scoreLabel", { score })}
+                  {submittedAt && (
+                    <Badge className={reviewedAt ? "bg-green-600" : undefined}>
+                      {t("scoreLabel", { score: score.toFixed(2) })}
                     </Badge>
                   )}
                 </div>
               </AccordionTrigger>
               <AccordionContent className="flex flex-col gap-4">
                 {submittedAt && (
-                  <ReviewScoreForm
+                  <MarkReviewedButton
                     lessonId={lessonId}
                     reviewedAt={reviewedAt}
-                    score={score}
                     userId={student.id}
                   />
                 )}
                 {answers.map((answer, idx) => (
                   <div className="flex flex-col gap-2" key={answer.exerciseId}>
-                    <h3 className="font-medium text-sm">
-                      {idx + 1}. {answer.problem.title}
-                    </h3>
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="font-medium text-sm">
+                        {idx + 1}. {answer.problem.title}
+                      </h3>
+                      {answer.submission && (
+                        <Badge variant="outline">
+                          {t("exerciseScoreLabel", {
+                            score: answer.score.toFixed(2),
+                          })}
+                        </Badge>
+                      )}
+                    </div>
                     {answer.submission ? (
                       <div className="relative">
                         <Badge
@@ -144,6 +155,14 @@ export function LessonReview({ lessonId }: { lessonId: string }) {
                         {t("noAnswer")}
                       </p>
                     )}
+                    {answer.submission && (
+                      <ExerciseFeedbackForm
+                        exerciseId={answer.exerciseId}
+                        feedback={answer.feedback}
+                        lessonId={lessonId}
+                        userId={student.id}
+                      />
+                    )}
                   </div>
                 ))}
               </AccordionContent>
@@ -155,35 +174,26 @@ export function LessonReview({ lessonId }: { lessonId: string }) {
   );
 }
 
-function ReviewScoreForm({
+function MarkReviewedButton({
   lessonId,
   userId,
-  score,
   reviewedAt,
 }: {
   lessonId: string;
   userId: string;
-  score: number | null;
   reviewedAt: Date | null;
 }) {
   const t = useTranslations("RoadmapPage.Review");
-  const { mutate: review, isPending } = useReviewLessonSubmission();
-  const [value, setValue] = useState(score !== null ? String(score) : "");
+  const { mutate: markReviewed, isPending } =
+    useMarkLessonSubmissionReviewed();
 
   return (
     <div className="flex items-center gap-2 rounded-md border bg-muted/30 p-2">
-      <Input
-        className="w-24"
-        onChange={(e) => setValue(e.target.value)}
-        placeholder={t("scorePlaceholder")}
-        type="number"
-        value={value}
-      />
       <Button
-        disabled={isPending || value.trim() === ""}
+        disabled={isPending}
         onClick={() =>
-          review(
-            { lessonId, userId, score: Number(value) },
+          markReviewed(
+            { lessonId, userId },
             {
               onError: (error) => toast.error(error.message),
               onSuccess: () => toast.success(t("reviewSaved")),
@@ -192,13 +202,56 @@ function ReviewScoreForm({
         }
         size="sm"
       >
-        {reviewedAt ? t("updateScore") : t("markReviewed")}
+        {t("markReviewed")}
       </Button>
       {reviewedAt && (
         <span className="text-muted-foreground text-xs">
           {t("reviewedAt", { date: new Date(reviewedAt).toLocaleString() })}
         </span>
       )}
+    </div>
+  );
+}
+
+function ExerciseFeedbackForm({
+  lessonId,
+  exerciseId,
+  userId,
+  feedback,
+}: {
+  lessonId: string;
+  exerciseId: string;
+  userId: string;
+  feedback: string | null;
+}) {
+  const t = useTranslations("RoadmapPage.Review");
+  const { mutate: saveFeedback, isPending } = useSetExerciseFeedback();
+  const [value, setValue] = useState(feedback ?? "");
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Textarea
+        onChange={(e) => setValue(e.target.value)}
+        placeholder={t("feedbackPlaceholder")}
+        value={value}
+      />
+      <Button
+        className="w-fit"
+        disabled={isPending}
+        onClick={() =>
+          saveFeedback(
+            { lessonId, exerciseId, userId, feedback: value },
+            {
+              onError: (error) => toast.error(error.message),
+              onSuccess: () => toast.success(t("feedbackSaved")),
+            },
+          )
+        }
+        size="sm"
+        variant="outline"
+      >
+        {t("saveFeedback")}
+      </Button>
     </div>
   );
 }
