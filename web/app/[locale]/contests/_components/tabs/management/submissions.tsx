@@ -24,7 +24,7 @@ export function ContestSubmissions({ contest }: { contest: Contest }) {
   );
 
   return (
-    <Card className="">
+    <Card className="bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
       <CardHeader>
         <CardTitle>
           {tTable("title", { count: submissions?.length ?? 0 })}

@@ -231,7 +231,7 @@ export function ActivityCard({
   }
 
   return (
-    <div className="rounded-none border bg-card p-4">
+    <div className="rounded-none border bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5 p-4">
       <div className="flex gap-3">
         <Avatar className="h-10 w-10 shrink-0">
           <AvatarImage src={activity.user?.image ?? ""} />

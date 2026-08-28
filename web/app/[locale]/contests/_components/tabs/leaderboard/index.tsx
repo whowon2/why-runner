@@ -42,7 +42,7 @@ export function Leaderboard({
 
   if (isPending) {
     return (
-      <Card>
+      <Card className="bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
         <CardContent className="pt-4">
           <div className="flex flex-col gap-2">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -56,7 +56,7 @@ export function Leaderboard({
 
   if (!leaderboard || leaderboard.length === 0) {
     return (
-      <Card>
+      <Card className="bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
         <CardContent className="flex flex-col items-center justify-center py-12 gap-3 text-muted-foreground">
           <Trophy className="w-8 h-8 opacity-40" />
           <p className="text-sm font-medium">{t("empty")}</p>
@@ -71,7 +71,7 @@ export function Leaderboard({
 
   return (
     <div className="flex flex-col gap-4">
-      <Card className="max-h-[70vh] overflow-auto">
+      <Card className="max-h-[70vh] overflow-auto bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
         <CardContent>
           <Table>
             <TableHeader>

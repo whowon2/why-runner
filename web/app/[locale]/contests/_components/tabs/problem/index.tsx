@@ -63,7 +63,7 @@ export function ProblemTab({
 
   if (!isContestStarted) {
     return (
-      <Card className="w-full">
+      <Card className="w-full bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
         <CardContent className="flex items-center justify-center py-12 font-bold text-xl text-muted-foreground">
           {t("notStarted")}
         </CardContent>
@@ -78,7 +78,7 @@ export function ProblemTab({
     !isUserOnContest
   ) {
     return (
-      <Card className="w-full">
+      <Card className="w-full bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
         <CardContent className="flex items-center justify-center py-12 font-bold text-xl text-muted-foreground">
           {t("viewAfterEnd")}
         </CardContent>
@@ -88,7 +88,7 @@ export function ProblemTab({
 
   if (contest.problems.length === 0) {
     return (
-      <Card className="w-full">
+      <Card className="w-full bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
         <CardContent className="flex flex-col items-center justify-center py-12 gap-3 text-center">
           <p className="font-bold text-xl text-muted-foreground">
             {t("noProblems")}
@@ -114,7 +114,7 @@ export function ProblemTab({
     currentProblemLetter && answeredLetters.includes(currentProblemLetter);
 
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
       <CardContent className="flex flex-col w-full gap-4">
         <SelectProblem
           contest={contest}

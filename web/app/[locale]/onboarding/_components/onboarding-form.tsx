@@ -47,7 +47,7 @@ export function OnboardingForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl border-muted/60 dark:border-white/5">
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
         <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
