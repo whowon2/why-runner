@@ -4,7 +4,6 @@ import {
   GraduationCap,
   HomeIcon,
   Moon,
-  Newspaper,
   ScrollText,
   Settings,
   Sun,
@@ -42,9 +41,6 @@ export function UserDock() {
       { href: "/contests", icon: Trophy, label: t("Dock.contests") },
       { href: "/problems", icon: ScrollText, label: t("Dock.problems") },
       { href: "/classes", icon: GraduationCap, label: t("Dock.roadmap") },
-      ...(session
-        ? [{ href: "/feed", icon: Newspaper, label: t("Dock.feed") }]
-        : []),
     ],
   };
 

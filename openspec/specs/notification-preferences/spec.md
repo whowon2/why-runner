@@ -27,7 +27,7 @@ The system SHALL let an authenticated user turn off a specific notification type
 - **THEN** subsequent events of that type create notifications for that user again
 
 ### Requirement: Notification settings section lists every type grouped by module
-The `/settings` page SHALL include a Notifications section listing every notification type, grouped by the module it belongs to (Social, Contests, Submissions, Problems, Lessons), each with its own on/off control reflecting the user's current preference.
+The `/settings` page SHALL include a Notifications section listing every notification type, grouped by the module it belongs to (Contests, Submissions, Lessons), each with its own on/off control reflecting the user's current preference.
 
 #### Scenario: Opening the notifications settings section
 - **WHEN** an authenticated user opens the Notifications section of settings
@@ -40,11 +40,11 @@ The `/settings` page SHALL include a Notifications section listing every notific
 ### Requirement: Preference enforcement happens at creation time
 The system SHALL check the recipient's preference for a notification type before creating that notification, for every trigger path including the submission-grading trigger that runs outside the web application process.
 
-#### Scenario: Disabled type suppresses application-triggered notifications
-- **WHEN** a user has disabled `ACTIVITY_LIKE` and receives a like on their activity post
-- **THEN** no `ACTIVITY_LIKE` notification is created for them
-
 #### Scenario: Disabled type suppresses the database-triggered submission notification
 - **WHEN** a user has disabled `SUBMISSION_GRADED` and one of their submissions transitions to `PASSED`, `FAILED`, or `ERROR`
 - **THEN** no `SUBMISSION_GRADED` notification is created for them, even though the transition is written by the judge process outside the web app
+
+#### Scenario: Disabled type suppresses an application-triggered notification
+- **WHEN** a user has disabled `CONTEST_JOIN_REQUEST` and receives a join request on a private contest they own
+- **THEN** no `CONTEST_JOIN_REQUEST` notification is created for them
 </content>

@@ -48,32 +48,9 @@
     "problems": "Problemas",
     "contests": "Torneios",
     "roadmap": "Turmas",
-    "feed": "Feed",
     "login": "Entrar",
     "settings": "Configurações",
     "notifications": "Notificações"
-  },
-  "Follow": {
-    "follow": "Seguir",
-    "following": "Seguindo"
-  },
-  "FollowList": {
-    "followersTitle": "Seguidores",
-    "followingTitle": "Seguindo",
-    "searchPlaceholder": "Buscar por nome ou usuário",
-    "emptyFollowers": "Ainda sem seguidores.",
-    "emptyFollowing": "Ainda não segue ninguém.",
-    "emptySearch": "Nenhum usuário corresponde à busca."
-  },
-  "SocialFeed": {
-    "title": "Feed",
-    "subtitle": "Veja o que as pessoas que você segue estão fazendo.",
-    "followingTab": "Seguindo",
-    "exploreTab": "Explorar",
-    "emptyFollowing": "Seu feed de seguindo está vazio.",
-    "emptyFollowingCta": "Siga pessoas em Explorar para ver as atividades delas aqui.",
-    "emptyExplore": "Nenhuma atividade para mostrar ainda.",
-    "exploreLinkLabel": "Explorar"
   },
   "Footer": {
     "copyright": "© {year} Why Runner",
@@ -1172,8 +1149,6 @@
     "joined": "Entrou em",
     "contests": "Torneios",
     "problems": "Problemas",
-    "followers": "seguidores",
-    "following": "seguindo",
     "globalRank": "Ranking Global",
     "Skills": {
       "themesTitle": "Habilidades por Tema",
@@ -1182,30 +1157,8 @@
   },
   "UserPage": {
     "Tabs": {
-      "posts": "Publicações",
       "contests": "Torneios",
       "problems": "Problemas"
-    },
-    "Feed": {
-      "empty": "Nenhuma atividade para mostrar ainda. Seja o primeiro a compartilhar algo!",
-      "emptyTitleOwner": "Nenhuma publicação ainda",
-      "emptyDescriptionOwner": "Você ainda não publicou nada. Compartilhe uma atualização para começar.",
-      "emptyTitleVisitor": "Nenhuma publicação ainda",
-      "emptyDescriptionVisitor": "Este usuário ainda não publicou nada.",
-      "someone": "alguém",
-      "problemAction": "publicou um problema",
-      "contestAction": "publicou um torneio",
-      "commentPlaceholder": "Escreva um comentário...",
-      "reply": "Responder",
-      "replyPlaceholder": "Escreva uma resposta...",
-      "delete": "Excluir",
-      "cancel": "Cancelar",
-      "moreOptions": "Mais opções",
-      "deleteComment": "Excluir comentário",
-      "deleteCommentError": "Falha ao excluir comentário",
-      "deleteActivityTitle": "Excluir esta publicação?",
-      "deleteActivityDescription": "Isso removerá permanentemente a publicação junto com suas curtidas e comentários.",
-      "deleteActivityError": "Falha ao excluir publicação"
     },
     "MyContests": {
       "loading": "Carregando torneios...",
@@ -1242,21 +1195,15 @@
       "title": "Notificações",
       "description": "Escolha quais notificações você quer receber. Todas as notificações vêm ativadas por padrão.",
       "groups": {
-        "social": "Social",
         "contests": "Contests",
         "submissions": "Submissões",
-        "problems": "Problemas",
         "lessons": "Lições"
       },
       "types": {
-        "FOLLOW": "Novos seguidores",
-        "ACTIVITY_LIKE": "Curtidas nos seus posts",
-        "ACTIVITY_COMMENT": "Comentários nos seus posts",
         "CONTEST_JOIN_REQUEST": "Pedidos de entrada nos seus contests privados",
         "CONTEST_JOIN_APPROVED": "Seus pedidos de entrada são aprovados",
         "CONTEST_JOIN_REJECTED": "Seus pedidos de entrada são rejeitados",
         "SUBMISSION_GRADED": "Suas submissões terminam de ser corrigidas",
-        "FOLLOWED_USER_PUBLISHED_PROBLEM": "Pessoas que você segue publicam um problema",
         "LESSON_UNLOCKED": "Uma nova lição do roadmap é desbloqueada para você"
       }
     }
@@ -1267,18 +1214,12 @@
     "loading": "Carregando...",
     "empty": "Nenhuma notificação ainda.",
     "types": {
-      "FOLLOW": "{name} começou a seguir você",
-      "FOLLOW_others": "{name} e mais {count, plural, one {# pessoa} other {# pessoas}} começaram a seguir você",
-      "ACTIVITY_LIKE": "{name} curtiu seu post",
-      "ACTIVITY_LIKE_others": "{count, plural, one {# pessoa curtiu} other {# pessoas curtiram}} seu post",
-      "ACTIVITY_COMMENT": "{name} comentou no seu post",
       "CONTEST_JOIN_REQUEST": "{name} pediu para entrar em \"{contest}\"",
       "CONTEST_JOIN_APPROVED": "Seu pedido para entrar em \"{contest}\" foi aprovado",
       "CONTEST_JOIN_REJECTED": "Seu pedido para entrar em \"{contest}\" foi rejeitado",
       "SUBMISSION_GRADED_PASSED": "Sua submissão para \"{problem}\" passou",
       "SUBMISSION_GRADED_FAILED": "Sua submissão para \"{problem}\" falhou",
       "SUBMISSION_GRADED_ERROR": "Sua submissão para \"{problem}\" teve um erro",
-      "FOLLOWED_USER_PUBLISHED_PROBLEM": "{name} publicou um novo problema: \"{problem}\"",
       "LESSON_UNLOCKED": "Uma nova lição está disponível no seu roadmap"
     }
   },
