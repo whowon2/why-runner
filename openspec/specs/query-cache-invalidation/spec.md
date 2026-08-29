@@ -2,20 +2,9 @@
 
 ## Purpose
 
-Ensure that mutations across the app (follow/unfollow, contest problem management, join approvals, submissions, profile edits, contest creation) invalidate the appropriate cached queries so affected views update immediately without requiring a manual page refresh.
+Ensure that mutations across the app (contest problem management, join approvals, submissions, profile edits, contest creation) invalidate the appropriate cached queries so affected views update immediately without requiring a manual page refresh.
 
 ## Requirements
-
-### Requirement: Follow/unfollow refreshes follower and following lists
-When a user follows or unfollows another user, the system SHALL invalidate cached followers/following list queries so any open followers/following view reflects the change without a manual refresh.
-
-#### Scenario: Follow list tab updates after following a user
-- **WHEN** a user follows another user and then navigates to (or has open) a followers or following list tab
-- **THEN** the list reflects the new follow relationship without requiring a manual page refresh
-
-#### Scenario: Follow list tab updates after unfollowing a user
-- **WHEN** a user unfollows another user and then navigates to (or has open) a followers or following list tab
-- **THEN** the list no longer includes the unfollowed relationship without requiring a manual page refresh
 
 ### Requirement: Contest problem list refreshes on add/remove
 Adding or removing a problem from a contest SHALL invalidate the contest's cached data so the problem list updates immediately, and this invalidation SHALL be guaranteed by the mutation itself rather than depending on the calling component to trigger it.

@@ -20,7 +20,7 @@
 \author{Juan Israel dos Anjos\inst{1}}
 
 \address{Instituto Federal de Educação, Ciência e Tecnologia de Minas Gerais (IFMG)\\
-  Rua Afonso Sardinha, 90 -- Ouro Branco/MG -- CEP: 36494-018 -- Brasil
+  Rua Afonso Sardinha, 90, Ouro Branco/MG, CEP: 36494-018, Brasil
   \email{juaniwk3@gmail.com}
 }
 
@@ -31,27 +31,32 @@
 \begin{abstract}
 WhyRunner is an educational online judge system designed to support programming
 teaching in formal academic environments. The platform integrates secure
-containerized code execution, real-time contest management, and AI-powered
-pedagogical feedback using Google Gemini. Unlike traditional judges that return
-only binary verdicts, WhyRunner provides contextual, student-initiated hints
-that guide learning without revealing solutions. Validated in a real classroom
-contest at IFMG with 23 undergraduate students, 6 problems, and over 50
-submissions, the system operated with zero crashes and was well received by
-both students and instructors. The software is open-source (MIT) and targets
-secondary, technical, and higher education contexts.
+containerized code execution, real-time contest management, a professor-curated
+Class/Lesson/Exercise assignment model, AI-assisted problem authoring, and
+AI-powered pedagogical feedback using Google Gemini. Unlike traditional judges
+that return only binary verdicts, WhyRunner provides contextual, student-initiated
+hints that guide learning without revealing solutions, and lets professors assemble
+gradable lessons from existing problems outside of timed contests. The system is
+fully implemented and self-tested by the author; classroom evaluation with real
+students and instructors has not yet been conducted and is planned as next step.
+The software is open-source (MIT) and targets secondary, technical, and higher
+education contexts.
 \end{abstract}
 
 \begin{resumo}
 O WhyRunner é um sistema de juiz online educacional desenvolvido para apoiar o
 ensino de programação em ambientes acadêmicos formais. A plataforma integra
 execução segura de código em contêineres, gerenciamento de competições em tempo
-real e feedback pedagógico gerado por inteligência artificial (Google Gemini).
-Diferentemente dos juízes tradicionais, que retornam apenas veredictos binários,
-o WhyRunner fornece dicas contextuais, acionadas pelo próprio estudante, que
-orientam o aprendizado sem revelar a solução. Validado em uma competição real em
-sala de aula no IFMG, com 23 estudantes de graduação, 6 problemas e mais de 50
-submissões, o sistema operou sem falhas e foi bem avaliado por estudantes e
-docentes. O software é de código aberto (MIT) e destina-se aos contextos de
+real, um modelo de aulas curadas pelo docente (Turma/Aula/Exercício), autoria de
+problemas assistida por IA e feedback pedagógico gerado por inteligência
+artificial (Google Gemini). Diferentemente dos juízes tradicionais, que retornam
+apenas veredictos binários, o WhyRunner fornece dicas contextuais, acionadas pelo
+próprio estudante, que orientam o aprendizado sem revelar a solução, além de
+permitir que docentes montem aulas avaliáveis a partir de problemas existentes,
+fora do contexto de competições cronometradas. O sistema está totalmente
+implementado e foi testado pelo próprio autor; a avaliação em sala de aula com
+estudantes e docentes reais ainda não foi realizada e é o próximo passo
+planejado. O software é de código aberto (MIT) e destina-se aos contextos de
 ensino médio, técnico e superior.
 \end{resumo}
 
@@ -68,11 +73,11 @@ superior em Ciências Exatas e Engenharias. Entre os objetos de aprendizagem
 diretamente atendidos pelo WhyRunner estão:
 
 \begin{itemize}[nosep]
-  \item \textbf{Pensamento Computacional} -- decomposição de problemas,
+  \item \textbf{Pensamento Computacional}: decomposição de problemas,
         reconhecimento de padrões, algoritmos e depuração de código;
-  \item \textbf{Mundo Digital} -- desenvolvimento e teste de programas,
+  \item \textbf{Mundo Digital}: desenvolvimento e teste de programas,
         ambientes de execução e boas práticas de engenharia de software;
-  \item \textbf{Cultura Digital} -- participação em práticas colaborativas e
+  \item \textbf{Cultura Digital}: participação em práticas colaborativas e
         competitivas mediadas por tecnologia.
 \end{itemize}
 
@@ -91,7 +96,7 @@ raciocínio sem entregar a resposta.
 O WhyRunner tem como propósito fornecer aos docentes uma ferramenta gratuita,
 moderna e de fácil configuração para \textbf{criar e gerenciar competições de
 programação em sala de aula}, e aos estudantes uma experiência de submissão com
-\textbf{feedback formativo imediato} -- sem depender de plataformas comerciais
+\textbf{feedback formativo imediato}, sem depender de plataformas comerciais
 ou de infraestrutura complexa.
 
 \section*{3. Público-Alvo}
@@ -113,7 +118,7 @@ Português.
 \section*{4. Diferenciais e Potenciais de Inovação}
 
 \begin{center}
-\begin{tabular}{lcccc}
+\begin{tabular}{lccccc}
 \toprule
 \textbf{Funcionalidade} & \textbf{BOCA} & \textbf{Run Codes} & \textbf{Ataux} & \textbf{WhyRunner} \\
 \midrule
@@ -122,6 +127,8 @@ Interface em Português     & Não & Sim & Sim & \textbf{Sim} \\
 Código aberto (MIT)        & Sim & Não & Não & \textbf{Sim} \\
 Sem fila externa           & N/A & Não & Não & \textbf{Sim} \\
 Scoreboard em tempo real   & Sim & Sim & Não & \textbf{Sim} \\
+Aulas curadas pelo docente & Não & Não & Não & \textbf{Sim} \\
+Restrição de solução (algoritmo exigido) & Não & Não & Não & \textbf{Sim} \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -133,18 +140,34 @@ analisa o código enviado, os casos de teste com falha e o enunciado do problema
 retornando uma orientação que estimula o raciocínio sem revelar a solução. A IA
 é instruída explicitamente a \emph{não} fornecer o código correto.
 
-\section*{5. Repercussões Educacionais}
+Um segundo diferencial é o \textbf{modelo de Turma/Aula/Exercício}: o docente
+monta uma aula a partir de problemas existentes, o aluno submete a aula
+inteira de uma vez e a nota por exercício é calculada automaticamente pelo
+juiz, com feedback em texto livre do docente. Um terceiro diferencial é a
+\textbf{restrição de solução}: além de bater a saída esperada, o docente pode
+exigir um limite estrutural (ex.: profundidade máxima de laços) ou um
+algoritmo específico (ex.: ``deve usar Dijkstra''), este último verificado por
+classificação via IA sobre o código. Uma submissão que viola qualquer
+restrição não conta para o placar nem para conclusão do problema, mesmo tendo
+passado em todos os casos de teste.
 
-No contest de validação realizado no IFMG (Ouro Branco, 2025):
+\section*{5. Repercussões Educacionais Esperadas}
+
+O WhyRunner ainda não foi implantado em sala de aula com estudantes e
+docentes reais; nenhuma avaliação foi conduzida até o momento. Com base no
+desenho do sistema, espera-se que:
 \begin{itemize}[nosep]
-  \item Estudantes relataram maior clareza sobre \emph{por que} a solução
-        falhou, em contraste com o veredicto ``Wrong Answer'' puro;
-  \item Docentes destacaram a redução de interrupções durante provas graças ao
-        feedback automático;
-  \item O scoreboard em tempo real aumentou o engajamento e o espírito
-        competitivo de forma saudável;
-  \item Submissões foram processadas em segundos, sem fila de espera perceptível.
+  \item o feedback contextual por IA dê ao estudante mais clareza sobre
+        \emph{por que} uma solução falhou, em contraste com o veredicto
+        ``Wrong Answer'' puro;
+  \item o feedback automático reduza interrupções durante provas dirigidas ao
+        docente;
+  \item o scoreboard em tempo real aumente o engajamento competitivo;
+  \item o processamento assíncrono via \texttt{LISTEN/NOTIFY} mantenha as
+        submissões rápidas mesmo sob carga.
 \end{itemize}
+Essas expectativas serão verificadas na avaliação em sala de aula planejada
+como próximo passo (Seção~8).
 
 \section*{6. Aspectos Tecnológicos}
 
@@ -155,13 +178,25 @@ No contest de validação realizado no IFMG (Ouro Branco, 2025):
   \item \textbf{Banco de dados}: PostgreSQL + Drizzle ORM; comunicação
         inter-serviço via \texttt{LISTEN/NOTIFY} nativo (sem fila externa);
   \item \textbf{Autenticação}: Better Auth (e-mail/senha, GitHub, Google OAuth);
-  \item \textbf{Execução de código}: Docker -- contêineres efêmeros com
+  \item \textbf{Execução de código}: Docker, contêineres efêmeros com
         \texttt{--cpus 0.5 --memory 128m}, sem acesso à rede;
-  \item \textbf{IA}: Google Gemini 2.0 Flash (API REST via Server Action);
+  \item \textbf{IA}: Google Gemini 2.0 Flash (API REST via Server Action):
+        dica de feedback, rascunho/revisão de problema, narrativa temática e
+        classificação de restrição de algoritmo;
+  \item \textbf{Validação pré-publicação}: solução de referência do docente
+        executada no sandbox do juiz antes de publicar; edição de I/O
+        invalida uma validação aprovada;
+  \item \textbf{Restrições de solução}: limites estruturais (análise
+        estática) e algoritmo exigido (classificação por IA), aplicados após
+        a submissão passar em todos os casos de teste;
   \item \textbf{Linguagens suportadas}: Python, Rust, C++, Portugol (em
         produção); C e Java arquiteturalmente suportados, pendentes de
         implementação no runner;
   \item \textbf{Runtime}: Bun (gerenciador de pacotes e runtime Node.js);
+  \item \textbf{Notificações}: caixa de entrada in-app (submissão avaliada,
+        pedido/aprovação de entrada em competição, aula desbloqueada), com
+        contagem de não lidas e agregação de eventos repetidos do mesmo
+        tipo;
   \item \textbf{Licença}: MIT;
   \item \textbf{i18n}: next-intl (Português e Inglês).
 \end{itemize}
@@ -169,14 +204,34 @@ No contest de validação realizado no IFMG (Ouro Branco, 2025):
 \subsection*{Arquitetura resumida}
 
 \begin{enumerate}[nosep]
-  \item Usuário submete código pelo editor web (Monaco);
+  \item Usuário submete código pelo editor web (Monaco), seja em uma
+        competição ou em um exercício de aula;
   \item Server Action valida, salva \texttt{PENDING} no PostgreSQL e emite
         \texttt{NOTIFY};
   \item Judge worker (Rust) recebe notificação, executa código em Docker,
-        compara saídas com gabarito;
-  \item Resultado (\texttt{PASSED / FAILED / TLE / ERROR}) é gravado no banco;
-  \item Frontend atualiza em tempo real via TanStack Query;
+        compara saídas com gabarito; para exercícios de aula, todos os
+        casos de teste são executados (não apenas até a primeira falha),
+        para computar a nota do exercício como fração de casos aprovados;
+  \item Se o problema tiver restrições de solução, o worker roda análise
+        estática e/ou classificação por IA antes de finalizar o resultado;
+  \item Resultado (\texttt{PASSED / FAILED / TLE / ERROR} ou violação de
+        restrição) é gravado no banco;
+  \item Frontend atualiza em tempo real via TanStack Query e gera uma
+        notificação in-app para o usuário;
   \item Em falha, estudante pode solicitar dica da IA (Gemini).
+\end{enumerate}
+
+\subsection*{Modelo Turma/Aula/Exercício}
+
+\begin{enumerate}[nosep]
+  \item Docente cria uma turma (\texttt{classroom}) com código de entrada;
+  \item Docente monta uma aula (\texttt{lesson}) adicionando problemas
+        existentes como exercícios (\texttt{exercise}) ordenados, com prazo
+        opcional, e publica para a turma;
+  \item Aluno entra na turma pelo código, responde cada exercício e submete
+        a aula inteira de uma vez (\texttt{lessonSubmission});
+  \item Após o prazo, docente revisa: nota por exercício calculada
+        automaticamente pelo juiz e feedback em texto livre por exercício.
 \end{enumerate}
 
 \section*{7. Apresentação do Software}
@@ -193,27 +248,26 @@ No contest de validação realizado no IFMG (Ouro Branco, 2025):
 \caption{Tela de resultado: casos de teste, status por caso e opção de solicitar feedback por IA.}
 \end{figure}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.85\textwidth]{sub-seq.png}
-\caption{Diagrama de sequência da pipeline de submissão.}
-\end{figure}
-
 \section*{8. Considerações Finais}
 
-O WhyRunner demonstrou, em ambiente real, que é possível combinar execução
-segura de código, gerenciamento de contest e feedback pedagógico por IA em uma
-única plataforma gratuita e de código aberto. O sistema está pronto para uso
-imediato por docentes, sem necessidade de infraestrutura proprietária, e
-possui arquitetura extensível para suportar novos idiomas de programação,
-detecção de plágio e avaliação quantitativa de usabilidade.
+O WhyRunner demonstra que é possível combinar execução segura de código,
+gerenciamento de contest, um modelo de Turma/Aula/Exercício curado pelo
+docente, autoria de problemas assistida por IA (rascunho, revisão e
+narrativa), restrições de solução e feedback pedagógico por IA em uma única
+plataforma gratuita e de código aberto. O sistema está funcionalmente
+completo e pronto para implantação por docentes, sem necessidade de
+infraestrutura proprietária, mas ainda não foi avaliado com estudantes e
+docentes reais; essa avaliação é o próximo passo. A arquitetura é extensível
+para suportar novos idiomas de programação, detecção de plágio e avaliação
+quantitativa de usabilidade.
 
 \subsection*{Nível TRL}
 
-\textbf{TRL 7 -- Demonstração de protótipo do sistema em ambiente operacional}:
-O WhyRunner foi implantado e operado em uma competição de programação real com
-23 estudantes, 6 problemas e mais de 50 submissões, sem falhas, em condições
-idênticas às de uso definitivo.
+\textbf{TRL 4--5: Validação/demonstração de tecnologia em ambiente relevante}:
+O WhyRunner está implementado e foi testado pelo próprio autor, mas ainda não
+foi implantado ou operado com um público real de estudantes e docentes. Uma
+implantação em ambiente operacional (sala de aula real) é necessária para
+avançar a TRL 6--7.
 
 \bibliographystyle{sbc}
 \bibliography{refs}

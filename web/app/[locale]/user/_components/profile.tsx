@@ -8,13 +8,10 @@ import type { ReactNode } from "react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { CropImageDialog } from "@/components/crop-image-dialog";
-import { FollowButton } from "@/components/follow-button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useFollowState } from "@/hooks/use-follow";
 import { useProfile } from "@/hooks/use-profile";
-import { Link } from "@/i18n/navigation";
 import { useUploadProfileImage } from "@/hooks/use-upload-profile-image";
 
 const COVER_TEXT_SHADOW =
@@ -67,7 +64,6 @@ export default function Profile({
   const { data, isPending } = useProfile(userId);
   const { mutateAsync: uploadImage, isPending: isUploading } =
     useUploadProfileImage(userId);
-  const { data: followState } = useFollowState(userId);
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const [avatarImageSrc, setAvatarImageSrc] = useState<string | null>(null);
@@ -197,26 +193,7 @@ export default function Profile({
               >
                 {data.name}
               </h1>
-              {!isOwner && <FollowButton targetUserId={userId} />}
             </div>
-            {followState && data.username && (
-              <div
-                className={`mt-1 flex gap-3 text-sm ${onCover ? `text-white/80 ${COVER_TEXT_SHADOW}` : "text-muted-foreground"}`}
-              >
-                <Link
-                  href={`/user/${data.username}/followers`}
-                  className="hover:underline"
-                >
-                  <strong>{followState.followerCount}</strong> {t("followers")}
-                </Link>
-                <Link
-                  href={`/user/${data.username}/following`}
-                  className="hover:underline"
-                >
-                  <strong>{followState.followingCount}</strong> {t("following")}
-                </Link>
-              </div>
-            )}
             <Separator className={onCover ? "mt-2 bg-white/40" : "mt-2"} />
           </div>
 

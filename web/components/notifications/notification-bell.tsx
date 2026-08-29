@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  AtSign,
-  Bell,
-  CheckCircle2,
-  GraduationCap,
-  Heart,
-  MessageCircle,
-  ScrollText,
-  Trophy,
-  UserPlus,
-} from "lucide-react";
+import { AtSign, Bell, CheckCircle2, GraduationCap, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import {
@@ -51,11 +41,6 @@ function formatRelative(date: string | Date) {
 }
 
 function NotificationIcon({ type }: { type: NotificationType }) {
-  if (type === "FOLLOW") return <UserPlus className="size-4 text-primary" />;
-  if (type === "ACTIVITY_LIKE")
-    return <Heart className="size-4 text-red-400" />;
-  if (type === "ACTIVITY_COMMENT")
-    return <MessageCircle className="size-4 text-primary" />;
   if (
     type === "CONTEST_JOIN_REQUEST" ||
     type === "CONTEST_JOIN_APPROVED" ||
@@ -64,8 +49,6 @@ function NotificationIcon({ type }: { type: NotificationType }) {
     return <Trophy className="size-4 text-primary" />;
   if (type === "SUBMISSION_GRADED")
     return <CheckCircle2 className="size-4 text-emerald-500" />;
-  if (type === "FOLLOWED_USER_PUBLISHED_PROBLEM")
-    return <ScrollText className="size-4 text-primary" />;
   if (type === "LESSON_UNLOCKED")
     return <GraduationCap className="size-4 text-primary" />;
   return <AtSign className="size-4 text-primary" />;
@@ -79,29 +62,6 @@ function useDescribeNotification() {
     const actorName = primaryActor?.name ?? primaryActor?.username ?? "";
 
     switch (n.type) {
-      case "FOLLOW":
-        return {
-          text:
-            n.count > 1
-              ? t("FOLLOW_others", { name: actorName, count: n.count - 1 })
-              : t("FOLLOW", { name: actorName }),
-          href: primaryActor?.username
-            ? `/user/${primaryActor.username}`
-            : "/user",
-        };
-      case "ACTIVITY_LIKE":
-        return {
-          text:
-            n.count > 1
-              ? t("ACTIVITY_LIKE_others", { count: n.count })
-              : t("ACTIVITY_LIKE", { name: actorName }),
-          href: "/feed",
-        };
-      case "ACTIVITY_COMMENT":
-        return {
-          text: t("ACTIVITY_COMMENT", { name: actorName }),
-          href: "/feed",
-        };
       case "CONTEST_JOIN_REQUEST":
         return {
           text: t("CONTEST_JOIN_REQUEST", {
@@ -133,14 +93,6 @@ function useDescribeNotification() {
           href: n.problem ? `/problems/${n.problem.slug}` : "/problems",
         };
       }
-      case "FOLLOWED_USER_PUBLISHED_PROBLEM":
-        return {
-          text: t("FOLLOWED_USER_PUBLISHED_PROBLEM", {
-            name: actorName,
-            problem: n.problem?.title ?? "",
-          }),
-          href: n.problem ? `/problems/${n.problem.slug}` : "/problems",
-        };
       case "LESSON_UNLOCKED":
         return {
           text: t("LESSON_UNLOCKED"),
