@@ -106,7 +106,20 @@ pub async fn box_run(
         .arg(format!("--wall-time={}", limits.wall_time_secs))
         .arg(format!("--mem={}", limits.mem_kb))
         .arg(format!("--processes={}", limits.processes))
-        .arg(format!("--meta={}", meta_path.display()));
+        .arg(format!("--meta={}", meta_path.display()))
+        // isolate's --run starts the boxed process with an environment that
+        // is *entirely* empty (no PATH at all — confirmed by dumping `env`
+        // inside a box). `/bin/sh` still resolves bare commands like `gcc`
+        // via its own compiled-in default search list even without a PATH
+        // in its environment, but that default is never exported to child
+        // processes: gcc's own collect2 step execve()s `ld` by searching
+        // COMPILER_PATH (which doesn't include /usr/bin) and then $PATH from
+        // its environment, and with no PATH there it fails with
+        // "cannot find 'ld'" — nondeterministically, since a run started
+        // via `sh -c 'gcc -v ...'` prints its own diagnostic PATH-shaped
+        // strings that can look misleadingly like a fix. Setting PATH
+        // explicitly here fixes it for every language, not just gcc/g++.
+        .arg("--env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin");
 
     if let Some(stdin) = stdin_path {
         cmd.arg(format!("--stdin={}", stdin));
@@ -155,7 +168,8 @@ mod tests {
 
     #[test]
     fn parses_a_timeout() {
-        let text = "time:5.000\ntime-wall:5.012\nmax-rss:1024\nstatus:TO\nmessage:Time limit exceeded\n";
+        let text =
+            "time:5.000\ntime-wall:5.012\nmax-rss:1024\nstatus:TO\nmessage:Time limit exceeded\n";
         let meta = parse_meta(text);
         assert_eq!(meta.status.as_deref(), Some("TO"));
         assert_eq!(meta.message.as_deref(), Some("Time limit exceeded"));

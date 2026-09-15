@@ -102,7 +102,7 @@ pub struct ProblemValidation {
     pub problem_id: Uuid,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct TestCaseResult {
     pub input: String,
     pub expected: String,
