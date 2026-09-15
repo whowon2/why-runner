@@ -1,3 +1,9 @@
+use std::path::PathBuf;
+use std::process::Stdio;
+use std::sync::atomic::{AtomicU32, Ordering};
+use tokio::fs;
+use tokio::process::Command;
+
 #[derive(Debug, Default, PartialEq)]
 pub struct IsolateMeta {
     pub time_secs: Option<f64>,
@@ -30,6 +36,106 @@ pub fn parse_meta(text: &str) -> IsolateMeta {
         }
     }
     meta
+}
+
+/// isolate box ids range 0..1000 (see `num_boxes` in `judge/isolate.cfg`). A
+/// process-local counter is enough: `process_job` in main.rs runs test cases
+/// strictly sequentially within one submission, and each judge-worker
+/// replica is its own OS process / cgroup hierarchy (judge/CLAUDE.md's
+/// multi-replica note) — no cross-process coordination needed.
+static NEXT_BOX_ID: AtomicU32 = AtomicU32::new(0);
+
+fn alloc_box_id() -> u32 {
+    NEXT_BOX_ID.fetch_add(1, Ordering::Relaxed) % 1000
+}
+
+pub struct IsolateLimits {
+    pub time_secs: u64,
+    pub wall_time_secs: u64,
+    pub mem_kb: u64,
+    pub processes: u32,
+}
+
+pub struct IsolateBox {
+    pub id: u32,
+    /// The box's working directory (`<box_root>/<id>/box`), where the
+    /// sandboxed shell command actually executes and where its relative
+    /// file writes (source files, stdin file) land.
+    pub path: PathBuf,
+}
+
+pub async fn box_init() -> std::io::Result<IsolateBox> {
+    let id = alloc_box_id();
+    let output = Command::new("isolate")
+        .args(["--box-id", &id.to_string(), "--init"])
+        .output()
+        .await?;
+
+    if !output.status.success() {
+        return Err(std::io::Error::other(format!(
+            "isolate --init failed for box {}: {}",
+            id,
+            String::from_utf8_lossy(&output.stderr)
+        )));
+    }
+
+    let root = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    Ok(IsolateBox {
+        id,
+        path: PathBuf::from(root).join("box"),
+    })
+}
+
+/// Runs `argv` inside `box_id` under `limits`, with `stdin_path` (a filename
+/// relative to the box's working directory, written by the caller first) as
+/// stdin. Returns the raw process output (for stdout/stderr) and isolate's
+/// parsed resource-usage report.
+pub async fn box_run(
+    box_id: u32,
+    limits: &IsolateLimits,
+    stdin_path: Option<&str>,
+    extra_dirs: &[&str],
+    argv: &[&str],
+) -> std::io::Result<(std::process::Output, IsolateMeta)> {
+    let meta_file = tempfile::NamedTempFile::new()?;
+    let meta_path = meta_file.path().to_path_buf();
+
+    let mut cmd = Command::new("isolate");
+    cmd.args(["--box-id", &box_id.to_string()])
+        .arg(format!("--time={}", limits.time_secs))
+        .arg(format!("--wall-time={}", limits.wall_time_secs))
+        .arg(format!("--mem={}", limits.mem_kb))
+        .arg(format!("--processes={}", limits.processes))
+        .arg(format!("--meta={}", meta_path.display()));
+
+    if let Some(stdin) = stdin_path {
+        cmd.arg(format!("--stdin={}", stdin));
+    }
+
+    // Directories beyond isolate's built-in defaults (/bin, /lib, /lib64,
+    // /usr — see the ruling above this code block) that this run needs
+    // visible inside the box, e.g. Portugol's jar at /portugol.
+    for dir in extra_dirs {
+        cmd.arg(format!("--dir={}", dir));
+    }
+
+    cmd.arg("--run").arg("--").args(argv);
+    cmd.stdout(Stdio::piped()).stderr(Stdio::piped());
+
+    let output = cmd.output().await?;
+    let meta_text = fs::read_to_string(&meta_path).await.unwrap_or_default();
+    let meta = parse_meta(&meta_text);
+
+    Ok((output, meta))
+}
+
+/// Best-effort: a failed cleanup leaks one box slot (of 1000) until the
+/// judge-worker process restarts — not worth failing the caller over.
+pub async fn box_cleanup(box_id: u32) {
+    let _ = Command::new("isolate")
+        .args(["--box-id", &box_id.to_string(), "--cleanup"])
+        .output()
+        .await;
 }
 
 #[cfg(test)]
