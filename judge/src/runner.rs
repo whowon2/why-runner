@@ -5,6 +5,46 @@ use tokio::time::timeout;
 
 const COMPILE_ERROR_MARKER: &str = "##COMPILE_ERROR##";
 
+/// Default box memory cap: 128MB, matches the previous `docker run --memory
+/// 128m`.
+const DEFAULT_MEM_KB: u64 = 131_072;
+
+/// Box memory cap for JVM-based languages (Java, Portugol).
+///
+/// isolate's `--mem` is a `RLIMIT_AS` (virtual address space) cap, not a real
+/// (cgroup) RSS cap — real cgroup memory accounting (`isolate --cg`) needs a
+/// writable cgroup delegation this container doesn't have. The JVM reserves
+/// virtual address space far beyond what it actually uses (~1GB for
+/// compressed class space alone, by default) even for a trivial program, so
+/// under `RLIMIT_AS` it needs a much larger nominal cap than other languages
+/// to even start — real physical usage is still bounded by the `-Xmx`/`-XX:`
+/// flags `run_java`/`run_portugol` pass via `JAVA_TOOL_OPTIONS`. Portugol is
+/// the tighter case: its console jar spawns its own nested `javac` process
+/// (also picking up the same tuned flags via the inherited environment
+/// variable) to compile the generated Java, and empirically needed >1GB to
+/// stop being flaky; 2GB gave 6/6 clean runs in manual testing with margin.
+const JVM_MEM_KB: u64 = 2_097_152;
+
+/// `-XX` flags that shrink the JVM's own virtual-address-space footprint
+/// (compressed class space defaults to a 1GB reservation on its own) so it
+/// fits under `JVM_MEM_KB`'s `RLIMIT_AS` cap. Passed via `JAVA_TOOL_OPTIONS`
+/// rather than as direct `java` args so a nested JVM process (Portugol's
+/// internal `javac` call) picks the same flags up too. The JVM prints a
+/// "Picked up JAVA_TOOL_OPTIONS: ..." notice to stderr on every run because
+/// of this — harmless (grading only checks stdout/exit code), but expected
+/// in stderr for Java/Portugol runs.
+const JVM_TOOL_OPTIONS: &str = "-Xmx64m -XX:CompressedClassSpaceSize=32m -XX:ReservedCodeCacheSize=32m -XX:MaxMetaspaceSize=64m -XX:ParallelGCThreads=1 -XX:CICompilerCount=1 -Xss256k -XX:-TieredCompilation";
+
+/// Box memory cap for Rust. Same `RLIMIT_AS`-vs-cgroup story as the JVM
+/// languages above, smaller scale: `rustc` (Debian's package) dynamically
+/// links `libLLVM-14.so.1`, a ~110MB shared object, plus a ~65MB
+/// `librustc_driver` — comfortably fit in real RSS under the old Docker
+/// `--memory 128m`, but `RLIMIT_AS` counts the full mmap of both up front
+/// regardless of how much of them is ever touched. 512MB was the smallest
+/// cap that compiled+ran a trivial program in manual testing; 768MB gave
+/// clean, repeatable runs with margin.
+const RUST_MEM_KB: u64 = 786_432;
+
 pub struct ExecutionResult {
     pub stdout: String,
     pub stderr: String,
@@ -55,14 +95,26 @@ pub async fn run_python(code: &str, input_data: &str, time_limit_secs: u64) -> E
         b64_code
     );
 
-    run_in_isolate(&shell_command, input_data, time_limit_secs, &[]).await
+    run_in_isolate(
+        &shell_command,
+        input_data,
+        time_limit_secs,
+        DEFAULT_MEM_KB,
+        &[],
+    )
+    .await
 }
 
 pub async fn run_portugol(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
     let b64_code = general_purpose::STANDARD.encode(code);
+    // `export JAVA_TOOL_OPTIONS=...` (rather than passing `-XX:...` flags
+    // directly to `java`) so the same tuning also reaches the nested `javac`
+    // process the Portugol console jar spawns internally to compile the
+    // generated Java — see `JVM_MEM_KB`/`JVM_TOOL_OPTIONS` above.
     let shell_command = format!(
-        "echo \"{}\" | base64 -d > script.por && java -jar /portugol/portugol-console.jar -no-wait script.por",
-        b64_code
+        "export JAVA_TOOL_OPTIONS='{opts}'; echo \"{code}\" | base64 -d > script.por && java -jar /portugol/portugol-console.jar -no-wait script.por",
+        opts = JVM_TOOL_OPTIONS,
+        code = b64_code
     );
 
     let normalized_input = input_data.split_whitespace().collect::<Vec<_>>().join("\n");
@@ -70,7 +122,14 @@ pub async fn run_portugol(code: &str, input_data: &str, time_limit_secs: u64) ->
         &shell_command,
         &normalized_input,
         time_limit_secs,
-        &["/portugol"],
+        JVM_MEM_KB,
+        // `/portugol` for the console jar itself; `/etc/alternatives` because
+        // Debian/Temurin's `java`/`javac` under /usr/bin are symlinks through
+        // /etc/alternatives, and /etc isn't one of isolate's default-visible
+        // directories (only /bin, /lib, /lib64, /usr are) — without this the
+        // console jar's own internal `javac` subprocess call fails with
+        // "Cannot run program \"javac\"".
+        &["/portugol", "/etc/alternatives"],
     )
     .await
 }
@@ -83,7 +142,14 @@ pub async fn run_cpp(code: &str, input_data: &str, time_limit_secs: u64) -> Exec
         "./program",
     );
 
-    run_in_isolate(&shell_command, input_data, time_limit_secs, &[]).await
+    run_in_isolate(
+        &shell_command,
+        input_data,
+        time_limit_secs,
+        DEFAULT_MEM_KB,
+        &[],
+    )
+    .await
 }
 
 pub async fn run_c(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
@@ -94,18 +160,39 @@ pub async fn run_c(code: &str, input_data: &str, time_limit_secs: u64) -> Execut
         "./program",
     );
 
-    run_in_isolate(&shell_command, input_data, time_limit_secs, &[]).await
+    run_in_isolate(
+        &shell_command,
+        input_data,
+        time_limit_secs,
+        DEFAULT_MEM_KB,
+        &[],
+    )
+    .await
 }
 
 pub async fn run_java(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
     let b64_code = general_purpose::STANDARD.encode(code);
     let shell_command = compile_and_run_command(
-        &format!("echo \"{}\" | base64 -d > Main.java", b64_code),
+        &format!(
+            "export JAVA_TOOL_OPTIONS='{opts}'; echo \"{code}\" | base64 -d > Main.java",
+            opts = JVM_TOOL_OPTIONS,
+            code = b64_code
+        ),
         "javac Main.java",
         "java Main",
     );
 
-    run_in_isolate(&shell_command, input_data, time_limit_secs, &[]).await
+    run_in_isolate(
+        &shell_command,
+        input_data,
+        time_limit_secs,
+        JVM_MEM_KB,
+        // See `run_portugol` above: /usr/bin/java(c) are symlinks through
+        // /etc/alternatives, which isn't one of isolate's default-visible
+        // directories.
+        &["/etc/alternatives"],
+    )
+    .await
 }
 
 pub async fn run_rust(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
@@ -116,13 +203,24 @@ pub async fn run_rust(code: &str, input_data: &str, time_limit_secs: u64) -> Exe
         "./program",
     );
 
-    run_in_isolate(&shell_command, input_data, time_limit_secs, &[]).await
+    run_in_isolate(
+        &shell_command,
+        input_data,
+        time_limit_secs,
+        RUST_MEM_KB,
+        // rustc's default linker is `cc`, which — like `java`/`javac` above —
+        // is an /etc/alternatives symlink on Debian, not a plain file under
+        // /usr/bin; without this, linking fails with "linker `cc` not found".
+        &["/etc/alternatives"],
+    )
+    .await
 }
 
 async fn run_in_isolate(
     shell_command: &str,
     input_data: &str,
     time_limit_secs: u64,
+    mem_kb: u64,
     extra_dirs: &[&str],
 ) -> ExecutionResult {
     println!("   🔒 Running in isolate sandbox");
@@ -162,8 +260,8 @@ async fn run_in_isolate(
     let limits = crate::isolate::IsolateLimits {
         time_secs: time_limit_secs,
         wall_time_secs: time_limit_secs + 2,
-        mem_kb: 131_072, // 128MB, matches the previous `docker run --memory 128m`
-        processes: 64,   // fork-bomb cap; new, additive safety property vs the Docker version
+        mem_kb,
+        processes: 64, // fork-bomb cap; new, additive safety property vs the Docker version
     };
 
     let run_result = timeout(

@@ -59,7 +59,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Database connected");
 
     // PgListener
-    let mut listener = connect_with_retry("PgListener", || PgListener::connect(&database_url)).await;
+    let mut listener =
+        connect_with_retry("PgListener", || PgListener::connect(&database_url)).await;
     listener.listen("new_submission").await?;
     listener.listen("new_validation").await?;
     println!("Listening for 'new_submission' and 'new_validation' notifications...");
@@ -420,8 +421,15 @@ mod grade_tests {
 
         assert!(!report.passed);
         assert_eq!(report.total_tests, 3);
-        assert_eq!(report.passed_count, 2, "should count tests 1 and 3 as passed despite the failure at test 2");
-        assert_eq!(report.failure_details.unwrap().index, 2, "failure_details should still capture only the first failure");
+        assert_eq!(
+            report.passed_count, 2,
+            "should count tests 1 and 3 as passed despite the failure at test 2"
+        );
+        assert_eq!(
+            report.failure_details.unwrap().index,
+            2,
+            "failure_details should still capture only the first failure"
+        );
     }
 
     #[tokio::test]
@@ -431,7 +439,10 @@ mod grade_tests {
 
         assert!(!report.passed);
         assert_eq!(report.total_tests, 3);
-        assert_eq!(report.passed_count, 1, "should stop after test 2 and never run test 3");
+        assert_eq!(
+            report.passed_count, 1,
+            "should stop after test 2 and never run test 3"
+        );
     }
 
     #[tokio::test]
@@ -450,5 +461,94 @@ mod grade_tests {
             );
             assert!(report.failure_details.is_some());
         }
+    }
+
+    #[tokio::test]
+    async fn every_language_can_pass_a_trivial_echo() {
+        let cases: &[(Language, &str)] = &[
+            (Language::Python, "print(input())"),
+            (
+                Language::C,
+                "#include <stdio.h>\nint main(){int x;scanf(\"%d\",&x);printf(\"%d\\n\",x);return 0;}",
+            ),
+            (
+                Language::Cpp,
+                "#include <iostream>\nint main(){int x;std::cin>>x;std::cout<<x<<std::endl;return 0;}",
+            ),
+            (
+                Language::Rust,
+                "use std::io::*;\nfn main(){let mut s=String::new();stdin().read_line(&mut s).unwrap();print!(\"{}\",s.trim());}",
+            ),
+            (
+                Language::Java,
+                "import java.util.Scanner;\npublic class Main{public static void main(String[] a){Scanner sc=new Scanner(System.in);System.out.println(sc.nextInt());}}",
+            ),
+        ];
+
+        let p = problem(&["7"], &["7"]);
+        for (lang, code) in cases {
+            let (report, _, _) = grade(code, *lang, &p, false).await;
+            assert!(
+                report.passed,
+                "{:?} should pass a trivial echo, got: {:?}",
+                lang, report.failure_details
+            );
+        }
+    }
+
+    #[tokio::test]
+    async fn portugol_can_pass_a_trivial_echo() {
+        // Separate from `every_language_can_pass_a_trivial_echo` because
+        // Portugol needs Portugol syntax, not a shared echo snippet, and its
+        // input goes through the space/newline normalization in
+        // `run_portugol` before reaching the box's stdin file.
+        let p = problem(&["7"], &["7"]);
+        let code =
+            "programa {\n\tfuncao inicio() {\n\t\tinteiro x\n\t\tleia(x)\n\t\tescreva(x)\n\t}\n}";
+        let (report, _, _) = grade(code, Language::Portugol, &p, false).await;
+        assert!(
+            report.passed,
+            "Portugol should pass a trivial echo, got: {:?}",
+            report.failure_details
+        );
+    }
+
+    #[tokio::test]
+    async fn fork_bomb_is_capped_by_processes_limit() {
+        // Python fork bomb via os.fork() in a loop — should hit isolate's
+        // --processes=64 cap and fail (crash/killed), not hang the box or
+        // spill into the host beyond the box's own cgroup.
+        let p = problem(&["1"], &["1"]);
+        let code = "import os\nwhile True: os.fork()";
+        let (report, _, _) = grade(code, Language::Python, &p, false).await;
+        assert!(
+            !report.passed,
+            "fork bomb should fail under the box's --processes cap, not pass or hang"
+        );
+    }
+
+    #[tokio::test]
+    async fn tle_is_detected_via_isolate_wall_time() {
+        // Python busy-loop with no output — must be killed by isolate's
+        // --wall-time, not just hang until the crate's own 20s+5s watchdog.
+        let p = problem(&["1"], &["1"]);
+        let code = "while True: pass";
+        let (report, _, _) = grade(code, Language::Python, &p, false).await;
+        assert!(!report.passed);
+        let details = report.failure_details.unwrap();
+        assert!(details.error.unwrap_or_default().contains("Time Limit"));
+    }
+
+    #[tokio::test]
+    async fn memory_cap_is_enforced() {
+        // Allocates far more than the 128MB box limit — should fail, not hang
+        // or silently succeed with an OOM'd process reporting exit 0.
+        let p = problem(&["1"], &["1"]);
+        let code = "x = bytearray(500 * 1024 * 1024)\nprint(input())";
+        let (report, _, _) = grade(code, Language::Python, &p, false).await;
+        assert!(
+            !report.passed,
+            "500MB allocation should fail under the 128MB box limit"
+        );
     }
 }
