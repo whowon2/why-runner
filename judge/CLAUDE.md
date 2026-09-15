@@ -34,13 +34,54 @@ Three files, straight-line flow, no framework:
 
 Add a variant to `Language` in `models.rs` matching the DB enum, add a `run_<lang>` fn in `runner.rs` following the existing pattern (base64 the source, write+compile+run in one shell command, delegate to `run_in_docker` with the right image), and wire it into the `match` in `runner::run`. All six DB enum variants (`C`, `Cpp`, `Java`, `Python`, `Portugol`, `Rust`) have runners. `Java` submissions must define `public class Main` (the shell command writes source to `Main.java`).
 
-### Docker-in-Docker
+### Sandboxed execution (isolate)
 
-The judge-worker container itself mounts `/var/run/docker.sock` (see `compose.yml` and `Dockerfile`) so it can spawn sibling sandbox containers on the host's Docker daemon — it does not run Docker-in-Docker nested, it's a sibling-container pattern. Sandbox containers get no network and capped memory/CPU; there is no source-level input sanitization since untrusted code executes in a language runtime, not the shell (the shell command itself is judge-constructed, not attacker-constructed, aside from the base64 payload).
+`src/runner.rs` sandboxes submissions via `isolate` (github.com/ioi/isolate),
+not Docker — there is no host Docker daemon dependency at runtime. Each
+`run_<lang>` function builds the same `sh -c` shell command string as
+before (base64-decode source → write → compile → run, `COMPILE_ERROR_MARKER`
+for compile-error detection), and `run_in_isolate` (`src/isolate.rs`) runs
+it as `/bin/sh -c <command>` inside an `isolate` box: `isolate --box-id=N
+--init`, then `--run` with `--time`/`--wall-time`/`--mem`/`--processes`
+limits and `--stdin=<file>`, then `--cleanup`. No `--share-net` flag is
+passed, so boxes have no network access by default. Resource usage
+(exit code, wall time, peak RSS, TO/SG/RE status) comes from isolate's own
+`--meta` file (`src/isolate.rs::parse_meta`), not a polling approximation.
+
+Memory limits are language-specific:
+- Python, C, C++: 128MB (DEFAULT_MEM_KB)
+- Rust: 768MB (RUST_MEM_KB) — rustc's linked LLVM libraries cause high
+  virtual-address-space usage despite modest real RSS
+- Java, Portugol: 2GB (JVM_MEM_KB) — the JVM reserves large virtual address
+  space by default even for trivial programs; real usage is bounded via
+  `-Xmx`/`-XX:` flags passed through `JAVA_TOOL_OPTIONS`
+
+All language toolchains (python3, gcc/g++, rustc, JDK 21, the Portugol
+console jar) are installed directly in the judge image (see `Dockerfile`)
+rather than pulled as separate per-language Docker images at runtime.
+isolate's built-in default directory visibility includes `/bin`, `/lib`,
+`/lib64`, and `/usr` (read-only), so these toolchains are reachable from
+inside a sandboxed run. Additional directories (e.g. `/portugol` for the
+Portugol jar, `/etc/alternatives` for Java/Rust symlinked toolchain binaries
+on Debian) are bind-mounted per run via `--dir=` flags passed from `runner.rs`.
+
+isolate requires elevated container capabilities to manage its own cgroups/
+namespaces (see `compose.yml`'s `cap_add: [SYS_ADMIN, NET_ADMIN]`) — this is
+a real container capability requirement, separate from (and much narrower than)
+the old Docker-socket-mount approach, which needed full host Docker daemon
+access. The judge Dockerfile's builder stage is pinned to `rust:1.91.1-bookworm`
+(not a floating `rust:1.91.1` tag) to match the runtime stage's Debian version
+and avoid glibc version mismatches.
 
 ### Portugol specifics
 
-Portugol input is space/newline-normalized (`split_whitespace().join("\n")`) before being piped in — Portugol's console runner expects one input token per line, unlike the other languages which get raw stdin. The `portugol:latest` image is built from `./portugol/Dockerfile` (bundles the Portugol Studio console jar + ANTLR/audio libs under `portugol/lib/`).
+Portugol input is space/newline-normalized (`split_whitespace().join("\n")`)
+before being piped in — Portugol's console runner expects one input token per
+line, unlike the other languages which get raw stdin. The Portugol console jar
+(`portugol/portugol-console-2.7.5.jar`) and its ANTLR/audio library dependencies
+(`portugol/lib/`) are bundled directly in the judge image at `/portugol/` (not
+built as a separate Docker image) and bind-mounted into sandboxed runs via
+`--dir=/portugol`.
 
 ### `Portugol-Studio/`
 

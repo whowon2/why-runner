@@ -1,23 +1,36 @@
 # Judge VPS deploy
 
-Target: Hetzner CX22 (or any VPS w/ Docker). Debian/Ubuntu assumed.
+Target: any VPS or container platform with Docker container support and
+capability support (`CAP_SYS_ADMIN`, `CAP_NET_ADMIN`). Debian/Ubuntu assumed
+for VPS; platform-specific capability grants required for Railway/other
+managed platforms. See notes below.
 
 ## 1. Provision box
 
-- Debian 12 or Ubuntu 22.04+, 2GB+ RAM (sandbox containers get 128MB/0.5cpu each, sequential — 2GB is fine)
+- Debian 12 or Ubuntu 22.04+, 2GB+ RAM (sandbox submissions are sequential
+  with ~2GB peak heap usage; 2GB host RAM is comfortable)
 - Add SSH key, disable password auth
-- Create non-root user w/ docker group membership (avoid running as root)
+- Create non-root user (judge container runs as a normal unprivileged user;
+  `cap_add` in compose grants only the required Linux capabilities, not full
+  root)
 
-## 2. Install Docker
+## 2. Install Docker (VPS only)
+
+VPS deployments need Docker installed on the host:
 
 ```sh
 curl -fsSL https://get.docker.com | sh
 usermod -aG docker $USER
 ```
 
+Managed platforms (Railway, Fly.io, etc.) already provide a container runtime;
+skip this step and see notes below on capability requirements.
+
 ## 3. Firewall (ufw)
 
-Judge needs: outbound to Postgres (managed DB, usually 5432/tls), outbound to Docker Hub / your registry for image pulls, SSH in. No inbound app port needed — judge has no HTTP server, it's a DB-polling worker.
+Judge needs: outbound to Postgres (managed DB, usually 5432/tls), outbound to
+Docker Hub / your registry for image pulls, SSH in. No inbound app port needed
+— judge has no HTTP server, it's a DB-polling worker.
 
 ```sh
 ufw default deny incoming
@@ -79,6 +92,23 @@ docker compose -f compose.prod.yml up -d --build
 ```
 
 Consider a small deploy script or GitHub Actions runner on the box for this later; manual is fine for now.
+
+## Capabilities and platform requirements
+
+Judge uses `isolate` (sandboxed execution) instead of Docker-in-Docker, so it
+**does not need a host Docker daemon at runtime**. Instead, the judge container
+itself needs two Linux capabilities: `CAP_SYS_ADMIN` (to manage cgroups/namespaces)
+and `CAP_NET_ADMIN` (for isolate's per-box network namespace setup). The compose
+files (`judge/compose.yml`, `judge/compose.prod.yml`) declare these via
+`cap_add: [SYS_ADMIN, NET_ADMIN]`.
+
+**Managed platform notes:**
+- **Railway, Fly.io, Render, etc.:** Capability support is platform-dependent.
+  Local Docker testing (this plan's Task 1-6) validated the mechanism works
+  with elevated capabilities enabled, but Railway's specific capability grants
+  are undocumented and unconfirmed. A real deploy attempt to Railway would be
+  the only way to know if it grants those capabilities. Contact platform
+  support if a deploy fails with permission errors on isolate startup.
 
 ## Notes / gaps to revisit
 
