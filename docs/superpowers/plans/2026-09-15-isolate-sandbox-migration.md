@@ -260,7 +260,9 @@ git commit -m "feat(judge): add isolate meta-file parser"
 
 **Interfaces:**
 - Consumes: `tempfile::NamedTempFile` (already a dependency), `IsolateMeta`/`parse_meta` from Task 2.
-- Produces: `pub struct IsolateLimits { time_secs: u64, wall_time_secs: u64, mem_kb: u64, processes: u32 }`, `pub struct IsolateBox { id: u32, path: std::path::PathBuf }`, `pub async fn box_init() -> std::io::Result<IsolateBox>`, `pub async fn box_run(box_id: u32, limits: &IsolateLimits, stdin_path: Option<&str>, argv: &[&str]) -> std::io::Result<(std::process::Output, IsolateMeta)>`, `pub async fn box_cleanup(box_id: u32)` — all consumed by Task 4.
+- Produces: `pub struct IsolateLimits { time_secs: u64, wall_time_secs: u64, mem_kb: u64, processes: u32 }`, `pub struct IsolateBox { id: u32, path: std::path::PathBuf }`, `pub async fn box_init() -> std::io::Result<IsolateBox>`, `pub async fn box_run(box_id: u32, limits: &IsolateLimits, stdin_path: Option<&str>, extra_dirs: &[&str], argv: &[&str]) -> std::io::Result<(std::process::Output, IsolateMeta)>`, `pub async fn box_cleanup(box_id: u32)` — all consumed by Task 4.
+
+> **Ruling (from Task 1's findings, ledgered in `.superpowers/sdd/2026-09-15-isolate-sandbox-migration/progress.md`):** isolate v2.7 (the tag Task 1 actually built) has no `dir = ...` config-file directive — `judge/isolate.cfg` only sets `box_root`/`lock_root`/`cg_root`/`num_boxes`, and isolate's own built-in default rules already bind-mount `/bin`, `/lib`, `/lib64`, `/usr` read-only into every box with no config needed. Anything outside those paths (Task 5's Portugol jar lives at `/portugol`) must be passed per-run as an `isolate --run --dir=<path>` flag. `box_run` therefore takes an `extra_dirs: &[&str]` parameter (empty for every language except Portugol) instead of relying on config-file-wide directory exposure as originally planned.
 
 - [ ] **Step 1: Add the types and box lifecycle functions**
 
@@ -329,6 +331,7 @@ pub async fn box_run(
     box_id: u32,
     limits: &IsolateLimits,
     stdin_path: Option<&str>,
+    extra_dirs: &[&str],
     argv: &[&str],
 ) -> std::io::Result<(std::process::Output, super::isolate::IsolateMeta)> {
     let meta_file = tempfile::NamedTempFile::new()?;
@@ -344,6 +347,13 @@ pub async fn box_run(
 
     if let Some(stdin) = stdin_path {
         cmd.arg(format!("--stdin={}", stdin));
+    }
+
+    // Directories beyond isolate's built-in defaults (/bin, /lib, /lib64,
+    // /usr — see the ruling above this code block) that this run needs
+    // visible inside the box, e.g. Portugol's jar at /portugol.
+    for dir in extra_dirs {
+        cmd.arg(format!("--dir={}", dir));
     }
 
     cmd.arg("--run").arg("--").args(argv);
@@ -394,7 +404,7 @@ git commit -m "feat(judge): add isolate box lifecycle (init/run/cleanup)"
 
 **Interfaces:**
 - Consumes: `isolate::{box_init, box_run, box_cleanup, IsolateLimits}` from Tasks 2-3.
-- Produces: `pub async fn run(code: &str, input_data: &str, language: Language, time_limit_secs: u64) -> ExecutionResult` — unchanged signature, consumed by `main.rs::grade` (Task 5 verifies this end-to-end).
+- Produces: `pub async fn run(code: &str, input_data: &str, language: Language, time_limit_secs: u64) -> ExecutionResult` — unchanged signature, consumed by `main.rs::grade` (Task 5 verifies this end-to-end). `run_in_isolate` takes an added `extra_dirs: &[&str]` parameter (see Task 3's ruling note) — every `run_<lang>` passes `&[]` except `run_portugol`, which passes `&["/portugol"]` so the box can see the jar Task 5 installs there.
 
 - [ ] **Step 1: Delete Docker-specific code, add `run_in_isolate`**
 
@@ -408,6 +418,7 @@ async fn run_in_isolate(
     shell_command: &str,
     input_data: &str,
     time_limit_secs: u64,
+    extra_dirs: &[&str],
 ) -> ExecutionResult {
     println!("   🔒 Running in isolate sandbox");
     let started_at = Instant::now();
@@ -456,6 +467,7 @@ async fn run_in_isolate(
             sandbox_box.id,
             &limits,
             Some(stdin_file),
+            extra_dirs,
             &["/bin/sh", "-c", shell_command],
         ),
     )
@@ -525,7 +537,7 @@ async fn run_in_isolate(
 
 - [ ] **Step 2: Update every `run_<lang>` function to call `run_in_isolate`**
 
-Each function currently ends with a call to `run_in_docker(<image>, &shell_command, input_data, time_limit_secs)`. Change each to `run_in_isolate(&shell_command, input_data, time_limit_secs)` — dropping the image-name argument, keeping the shell-command construction above it completely unchanged. E.g. `run_python`:
+Each function currently ends with a call to `run_in_docker(<image>, &shell_command, input_data, time_limit_secs)`. Change each to `run_in_isolate(&shell_command, input_data, time_limit_secs, &[])` — dropping the image-name argument, passing an empty `extra_dirs` slice, keeping the shell-command construction above it completely unchanged. E.g. `run_python`:
 
 ```rust
 pub async fn run_python(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
@@ -535,11 +547,24 @@ pub async fn run_python(code: &str, input_data: &str, time_limit_secs: u64) -> E
         b64_code
     );
 
-    run_in_isolate(&shell_command, input_data, time_limit_secs).await
+    run_in_isolate(&shell_command, input_data, time_limit_secs, &[]).await
 }
 ```
 
-Apply the same pattern (delete the image-name string literal, call `run_in_isolate` instead of `run_in_docker`) to `run_portugol`, `run_cpp`, `run_c`, `run_java`, `run_rust`. Also update `run_portugol`'s call site, which passes `&normalized_input` — unchanged, `run_in_isolate` takes `input_data: &str` the same as `run_in_docker` did.
+Apply the same pattern (delete the image-name string literal, call `run_in_isolate` instead of `run_in_docker`, pass `&[]` for `extra_dirs`) to `run_cpp`, `run_c`, `run_java`, `run_rust`. Also update `run_portugol`'s call site, which passes `&normalized_input` (unchanged) — but `run_portugol` passes `&["/portugol"]` instead of `&[]` for `extra_dirs`, since the Portugol console jar (installed at `/portugol/portugol-console.jar` in Task 5) lives outside isolate's built-in default-visible directories (`/bin`, `/lib`, `/lib64`, `/usr` — see Task 3's ruling note) and needs an explicit `--dir=/portugol` to be reachable from inside the box:
+
+```rust
+pub async fn run_portugol(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
+    let b64_code = general_purpose::STANDARD.encode(code);
+    let shell_command = format!(
+        "echo \"{}\" | base64 -d > script.por && java -jar /portugol/portugol-console.jar -no-wait script.por",
+        b64_code
+    );
+
+    let normalized_input = input_data.split_whitespace().collect::<Vec<_>>().join("\n");
+    run_in_isolate(&shell_command, &normalized_input, time_limit_secs, &["/portugol"]).await
+}
+```
 
 - [ ] **Step 3: Also strip the now-unused `ExecutionResult` doc comment**
 
@@ -689,13 +714,13 @@ These tests shell out to the real `isolate` binary (same as the old ones shelled
 
 ```bash
 docker build -t judge:isolate-dev -f judge/Dockerfile judge
-docker run --rm --cap-add=SYS_ADMIN -v "$(pwd)/judge":/src -w /src judge:isolate-dev \
+docker run --rm --cap-add=SYS_ADMIN --cap-add=NET_ADMIN -v "$(pwd)/judge":/src -w /src judge:isolate-dev \
   sh -c "apt-get update && apt-get install -y curl && curl https://sh.rustup.rs -sSf | sh -s -- -y && . \$HOME/.cargo/env && cargo test"
 ```
 
-(This installs a Rust toolchain inside the running container just to invoke `cargo test` there — the shipped image itself doesn't need Rust at runtime, only its build stage did. If this proves too slow/awkward in practice, an acceptable alternative is building a one-off `judge:test` image whose final stage is the `builder` stage itself, i.e. `docker build --target builder -t judge:test -f judge/Dockerfile judge && docker run --rm --cap-add=SYS_ADMIN judge:test cargo test`, which has both the Rust toolchain and — once Step 1 is also present in that stage — the isolate binary. Prefer whichever the box-init smoke test in Task 1 already proved works with `--cap-add=SYS_ADMIN`.)
+(This installs a Rust toolchain inside the running container just to invoke `cargo test` there — the shipped image itself doesn't need Rust at runtime, only its build stage did. If this proves too slow/awkward in practice, an acceptable alternative is building a one-off `judge:test` image whose final stage is the `builder` stage itself, i.e. `docker build --target builder -t judge:test -f judge/Dockerfile judge && docker run --rm --cap-add=SYS_ADMIN --cap-add=NET_ADMIN judge:test cargo test`, which has both the Rust toolchain and — once Step 1 is also present in that stage — the isolate binary. Use `--cap-add=SYS_ADMIN --cap-add=NET_ADMIN` — the exact minimal capability set Task 1's smoke test found necessary (`SYS_ADMIN` alone gets `--init` working but `--run` fails bringing up the box's loopback interface without `NET_ADMIN`).)
 
-Expected: all tests pass, including the 5 new ones. If any language-specific test fails, the likely cause is `judge/isolate.cfg`'s `dir` lines not exposing a toolchain's install path (e.g. JDK on Debian may live under `/usr/lib/jvm` — already covered by the `dir = /usr` line — but double check with the actual error before adding more `dir` lines).
+Expected: all tests pass, including the 5 new ones. If any language-specific test fails on a "not found"/permission error for a toolchain path, the likely cause is that path falling outside isolate's built-in default-visible directories (`/bin`, `/lib`, `/lib64`, `/usr` — see Task 3's ruling note; `judge/isolate.cfg` itself has no `dir` lines in this isolate release) — check whether that language's `run_<lang>` needs its own `--dir=` addition the way `run_portugol` already gets `extra_dirs: &["/portugol"]`, rather than assuming a config-file fix.
 
 - [ ] **Step 5: Commit**
 
@@ -713,11 +738,11 @@ git commit -m "feat(judge): bundle language toolchains in judge image, extend te
 - Modify: `judge/compose.prod.yml`
 
 **Interfaces:**
-- Consumes: whichever `--cap-add`/`--privileged` requirement Task 1's smoke test determined necessary.
+- Consumes: the capability requirement Task 1's smoke test determined necessary — `cap_add: [SYS_ADMIN, NET_ADMIN]` (confirmed by Task 1's report: `SYS_ADMIN` alone inits a box but `--run` fails bringing up its loopback interface without `NET_ADMIN`; `--privileged` was not needed).
 
 - [ ] **Step 1: Update `judge/compose.yml`**
 
-Remove the `portugol` service and the `docker.sock` volume mount, add the capability flag found in Task 1:
+Remove the `portugol` service and the `docker.sock` volume mount, add both capability flags Task 1 found necessary:
 
 ```yaml
 services:
@@ -727,6 +752,7 @@ services:
       dockerfile: Dockerfile
     cap_add:
       - SYS_ADMIN
+      - NET_ADMIN
     env_file:
       - .env
     restart: on-failure
@@ -749,11 +775,9 @@ services:
       retries: 10
 ```
 
-(If Task 1's smoke test found `--cap-add=SYS_ADMIN` insufficient and needed `--privileged`, use `privileged: true` here instead of `cap_add` — whichever the smoke test actually proved necessary, not a guess.)
-
 - [ ] **Step 2: Update `judge/compose.prod.yml`**
 
-Same shape — remove the `portugol` service block and the `docker.sock` volume mount, add the same `cap_add`/`privileged` line:
+Same shape — remove the `portugol` service block and the `docker.sock` volume mount, add the same `cap_add` lines:
 
 ```yaml
 services:
@@ -761,6 +785,7 @@ services:
     build: .
     cap_add:
       - SYS_ADMIN
+      - NET_ADMIN
     env_file:
       - .env
     restart: always
