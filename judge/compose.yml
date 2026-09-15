@@ -1,13 +1,11 @@
 services:
-  portugol:
-    build: ./portugol
-    image: portugol:latest
-    command: echo "Portugol image ready"
-
   judge-worker:
-    build: .
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    build:
+      context: .
+      dockerfile: Dockerfile
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
     env_file:
       - .env
     restart: on-failure

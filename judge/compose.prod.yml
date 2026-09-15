@@ -2,21 +2,14 @@
 # No local Postgres — points at managed DB (e.g. Neon) via .env's DATABASE_URL.
 # Usage: docker compose -f compose.prod.yml up -d --build
 services:
-  portugol:
-    build: ./portugol
-    image: portugol:latest
-    command: echo "Portugol image ready"
-    restart: "no"
-
   judge-worker:
     build: .
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
     env_file:
       - .env
     restart: always
-    depends_on:
-      - portugol
     logging:
       driver: json-file
       options:
