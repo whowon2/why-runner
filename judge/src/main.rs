@@ -1,5 +1,6 @@
 mod constraints;
 mod db;
+mod isolate;
 mod models;
 mod runner;
 
