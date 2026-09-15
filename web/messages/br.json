@@ -1267,6 +1267,18 @@
     "students": "Alunos",
     "noStudentsYet": "Nenhum aluno entrou ainda.",
     "editClass": "Editar turma",
-    "classNameLabel": "Nome da turma"
+    "classNameLabel": "Nome da turma",
+    "deleteClass": "Excluir turma",
+    "deleteClassTitle": "Excluir esta turma?",
+    "deleteClassDescription": "Essa ação não pode ser desfeita. Todas as aulas, exercícios e envios dos alunos dessa turma serão excluídos permanentemente.",
+    "deleteClassSuccess": "Turma excluída.",
+    "removeStudent": "Remover aluno",
+    "removeStudentTitle": "Remover este aluno?",
+    "removeStudentDescription": "Ele perderá acesso a esta turma e suas aulas. Pode entrar novamente depois com o código da turma.",
+    "removeStudentSuccess": "Aluno removido.",
+    "leaveClass": "Sair da turma",
+    "leaveClassTitle": "Sair desta turma?",
+    "leaveClassDescription": "Você perderá acesso a esta turma e suas aulas, a menos que entre novamente com o código.",
+    "leaveClassSuccess": "Você saiu da turma."
   }
 }

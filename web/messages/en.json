@@ -1267,6 +1267,18 @@
     "students": "Students",
     "noStudentsYet": "No students have joined yet.",
     "editClass": "Edit class",
-    "classNameLabel": "Class name"
+    "classNameLabel": "Class name",
+    "deleteClass": "Delete class",
+    "deleteClassTitle": "Delete this class?",
+    "deleteClassDescription": "This cannot be undone. All lessons, exercises, and student submissions in this class will be permanently deleted.",
+    "deleteClassSuccess": "Class deleted.",
+    "removeStudent": "Remove student",
+    "removeStudentTitle": "Remove this student?",
+    "removeStudentDescription": "They will lose access to this class and its lessons. They can rejoin later with the class code.",
+    "removeStudentSuccess": "Student removed.",
+    "leaveClass": "Leave class",
+    "leaveClassTitle": "Leave this class?",
+    "leaveClassDescription": "You'll lose access to this class and its lessons unless you rejoin with the class code.",
+    "leaveClassSuccess": "You left the class."
   }
 }

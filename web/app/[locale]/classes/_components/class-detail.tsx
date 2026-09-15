@@ -12,7 +12,10 @@ import { Link } from "@/i18n/navigation";
 import { useClass } from "@/hooks/use-class";
 import { useClassLessons } from "@/hooks/use-lessons";
 import { CreateLessonButton } from "./create-lesson-button";
+import { DeleteClassDialog } from "./delete-class-dialog";
 import { EditClassDialog } from "./edit-class-dialog";
+import { LeaveClassButton } from "./leave-class-button";
+import { RemoveMemberButton } from "./remove-member-button";
 
 export function ClassDetail({ classroomId }: { classroomId: string }) {
   const t = useTranslations("ClassesPage");
@@ -50,8 +53,11 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
                 classSlug={classroom.slug}
                 classroomId={classroomId}
               />
+              <DeleteClassDialog classroomId={classroomId} />
             </>
-          ) : undefined
+          ) : (
+            <LeaveClassButton classroomId={classroomId} />
+          )
         }
         icon={School}
         subtitle={t("memberCount", { count: memberCount })}
@@ -71,13 +77,20 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
             ) : (
               <ul className="flex flex-col gap-1">
                 {members.map((m) => (
-                  <li key={m.id}>
+                  <li
+                    className="flex items-center justify-between gap-2"
+                    key={m.id}
+                  >
                     <Link
                       className="text-sm hover:underline"
                       href={`/user/${m.username}`}
                     >
                       {m.name}
                     </Link>
+                    <RemoveMemberButton
+                      classroomId={classroomId}
+                      userId={m.id}
+                    />
                   </li>
                 ))}
               </ul>
