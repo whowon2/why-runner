@@ -1,13 +1,7 @@
 use crate::models::Language;
 use base64::{Engine as _, engine::general_purpose};
-use std::process::Stdio;
-use std::sync::Arc;
-use std::sync::atomic::{AtomicI64, Ordering};
 use std::time::{Duration, Instant};
-use tokio::io::AsyncWriteExt;
-use tokio::process::Command;
-use tokio::time::{interval, timeout};
-use uuid::Uuid;
+use tokio::time::timeout;
 
 const COMPILE_ERROR_MARKER: &str = "##COMPILE_ERROR##";
 
@@ -18,14 +12,9 @@ pub struct ExecutionResult {
     pub is_timeout: bool,
     pub is_compile_error: bool,
     pub duration_ms: i64,
-    /// Peak resident memory observed via periodic `docker stats` sampling
-    /// while the sandbox container was running. This is a sampled
-    /// approximation (not a true cgroup peak-usage counter), since `--rm`
-    /// containers don't retain stats after exit and reading cgroup
-    /// peak-usage files directly would be fragile across cgroup v1/v2 and
-    /// Docker storage/cgroup driver configurations. `None` if sampling
-    /// failed (e.g. `docker stats` unavailable) or the container exited
-    /// before any sample was taken.
+    /// Peak resident memory in KB, as reported by isolate's `max-rss` field
+    /// in its `--meta` output (a real kernel-reported cgroup peak, not an
+    /// approximation). `None` if the box failed to start before any run.
     pub peak_memory_kb: Option<i64>,
 }
 
@@ -66,13 +55,7 @@ pub async fn run_python(code: &str, input_data: &str, time_limit_secs: u64) -> E
         b64_code
     );
 
-    run_in_docker(
-        "python:3.9-slim",
-        &shell_command,
-        input_data,
-        time_limit_secs,
-    )
-    .await
+    run_in_isolate(&shell_command, input_data, time_limit_secs, &[]).await
 }
 
 pub async fn run_portugol(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
@@ -83,11 +66,11 @@ pub async fn run_portugol(code: &str, input_data: &str, time_limit_secs: u64) ->
     );
 
     let normalized_input = input_data.split_whitespace().collect::<Vec<_>>().join("\n");
-    run_in_docker(
-        "portugol:latest",
+    run_in_isolate(
         &shell_command,
         &normalized_input,
         time_limit_secs,
+        &["/portugol"],
     )
     .await
 }
@@ -100,13 +83,7 @@ pub async fn run_cpp(code: &str, input_data: &str, time_limit_secs: u64) -> Exec
         "./program",
     );
 
-    run_in_docker(
-        "gcc:13-bookworm",
-        &shell_command,
-        input_data,
-        time_limit_secs,
-    )
-    .await
+    run_in_isolate(&shell_command, input_data, time_limit_secs, &[]).await
 }
 
 pub async fn run_c(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
@@ -117,13 +94,7 @@ pub async fn run_c(code: &str, input_data: &str, time_limit_secs: u64) -> Execut
         "./program",
     );
 
-    run_in_docker(
-        "gcc:13-bookworm",
-        &shell_command,
-        input_data,
-        time_limit_secs,
-    )
-    .await
+    run_in_isolate(&shell_command, input_data, time_limit_secs, &[]).await
 }
 
 pub async fn run_java(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
@@ -134,13 +105,7 @@ pub async fn run_java(code: &str, input_data: &str, time_limit_secs: u64) -> Exe
         "java Main",
     );
 
-    run_in_docker(
-        "eclipse-temurin:21-jdk",
-        &shell_command,
-        input_data,
-        time_limit_secs,
-    )
-    .await
+    run_in_isolate(&shell_command, input_data, time_limit_secs, &[]).await
 }
 
 pub async fn run_rust(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
@@ -151,111 +116,22 @@ pub async fn run_rust(code: &str, input_data: &str, time_limit_secs: u64) -> Exe
         "./program",
     );
 
-    run_in_docker(
-        "rust:1.80-slim",
-        &shell_command,
-        input_data,
-        time_limit_secs,
-    )
-    .await
+    run_in_isolate(&shell_command, input_data, time_limit_secs, &[]).await
 }
 
-/// Polls `docker stats` for `container_name` every 50ms and keeps a running
-/// max of the reported memory usage (converted to KB) in `peak_kb`. Runs
-/// until `stop` is set to true. Best-effort: a sample that fails to run or
-/// parse is silently skipped, since a single missed sample just narrows the
-/// approximation, not a correctness issue for the caller.
-async fn sample_peak_memory(
-    container_name: String,
-    peak_kb: Arc<AtomicI64>,
-    stop: Arc<std::sync::atomic::AtomicBool>,
-) {
-    let mut ticker = interval(Duration::from_millis(50));
-    while !stop.load(Ordering::Relaxed) {
-        ticker.tick().await;
-
-        let output = Command::new("docker")
-            .args(&[
-                "stats",
-                "--no-stream",
-                "--format",
-                "{{.MemUsage}}",
-                &container_name,
-            ])
-            .output()
-            .await;
-
-        let Ok(output) = output else { continue };
-        if !output.status.success() {
-            continue;
-        }
-
-        let text = String::from_utf8_lossy(&output.stdout);
-        let Some(used_part) = text.split('/').next() else {
-            continue;
-        };
-
-        if let Some(kb) = parse_mem_to_kb(used_part.trim()) {
-            peak_kb.fetch_max(kb, Ordering::Relaxed);
-        }
-    }
-}
-
-/// Parses a docker-formatted memory size like "12.34MiB" / "512KiB" / "1.2GiB"
-/// into whole kilobytes.
-fn parse_mem_to_kb(text: &str) -> Option<i64> {
-    let (number_part, unit) =
-        text.split_at(text.find(|c: char| c.is_alphabetic()).unwrap_or(text.len()));
-    let value: f64 = number_part.trim().parse().ok()?;
-
-    let kb = match unit.trim() {
-        "GiB" => value * 1024.0 * 1024.0,
-        "MiB" => value * 1024.0,
-        "KiB" => value,
-        "B" => value / 1024.0,
-        _ => return None,
-    };
-
-    Some(kb as i64)
-}
-
-async fn run_in_docker(
-    image: &str,
+async fn run_in_isolate(
     shell_command: &str,
     input_data: &str,
     time_limit_secs: u64,
+    extra_dirs: &[&str],
 ) -> ExecutionResult {
-    println!("   🐳 Spawning Docker Container ({})", image);
-
+    println!("   🔒 Running in isolate sandbox");
     let started_at = Instant::now();
-    let container_name = format!("judge-{}", Uuid::new_v4());
 
-    let mut child = match Command::new("docker")
-        .args(&[
-            "run",
-            "--name",
-            &container_name,
-            "-i",
-            "--network",
-            "none",
-            "--memory",
-            "128m",
-            "--cpus",
-            "0.5",
-            image,
-            "sh",
-            "-c",
-            shell_command,
-        ])
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .kill_on_drop(true)
-        .spawn()
-    {
-        Ok(c) => c,
+    let sandbox_box = match crate::isolate::box_init().await {
+        Ok(b) => b,
         Err(e) => {
-            eprintln!("Failed to spawn Docker container: {}", e);
+            eprintln!("Failed to init isolate box: {}", e);
             return ExecutionResult {
                 stdout: String::new(),
                 stderr: format!("Internal error: failed to start runner ({})", e),
@@ -268,46 +144,45 @@ async fn run_in_docker(
         }
     };
 
-    if let Some(mut stdin) = child.stdin.take() {
-        let input_bytes = input_data.as_bytes().to_vec();
-        tokio::spawn(async move {
-            stdin.write_all(&input_bytes).await.ok();
-        });
+    let stdin_file = "stdin.txt";
+    if let Err(e) = tokio::fs::write(sandbox_box.path.join(stdin_file), input_data).await {
+        crate::isolate::box_cleanup(sandbox_box.id).await;
+        eprintln!("Failed to write sandbox stdin: {}", e);
+        return ExecutionResult {
+            stdout: String::new(),
+            stderr: format!("Internal error: failed to prepare runner input ({})", e),
+            exit_code: -1,
+            is_timeout: false,
+            is_compile_error: false,
+            duration_ms: started_at.elapsed().as_millis() as i64,
+            peak_memory_kb: None,
+        };
     }
 
-    let peak_kb = Arc::new(AtomicI64::new(0));
-    let stop_sampling = Arc::new(std::sync::atomic::AtomicBool::new(false));
-    let sampler = tokio::spawn(sample_peak_memory(
-        container_name.clone(),
-        peak_kb.clone(),
-        stop_sampling.clone(),
-    ));
-
-    let duration = Duration::from_secs(time_limit_secs);
-    let wait_result = timeout(duration, child.wait_with_output()).await;
-
-    stop_sampling.store(true, Ordering::Relaxed);
-    sampler.abort();
-
-    // Container is created without --rm (needed so the sampler above can
-    // read stats after the process exits but before removal); clean it up
-    // ourselves in every branch below.
-    let cleanup_name = container_name.clone();
-    tokio::spawn(async move {
-        Command::new("docker")
-            .args(&["rm", "-f", &cleanup_name])
-            .output()
-            .await
-            .ok();
-    });
-
-    let peak_memory_kb = match peak_kb.load(Ordering::Relaxed) {
-        0 => None,
-        kb => Some(kb),
+    let limits = crate::isolate::IsolateLimits {
+        time_secs: time_limit_secs,
+        wall_time_secs: time_limit_secs + 2,
+        mem_kb: 131_072, // 128MB, matches the previous `docker run --memory 128m`
+        processes: 64,   // fork-bomb cap; new, additive safety property vs the Docker version
     };
 
-    match wait_result {
-        Ok(Ok(output)) => {
+    let run_result = timeout(
+        Duration::from_secs(time_limit_secs + 5),
+        crate::isolate::box_run(
+            sandbox_box.id,
+            &limits,
+            Some(stdin_file),
+            extra_dirs,
+            &["/bin/sh", "-c", shell_command],
+        ),
+    )
+    .await;
+
+    let box_id = sandbox_box.id;
+    crate::isolate::box_cleanup(box_id).await;
+
+    match run_result {
+        Ok(Ok((output, meta))) => {
             let stderr = String::from_utf8_lossy(&output.stderr).to_string();
             let is_compile_error = stderr.contains(COMPILE_ERROR_MARKER);
             let stderr = if is_compile_error {
@@ -315,19 +190,29 @@ async fn run_in_docker(
             } else {
                 stderr
             };
+            let is_timeout = meta.status.as_deref() == Some("TO");
 
             ExecutionResult {
                 stdout: String::from_utf8_lossy(&output.stdout).to_string(),
-                stderr,
-                exit_code: output.status.code().unwrap_or(-1),
-                is_timeout: false,
-                is_compile_error,
+                stderr: if is_timeout {
+                    "Time Limit Exceeded".to_string()
+                } else {
+                    stderr
+                },
+                exit_code: if is_timeout {
+                    124
+                } else {
+                    meta.exit_code
+                        .unwrap_or_else(|| output.status.code().unwrap_or(-1))
+                },
+                is_timeout,
+                is_compile_error: is_compile_error && !is_timeout,
                 duration_ms: started_at.elapsed().as_millis() as i64,
-                peak_memory_kb,
+                peak_memory_kb: meta.max_rss_kb,
             }
         }
         Ok(Err(e)) => {
-            eprintln!("Failed to read container output: {}", e);
+            eprintln!("Failed to run isolate box: {}", e);
             ExecutionResult {
                 stdout: String::new(),
                 stderr: format!("Internal error: failed to read runner output ({})", e),
@@ -335,11 +220,11 @@ async fn run_in_docker(
                 is_timeout: false,
                 is_compile_error: false,
                 duration_ms: started_at.elapsed().as_millis() as i64,
-                peak_memory_kb,
+                peak_memory_kb: None,
             }
         }
         Err(_) => {
-            println!("\t⏳ Time Limit Exceeded! Killing container...");
+            println!("\t⏳ Time Limit Exceeded! (outer watchdog)");
             ExecutionResult {
                 stdout: String::new(),
                 stderr: "Time Limit Exceeded".to_string(),
@@ -347,7 +232,7 @@ async fn run_in_docker(
                 is_timeout: true,
                 is_compile_error: false,
                 duration_ms: started_at.elapsed().as_millis() as i64,
-                peak_memory_kb,
+                peak_memory_kb: None,
             }
         }
     }
