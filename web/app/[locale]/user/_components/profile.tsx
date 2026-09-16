@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera } from "lucide-react";
+import { Camera, Pencil } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -8,11 +8,19 @@ import type { ReactNode } from "react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { CropImageDialog } from "@/components/crop-image-dialog";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProfile } from "@/hooks/use-profile";
 import { useUploadProfileImage } from "@/hooks/use-upload-profile-image";
+import { UpdateForm } from "./form";
 
 const COVER_TEXT_SHADOW =
   "[text-shadow:0_1px_3px_rgba(0,0,0,0.95),0_0_10px_rgba(0,0,0,0.75)]";
@@ -70,6 +78,7 @@ export default function Profile({
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [coverImageSrc, setCoverImageSrc] = useState<string | null>(null);
   const [coverDim, setCoverDim] = useState(60);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   function readFileAsDataUrl(file: File, onLoaded: (src: string) => void) {
     const reader = new FileReader();
@@ -193,16 +202,26 @@ export default function Profile({
               >
                 {data.name}
               </h1>
+              {isOwner && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className={onCover ? "text-white hover:text-white" : ""}
+                  onClick={() => setIsEditOpen(true)}
+                >
+                  <Pencil className="h-4 w-4" />
+                  <span className="sr-only">{t("editProfile")}</span>
+                </Button>
+              )}
             </div>
             <Separator className={onCover ? "mt-2 bg-white/40" : "mt-2"} />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <FactRow
-              onCover={onCover}
-              label={t("bio")}
-              value={data.bio || t("defaultBio")}
-            />
+            {data.bio && (
+              <FactRow onCover={onCover} label={t("bio")} value={data.bio} />
+            )}
             {data.location && (
               <FactRow
                 onCover={onCover}
@@ -224,8 +243,16 @@ export default function Profile({
                 value={new Date(data.createdAt).toLocaleDateString()}
               />
             )}
-            <FactRow onCover={onCover} label={t("contests")} value="4" />
-            <FactRow onCover={onCover} label={t("problems")} value="12" />
+            <FactRow
+              onCover={onCover}
+              label={t("contests")}
+              value={data.contestCount}
+            />
+            <FactRow
+              onCover={onCover}
+              label={t("problems")}
+              value={data.problemCount}
+            />
           </div>
 
           {/* Decorative color-swatch footer */}
@@ -307,6 +334,20 @@ export default function Profile({
               </div>
             }
           />
+
+          <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="sr-only">
+                  {t("editProfile")}
+                </DialogTitle>
+              </DialogHeader>
+              <UpdateForm
+                user={data}
+                onSaved={() => setIsEditOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
         </>
       )}
     </Card>
