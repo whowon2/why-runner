@@ -27,11 +27,7 @@ const signUpSchema = z.object({
 
 type SignUpForm = z.infer<typeof signUpSchema>;
 
-export function SignUpTab({
-  openEmailVerificationTab,
-}: {
-  openEmailVerificationTab: (email: string) => void;
-}) {
+export function SignUpTab() {
   const t = useTranslations("Auth");
   const form = useForm<SignUpForm>({
     resolver: zodResolver(signUpSchema),
@@ -45,7 +41,7 @@ export function SignUpTab({
   const { isSubmitting } = form.formState;
 
   async function handleSignUp(data: SignUpForm) {
-    const res = await authClient.signUp.email(
+    await authClient.signUp.email(
       { ...data, callbackURL: "/" },
       {
         onError: (error) => {
@@ -53,10 +49,6 @@ export function SignUpTab({
         },
       },
     );
-
-    if (res.error == null && !res.data.user.emailVerified) {
-      openEmailVerificationTab(data.email);
-    }
   }
 
   return (

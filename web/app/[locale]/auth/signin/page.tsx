@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { EmailVerification } from "@/components/auth/email-verification";
 import {
   Card,
   CardContent,
@@ -18,12 +17,11 @@ import { SignInTab } from "./_components/sign-in-tab";
 import { SignUpTab } from "./_components/sign-up-tab";
 import { SocialAuthButtons } from "./_components/social-auth-buttons";
 
-type Tab = "signin" | "signup" | "email-verification" | "forgot-password";
+type Tab = "signin" | "signup" | "forgot-password";
 
 export default function LoginPage() {
   const t = useTranslations("Auth");
   const router = useRouter();
-  const [email, setEmail] = useState("");
   const [selectedTab, setSelectedTab] = useState<Tab>("signin");
 
   useEffect(() => {
@@ -31,11 +29,6 @@ export default function LoginPage() {
       if (session.data != null) router.push("/");
     });
   }, [router]);
-
-  function openEmailVerificationTab(email: string) {
-    setEmail(email);
-    setSelectedTab("email-verification");
-  }
 
   return (
     <div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">
@@ -57,7 +50,6 @@ export default function LoginPage() {
             </CardHeader>
             <CardContent>
               <SignInTab
-                openEmailVerificationTab={openEmailVerificationTab}
                 openForgotPassword={() => setSelectedTab("forgot-password")}
               />
             </CardContent>
@@ -76,7 +68,7 @@ export default function LoginPage() {
               <CardTitle>{t("signUp")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <SignUpTab openEmailVerificationTab={openEmailVerificationTab} />
+              <SignUpTab />
             </CardContent>
 
             <Separator />
@@ -84,17 +76,6 @@ export default function LoginPage() {
             <CardFooter className="grid grid-cols-2 gap-3">
               <SocialAuthButtons />
             </CardFooter>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="email-verification">
-          <Card>
-            <CardHeader className="text-2xl font-bold">
-              <CardTitle>{t("verifyEmail")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <EmailVerification email={email} />
-            </CardContent>
           </Card>
         </TabsContent>
 

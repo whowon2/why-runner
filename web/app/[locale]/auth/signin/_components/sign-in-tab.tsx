@@ -28,10 +28,8 @@ const signInSchema = z.object({
 type SignInForm = z.infer<typeof signInSchema>;
 
 export function SignInTab({
-  openEmailVerificationTab,
   openForgotPassword,
 }: {
-  openEmailVerificationTab: (email: string) => void;
   openForgotPassword: () => void;
 }) {
   const t = useTranslations("Auth");
@@ -51,9 +49,6 @@ export function SignInTab({
       { ...data, callbackURL: "/" },
       {
         onError: (error) => {
-          if (error.error.code === "EMAIL_NOT_VERIFIED") {
-            openEmailVerificationTab(data.email);
-          }
           toast.error(error.error.message || t("failedSignIn"));
         },
         onSuccess: () => {
