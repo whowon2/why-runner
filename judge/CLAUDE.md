@@ -13,14 +13,14 @@ Judge: Rust worker for the Runner platform. Polls Postgres for pending code subm
 - Build release: `cargo build --release`
 - Local stack (Postgres + judge-worker): `docker compose up` (compose.yml at repo root)
 
-9 tests exist in this crate: 4 pre-existing `isolate::tests` unit tests (pure meta-parser tests, no sandbox needed) plus 5 `grade_tests` and the constraints tests added by the isolate-migration branch, which exercise the real sandbox end-to-end. The sandboxed tests need real `isolate` + elevated capabilities to run — they'll hang/fail confusingly on a bare host without them. Run the full suite via:
+24 tests exist in this crate: 4 `isolate::tests` unit tests (pure meta-parser tests) and 12 `constraints::tests` (pure static-analysis tests over source strings) both run fine on a bare host — neither touches `isolate` or spawns a process. The 8 `grade_tests` in `main.rs` (3 pre-existing, 5 added by the isolate-migration branch) shell out to the real sandbox end-to-end and need real `isolate` + elevated capabilities to run — they'll hang/fail confusingly on a bare host without them. Run the full suite via:
 
 ```sh
 docker build --target builder -t judge:test -f judge/Dockerfile judge
 docker run --rm --cap-add=SYS_ADMIN --cap-add=NET_ADMIN judge:test cargo test
 ```
 
-`cargo test isolate::tests` is the only subset that runs directly on a bare host without isolate/Docker.
+`cargo test isolate::tests constraints::tests` is the subset that runs directly on a bare host without isolate/Docker; `cargo test grade_tests` needs the sandboxed invocation above.
 
 ### Required `.env`
 
