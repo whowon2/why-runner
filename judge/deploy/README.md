@@ -7,8 +7,17 @@ managed platforms. See notes below.
 
 ## 1. Provision box
 
-- Debian 12 or Ubuntu 22.04+, 2GB+ RAM (sandbox submissions are sequential
-  with ~2GB peak heap usage; 2GB host RAM is comfortable)
+- Debian 12 or Ubuntu 22.04+, 2GB+ RAM (sandbox submissions are sequential,
+  but a bare 2GB is tight, not comfortable: Java/Portugol's nominal cap alone
+  is 2GB (`JVM_MEM_KB`), so a 2GB host leaves little headroom for the OS, the
+  judge process itself, and Postgres/Docker overhead once one of those
+  submissions is running. `isolate`'s `--mem` limit is enforced per-process
+  (`RLIMIT_AS`), not per-cgroup like the old Docker `--memory` flag, and boxes
+  run with `--processes=64` — a misbehaving/forking submission can multiply
+  its real host memory usage well past its nominal per-language cap, since
+  there is currently no aggregate memory cap across a box's processes. Size
+  the host with real margin above the language caps, not just up to them;
+  3-4GB is safer than the bare minimum if budget allows.
 - Add SSH key, disable password auth
 - Create non-root user (judge container runs as a normal unprivileged user;
   `cap_add` in compose grants only the required Linux capabilities, not full
@@ -112,6 +121,16 @@ files (`judge/compose.yml`, `judge/compose.prod.yml`) declare these via
 
 ## Notes / gaps to revisit
 
+- **Known gap: no aggregate per-box memory cap.** isolate's `--mem` is enforced
+  as `RLIMIT_AS` per-process, not real cgroup RSS accounting like the old
+  Docker `--memory` flag (see `src/runner.rs`'s `JVM_MEM_KB` doc comment).
+  Real per-box aggregate memory accounting across all of a box's processes
+  would need `isolate --cg`, which needs a writable cgroup delegation this
+  container doesn't have and isn't enabled here — deferred as a deployment/
+  security decision during Task 5, not fixed by this branch. Combined with
+  `--processes=64`, a misbehaving/forking submission can use several times its
+  nominal per-language cap in real host RAM; see the RAM sizing note in
+  "1. Provision box" above.
 - No monitoring/alerting on judge-worker crash-looping or DB connection loss — add later (Healthchecks.io ping in main.rs loop, or `docker compose logs` shipped somewhere).
 - Root CLAUDE.md's mention of a "compose.yml at repo root" is stale — it lives at `judge/compose.yml` (dev) / `judge/compose.prod.yml` (this).
 - Multiple judge-worker replicas are safe (claim query uses `FOR UPDATE SKIP LOCKED`) if you need more throughput later — just scale `judge-worker` replica count in compose or run a second VPS pointed at same DB.

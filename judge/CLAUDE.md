@@ -4,16 +4,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Judge: Rust worker for the Runner platform. Polls Postgres for pending code submissions (via `LISTEN/NOTIFY` + periodic sweep), runs submitted code in sandboxed Docker containers per language, compares stdout to expected output, writes results back to Postgres.
+Judge: Rust worker for the Runner platform. Polls Postgres for pending code submissions (via `LISTEN/NOTIFY` + periodic sweep), runs submitted code in sandboxed `isolate` boxes per language, compares stdout to expected output, writes results back to Postgres.
 
 ## Commands
 
-- Run locally: `cargo run` (needs `.env` in this dir — see below, and Docker running on host)
+- Run locally: `cargo run` (needs `.env` in this dir — see below, and `isolate` with elevated capabilities available on the host, see "Sandboxed execution (isolate)" below)
 - Format: `cargo fmt`
 - Build release: `cargo build --release`
-- Local stack (Postgres + judge-worker + portugol image): `docker compose up` (compose.yml at repo root)
+- Local stack (Postgres + judge-worker): `docker compose up` (compose.yml at repo root)
 
-No test suite exists in this crate currently.
+9 tests exist in this crate: 4 pre-existing `isolate::tests` unit tests (pure meta-parser tests, no sandbox needed) plus 5 `grade_tests` and the constraints tests added by the isolate-migration branch, which exercise the real sandbox end-to-end. The sandboxed tests need real `isolate` + elevated capabilities to run — they'll hang/fail confusingly on a bare host without them. Run the full suite via:
+
+```sh
+docker build --target builder -t judge:test -f judge/Dockerfile judge
+docker run --rm --cap-add=SYS_ADMIN --cap-add=NET_ADMIN judge:test cargo test
+```
+
+`cargo test isolate::tests` is the only subset that runs directly on a bare host without isolate/Docker.
 
 ### Required `.env`
 
@@ -85,4 +92,4 @@ built as a separate Docker image) and bind-mounted into sandboxed runs via
 
 ### `Portugol-Studio/`
 
-Vendored upstream Java/Gradle project (the Portugol Studio IDE + interpreter source). Not part of the Rust build; referenced only insofar as `portugol/portugol-console-2.7.5.jar` (built from it) is what `portugol:latest`'s Docker image runs. Treat as a third-party checkout, not application code to edit as part of judge work.
+Vendored upstream Java/Gradle project (the Portugol Studio IDE + interpreter source). Not part of the Rust build; referenced only insofar as `portugol/portugol-console-2.7.5.jar` (built from it) is what runs inside the sandboxed `isolate` box for Portugol submissions (see "Portugol specifics" above). Treat as a third-party checkout, not application code to edit as part of judge work.

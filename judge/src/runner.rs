@@ -53,8 +53,9 @@ pub struct ExecutionResult {
     pub is_compile_error: bool,
     pub duration_ms: i64,
     /// Peak resident memory in KB, as reported by isolate's `max-rss` field
-    /// in its `--meta` output (a real kernel-reported cgroup peak, not an
-    /// approximation). `None` if the box failed to start before any run.
+    /// in its `--meta` output. Without `--cg` (see `JVM_MEM_KB` above), this
+    /// comes from `getrusage`-based max-RSS tracking, not real cgroup memory
+    /// accounting. `None` if the box failed to start before any run.
     pub peak_memory_kb: Option<i64>,
 }
 

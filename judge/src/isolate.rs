@@ -66,6 +66,13 @@ pub struct IsolateBox {
 
 pub async fn box_init() -> std::io::Result<IsolateBox> {
     let id = alloc_box_id();
+
+    // Best-effort: `NEXT_BOX_ID` restarts at 0 every process start, so a box
+    // directory left behind by a previous crashed run (never `--cleanup`'d)
+    // can still exist on disk and make `--init` fail. Clear it first; errors
+    // are ignored the same way `box_cleanup`'s own callers already do.
+    box_cleanup(id).await;
+
     let output = Command::new("isolate")
         .args(["--box-id", &id.to_string(), "--init"])
         .output()
@@ -134,6 +141,10 @@ pub async fn box_run(
 
     cmd.arg("--run").arg("--").args(argv);
     cmd.stdout(Stdio::piped()).stderr(Stdio::piped());
+    // Without this, dropping the future (e.g. when the outer
+    // `tokio::time::timeout` in runner.rs fires) does not kill the child —
+    // it would keep running as an orphan inside the box.
+    cmd.kill_on_drop(true);
 
     let output = cmd.output().await?;
     let meta_text = fs::read_to_string(&meta_path).await.unwrap_or_default();
