@@ -25,7 +25,7 @@ The fact-row list SHALL begin with a header line displaying the user's display n
 - **THEN** the header line displays "ada" as the first line of the info block, visually distinct from the rows below it
 
 ### Requirement: Fact rows cover identity and skills
-The fact-row list SHALL include, in order, whichever of the following are available for the user: bio, location, website, joined date, contest count, problem count, theme skills, and language skills — each as a single `label: value` row. There is no global-rank row, and no follower/following count row.
+The fact-row list SHALL include, in order, whichever of the following are available for the user: bio, location, website, joined date, contest count, problem count, theme skills, and language skills — each as a single `label: value` row. There is no global-rank row, and no follower/following count row. The contest count and problem count rows SHALL reflect that user's actual number of contests and problems, never a hardcoded or placeholder value.
 
 #### Scenario: All fields present
 - **WHEN** a user has a bio, location, website, join date, contest count, problem count, and at least one theme skill and one language skill
@@ -38,6 +38,14 @@ The fact-row list SHALL include, in order, whichever of the following are availa
 #### Scenario: Skills row packs multiple values
 - **WHEN** a user has more than one theme skill
 - **THEN** the theme skills row displays all of that user's theme skill values together on the same labeled row, wrapping onto additional lines only if they do not fit
+
+#### Scenario: Contest and problem counts reflect real data
+- **WHEN** a user has created 2 contests and 5 problems
+- **THEN** the contest count row shows `2` and the problem count row shows `5`, sourced from the user's actual records rather than a fixed value
+
+#### Scenario: Counts are zero
+- **WHEN** a user has created no contests and no problems
+- **THEN** the contest count row shows `0` and the problem count row shows `0`
 
 ### Requirement: Avatar upload affordance preserved in the new layout
 The left-column avatar block SHALL retain a click-to-upload interaction for changing the avatar image, including the crop dialog, when the viewer is the profile's owner. The control SHALL be icon-only (no solid background box) so it reads cleanly over the avatar photo. When the viewer is not the profile's owner, no upload affordance SHALL be rendered.

@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
   TooltipContent,
@@ -30,13 +31,32 @@ import { useUpdateProfile } from "@/hooks/user-update-profile";
 
 const updateProfileSchema = z.object({
   username: z.string(),
+  bio: z.string().max(280).optional(),
+  location: z.string().max(120).optional(),
+  website: z.union([z.url(), z.literal("")]).optional(),
 });
 
-export function UpdateForm({ user }: { user: User & { username?: string } }) {
+type ProfileFormUser = User & {
+  username?: string;
+  bio?: string | null;
+  location?: string | null;
+  website?: string | null;
+};
+
+export function UpdateForm({
+  user,
+  onSaved: onSavedAction,
+}: {
+  user: ProfileFormUser;
+  onSaved?: () => void;
+}) {
   const t = useTranslations("UserForm");
   const form = useForm<z.infer<typeof updateProfileSchema>>({
     defaultValues: {
       username: user.username ?? "",
+      bio: user.bio ?? "",
+      location: user.location ?? "",
+      website: user.website ?? "",
     },
     resolver: zodResolver(updateProfileSchema),
   });
@@ -52,6 +72,7 @@ export function UpdateForm({ user }: { user: User & { username?: string } }) {
       async onSuccess() {
         toast(t("updated"));
         queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
+        onSavedAction?.();
       },
     });
   }
@@ -73,6 +94,49 @@ export function UpdateForm({ user }: { user: User & { username?: string } }) {
                     <Input placeholder={t("usernamePlaceholder")} {...field} />
                   </FormControl>
                   <FormDescription>{t("usernameDescription")}</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="bio"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("bio")}</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder={t("bioPlaceholder")} {...field} />
+                  </FormControl>
+                  <FormDescription>{t("bioDescription")}</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("location")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("locationPlaceholder")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="website"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("website")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("websitePlaceholder")} {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

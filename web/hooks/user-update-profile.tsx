@@ -3,6 +3,9 @@ import { updateProfile } from "@/lib/actions/update-profile";
 
 export type UpdateProfileInput = {
   username: string;
+  bio?: string;
+  location?: string;
+  website?: string;
 };
 
 export const useUpdateProfile = () =>
