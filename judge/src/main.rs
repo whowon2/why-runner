@@ -401,8 +401,8 @@ mod grade_tests {
 
     // A tiny Python script that reads one int per line and echoes it back —
     // correct for `expected == input`, wrong otherwise. Cheap and fast to
-    // run through the real Python sandbox (needs Docker running locally,
-    // same as production).
+    // run through the real Python sandbox (needs `isolate` running locally
+    // with elevated capabilities, same as production).
     const ECHO_CODE: &str = "print(input())";
 
     fn problem(inputs: &[&str], outputs: &[&str]) -> Problem {
