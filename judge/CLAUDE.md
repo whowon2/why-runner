@@ -16,9 +16,12 @@ Judge: Rust worker for the Runner platform. Polls Postgres for pending code subm
 24 tests exist in this crate: 4 `isolate::tests` unit tests (pure meta-parser tests) and 12 `constraints::tests` (pure static-analysis tests over source strings) both run fine on a bare host — neither touches `isolate` or spawns a process. The 8 `grade_tests` in `main.rs` (3 pre-existing, 5 added by the isolate-migration branch) shell out to the real sandbox end-to-end and need real `isolate` + elevated capabilities to run — they'll hang/fail confusingly on a bare host without them. Run the full suite via:
 
 ```sh
-docker build --target builder -t judge:test -f judge/Dockerfile judge
-docker run --rm --cap-add=SYS_ADMIN --cap-add=NET_ADMIN judge:test cargo test
+docker build -t judge:test -f judge/Dockerfile judge
+docker run --rm --cap-add=SYS_ADMIN --cap-add=NET_ADMIN -v "$(pwd)/judge":/src -w /src judge:test \
+  sh -c "apt-get update -qq && apt-get install -y -qq curl pkg-config libssl-dev && curl https://sh.rustup.rs -sSf | sh -s -- -y -q && . \$HOME/.cargo/env && cargo test"
 ```
+
+(Build the full final-stage image, not `--target builder` — the builder stage alone has no `isolate` binary, since that's only copied into the final stage; `grade_tests` would fail with "isolate: command not found" against a builder-only image. Installing Rust inside a container of the final image is the working pattern — the shipped image itself doesn't need a Rust toolchain at runtime, only for this test invocation.)
 
 `cargo test isolate::tests constraints::tests` is the subset that runs directly on a bare host without isolate/Docker; `cargo test grade_tests` needs the sandboxed invocation above.
 
