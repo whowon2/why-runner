@@ -8,6 +8,9 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin();
 
 const config: NextConfig = {
+  outputFileTracingIncludes: {
+    "/**": ["./node_modules/@img/sharp-libvips-linux-x64/**"],
+  },
   images: {
     remotePatterns: [
       {
