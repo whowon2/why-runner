@@ -787,7 +787,9 @@
       "codeCopied": "Código copiado para a área de transferência",
       "testCasesTitle": "Casos de teste",
       "testCaseInput": "Entrada {index}",
-      "testCaseOutput": "Saída esperada {index}"
+      "testCaseOutput": "Saída esperada {index}",
+      "answerWithBlocks": "Responda encaixando blocos. Abra \"Ver código\" para ver o Portugol que seus blocos geram.",
+      "answerWithParsons": "Coloque as linhas na ordem e indentação certas e envie."
     },
     "Review": {
       "backToTrack": "Voltar para a atividade",
@@ -816,7 +818,36 @@
     "trackLocked": "O prazo final dessa atividade passou — os exercícios estão bloqueados.",
     "incompleteSubmitTitle": "Enviar com exercícios não resolvidos?",
     "incompleteSubmitDescription": "{count, plural, one {# exercício ainda não foi} other {# exercícios ainda não foram}} resolvido(s). Você pode reenviar quantas vezes quiser até o prazo final.",
-    "submitAnyway": "Enviar mesmo assim"
+    "submitAnyway": "Enviar mesmo assim",
+    "Mode": {
+      "trigger": "Modo de resposta",
+      "title": "Modo de resposta",
+      "description": "Como os alunos respondem este exercício. Todos os modos são corrigidos pelo mesmo juiz, com os casos de teste do problema.",
+      "current": "atual",
+      "apply": "Aplicar",
+      "saved": "Modo de resposta salvo",
+      "code": {
+        "label": "Código",
+        "hint": "Os alunos escrevem código no editor."
+      },
+      "blocks": {
+        "label": "Blocos",
+        "hint": "Os alunos encaixam blocos; os blocos viram Portugol."
+      },
+      "parsons": {
+        "label": "Parsons",
+        "hint": "Os alunos colocam as linhas da sua solução na ordem certa.",
+        "solutionHint": "Cole uma solução correta. Cada linha não vazia vira uma linha para os alunos ordenarem. Ela precisa passar em todos os casos de teste antes de ser aplicada.",
+        "languagePlaceholder": "Linguagem",
+        "selectLanguage": "Escolha a linguagem da solução",
+        "solutionPlaceholder": "Solução correta, uma instrução por linha",
+        "check": "Testar com os casos de teste",
+        "checking": "Testando...",
+        "passed": "Passou em todos os casos de teste",
+        "failed": "Falhou",
+        "edited": "Editada desde o último teste"
+      }
+    }
   },
   "ImportProblems": {
     "button": "Importar JSON",
@@ -1287,5 +1318,54 @@
     "leaveClassTitle": "Sair desta turma?",
     "leaveClassDescription": "Você perderá acesso a esta turma e suas aulas, a menos que entre novamente com o código.",
     "leaveClassSuccess": "Você saiu da turma."
+  },
+  "Blocks": {
+    "start": "quando o programa começar",
+    "declare": "criar variável %1 do tipo %2 com valor %3",
+    "read": "ler valor para %1",
+    "write": "escrever %1 pular linha %2",
+    "repeatWhile": "repetir enquanto",
+    "countWith": "contar com %1 de %2 até %3",
+    "doLabel": "faça",
+    "types": {
+      "inteiro": "inteiro",
+      "real": "real",
+      "cadeia": "texto",
+      "logico": "lógico"
+    },
+    "boolTrue": "verdadeiro",
+    "boolFalse": "falso",
+    "and": "e",
+    "or": "ou",
+    "not": "não",
+    "mod": "resto",
+    "createVariable": "Criar variável",
+    "categories": {
+      "variables": "Variáveis",
+      "io": "Entrada e saída",
+      "decisions": "Decisões",
+      "loops": "Repetições",
+      "values": "Valores e operações"
+    },
+    "viewCode": "Ver código",
+    "hideCode": "Esconder código",
+    "generatedCode": "Código Portugol gerado",
+    "viewBlocks": "Ver blocos",
+    "errors": {
+      "missingStart": "Falta o bloco \"quando o programa começar\".",
+      "multipleStarts": "Só pode haver um bloco \"quando o programa começar\".",
+      "emptyProgram": "Encaixe blocos dentro de \"quando o programa começar\".",
+      "emptyInput": "Algum bloco tem um espaço vazio: encaixe um valor nele.",
+      "undeclaredVariable": "A variável \"{name}\" é usada antes de ser criada com \"criar variável\".",
+      "duplicateDeclaration": "A variável \"{name}\" foi criada duas vezes.",
+      "unknownBlock": "Há um bloco que não pode ser convertido em código."
+    }
+  },
+  "Parsons": {
+    "instructions": "Arraste as linhas ou use as setas: ↑ ↓ movem a linha, ← → mudam a indentação.",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo",
+    "indent": "Aumentar indentação",
+    "outdent": "Diminuir indentação"
   }
 }

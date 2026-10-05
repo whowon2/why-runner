@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   text,
@@ -20,6 +21,20 @@ export const Language = pgEnum("language", [
 ]);
 
 export type Language = (typeof Language.enumValues)[number];
+
+// How a lesson exercise is answered. `code` is the text editor; `blocks`
+// (Blockly → Portugol) and `parsons` (reorder given lines) are visual modes
+// whose program is generated server-side from the visual source, so the
+// judge always just sees ordinary `code` + `language`. Lives here rather
+// than in `lessons.ts` because `submission` needs it too and `lessons.ts`
+// already imports from this file.
+export const ExerciseMode = pgEnum("exercise_mode", [
+  "code",
+  "blocks",
+  "parsons",
+]);
+
+export type ExerciseMode = (typeof ExerciseMode.enumValues)[number];
 
 export const SubmissionStatus = pgEnum("submission_status", [
   "PENDING",
@@ -66,6 +81,12 @@ export const submission = pgTable("submission", {
   // constraints only ever apply when this is set: never for contests, never
   // for standalone/practice submissions to the same problem.
   exerciseId: uuid("exercise_id"),
+  // Set only for visual-mode exercise submissions: which mode produced
+  // `code`, and the student's visual source (Blockly workspace JSON, or the
+  // ordered Parsons items) it was generated from. `code` is always the
+  // program the judge actually ran.
+  editorMode: ExerciseMode("editor_mode"),
+  visualSource: jsonb("visual_source"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()

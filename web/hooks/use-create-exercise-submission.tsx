@@ -1,14 +1,20 @@
-import { useMutation } from "@tanstack/react-query";
-import type { Language } from "@/drizzle/schema";
-import { createExerciseSubmission } from "@/lib/actions/lessons/create-exercise-submission";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  createExerciseSubmission,
+  type ExerciseSubmissionInput,
+} from "@/lib/actions/lessons/create-exercise-submission";
 
-export const useCreateExerciseSubmission = () =>
-  useMutation({
-    mutationFn: async (input: {
-      exerciseId: string;
-      code: string;
-      language: Language;
-    }) => {
+export const useCreateExerciseSubmission = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: ExerciseSubmissionInput) => {
       return await createExerciseSubmission(input);
     },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["submissions", "exercise", variables.exerciseId],
+      });
+    },
   });
+};

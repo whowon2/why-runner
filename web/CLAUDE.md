@@ -17,7 +17,7 @@ bun db:studio     # Drizzle Studio GUI
 bun db:seed       # Seed database
 ```
 
-No test suite exists yet.
+Unit tests use Bun's built-in runner (`bun test lib`) for pure modules only (`lib/blocks/portugol-generator.test.ts`, `lib/parsons.test.ts`). There is no DB/server-action test setup.
 
 ## Architecture
 
@@ -80,6 +80,15 @@ Better Auth with email/password + GitHub + Google OAuth. Session access:
 ### Problem Narrative
 
 `problem.narrative` is an optional text field (nullable) shown above the description on the standalone problem page when set, styled as flavor text — never required for publish. `generateProblemNarrative()` (`lib/actions/problems/generate-problem-narrative.ts`) drafts an Advent-of-Code-style themed story via Gemini into the edit form's narrative field for the author to edit/save through the existing `updateProblem` action.
+
+### Exercise Answer Modes (code / blocks / parsons)
+
+Lesson exercises have `exercise.mode` (`exercise_mode` enum, default `code`), set per exercise via `setExerciseMode` (`lib/actions/lessons/exercise-mode.ts`) — never per problem.
+
+- `blocks`: students build the program in Blockly (`components/blocks/`, client-only, loaded via `next/dynamic`). Forces `primaryLanguage = portugol`. `lib/blocks/portugol-generator.ts` walks Blockly's **serialized JSON** (no Blockly import), so the same function runs in the browser ("view code" panel) and in `createExerciseSubmission`, which regenerates `code` from the submitted workspace and ignores any client code. Every block type in `lib/blocks/definitions.ts` must be handled by the generator.
+- `parsons`: the professor's `exercise.parsonsSolution` is split into lines (`lib/parsons.ts`); students get them shuffled by `getExercise` (the solution itself is never sent to students — keep `parsonsSolution` out of student-facing queries). On submit the server checks the lines are exactly the solution's lines and assembles the program. A solution is only accepted after a judge run passes: `checkParsonsSolution` reuses `problem_validation` with `exercise_id` set, and the problem's own publish/staleness checks filter `exercise_id IS NULL`.
+- Both modes store `submission.editorMode` + `submission.visualSource`; `code` is always what the judge ran. `components/submissions/visual-answer.tsx` renders them read-only. The judge needs no changes (it claims rows with an explicit column list).
+- AI hints (`getUserPrompt`) get mode-specific instructions: blocks → refer to block labels in the student's locale; parsons → only order/indentation.
 
 ## Environment Variables
 

@@ -787,7 +787,9 @@
       "codeCopied": "Code copied to clipboard",
       "testCasesTitle": "Test cases",
       "testCaseInput": "Input {index}",
-      "testCaseOutput": "Expected output {index}"
+      "testCaseOutput": "Expected output {index}",
+      "answerWithBlocks": "Answer by snapping blocks together. Open \"View code\" to see the Portugol your blocks become.",
+      "answerWithParsons": "Put the lines in the right order and indentation, then submit."
     },
     "Review": {
       "backToTrack": "Back to assignment",
@@ -816,7 +818,36 @@
     "trackLocked": "This assignment's due date has passed — exercises are locked.",
     "incompleteSubmitTitle": "Submit with unsolved exercises?",
     "incompleteSubmitDescription": "{count, plural, one {# exercise hasn't} other {# exercises haven't}} been solved yet. You can keep resubmitting until the due date.",
-    "submitAnyway": "Submit anyway"
+    "submitAnyway": "Submit anyway",
+    "Mode": {
+      "trigger": "Answer mode",
+      "title": "Answer mode",
+      "description": "How students answer this exercise. Every mode is graded by the same judge against the problem's test cases.",
+      "current": "current",
+      "apply": "Apply",
+      "saved": "Answer mode saved",
+      "code": {
+        "label": "Code",
+        "hint": "Students write code in the editor."
+      },
+      "blocks": {
+        "label": "Blocks",
+        "hint": "Students snap blocks together; the blocks become Portugol."
+      },
+      "parsons": {
+        "label": "Parsons",
+        "hint": "Students put the lines of your solution in order.",
+        "solutionHint": "Paste a correct solution. Each non-blank line becomes one line for students to order. It must pass every test case before you can apply it.",
+        "languagePlaceholder": "Language",
+        "selectLanguage": "Choose the solution's language",
+        "solutionPlaceholder": "Correct solution, one statement per line",
+        "check": "Check against test cases",
+        "checking": "Checking...",
+        "passed": "Passed every test case",
+        "failed": "Failed",
+        "edited": "Edited since last check"
+      }
+    }
   },
   "ImportProblems": {
     "button": "Import JSON",
@@ -1287,5 +1318,54 @@
     "leaveClassTitle": "Leave this class?",
     "leaveClassDescription": "You'll lose access to this class and its lessons unless you rejoin with the class code.",
     "leaveClassSuccess": "You left the class."
+  },
+  "Blocks": {
+    "start": "when the program starts",
+    "declare": "create variable %1 of type %2 with value %3",
+    "read": "read value into %1",
+    "write": "write %1 new line %2",
+    "repeatWhile": "repeat while",
+    "countWith": "count with %1 from %2 to %3",
+    "doLabel": "do",
+    "types": {
+      "inteiro": "integer",
+      "real": "real",
+      "cadeia": "text",
+      "logico": "boolean"
+    },
+    "boolTrue": "true",
+    "boolFalse": "false",
+    "and": "and",
+    "or": "or",
+    "not": "not",
+    "mod": "remainder",
+    "createVariable": "Create variable",
+    "categories": {
+      "variables": "Variables",
+      "io": "Input and output",
+      "decisions": "Decisions",
+      "loops": "Loops",
+      "values": "Values and operations"
+    },
+    "viewCode": "View code",
+    "hideCode": "Hide code",
+    "generatedCode": "Generated Portugol code",
+    "viewBlocks": "View blocks",
+    "errors": {
+      "missingStart": "The \"when the program starts\" block is missing.",
+      "multipleStarts": "There can only be one \"when the program starts\" block.",
+      "emptyProgram": "Snap blocks inside \"when the program starts\".",
+      "emptyInput": "A block has an empty slot: snap a value into it.",
+      "undeclaredVariable": "The variable \"{name}\" is used before it is created with \"create variable\".",
+      "duplicateDeclaration": "The variable \"{name}\" is created twice.",
+      "unknownBlock": "A block can't be turned into code."
+    }
+  },
+  "Parsons": {
+    "instructions": "Drag the lines, or use the arrows: ↑ ↓ move a line, ← → change its indentation.",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "indent": "Indent",
+    "outdent": "Outdent"
   }
 }
