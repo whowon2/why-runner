@@ -129,6 +129,7 @@ Sem fila externa           & N/A & Não & Não & \textbf{Sim} \\
 Scoreboard em tempo real   & Sim & Sim & Não & \textbf{Sim} \\
 Aulas curadas pelo docente & Não & Não & Não & \textbf{Sim} \\
 Restrição de solução (algoritmo exigido) & Não & Não & Não & \textbf{Sim} \\
+Resposta por blocos e Parsons & Não & Não & Não & \textbf{Sim} \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -150,6 +151,15 @@ algoritmo específico (ex.: ``deve usar Dijkstra''), este último verificado por
 classificação via IA sobre o código. Uma submissão que viola qualquer
 restrição não conta para o placar nem para conclusão do problema, mesmo tendo
 passado em todos os casos de teste.
+
+Um quarto diferencial são os \textbf{modos de resposta visuais}, pensados para
+quem nunca programou: em cada exercício o docente escolhe se o aluno responde
+com código, com \emph{blocos} (no estilo Scratch, convertidos automaticamente
+em Portugol, com um painel que mostra o código gerado) ou com um problema de
+\emph{Parsons} (as linhas de uma solução correta aparecem embaralhadas e o
+aluno só precisa ordená-las e indentá-las). Nos dois casos o programa é gerado
+no servidor e corrigido pelo mesmo juiz, e as dicas da IA falam em blocos ou
+em ordem das linhas, não em sintaxe de código.
 
 \section*{5. Repercussões Educacionais Esperadas}
 
@@ -228,6 +238,9 @@ como próximo passo (Seção~8).
   \item Docente monta uma aula (\texttt{lesson}) adicionando problemas
         existentes como exercícios (\texttt{exercise}) ordenados, com prazo
         opcional, e publica para a turma;
+  \item Para cada exercício, docente escolhe o modo de resposta: código,
+        blocos (convertidos em Portugol) ou Parsons (ordenar linhas de uma
+        solução que já passou nos casos de teste);
   \item Aluno entra na turma pelo código, responde cada exercício e submete
         a aula inteira de uma vez (\texttt{lessonSubmission});
   \item Após o prazo, docente revisa: nota por exercício calculada
