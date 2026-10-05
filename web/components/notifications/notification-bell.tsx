@@ -90,7 +90,9 @@ function useDescribeNotification() {
               : "SUBMISSION_GRADED_ERROR";
         return {
           text: t(key, { problem: problemTitle }),
-          href: n.problem ? `/problems/${n.problem.slug}` : "/problems",
+          href:
+            n.exerciseHref ??
+            (n.problem ? `/problems/${n.problem.slug}` : "/problems"),
         };
       }
       case "LESSON_UNLOCKED":
