@@ -28,11 +28,11 @@
 \maketitle
 
 \begin{abstract}
-  Existing online judges primarily focus on correctness-based evaluation, often neglecting pedagogical feedback and real-time contest dynamics essential for educational contexts. This paper introduces WhyRunner: Programming Online Judge, a modular and secure system that integrates containerized code execution, real-time contest management, a professor-curated lesson/exercise authoring model, and AI-powered feedback. This paper presents the system's architecture, development methodology, and implementation; classroom evaluation is left to future work.
+  Existing online judges primarily focus on correctness-based evaluation, often neglecting pedagogical feedback and real-time contest dynamics essential for educational contexts. This paper introduces WhyRunner: Programming Online Judge, a modular and secure system that integrates sandboxed code execution, real-time contest management, a professor-curated lesson/exercise authoring model, and AI-powered feedback. This paper presents the system's architecture, development methodology, and implementation; classroom evaluation is left to future work.
 \end{abstract}
 
 \begin{resumo}
-  Os juízes online existentes focam principalmente na avaliação baseada em correção, negligenciando o feedback pedagógico e a dinâmica de competições em tempo real, essenciais em contextos educacionais. Este artigo apresenta o WhyRunner: Programming Online Judge, um sistema modular e seguro que integra execução de código em contêineres, gerenciamento de competições em tempo real, um modelo de autoria de aulas/exercícios curado pelo docente e feedback assistido por inteligência artificial. Este artigo descreve a arquitetura do sistema, a metodologia de desenvolvimento e a implementação; a avaliação em sala de aula fica como trabalho futuro.
+  Os juízes online existentes focam principalmente na avaliação baseada em correção, negligenciando o feedback pedagógico e a dinâmica de competições em tempo real, essenciais em contextos educacionais. Este artigo apresenta o WhyRunner: Programming Online Judge, um sistema modular e seguro que integra execução de código em ambiente isolado (sandbox), gerenciamento de competições em tempo real, um modelo de autoria de aulas/exercícios curado pelo docente e feedback assistido por inteligência artificial. Este artigo descreve a arquitetura do sistema, a metodologia de desenvolvimento e a implementação; a avaliação em sala de aula fica como trabalho futuro.
 \end{resumo}
 
 \section{Introduction}
@@ -43,7 +43,7 @@ Most online judges are not optimized for educational use. They were primarily de
 
 Many platforms are rigid in design, making it difficult for educators and students to configure and use. Features such as adaptive problem sets, real-time contest control, and support for multiple programming languages are either limited or absent. The increasing complexity of software development tools and the diverse backgrounds of students further highlight the need for more accessible and educationally driven platforms.
 
-To address these limitations, this work presents \textbf{WhyRunner}, a modern and modular online judge system developed specifically for educational contexts. WhyRunner was designed from the ground up with three core objectives: (1) to provide rich, automated feedback using artificial intelligence; (2) to support safe, scalable, and multi-language code execution through containerization; and (3) to enable flexible real-time contest management for classroom or remote settings.
+To address these limitations, this work presents \textbf{WhyRunner}, a modern and modular online judge system developed specifically for educational contexts. WhyRunner was designed from the ground up with three core objectives: (1) to provide rich, automated feedback using artificial intelligence; (2) to support safe, scalable, and multi-language code execution through kernel-level sandboxing; and (3) to enable flexible real-time contest management for classroom or remote settings.
 
 This paper details the design, development, and current implementation status of WhyRunner.
 
@@ -62,7 +62,7 @@ The system was designed with modularity, scalability, and pedagogical value as c
 \begin{itemize}
   \item \textbf{Modularity}: Components such as code execution, feedback generation, user interface, and contest management were developed as loosely coupled modules, enabling easier maintenance and future upgrades.
   \item \textbf{Scalability}: The system leverages message queues and container orchestration to handle multiple concurrent submissions with minimal latency.
-  \item \textbf{Security}: All submitted code is executed in isolated Docker containers with restricted resource access, minimizing the risk of malicious code affecting the system.
+  \item \textbf{Security}: All submitted code is executed in a per-run \texttt{isolate} sandbox \cite{mares2012isolate}, with no network access and capped time, memory, and process count, minimizing the risk of malicious code affecting the system.
   \item \textbf{Educational Feedback}: Instead of reporting only binary results (e.g., ``Accepted'' or ``Wrong Answer''), the system uses AI to generate contextual explanations and suggestions for improvement.
 \end{itemize}
 
@@ -74,7 +74,7 @@ Initially, the front-end was built using the React framework due to prior experi
 
 Queue management went through two discarded approaches before settling: BullMQ (Redis-based) generated excessive idle polling traffic in production, and its replacement, AWS SQS, added external operational overhead. The final architecture uses PostgreSQL's native \texttt{LISTEN/NOTIFY} instead, eliminating the external queue entirely while keeping asynchronous, event-driven behavior.
 
-Similarly, Supabase was dropped in favor of a standalone PostgreSQL instance (via Drizzle ORM) once it proved restrictive for custom server-side logic, and a separate NestJS API was dropped in favor of Next.js Server Actions once the split-repository model made shared types and auth logic too costly to maintain. A short-lived TurboRepo monorepo was also abandoned, as it complicated Docker-based deployment of the judge worker, which now ships as a standalone Rust binary listening for submissions over \texttt{LISTEN/NOTIFY} and executing them in Docker.
+Similarly, Supabase was dropped in favor of a standalone PostgreSQL instance (via Drizzle ORM) once it proved restrictive for custom server-side logic, and a separate NestJS API was dropped in favor of Next.js Server Actions once the split-repository model made shared types and auth logic too costly to maintain. A short-lived TurboRepo monorepo was also abandoned, as it complicated Docker-based deployment of the judge worker, which now ships as a standalone Rust binary listening for submissions over \texttt{LISTEN/NOTIFY}. Code execution itself was migrated from per-submission Docker containers to the \texttt{isolate} sandbox; the motivation and trade-offs are discussed in \S\ref{sec:execution-environment}.
 
 \subsection{Development Process}
 
@@ -147,7 +147,8 @@ Beyond timed contests, WhyRunner also supports a professor-curated Class/Lesson/
     \item \textbf{Drizzle ORM} \cite{drizzleorm2024}: Type-safe database access layer for PostgreSQL.
     \item \textbf{PostgreSQL} \cite{stonebraker1986design}: Relational database for persistent data storage and inter-service messaging via \texttt{LISTEN/NOTIFY}.
     \item \textbf{Rust} \cite{matsakis2014rust}: Systems language used for the judge worker, chosen for performance and memory safety.
-    \item \textbf{Docker} \cite{merkel2014docker}: Isolated, resource-constrained containers for safe user code execution.
+    \item \textbf{isolate} \cite{mares2012isolate}: Linux namespace/cgroup sandbox, originally built for the International Olympiad in Informatics, used to run each submission with no network and enforced resource limits.
+    \item \textbf{Docker} \cite{merkel2014docker}: Packaging of the judge worker, the sandbox, and every language toolchain into a single deployable image.
     \item \textbf{Gemini API} \cite{gemini2023}: Powers AI-driven feedback on failed submissions.
 \end{itemize}
 
@@ -168,7 +169,7 @@ The core implementation revolves around a pipeline that ensures decoupling betwe
 \node[box] (submit) {Student submits code (contest, standalone, or lesson exercise)};
 \node[box, below=of submit] (save) {Server Action validates, saves submission as \texttt{PENDING}, issues \texttt{NOTIFY}};
 \node[box, below=of save] (pickup) {Judge worker (\texttt{PgListener}) picks up the submission and its test cases};
-\node[box, below=of pickup] (exec) {Docker container compiles and runs the code against each test case};
+\node[box, below=of pickup] (exec) {\texttt{isolate} sandbox compiles and runs the code against each test case};
 \node[note, right=of exec] (policy) {Contest/standalone: stop at first failing case. Lesson exercise: run every case, for a per-exercise pass fraction};
 \node[box, below=of exec] (constraints) {If the exercise has solution constraints, run structural static analysis, then (if configured) an LLM classification for the algorithm requirement};
 \node[note, right=of constraints] (statuses) {Outcomes: \texttt{PASSED}, \texttt{FAILED}, \texttt{ERROR}, or \texttt{CONSTRAINT\_VIOLATION}};
@@ -193,10 +194,10 @@ The core implementation revolves around a pipeline that ensures decoupling betwe
 The user submits code via the web interface. A Next.js Server Action validates the submission, checks contest membership and rate limits, and saves it to PostgreSQL with a \texttt{PENDING} status. A \texttt{NOTIFY} is then issued on the \texttt{submission\_created} channel.
 
 \subsubsection{Queue Dispatch}
-The judge worker holds a persistent connection to PostgreSQL and listens on the \texttt{submission\_created} channel using \texttt{PgListener} from the \texttt{sqlx} library. Upon receiving a notification, it fetches the submission and its associated test cases from the database.
+The judge worker holds a persistent connection to PostgreSQL and listens on the \texttt{new\_submission} channel using \texttt{PgListener} from the \texttt{sqlx} library. Upon receiving a notification, it fetches the submission and its associated test cases from the database.
 
 \subsubsection{Execution and Grading Policy}
-The judge worker spawns a Docker container for the submission's language, with strict resource limits (\texttt{--cpus 0.5 --memory 128m}) and a configurable execution timeout. Contest and standalone submissions stop at the first failing test case; lesson-exercise submissions run every declared test case, so the pass count reflects exactly how many cases the code got right (\S\ref{sec:class-lesson-model}).
+For each test case, the judge worker runs the submission inside a fresh \texttt{isolate} box with per-language memory caps, a CPU-time and wall-clock limit, and a process-count cap (\S\ref{sec:execution-environment}). Contest and standalone submissions stop at the first failing test case; lesson-exercise submissions run every declared test case, so the pass count reflects exactly how many cases the code got right (\S\ref{sec:class-lesson-model}).
 
 \subsubsection{Constraint Checking}
 If the exercise has active solution constraints, the checks described in \S\ref{sec:prepublish-validation} run once I/O grading completes: structural static analysis first, then, if configured, an algorithm-requirement classification via Gemini. Either violation path resolves the submission to \texttt{CONSTRAINT\_VIOLATION} instead of \texttt{PASSED}.
@@ -213,17 +214,26 @@ Alongside timed contests, WhyRunner offers a second, asynchronous mode built on 
 
 Grading differs from the contest path in one respect: the judge runs every declared test case for a lesson-exercise submission instead of stopping at the first failure, so each exercise's score is derived automatically as the fraction of test cases passed, and a lesson's total score sums those fractions, weighting every exercise equally regardless of its test-case count.
 
-\subsection{Execution Environment}
+\textbf{Visual answer modes.} Following the recommendation that programming education start with friendly, visual environments and move gradually to more algorithmic, text-based work \cite{audrito2012contests}, each exercise has an answer mode chosen by the professor for that lesson: \emph{code} (the default text editor), \emph{blocks}, or \emph{Parsons}. In block mode the student assembles the program from Blockly blocks (variables, input/output, decisions, and loops, labeled in the user's language); the blocks are converted into Portugol, and the student can open a read-only panel showing the generated code, which serves as a bridge from blocks to text. In Parsons mode the student receives the lines of a professor-provided solution in shuffled order and only has to arrange their order and indentation; the professor's solution must pass the problem's test cases before it can be used. In both modes the program the judge runs is generated on the server from what the student built, never taken from the browser, and is graded by the same judge pipeline, so solution constraints, scores, and AI hints work unchanged. Hints are adapted to the mode: they refer to blocks by their on-screen labels, or, for Parsons exercises, only to the order and nesting of lines. The professor's review shows the student's blocks or ordered lines alongside the generated code.
 
-To ensure safe and reproducible code execution, user code runs inside Docker containers spawned by the Rust judge worker. Each container is ephemeral: it is created per submission, executed with time and resource limits, and destroyed upon completion. Resource constraints are enforced via Docker runtime flags:
+\subsection{Execution Environment}\label{sec:execution-environment}
+
+\textbf{Motivation for the sandbox design.} Earlier versions of the judge ran each submission in a sibling Docker container, created through the host's Docker daemon socket (\texttt{/var/run/docker.sock}) mounted into the judge worker. This had two drawbacks. First, access to the Docker socket is effectively root access to the host, so a compromise of the worker would compromise the machine. Second, it required a host that exposes a privileged Docker daemon, which rules out most managed container platforms (PaaS), leaving a self-managed virtual machine as the only deployment target. Resource reporting was also imprecise: peak memory was approximated by polling \texttt{docker stats} every 50\,ms, which can miss short allocation spikes.
+
+To address this, execution was migrated to \texttt{isolate} \cite{mares2012isolate}, the sandbox developed for the International Olympiad in Informatics and used by contest systems such as CMS. Instead of a full container runtime, \texttt{isolate} confines a single process using Linux namespaces and resource limits, so the judge worker no longer depends on a Docker daemon at runtime. All language toolchains (Python, GCC/G++, \texttt{rustc}, JDK 21, and the Portugol interpreter) are installed in the judge's own image.
+
+\textbf{Per-run lifecycle.} For each test case, the worker initializes a box (\texttt{isolate --init}), writes the source code and the test input into it, runs the compile-and-run command under the limits below, reads the outcome from \texttt{isolate}'s metadata file, and destroys the box (\texttt{--cleanup}). The limits are:
 
 \begin{itemize}
-  \item \textbf{CPU}: limited to 0.5 cores (\texttt{--cpus 0.5})
-  \item \textbf{Memory}: limited to 128 MB (\texttt{--memory 128m})
-  \item \textbf{Execution time}: enforced by the judge worker via a configurable timeout
+  \item \textbf{Network}: none; boxes are created without network access.
+  \item \textbf{Time}: a CPU-time limit (currently 20\,s per test case) plus a wall-clock limit 2\,s longer, so a program that sleeps or blocks on input is also stopped.
+  \item \textbf{Memory}: 128\,MB of address space for C, C++, and Python; larger caps for Rust (768\,MB) and the JVM-based languages, Java and Portugol (2\,GB), because their toolchains reserve large amounts of virtual memory up front. For the JVM, actual heap use is bounded separately through JVM flags (\texttt{-Xmx64m}).
+  \item \textbf{Processes}: at most 64 processes/threads per box, which contains fork bombs, a protection the previous Docker setup lacked.
 \end{itemize}
 
-The system currently supports Python, Rust, and C++ as execution languages. Each language environment includes an interpreter or compiler and a test runner script. Support for additional languages can be added by extending the runner configuration.
+Exit code, CPU and wall time, peak resident memory, and the termination cause (time limit, signal, runtime error) are read directly from the metadata \texttt{isolate} writes, replacing the earlier polling approximation. The system currently supports six languages: C, C++, Java, Python, Rust, and Portugol.
+
+\textbf{Remaining requirements.} \texttt{isolate} still needs two Linux capabilities in the judge container (\texttt{CAP\_SYS\_ADMIN} and \texttt{CAP\_NET\_ADMIN}) to create its namespaces. This is a much narrower grant than Docker socket access, but many managed platforms do not allow it either, so in practice the judge still targets a virtual machine or a platform that grants these capabilities (\S\ref{sec:limitations}).
 
 \subsection{AI-Assisted Authoring and Feedback}
 
@@ -255,7 +265,7 @@ Two mechanisms let a professor set stricter grading guarantees than ordinary tes
 
 The system is organized as a two-project repository: the Next.js web application and the Rust judge worker. Both services share the same PostgreSQL instance and communicate exclusively through database primitives, with no shared runtime dependencies.
 
-The web application is deployed on a platform supporting long-running Next.js applications. The judge worker is built as a Docker image and deployed as a persistent background service, maintaining its \texttt{LISTEN} connection to PostgreSQL at all times.
+The web application is deployed on a platform supporting long-running Next.js applications. The judge worker is built as a single Docker image (worker binary, \texttt{isolate}, and all language toolchains) and deployed as a persistent background service with the \texttt{CAP\_SYS\_ADMIN} and \texttt{CAP\_NET\_ADMIN} capabilities, maintaining its \texttt{LISTEN} connection to PostgreSQL at all times.
 
 \section{Evaluation Status}
 
@@ -269,20 +279,20 @@ WhyRunner exhibits several notable strengths:
 
 \begin{itemize}
   \item \textbf{Modular and scalable architecture:} Clear separation of concerns across the web layer, judge worker, and execution containers allows for easy maintenance and future expansion.
-  \item \textbf{Secure code execution:} User code runs in ephemeral Docker containers with enforced CPU, memory, and time limits, isolating it from the host system.
+  \item \textbf{Secure code execution:} User code runs in ephemeral \texttt{isolate} sandboxes with no network and enforced time, memory, and process limits, and the worker does not need access to the host's Docker daemon.
   \item \textbf{No external queue dependency:} Using PostgreSQL \texttt{LISTEN/NOTIFY} for inter-service communication removes operational overhead while maintaining reliability.
   \item \textbf{AI-powered feedback:} The use of large language models enhances the learning process by offering tailored hints and performance improvement suggestions without revealing direct solutions.
   \item \textbf{Type-safe full-stack:} The combination of Next.js Server Actions, Drizzle ORM, and Zod validation provides end-to-end type safety from database schema to user interface.
 \end{itemize}
 
-\subsection{Limitations}
+\subsection{Limitations}\label{sec:limitations}
 
 Despite its strengths, WhyRunner has some limitations:
 
 \begin{itemize}
   \item \textbf{Dependency on third-party AI APIs:} The feedback system relies on the availability and consistency of the Gemini API, which may be subject to rate limits or cost constraints at scale.
-  \item \textbf{Limited language support:} Currently, Python, Rust, and C++ are fully supported for execution. C and Java are architecturally supported but not yet implemented in the judge runner.
-  \item \textbf{Deployment complexity:} The initial setup requires knowledge of Docker, Rust, and PostgreSQL configuration, which may present a barrier for non-technical instructors.
+  \item \textbf{Sandbox deployment and memory accounting:} \texttt{isolate} requires the \texttt{CAP\_SYS\_ADMIN} and \texttt{CAP\_NET\_ADMIN} capabilities, which many managed container platforms do not grant, so the judge is in practice deployed on a self-managed virtual machine. In addition, memory caps are currently applied per process (as an address-space limit) rather than to the whole box, so a submission that spawns several processes can use more memory in total than its nominal cap; enabling \texttt{isolate}'s control-group mode would fix this but requires further host configuration.
+  \item \textbf{Deployment complexity:} The initial setup requires knowledge of Docker, Linux capabilities, and PostgreSQL configuration, which may present a barrier for non-technical instructors.
   \item \textbf{No classroom validation yet:} As noted in \S\ref{sec:methodology}, WhyRunner as a whole, including contests, the Class/Lesson/Exercise model (\S\ref{sec:class-lesson-model}), AI-assisted authoring, and solution-constraint enforcement (\S\ref{sec:prepublish-validation}), is functionally complete but has not been evaluated with a real cohort of students or instructors.
   \item \textbf{Structural constraint analysis is heuristic, not a real parser:} Loop-nesting and forbidden/required-construct checks (\S\ref{sec:prepublish-validation}) scan raw source text (indentation width or brace depth, plus word-boundary substring search) rather than building an AST, so a matching token inside a string literal or comment can produce a false positive.
 \end{itemize}
@@ -293,7 +303,7 @@ Planned improvements include:
 
 \begin{itemize}
   \item \textbf{Classroom evaluation:} Deploy WhyRunner, both the contest path and the Class/Lesson/Exercise model, in a real classroom setting with students and an instructor, and apply standardized usability questionnaires (e.g., SUS or PSSUQ) to collect measurable data on satisfaction and usability across the full feature set, including AI-assisted authoring and solution-constraint enforcement.
-  \item \textbf{Language support expansion:} Add support for C, Java, and Kotlin by implementing the respective compiler scripts in the Docker execution environment.
+  \item \textbf{Language support expansion:} Add further languages, such as Kotlin, by installing their toolchains in the judge image and adding a runner for each.
   \item \textbf{Plagiarism detection:} Integrate code similarity analysis to support academic integrity in contest and lesson settings.
   \item \textbf{Improved test case management:} Develop tooling for automated test case generation and validation based on problem constraints, building on the AI-assisted edge-case suggestions already available in problem review.
 \end{itemize}
