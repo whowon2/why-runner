@@ -3,6 +3,7 @@
 import { db } from "@/drizzle/db";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { assertClassMember } from "@/lib/actions/classes/assert-class-member";
+import { parsonsLines, shuffle } from "@/lib/parsons";
 
 export async function getExercise(exerciseId: string) {
   const currentUser = await getCurrentUser({});
@@ -40,8 +41,17 @@ export async function getExercise(exerciseId: string) {
     found.lesson.dueDate && found.lesson.dueDate < new Date()
   );
 
+  // The Parsons solution is the answer key in order: students only ever get
+  // its lines, freshly shuffled on every load.
+  const { parsonsSolution, ...exerciseFields } = found;
+  const parsonsShuffled =
+    found.mode === "parsons" && parsonsSolution
+      ? shuffle(parsonsLines(parsonsSolution))
+      : null;
+
   return {
-    ...found,
+    ...exerciseFields,
+    parsonsShuffled,
     problem: {
       ...found.problem,
       // Test-case inputs are always visible so students can see the edge
@@ -75,6 +85,7 @@ export async function getNextExercise(exerciseId: string) {
         ),
       ),
     orderBy: (exercise, { asc }) => [asc(exercise.order), asc(exercise.id)],
+    columns: { parsonsSolution: false },
     with: { problem: { columns: { id: true, title: true } } },
   });
 
@@ -97,6 +108,7 @@ export async function getPreviousExercise(exerciseId: string) {
         ),
       ),
     orderBy: (exercise, { desc }) => [desc(exercise.order), desc(exercise.id)],
+    columns: { parsonsSolution: false },
     with: { problem: { columns: { id: true, title: true } } },
   });
 

@@ -22,6 +22,12 @@ export const problemValidation = pgTable("problem_validation", {
   // inputs/outputs to decide whether a PASSED run is still valid or stale.
   ioHash: text("io_hash").notNull(),
   runtimeMs: integer("runtime_ms"),
+  // Set only for a lesson exercise's Parsons-solution check (see
+  // `saveParsonsSolution`), which reuses this table's judge path. Bare uuid,
+  // no FK (avoids a `validations.ts` <-> `lessons.ts` import cycle). Rows
+  // with this set are NOT the problem's own pre-publish validation, so
+  // publish/staleness checks must filter on `exercise_id IS NULL`.
+  exerciseId: uuid("exercise_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()

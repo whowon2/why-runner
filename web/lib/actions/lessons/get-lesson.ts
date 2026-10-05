@@ -20,6 +20,8 @@ export async function getLesson(lessonId: string) {
     db.query.exercise.findMany({
       where: (exercise, { eq }) => eq(exercise.lessonId, lessonId),
       orderBy: (exercise, { asc }) => [asc(exercise.order)],
+      // Never sent to students: it is the Parsons answer key in order.
+      columns: { parsonsSolution: false },
       with: {
         problem: { columns: { inputs: false, outputs: false } },
       },
@@ -42,9 +44,7 @@ export async function getLesson(lessonId: string) {
     }),
   ]);
 
-  const passedExerciseIds = new Set(
-    passedSubmissions.map((s) => s.exerciseId),
-  );
+  const passedExerciseIds = new Set(passedSubmissions.map((s) => s.exerciseId));
 
   return {
     lesson,

@@ -11,7 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { classroom } from "./classes";
 import { problem } from "./problems";
-import { Language, submission } from "./submissions";
+import { ExerciseMode, Language, submission } from "./submissions";
 import { user } from "./users";
 
 /** A professor-curated assignment: a classroom-scoped collection of exercises. */
@@ -102,6 +102,11 @@ export const exercise = pgTable(
     slug: text("slug").notNull().unique(),
     order: integer("order").default(0).notNull(),
     primaryLanguage: Language("primary_language"),
+    // `blocks` forces primaryLanguage = portugol; `parsons` requires a
+    // primaryLanguage and a `parsonsSolution` that passed the problem's
+    // test cases (see `saveParsonsSolution`).
+    mode: ExerciseMode("mode").default("code").notNull(),
+    parsonsSolution: text("parsons_solution"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()

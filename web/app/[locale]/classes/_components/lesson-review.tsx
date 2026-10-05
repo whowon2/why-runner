@@ -14,6 +14,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Skeleton } from "@/components/ui/skeleton";
+import { VisualAnswer } from "@/components/submissions/visual-answer";
 import { Link } from "@/i18n/navigation";
 import {
   useMarkLessonSubmissionReviewed,
@@ -118,6 +119,9 @@ export function LessonReview({ lessonId }: { lessonId: string }) {
                         </Badge>
                       )}
                     </div>
+                    {answer.submission && (
+                      <VisualAnswer submission={answer.submission} />
+                    )}
                     {answer.submission ? (
                       <div className="relative">
                         <Badge

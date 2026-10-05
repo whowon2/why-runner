@@ -1,6 +1,6 @@
 "use server";
 
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import {
   problem,
@@ -38,7 +38,12 @@ export async function getProblemValidation(
       where: eq(problemReferenceSolution.problemId, problemId),
     }),
     db.query.problemValidation.findFirst({
-      where: eq(problemValidation.problemId, problemId),
+      // Parsons-solution checks reuse this table but are not the
+      // problem's own validation (see `problemValidation.exerciseId`).
+      where: and(
+        eq(problemValidation.problemId, problemId),
+        isNull(problemValidation.exerciseId),
+      ),
       orderBy: desc(problemValidation.createdAt),
     }),
   ]);

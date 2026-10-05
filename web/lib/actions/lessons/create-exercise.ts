@@ -12,7 +12,9 @@ import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { generateSlug } from "@/lib/slug";
 
 export async function createExercise(
-  input: Omit<CreateExerciseInput, "slug">,
+  // Answer mode is set afterwards via `setExerciseMode`, which enforces the
+  // per-mode rules (e.g. a Parsons solution must pass the test cases first).
+  input: Omit<CreateExerciseInput, "slug" | "mode" | "parsonsSolution">,
 ) {
   const currentUser = await getCurrentUser({});
 
@@ -51,7 +53,13 @@ export async function createExercise(
 
   const [created] = await db
     .insert(exercise)
-    .values({ ...input, order, slug: generateSlug(linkedProblem.title) })
+    .values({
+      lessonId: input.lessonId,
+      problemId: input.problemId,
+      primaryLanguage: input.primaryLanguage,
+      order,
+      slug: generateSlug(linkedProblem.title),
+    })
     .returning();
   return created;
 }

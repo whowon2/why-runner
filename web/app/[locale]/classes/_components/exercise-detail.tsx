@@ -1,11 +1,10 @@
 "use client";
 
 import Editor from "@monaco-editor/react";
-import { useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Copy, Upload } from "lucide-react";
+import { CheckCircle2, Code2, Copy, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
@@ -32,12 +31,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Language } from "@/drizzle/schema";
+import { BlockWorkspace } from "@/components/blocks";
+import { PortugolCodePanel } from "@/components/blocks/portugol-code-panel";
+import { ParsonsEditor } from "@/components/parsons/parsons-editor";
+import { VisualAnswer } from "@/components/submissions/visual-answer";
+import type { Language, ProblemPreview } from "@/drizzle/schema";
 import { useCreateExerciseSubmission } from "@/hooks/use-create-exercise-submission";
 import { useExercise } from "@/hooks/use-exercise";
 import { useExerciseConstraints } from "@/hooks/use-exercise-constraints";
 import { useExerciseSubmissions } from "@/hooks/use-exercise-submissions";
+import {
+  generatePortugol,
+  type SerializedWorkspace,
+} from "@/lib/blocks/portugol-generator";
+import type { ParsonsLine } from "@/lib/parsons";
 import { cn } from "@/lib/utils";
+import { AIDialog } from "../../contests/_components/ai-dialog";
 
 const LANGUAGES: Language[] = [
   "rust",
@@ -70,11 +79,15 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
         <Card className="bg-transparent shadow-none">
           <CardHeader>
             <p className="text-muted-foreground text-sm">
-              {exercise.primaryLanguage
-                ? t("Lesson.primaryLanguage", {
-                    language: exercise.primaryLanguage,
-                  })
-                : t("Lesson.anyLanguage")}
+              {exercise.mode === "blocks"
+                ? t("Lesson.answerWithBlocks")
+                : exercise.mode === "parsons"
+                  ? t("Lesson.answerWithParsons")
+                  : exercise.primaryLanguage
+                    ? t("Lesson.primaryLanguage", {
+                        language: exercise.primaryLanguage,
+                      })
+                    : t("Lesson.anyLanguage")}
             </p>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
@@ -96,28 +109,136 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
 
         <ExerciseConstraintsNotice exerciseId={exercise.id} />
 
-        <ExerciseSubmissions exerciseId={exercise.id} />
+        <ExerciseSubmissions
+          exerciseId={exercise.id}
+          problem={exercise.problem}
+        />
       </ResizablePanel>
 
       <ResizableHandle withHandle />
       <ResizablePanel className="flex flex-col gap-4 pl-4" minSize={25}>
-        <ExerciseSubmit
-          exerciseId={exercise.id}
-          locked={exercise.submissionsLocked}
-        />
+        {exercise.submissionsLocked ? (
+          <Card className="bg-transparent shadow-none">
+            <CardContent>
+              <p className="text-muted-foreground text-sm">
+                {t("trackLocked")}
+              </p>
+            </CardContent>
+          </Card>
+        ) : exercise.mode === "blocks" ? (
+          <BlocksSubmit exerciseId={exercise.id} />
+        ) : exercise.mode === "parsons" && exercise.parsonsShuffled ? (
+          <ParsonsSubmit
+            exerciseId={exercise.id}
+            lines={exercise.parsonsShuffled}
+          />
+        ) : (
+          <ExerciseSubmit exerciseId={exercise.id} />
+        )}
       </ResizablePanel>
     </ResizablePanelGroup>
   );
 }
 
-function ExerciseSubmit({
+function BlocksSubmit({ exerciseId }: { exerciseId: string }) {
+  const tBlocks = useTranslations("Blocks");
+  const tUpload = useTranslations(
+    "ContestsPage.Tabs.Problem.Submissions.Upload",
+  );
+  const [workspace, setWorkspace] = useState<SerializedWorkspace | null>(null);
+  const [showCode, setShowCode] = useState(false);
+  const { mutate, isPending } = useCreateExerciseSubmission();
+
+  const generated = useMemo(
+    () => (workspace ? generatePortugol(workspace) : null),
+    [workspace],
+  );
+  const hasErrors = !generated || generated.errors.length > 0;
+
+  function handleSubmit() {
+    if (!workspace || hasErrors) {
+      setShowCode(true);
+      return;
+    }
+    mutate(
+      { exerciseId, mode: "blocks", workspace },
+      {
+        onError: (error) =>
+          toast.error(tUpload("failedSubmit"), { description: error.message }),
+        onSuccess: () => toast.success(tUpload("submitted")),
+      },
+    );
+  }
+
+  return (
+    <Card className="bg-transparent shadow-none">
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex justify-between gap-2">
+          <Button
+            onClick={() => setShowCode((v) => !v)}
+            type="button"
+            variant="outline"
+          >
+            <Code2 />
+            {showCode ? tBlocks("hideCode") : tBlocks("viewCode")}
+          </Button>
+          <Button disabled={isPending} onClick={handleSubmit}>
+            <Upload />
+          </Button>
+        </div>
+        <BlockWorkspace
+          className="h-[min(600px,60vh)] w-full"
+          onChange={setWorkspace}
+        />
+        {showCode && generated && (
+          <PortugolCodePanel code={generated.code} errors={generated.errors} />
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function ParsonsSubmit({
   exerciseId,
-  locked,
+  lines,
 }: {
   exerciseId: string;
-  locked: boolean;
+  lines: string[];
 }) {
-  const t = useTranslations("RoadmapPage");
+  const tUpload = useTranslations(
+    "ContestsPage.Tabs.Problem.Submissions.Upload",
+  );
+  const [answer, setAnswer] = useState<ParsonsLine[]>(() =>
+    lines.map((text) => ({ text, indent: 0 })),
+  );
+  const { mutate, isPending } = useCreateExerciseSubmission();
+
+  function handleSubmit() {
+    mutate(
+      { exerciseId, mode: "parsons", lines: answer },
+      {
+        onError: (error) =>
+          toast.error(tUpload("failedSubmit"), { description: error.message }),
+        onSuccess: () => toast.success(tUpload("submitted")),
+      },
+    );
+  }
+
+  return (
+    <Card className="bg-transparent shadow-none">
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex justify-end">
+          <Button disabled={isPending} onClick={handleSubmit}>
+            <Upload />
+          </Button>
+        </div>
+        <ParsonsEditor lines={lines} onChange={setAnswer} />
+      </CardContent>
+    </Card>
+  );
+}
+
+function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
   const tUpload = useTranslations(
     "ContestsPage.Tabs.Problem.Submissions.Upload",
   );
@@ -125,17 +246,6 @@ function ExerciseSubmit({
   const [language, setLanguage] = useState<Language | null>(null);
   const { theme, systemTheme } = useTheme();
   const { mutate, isPending } = useCreateExerciseSubmission();
-  const queryClient = useQueryClient();
-
-  if (locked) {
-    return (
-      <Card className="bg-transparent shadow-none">
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("trackLocked")}</p>
-        </CardContent>
-      </Card>
-    );
-  }
 
   function handleSubmit() {
     if (!language) {
@@ -148,16 +258,13 @@ function ExerciseSubmit({
     }
 
     mutate(
-      { exerciseId, code, language },
+      { exerciseId, mode: "code", code, language },
       {
         onError: (error) => {
           toast.error(tUpload("failedSubmit"), { description: error.message });
         },
         onSuccess: () => {
           toast.success(tUpload("submitted"));
-          queryClient.invalidateQueries({
-            queryKey: ["submissions", "exercise", exerciseId],
-          });
         },
       },
     );
@@ -306,7 +413,13 @@ function ExerciseConstraintsNotice({ exerciseId }: { exerciseId: string }) {
   );
 }
 
-function ExerciseSubmissions({ exerciseId }: { exerciseId: string }) {
+function ExerciseSubmissions({
+  exerciseId,
+  problem,
+}: {
+  exerciseId: string;
+  problem: ProblemPreview;
+}) {
   const t = useTranslations("RoadmapPage.Lesson");
   const tCommon = useTranslations("ContestsPage.Tabs.Problem.Submissions");
   const { data: submissions, isPending } = useExerciseSubmissions(exerciseId);
@@ -354,7 +467,13 @@ function ExerciseSubmissions({ exerciseId }: { exerciseId: string }) {
                     {s.language} · {s.status}
                   </span>
                 </AccordionTrigger>
-                <AccordionContent>
+                <AccordionContent className="flex flex-col gap-2">
+                  {(s.status === "FAILED" || s.status === "ERROR") && (
+                    <div className="flex justify-end">
+                      <AIDialog problem={problem} submission={s} />
+                    </div>
+                  )}
+                  <VisualAnswer submission={s} />
                   <div className="relative">
                     <Button
                       className="absolute top-2 right-2 size-7"

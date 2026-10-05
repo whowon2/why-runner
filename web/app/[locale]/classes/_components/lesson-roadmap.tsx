@@ -7,6 +7,7 @@ import {
   ListChecks,
   Send,
   Settings2,
+  Blocks,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -38,12 +39,14 @@ import { useLesson } from "@/hooks/use-lesson";
 import { useSubmitLesson } from "@/hooks/use-submit-lesson";
 import { cn } from "@/lib/utils";
 import { ExerciseConstraintsPanel } from "./exercise-constraints";
+import { ExerciseModePanel } from "./exercise-mode";
 import { ManageLesson } from "./manage-lesson";
 
 export function LessonRoadmap({ lessonId }: { lessonId: string }) {
   const t = useTranslations("RoadmapPage");
   const tReview = useTranslations("RoadmapPage.Review");
   const tLessons = useTranslations("TracksPage");
+  const tMode = useTranslations("RoadmapPage.Mode");
   const { data, isPending } = useLesson(lessonId);
   const { mutate: submitLesson, isPending: isSubmitting } = useSubmitLesson();
 
@@ -161,6 +164,10 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
                 {e.primaryLanguage && (
                   <Badge variant="outline">{e.primaryLanguage}</Badge>
                 )}
+                {e.mode !== "code" && (
+                  <Badge variant="secondary">{tMode(`${e.mode}.label`)}</Badge>
+                )}
+                {isOwner && <ExerciseModeDialog exerciseId={e.id} />}
                 {isOwner && <ExerciseConstraintsDialog exerciseId={e.id} />}
               </div>
             </div>
@@ -231,6 +238,27 @@ function SubmitLessonButton({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+  );
+}
+
+function ExerciseModeDialog({ exerciseId }: { exerciseId: string }) {
+  const t = useTranslations("RoadmapPage.Mode");
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button size="sm" type="button" variant="outline">
+          <Blocks className="size-3.5" />
+          {t("trigger")}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{t("title")}</DialogTitle>
+        </DialogHeader>
+        <ExerciseModePanel exerciseId={exerciseId} />
+      </DialogContent>
+    </Dialog>
   );
 }
 
