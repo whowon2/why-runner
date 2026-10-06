@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  ArrowDown,
+  ArrowUp,
   CheckCircle2,
   Circle,
   ClipboardList,
@@ -8,6 +10,7 @@ import {
   Send,
   Settings2,
   Blocks,
+  Trash2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -23,6 +26,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,9 +39,14 @@ import {
 } from "@/components/ui/dialog";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useDeleteExerciseEntry,
+  useMoveExerciseEntry,
+} from "@/hooks/use-exercise-entry";
 import { useLesson } from "@/hooks/use-lesson";
 import { useSubmitLesson } from "@/hooks/use-submit-lesson";
 import { cn } from "@/lib/utils";
+import { EditLessonDialog } from "./edit-lesson-dialog";
 import { ExerciseConstraintsPanel } from "./exercise-constraints";
 import { ExerciseModePanel } from "./exercise-mode";
 import { ManageLesson } from "./manage-lesson";
@@ -63,28 +72,39 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
   if (!data) return null;
 
   const { lesson, classroom, exercises, isOwner, submittedAt } = data;
-  const dueDatePassed = !!(lesson.dueDate && new Date(lesson.dueDate) < new Date());
+  const dueDatePassed = !!(
+    lesson.dueDate && new Date(lesson.dueDate) < new Date()
+  );
 
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
         action={
           isOwner ? (
-            <Button
-              asChild
-              size="sm"
-              title={
-                !dueDatePassed && lesson.dueDate
-                  ? tReview("notYetAvailable")
-                  : undefined
-              }
-              variant="outline"
-            >
-              <Link href={`/classes/${classroom.slug}/lessons/${lesson.slug}/review`}>
-                <ClipboardList className="size-3.5" />
-                {t("reviewAnswers")}
-              </Link>
-            </Button>
+            <>
+              <EditLessonDialog
+                description={lesson.description}
+                lessonId={lesson.id}
+                title={lesson.title}
+              />
+              <Button
+                asChild
+                size="sm"
+                title={
+                  !dueDatePassed && lesson.dueDate
+                    ? tReview("notYetAvailable")
+                    : undefined
+                }
+                variant="outline"
+              >
+                <Link
+                  href={`/classes/${classroom.slug}/lessons/${lesson.slug}/review`}
+                >
+                  <ClipboardList className="size-3.5" />
+                  {t("reviewAnswers")}
+                </Link>
+              </Button>
+            </>
           ) : undefined
         }
         icon={ListChecks}
@@ -93,7 +113,8 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
       />
 
       <div className="flex flex-wrap items-center gap-2">
-        {lesson.dueDate && (
+        {/* Owners edit the due date in ManageLesson instead. */}
+        {!isOwner && lesson.dueDate && (
           <Badge className="w-fit" variant="outline">
             {t("dueDatePrefix")} {new Date(lesson.dueDate).toLocaleDateString()}
           </Badge>
@@ -169,12 +190,115 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
                 )}
                 {isOwner && <ExerciseModeDialog exerciseId={e.id} />}
                 {isOwner && <ExerciseConstraintsDialog exerciseId={e.id} />}
+                {isOwner && (
+                  <ExerciseOwnerControls
+                    canRemove={!lesson.isPublished}
+                    exerciseId={e.id}
+                    isFirst={idx === 0}
+                    isLast={idx === exercises.length - 1}
+                    lessonId={lesson.id}
+                  />
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
     </div>
+  );
+}
+
+// Owner-only move up/down and remove controls for one exercise row. Removal
+// is draft-only: deleting an exercise cascades students' answers/feedback.
+function ExerciseOwnerControls({
+  exerciseId,
+  lessonId,
+  isFirst,
+  isLast,
+  canRemove,
+}: {
+  exerciseId: string;
+  lessonId: string;
+  isFirst: boolean;
+  isLast: boolean;
+  canRemove: boolean;
+}) {
+  const t = useTranslations("TracksPage");
+  const tCommon = useTranslations("Common");
+  const { mutate: moveExercise, isPending: isMoving } =
+    useMoveExerciseEntry(lessonId);
+  const { mutate: deleteExercise, isPending: isDeleting } =
+    useDeleteExerciseEntry(lessonId);
+
+  function move(direction: "up" | "down") {
+    moveExercise(
+      { exerciseId, direction },
+      { onError: (error: Error) => toast.error(error.message) },
+    );
+  }
+
+  return (
+    <>
+      <Button
+        aria-label={t("moveUp")}
+        disabled={isFirst || isMoving}
+        onClick={() => move("up")}
+        size="icon"
+        title={t("moveUp")}
+        type="button"
+        variant="ghost"
+      >
+        <ArrowUp className="size-4" />
+      </Button>
+      <Button
+        aria-label={t("moveDown")}
+        disabled={isLast || isMoving}
+        onClick={() => move("down")}
+        size="icon"
+        title={t("moveDown")}
+        type="button"
+        variant="ghost"
+      >
+        <ArrowDown className="size-4" />
+      </Button>
+      {canRemove && (
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              aria-label={t("removeExercise")}
+              disabled={isDeleting}
+              size="icon"
+              title={t("removeExercise")}
+              type="button"
+              variant="ghost"
+            >
+              <Trash2 className="size-4 text-destructive" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t("removeExerciseTitle")}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t("removeExerciseDescription")}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() =>
+                  deleteExercise(exerciseId, {
+                    onError: (error: Error) => toast.error(error.message),
+                    onSuccess: () => toast.success(t("removeExerciseSuccess")),
+                  })
+                }
+              >
+                {tCommon("confirm")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+    </>
   );
 }
 

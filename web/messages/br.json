@@ -777,7 +777,7 @@
     "publish": "Publicar",
     "unpublish": "Despublicar",
     "addLesson": "Adicionar exercício",
-    "manageTrack": "Gerenciar atividade",
+    "noProblemsToAdd": "Nenhum exercício encontrado — crie um problema primeiro.",
     "showOutputs": "Mostrar saídas esperadas para os alunos",
     "showOutputsHint": "Permite que os alunos vejam saídas de casos de borda, para você poder checar respostas com valores fixos (hardcoded) durante a revisão.",
     "Lesson": {
@@ -1272,8 +1272,6 @@
     "myTracks": "Minhas atividades",
     "published": "Atribuída",
     "unpublished": "Rascunho",
-    "shareWithStudents": "Compartilhar com alunos",
-    "linkCopied": "Link de entrada copiado para a área de transferência",
     "defaultSubtitle": "Exercícios dessa atividade, em ordem.",
     "publish": "Publicar",
     "publishNeedsExercise": "Adicione ao menos um exercício antes de publicar.",
@@ -1285,7 +1283,16 @@
     "dueDatePrefix": "Prazo",
     "submittedAt": "Enviado em {date}",
     "scoreLabel": "Nota: {score}",
-    "awaitingReview": "Aguardando revisão"
+    "awaitingReview": "Aguardando revisão",
+    "editTrack": "Editar atividade",
+    "titlePlaceholder": "ex.: Semana 3 — Recursão",
+    "descriptionPlaceholder": "O que essa atividade aborda (opcional)",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo",
+    "removeExercise": "Remover exercício",
+    "removeExerciseTitle": "Remover este exercício?",
+    "removeExerciseDescription": "O exercício é removido desta atividade em rascunho. O problema original não é excluído.",
+    "removeExerciseSuccess": "Exercício removido"
   },
   "ClassesPage": {
     "title": "Turmas",

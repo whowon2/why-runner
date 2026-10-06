@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, max } from "drizzle-orm";
+import { and, asc, eq, max } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import {
   type CreateExerciseInput,
@@ -64,9 +64,9 @@ export async function createExercise(
   return created;
 }
 
-export async function reorderExerciseEntry(input: {
+export async function moveExerciseEntry(input: {
   exerciseId: string;
-  order: number;
+  direction: "up" | "down";
 }) {
   const currentUser = await getCurrentUser({});
 
@@ -79,12 +79,30 @@ export async function reorderExerciseEntry(input: {
     throw new Error("Not the lesson owner");
   }
 
-  const [updated] = await db
-    .update(exercise)
-    .set({ order: input.order })
-    .where(eq(exercise.id, input.exerciseId))
-    .returning();
-  return updated;
+  await db.transaction(async (tx) => {
+    const siblings = await tx.query.exercise.findMany({
+      where: eq(exercise.lessonId, found.lessonId),
+      orderBy: [asc(exercise.order), asc(exercise.createdAt)],
+      columns: { id: true, order: true },
+    });
+
+    const index = siblings.findIndex((e) => e.id === input.exerciseId);
+    const neighbour = input.direction === "up" ? index - 1 : index + 1;
+    if (neighbour < 0 || neighbour >= siblings.length) return;
+
+    // Legacy rows can share `order` (default 0), so normalize to 0..n-1
+    // before swapping — otherwise swapping two equal values is a no-op.
+    const orders = siblings.map((_, i) => i);
+    [orders[index], orders[neighbour]] = [orders[neighbour], orders[index]];
+
+    for (const [i, sibling] of siblings.entries()) {
+      if (sibling.order === orders[i]) continue;
+      await tx
+        .update(exercise)
+        .set({ order: orders[i] })
+        .where(eq(exercise.id, sibling.id));
+    }
+  });
 }
 
 export async function deleteExerciseEntry(exerciseId: string) {
@@ -97,6 +115,11 @@ export async function deleteExerciseEntry(exerciseId: string) {
   if (!found) throw new Error("Exercise not found");
   if (found.lesson.createdBy !== currentUser.id) {
     throw new Error("Not the lesson owner");
+  }
+  // Deleting cascades students' exercise_completion rows (answers and
+  // feedback), so only drafts may lose exercises — same rule as deleteLesson.
+  if (found.lesson.isPublished) {
+    throw new Error("Unpublish this assignment before removing exercises.");
   }
 
   await db.delete(exercise).where(eq(exercise.id, exerciseId));

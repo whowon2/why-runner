@@ -3,6 +3,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { lesson } from "@/drizzle/schema";
+import { normalizeLessonTitle } from "@/lib/actions/lessons/lesson-title";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 async function assertOwnsLesson(lessonId: string, userId: string) {
@@ -27,9 +28,11 @@ export async function updateLesson(input: {
   const [updated] = await db
     .update(lesson)
     .set({
-      ...(input.title !== undefined ? { title: input.title } : {}),
+      ...(input.title !== undefined
+        ? { title: normalizeLessonTitle(input.title) }
+        : {}),
       ...(input.description !== undefined
-        ? { description: input.description }
+        ? { description: input.description.trim() }
         : {}),
       ...(input.dueDate !== undefined ? { dueDate: input.dueDate } : {}),
       ...(input.showOutputs !== undefined

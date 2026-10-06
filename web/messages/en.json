@@ -777,7 +777,7 @@
     "publish": "Publish",
     "unpublish": "Unpublish",
     "addLesson": "Add exercise",
-    "manageTrack": "Manage assignment",
+    "noProblemsToAdd": "No exercises found — create a problem first.",
     "showOutputs": "Show expected outputs to students",
     "showOutputsHint": "Lets students see edge-case outputs, so you can check submitted code for hardcoded answers during review.",
     "Lesson": {
@@ -1272,8 +1272,6 @@
     "myTracks": "My assignments",
     "published": "Assigned",
     "unpublished": "Draft",
-    "shareWithStudents": "Share with students",
-    "linkCopied": "Join link copied to clipboard",
     "defaultSubtitle": "Exercises for this assignment, in order.",
     "publish": "Publish",
     "publishNeedsExercise": "Add at least one exercise before publishing.",
@@ -1285,7 +1283,16 @@
     "dueDatePrefix": "Due",
     "submittedAt": "Submitted {date}",
     "scoreLabel": "Score: {score}",
-    "awaitingReview": "Awaiting review"
+    "awaitingReview": "Awaiting review",
+    "editTrack": "Edit assignment",
+    "titlePlaceholder": "e.g. Week 3 — Recursion",
+    "descriptionPlaceholder": "What this assignment covers (optional)",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "removeExercise": "Remove exercise",
+    "removeExerciseTitle": "Remove this exercise?",
+    "removeExerciseDescription": "The exercise is removed from this draft assignment. The underlying problem is not deleted.",
+    "removeExerciseSuccess": "Exercise removed"
   },
   "ClassesPage": {
     "title": "Classes",
