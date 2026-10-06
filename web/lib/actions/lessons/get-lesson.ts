@@ -19,7 +19,11 @@ export async function getLesson(lessonId: string) {
   const [exercises, passedSubmissions, lessonSubmission] = await Promise.all([
     db.query.exercise.findMany({
       where: (exercise, { eq }) => eq(exercise.lessonId, lessonId),
-      orderBy: (exercise, { asc }) => [asc(exercise.order)],
+      // createdAt breaks legacy `order` ties, matching `moveExerciseEntry`.
+      orderBy: (exercise, { asc }) => [
+        asc(exercise.order),
+        asc(exercise.createdAt),
+      ],
       // Never sent to students: it is the Parsons answer key in order.
       columns: { parsonsSolution: false },
       with: {

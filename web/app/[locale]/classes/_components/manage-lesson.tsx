@@ -36,7 +36,6 @@ import {
   useUpdateLesson,
 } from "@/hooks/use-update-lesson";
 import { useRouter } from "@/i18n/navigation";
-import { ShareLessonLink } from "./share-lesson-link";
 
 export function ManageLesson({
   lesson,
@@ -60,52 +59,13 @@ export function ManageLesson({
 
   return (
     <div className="flex flex-col gap-4 rounded-md border p-4">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <span className="font-medium text-sm">{t("manageTrack")}</span>
-        <div className="flex flex-wrap items-center gap-4">
-          <ShareLessonLink classroomId={lesson.classroomId} />
-
-          <label className="flex items-center gap-2 text-sm">
-            {t("dueDatePrefix")}
-            <Input
-              className="w-auto"
-              defaultValue={
-                lesson.dueDate
-                  ? new Date(lesson.dueDate).toISOString().slice(0, 10)
-                  : ""
-              }
-              onChange={(e) =>
-                updateLesson(
-                  {
-                    lessonId: lesson.id,
-                    dueDate: e.target.value ? new Date(e.target.value) : null,
-                  },
-                  { onError: (error) => toast.error(error.message) },
-                )
-              }
-              type="date"
-            />
-          </label>
-
-          <label
-            className="flex items-center gap-2 text-sm"
-            title={t("showOutputsHint")}
-          >
-            {t("showOutputs")}
-            <Switch
-              checked={lesson.showOutputs}
-              onCheckedChange={(checked) =>
-                updateLesson(
-                  { lessonId: lesson.id, showOutputs: checked },
-                  { onError: (error) => toast.error(error.message) },
-                )
-              }
-            />
-          </label>
-
-          {lesson.isPublished ? (
-            <Badge>{tLessons("published")}</Badge>
-          ) : (
+      {/* Header: status badge top-left, draft actions on the right. */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Badge variant={lesson.isPublished ? "default" : "outline"}>
+          {lesson.isPublished ? tLessons("published") : tLessons("unpublished")}
+        </Badge>
+        <div className="flex items-center gap-2">
+          {!lesson.isPublished && (
             <>
               <Button
                 disabled={isPublishPending || exerciseCount === 0}
@@ -115,24 +75,24 @@ export function ManageLesson({
                     { onError: (error) => toast.error(error.message) },
                   )
                 }
+                size="sm"
               >
                 <LoadingSwap
                   className="inline-flex items-center gap-2"
                   isLoading={isPublishPending}
                 >
-                  <Rocket className="size-4" />
+                  <Rocket className="size-3.5" />
                   {tLessons("publish")}
                 </LoadingSwap>
               </Button>
-
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
                     disabled={isDeleting}
-                    size="icon"
+                    size="icon-sm"
                     variant="destructive"
                   >
-                    <Trash2 className="size-4" />
+                    <Trash2 className="size-3.5" />
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -167,17 +127,71 @@ export function ManageLesson({
         </div>
       </div>
       {!lesson.isPublished && exerciseCount === 0 && (
-        <p className="text-muted-foreground text-xs">
+        <p className="-mt-2 text-muted-foreground text-xs">
           {tLessons("publishNeedsExercise")}
         </p>
       )}
 
-      <AddExerciseForm
-        existingProblemIds={existingProblemIds}
-        lessonId={lesson.id}
-      />
+      {/* Settings */}
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <label className="flex items-center gap-2 text-sm">
+          {t("dueDatePrefix")}
+          <Input
+            className="w-auto"
+            defaultValue={
+              lesson.dueDate
+                ? toLocalDateInputValue(new Date(lesson.dueDate))
+                : ""
+            }
+            onChange={(e) =>
+              updateLesson(
+                {
+                  lessonId: lesson.id,
+                  // Due at the end of the picked day in the professor's
+                  // timezone — `new Date("YYYY-MM-DD")` would be UTC
+                  // midnight, i.e. the previous evening in Brazil.
+                  dueDate: e.target.value
+                    ? new Date(`${e.target.value}T23:59:59.999`)
+                    : null,
+                },
+                { onError: (error) => toast.error(error.message) },
+              )
+            }
+            type="date"
+          />
+        </label>
+
+        <label
+          className="flex items-center gap-2 text-sm"
+          title={t("showOutputsHint")}
+        >
+          {t("showOutputs")}
+          <Switch
+            checked={lesson.showOutputs}
+            onCheckedChange={(checked) =>
+              updateLesson(
+                { lessonId: lesson.id, showOutputs: checked },
+                { onError: (error) => toast.error(error.message) },
+              )
+            }
+          />
+        </label>
+      </div>
+
+      <div className="border-t pt-4">
+        <AddExerciseForm
+          existingProblemIds={existingProblemIds}
+          lessonId={lesson.id}
+        />
+      </div>
     </div>
   );
+}
+
+/** `YYYY-MM-DD` in local time, as `<input type="date">` expects. */
+function toLocalDateInputValue(date: Date) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
 function AddExerciseForm({
@@ -218,6 +232,11 @@ function AddExerciseForm({
           <SelectValue placeholder={t("addLesson")} />
         </SelectTrigger>
         <SelectContent>
+          {availableProblems.length === 0 && (
+            <p className="px-2 py-1.5 text-muted-foreground text-sm">
+              {t("noProblemsToAdd")}
+            </p>
+          )}
           {availableProblems.map((p) => (
             <SelectItem key={p.id} value={p.id}>
               {p.title}

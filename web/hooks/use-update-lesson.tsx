@@ -22,6 +22,9 @@ export const useUpdateLesson = () => {
       queryClient.invalidateQueries({
         queryKey: ["lessons", variables.lessonId],
       });
+      // Class-page lesson cards and exercise pages show lesson fields.
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      queryClient.invalidateQueries({ queryKey: ["exercises"] });
     },
   });
 };

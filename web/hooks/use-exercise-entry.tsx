@@ -3,7 +3,7 @@ import type { CreateExerciseInput } from "@/drizzle/schema";
 import {
   createExercise,
   deleteExerciseEntry,
-  reorderExerciseEntry,
+  moveExerciseEntry,
 } from "@/lib/actions/lessons/create-exercise";
 
 export const useCreateExerciseEntry = () => {
@@ -21,15 +21,20 @@ export const useCreateExerciseEntry = () => {
   });
 };
 
-export const useReorderExerciseEntry = (lessonId: string) => {
+export const useMoveExerciseEntry = (lessonId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { exerciseId: string; order: number }) => {
-      return await reorderExerciseEntry(input);
+    mutationFn: async (input: {
+      exerciseId: string;
+      direction: "up" | "down";
+    }) => {
+      return await moveExerciseEntry(input);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lessons", lessonId] });
+      // Exercise pages' next/previous links follow lesson order.
+      queryClient.invalidateQueries({ queryKey: ["exercises"] });
     },
   });
 };
@@ -43,6 +48,10 @@ export const useDeleteExerciseEntry = (lessonId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lessons", lessonId] });
+      // Class-page lesson cards show exercise counts; neighbouring
+      // exercises' next/previous links skip the removed one.
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      queryClient.invalidateQueries({ queryKey: ["exercises"] });
     },
   });
 };

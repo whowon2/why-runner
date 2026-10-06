@@ -5,7 +5,11 @@ export const useCreateLesson = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { classroomId: string }) => {
+    mutationFn: async (input: {
+      classroomId: string;
+      title: string;
+      description?: string;
+    }) => {
       return await createLesson(input);
     },
     onSuccess: (_data, variables) => {
