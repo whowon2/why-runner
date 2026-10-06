@@ -12,6 +12,7 @@ export async function getProblemSubmissions(problemId: string) {
         eq(submissions.problemId, problemId),
         eq(submissions.userId, currentUser.id),
       ),
+    orderBy: (submissions, { desc }) => [desc(submissions.createdAt)],
     with: {
       user: true,
       problem: { columns: { inputs: false, outputs: false } },
