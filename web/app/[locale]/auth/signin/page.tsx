@@ -1,8 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -12,23 +11,30 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
+import { safeRedirectPath } from "@/lib/auth/redirect-path";
 import { SignInTab } from "./_components/sign-in-tab";
 import { SignUpTab } from "./_components/sign-up-tab";
 import { SocialAuthButtons } from "./_components/social-auth-buttons";
 
 type Tab = "signin" | "signup" | "forgot-password";
 
-export default function LoginPage() {
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ redirectTo?: string }>;
+}) {
+  const redirectTo = safeRedirectPath(use(searchParams).redirectTo);
   const t = useTranslations("Auth");
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<Tab>("signin");
 
   useEffect(() => {
     authClient.getSession().then((session) => {
-      if (session.data != null) router.push("/");
+      if (session.data != null) router.push(redirectTo);
     });
-  }, [router]);
+  }, [router, redirectTo]);
 
   return (
     <div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">
@@ -50,6 +56,7 @@ export default function LoginPage() {
             </CardHeader>
             <CardContent>
               <SignInTab
+                redirectTo={redirectTo}
                 openForgotPassword={() => setSelectedTab("forgot-password")}
               />
             </CardContent>
@@ -57,7 +64,7 @@ export default function LoginPage() {
             <Separator />
 
             <CardFooter className="grid grid-cols-2 gap-3">
-              <SocialAuthButtons />
+              <SocialAuthButtons redirectTo={redirectTo} />
             </CardFooter>
           </Card>
         </TabsContent>
@@ -68,13 +75,13 @@ export default function LoginPage() {
               <CardTitle>{t("signUp")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <SignUpTab />
+              <SignUpTab redirectTo={redirectTo} />
             </CardContent>
 
             <Separator />
 
             <CardFooter className="grid grid-cols-2 gap-3">
-              <SocialAuthButtons />
+              <SocialAuthButtons redirectTo={redirectTo} />
             </CardFooter>
           </Card>
         </TabsContent>

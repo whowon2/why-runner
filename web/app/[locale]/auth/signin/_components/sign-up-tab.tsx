@@ -17,7 +17,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
+import { withRedirectTo } from "@/lib/auth/redirect-path";
 
 const signUpSchema = z.object({
   name: z.string().min(1),
@@ -27,8 +29,9 @@ const signUpSchema = z.object({
 
 type SignUpForm = z.infer<typeof signUpSchema>;
 
-export function SignUpTab() {
+export function SignUpTab({ redirectTo }: { redirectTo: string }) {
   const t = useTranslations("Auth");
+  const router = useRouter();
   const form = useForm<SignUpForm>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -41,11 +44,16 @@ export function SignUpTab() {
   const { isSubmitting } = form.formState;
 
   async function handleSignUp(data: SignUpForm) {
+    // New accounts still need a username, so go through onboarding first.
+    const onboardingHref = withRedirectTo("/onboarding", redirectTo);
     await authClient.signUp.email(
-      { ...data, callbackURL: "/" },
+      { ...data, callbackURL: onboardingHref },
       {
         onError: (error) => {
           toast.error(error.error.message || t("failedSignUp"));
+        },
+        onSuccess: () => {
+          router.push(onboardingHref);
         },
       },
     );

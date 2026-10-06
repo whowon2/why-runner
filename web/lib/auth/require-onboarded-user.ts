@@ -1,7 +1,9 @@
 import { getLocale } from "next-intl/server";
 import { db } from "@/drizzle/db";
 import { redirect } from "@/i18n/navigation";
+import { getCurrentPath } from "./current-path";
 import { getCurrentUser } from "./get-current-user";
+import { withRedirectTo } from "./redirect-path";
 
 export async function requireOnboardedUser({
   redirectTo,
@@ -21,7 +23,10 @@ export async function requireOnboardedUser({
 
   if (!freshUser?.finishedOnboarding) {
     const locale = await getLocale();
-    redirect({ href: "/onboarding", locale });
+    redirect({
+      href: withRedirectTo("/onboarding", await getCurrentPath()),
+      locale,
+    });
     throw new Error("User has not finished onboarding");
   }
 

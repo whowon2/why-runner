@@ -25,7 +25,7 @@ const onboardingSchema = z.object({
   username: usernameSchema,
 });
 
-export function OnboardingForm() {
+export function OnboardingForm({ redirectTo }: { redirectTo: string }) {
   const t = useTranslations("OnboardingPage");
   const router = useRouter();
   const form = useForm<z.infer<typeof onboardingSchema>>({
@@ -40,7 +40,7 @@ export function OnboardingForm() {
         toast.error(t("failed"), { description: error.message });
       },
       onSuccess() {
-        router.push("/");
+        router.push(redirectTo);
         router.refresh();
       },
     });
