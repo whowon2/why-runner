@@ -6,7 +6,7 @@ mod runner;
 
 use sqlx::postgres::PgListener;
 use std::env;
-use tokio::time::{Duration, timeout};
+use tokio::time::{Duration, Instant, timeout};
 
 use crate::{
     db::DbClient,
@@ -65,6 +65,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     listener.listen("new_validation").await?;
     println!("Listening for 'new_submission' and 'new_validation' notifications...");
 
+    // Optional idle auto-stop for on-demand hosts (e.g. a Fly Machine started
+    // manually on demo days): exit cleanly after this many seconds with no
+    // jobs, so the platform leaves the machine stopped instead of billing it.
+    // Unset = run forever.
+    let idle_exit_after = env::var("JUDGE_IDLE_EXIT_SECS")
+        .ok()
+        .and_then(|v| v.parse::<u64>().ok())
+        .filter(|&secs| secs > 0)
+        .map(Duration::from_secs);
+    if let Some(after) = idle_exit_after {
+        println!("Idle auto-stop enabled: exiting after {:?} without jobs", after);
+    }
+    let mut last_activity = Instant::now();
+
     loop {
         // 0. Dead-letter submissions abandoned by a crashed/killed worker that
         // already exhausted their retry budget, so they aren't reclaimed below.
@@ -90,6 +104,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         println!("Processing submission: {}", sub.id);
                     }
                     process_job(&db, sub).await;
+                    last_activity = Instant::now();
                 }
                 Ok(None) => break,
                 Err(e) => {
@@ -106,12 +121,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Ok(Some(validation)) => {
                     println!("Processing validation: {}", validation.id);
                     process_validation_job(&db, validation).await;
+                    last_activity = Instant::now();
                 }
                 Ok(None) => break,
                 Err(e) => {
                     eprintln!("Failed to fetch next validation: {}", e);
                     break;
                 }
+            }
+        }
+
+        if let Some(after) = idle_exit_after {
+            if last_activity.elapsed() >= after {
+                println!("Idle for {:?} with no jobs, exiting (idle auto-stop)", after);
+                return Ok(());
             }
         }
 

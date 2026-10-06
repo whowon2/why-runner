@@ -1,0 +1,21 @@
+# fly.toml app configuration file generated for why-runner-judge on 2026-10-06T17:50:02-03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'why-runner-judge'
+primary_region = 'gru'
+
+[build]
+  image = 'whowon/why-runner-judge:latest'
+
+[env]
+  JUDGE_IDLE_EXIT_SECS = '1800'
+
+[[restart]]
+  policy = 'on-failure'
+  retries = 5
+
+[[vm]]
+  size = 'shared-cpu-1x'
+  memory = '2gb'
