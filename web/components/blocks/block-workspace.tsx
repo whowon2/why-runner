@@ -22,6 +22,7 @@ import {
   START_BLOCK,
   type SerializedWorkspace,
 } from "@/lib/blocks/portugol-generator";
+import { cn } from "@/lib/utils";
 
 function useBlockLabels(): BlockLabels {
   const t = useTranslations("Blocks");
@@ -169,5 +170,12 @@ export default function BlockWorkspace({
     };
   }, [labels, locale, readOnly, resolvedTheme]);
 
-  return <div className={className ?? "h-[480px] w-full"} ref={container} />;
+  // `isolate` keeps Blockly's internal z-indexes (toolbox: 70) from stacking
+  // above app overlays like popovers (z-50).
+  return (
+    <div
+      className={cn("isolate", className ?? "h-[480px] w-full")}
+      ref={container}
+    />
+  );
 }
