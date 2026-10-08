@@ -10,6 +10,7 @@ import {
   getProblemReviewPrompt,
   SYSTEM_INSTRUCTION_PROBLEM_REVIEW,
 } from "@/lib/prompt";
+import { GEMINI_MODEL } from "@/lib/gemini-model";
 
 export type ProblemReviewEdgeCase = {
   input: string;
@@ -57,7 +58,7 @@ export async function reviewProblem(problemId: string): Promise<ProblemReview> {
   const ai = new GoogleGenAI({ apiKey: env.GEMINI_KEY });
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+    model: GEMINI_MODEL,
     config: {
       systemInstruction: SYSTEM_INSTRUCTION_PROBLEM_REVIEW,
       responseMimeType: "application/json",

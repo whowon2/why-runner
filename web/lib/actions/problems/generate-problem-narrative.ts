@@ -7,6 +7,7 @@ import { problem } from "@/drizzle/schema";
 import { env } from "@/env";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { getNarrativePrompt, SYSTEM_INSTRUCTION_NARRATIVE } from "@/lib/prompt";
+import { GEMINI_MODEL } from "@/lib/gemini-model";
 
 export async function generateProblemNarrative(
   problemId: string,
@@ -29,7 +30,7 @@ export async function generateProblemNarrative(
   const ai = new GoogleGenAI({ apiKey: env.GEMINI_KEY });
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+    model: GEMINI_MODEL,
     config: { systemInstruction: SYSTEM_INSTRUCTION_NARRATIVE },
     contents: getNarrativePrompt({ problem: found }),
   });
