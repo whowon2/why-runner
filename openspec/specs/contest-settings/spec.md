@@ -16,11 +16,15 @@ A "Settings" tab SHALL be shown on a contest's page only to that contest's creat
 - **THEN** no "Settings" tab is rendered, and navigating directly to `?tab=settings` does not display settings content
 
 ### Requirement: Full contest configuration form
-The Settings tab SHALL expose an editable form covering name, description, start date, end date, private/public toggle, and attached problems — replacing the previous Manage-tab edit form that only exposed name. The problem picker used to attach problems SHALL display each candidate problem's code and creator alongside its title, so problems sharing a title can be told apart. Each attached problem's code and title in the list SHALL link to that problem's page.
+The Settings tab SHALL expose an editable form covering name, description, start date, end date, private/public toggle, AI assistance level, and attached problems — replacing the previous Manage-tab edit form that only exposed name. The AI assistance level field SHALL offer `off`, `concept`, `hint`, and `pinpoint`, and each option SHALL show a short example of the kind of help it gives. The problem picker used to attach problems SHALL display each candidate problem's code and creator alongside its title, so problems sharing a title can be told apart. Each attached problem's code and title in the list SHALL link to that problem's page.
 
 #### Scenario: Editing all fields on a draft
-- **WHEN** the creator changes name, description, start/end dates, privacy, and problem selection on a draft contest and saves
+- **WHEN** the creator changes name, description, start/end dates, privacy, AI assistance level, and problem selection on a draft contest and saves
 - **THEN** all changed fields are persisted
+
+#### Scenario: Choosing an AI assistance level
+- **WHEN** the creator opens the AI assistance level field
+- **THEN** each option is listed with an example of its help (for example `concept` → "For loop badly implemented", `hint` → "You forgot to exit the loop", `pinpoint` → "Missing a break on line 14")
 
 #### Scenario: Picking between same-titled problems
 - **WHEN** the creator opens the problem picker and two or more candidate problems share the same title
