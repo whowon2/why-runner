@@ -2,8 +2,8 @@
 
 import { Camera, Pencil } from "lucide-react";
 import Image from "next/image";
-import { redirect } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { redirect } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
@@ -69,6 +69,7 @@ export default function Profile({
   isOwner: boolean;
 }) {
   const t = useTranslations("ProfilePage");
+  const locale = useLocale();
   const { data, isPending } = useProfile(userId);
   const { mutateAsync: uploadImage, isPending: isUploading } =
     useUploadProfileImage(userId);
@@ -129,7 +130,7 @@ export default function Profile({
   }
 
   if (!data) {
-    redirect("/auth/signin");
+    return redirect({ href: "/auth/signin", locale });
   }
 
   const onCover = Boolean(data.coverImage);

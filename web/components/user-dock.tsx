@@ -9,7 +9,6 @@ import {
   Sun,
   Trophy,
 } from "lucide-react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -21,7 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePathname } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { AvatarButton } from "./header/avatar-button";
