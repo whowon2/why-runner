@@ -10,6 +10,7 @@ import {
   getReferenceSolutionPrompt,
   SYSTEM_INSTRUCTION_REFERENCE_SOLUTION,
 } from "@/lib/prompt";
+import { GEMINI_MODEL } from "@/lib/gemini-model";
 
 // Strips a single leading/trailing markdown code fence, in case the model
 // adds one despite being told not to. Defensive only — the prompt asks for
@@ -53,7 +54,7 @@ export async function generateReferenceSolution(
   const ai = new GoogleGenAI({ apiKey: env.GEMINI_KEY });
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+    model: GEMINI_MODEL,
     config: { systemInstruction: SYSTEM_INSTRUCTION_REFERENCE_SOLUTION },
     contents: getReferenceSolutionPrompt({ problem: found, language }),
   });
