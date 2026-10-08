@@ -18,8 +18,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Contest } from "@/drizzle/schema";
+import { AI_ASSISTANCE_LEVELS, type Contest } from "@/drizzle/schema";
 import { useUpdateContest } from "@/hooks/use-update-contest";
 import { useRouter } from "@/i18n/navigation";
 
@@ -71,6 +78,7 @@ function useSettingsFormSchema() {
       startDate: z.string().optional(),
       endDate: z.string().optional(),
       isPrivate: z.boolean(),
+      aiAssistance: z.enum(AI_ASSISTANCE_LEVELS),
     })
     .refine(
       (values) =>
@@ -85,6 +93,7 @@ type FormValues = z.infer<ReturnType<typeof useSettingsFormSchema>>;
 
 export function EditContestForm({ contest }: { contest: Contest }) {
   const t = useTranslations("ContestsPage.Tabs.Settings.Form");
+  const tLevels = useTranslations("ContestsPage.AiAssistanceLevels");
   const { mutate: updateContest, isPending } = useUpdateContest();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -97,6 +106,7 @@ export function EditContestForm({ contest }: { contest: Contest }) {
       startDate: toDateTimeLocal(contest.startDate),
       endDate: toDateTimeLocal(contest.endDate),
       isPrivate: contest.isPrivate,
+      aiAssistance: contest.aiAssistance,
     },
     resolver: zodResolver(formSchema),
   });
@@ -111,6 +121,7 @@ export function EditContestForm({ contest }: { contest: Contest }) {
           startDate: values.startDate ? new Date(values.startDate) : null,
           endDate: values.endDate ? new Date(values.endDate) : null,
           isPrivate: values.isPrivate,
+          aiAssistance: values.aiAssistance,
         },
       },
       {
@@ -218,6 +229,39 @@ export function EditContestForm({ contest }: { contest: Contest }) {
                   {t("privateDescription")}
                 </p>
               </div>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="aiAssistance"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("aiAssistanceLabel")}</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {AI_ASSISTANCE_LEVELS.map((level) => (
+                    <SelectItem key={level} value={level}>
+                      <span className="font-medium">
+                        {tLevels(`${level}.name`)}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {tLevels(`${level}.example`)}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                {t("aiAssistanceDescription")}
+              </p>
+              <FormMessage />
             </FormItem>
           )}
         />

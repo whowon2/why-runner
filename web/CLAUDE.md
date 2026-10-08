@@ -71,11 +71,11 @@ Better Auth with email/password + GitHub + Google OAuth. Session access:
 
 ### AI Help
 
-`getAIHelp()` server action calls Gemini 2.5 Flash to explain submission failures. Parses JSON output from Judge to identify which test cases failed.
+`getAIHelp()` server action calls Gemini (model id in `lib/gemini-model.ts`, shared by every AI feature) to explain submission failures. Contest submissions are capped by `contest.aiAssistance` (`off`/`concept`/`hint`/`pinpoint`), enforced server-side; the dialog reveals levels one at a time. Parses JSON output from Judge to identify which test cases failed.
 
 ### AI Problem Review
 
-`reviewProblem()` server action (`lib/actions/problems/review-problem.ts`) calls Gemini 2.5 Flash with structured JSON output (`responseSchema`) to critique a draft problem's description and suggest edge-case test cases (input/output/rationale). Nothing is persisted — the edit workspace's `ProblemReviewPanel` lets the author add any suggested edge case to the form's test cases with one click, saved only when the form is submitted normally.
+`reviewProblem()` server action (`lib/actions/problems/review-problem.ts`) calls Gemini with structured JSON output (`responseSchema`) to critique a draft problem's description and suggest edge-case test cases (input/output/rationale). Nothing is persisted — the edit workspace's `ProblemReviewPanel` lets the author add any suggested edge case to the form's test cases with one click, saved only when the form is submitted normally.
 
 ### Problem Narrative
 

@@ -302,6 +302,13 @@
       "when": 1791230328992,
       "tag": "0042_next_scream",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1791501208718,
+      "tag": "0043_slim_monster_badoon",
+      "breakpoints": true
     }
   ]
 }
