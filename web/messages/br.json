@@ -509,7 +509,11 @@
     "landing": {
       "submission": {
         "title": "Interface de Submissão ao Vivo",
-        "description": "Um ambiente em tempo real para resolver problemas, enviar códigos e receber feedback."
+        "description": "Resolva problemas em um ambiente em tempo real, envie código e receba vereditos na hora — além de dicas de IA que explicam por que um caso de teste falhou."
+      },
+      "problems": {
+        "title": "Uma biblioteca de problemas em crescimento",
+        "description": "Navegue, filtre e acompanhe problemas por dificuldade, autor e pelo que você já resolveu."
       },
       "features": {
         "title": "O que torna isso diferente?",
@@ -559,6 +563,11 @@
       "stack": {
         "title": "Construído com ferramentas modernas",
         "description": "A arquitetura combina desempenho, segurança e uma boa experiência para desenvolvedores."
+      },
+      "alt": {
+        "workspace": "Ambiente de resolução de problema em uma competição, com enunciado, editor de código e uma submissão com falha",
+        "aiHelp": "Diálogo do assistente de IA com um conceito e uma dica para uma submissão com falha",
+        "problems": "Lista de problemas com busca, filtro de dificuldade e status de resolvido"
       }
     }
   },

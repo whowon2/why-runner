@@ -12,9 +12,15 @@ import {
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import contestProblemDark from "@/assets/contest-problem-dark.png";
+import contestProblemLight from "@/assets/contest-problem-light.png";
+import helpDark from "@/assets/help-dark.png";
+import helpLight from "@/assets/help-light.png";
+import problemsDark from "@/assets/problems-dark.png";
+import problemsLight from "@/assets/problems-light.png";
 import { FlipWords } from "@/components/ui/flip-words";
-import { Safari } from "@/components/ui/safari";
 import { Link } from "@/i18n/navigation";
+import { ThemedScreenshot } from "./_components/themed-screenshot";
 
 export default function Home() {
   const t = useTranslations("HomePage");
@@ -84,11 +90,45 @@ export default function Home() {
         <div className="relative w-full mt-16 group">
           <div className="absolute -inset-1 blur-2xl bg-linear-to-b from-indigo-500/20 to-purple-500/20 opacity-50 group-hover:opacity-70 transition duration-1000 rounded-none"></div>
           <div className="relative rounded-none border bg-background/50 backdrop-blur-sm p-2 shadow-2xl">
-            <Safari
-              url="why-runner.vercel.app"
-              mode="simple"
-              className="size-full rounded-none overflow-hidden"
-              imageSrc="https://sysdty3yzpahzaza.public.blob.vercel-storage.com/example.png"
+            <ThemedScreenshot
+              light={contestProblemLight}
+              dark={contestProblemDark}
+              alt={t("landing.alt.workspace")}
+              sizes="(min-width: 1024px) 1024px, 100vw"
+            />
+          </div>
+
+          {/* AI assistant: layered over the empty editor area on desktop, stacked below on mobile */}
+          <div className="relative mt-6 mx-auto max-w-md rounded-none border bg-background p-1 shadow-2xl md:absolute md:mt-0 md:-bottom-12 md:-right-8 md:w-[38%] md:max-w-none">
+            <ThemedScreenshot
+              light={helpLight}
+              dark={helpDark}
+              alt={t("landing.alt.aiHelp")}
+              sizes="(min-width: 768px) 400px, 100vw"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Problem Library Preview */}
+      <section className="w-full max-w-5xl px-4 text-center mt-40 space-y-8 relative">
+        <div className="space-y-4 max-w-3xl mx-auto">
+          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
+            {t("landing.problems.title")}
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            {t("landing.problems.description")}
+          </p>
+        </div>
+
+        <div className="relative w-full mt-16 group">
+          <div className="absolute -inset-1 blur-2xl bg-linear-to-b from-cyan-500/20 to-indigo-500/20 opacity-50 group-hover:opacity-70 transition duration-1000 rounded-none"></div>
+          <div className="relative rounded-none border bg-background/50 backdrop-blur-sm p-2 shadow-2xl">
+            <ThemedScreenshot
+              light={problemsLight}
+              dark={problemsDark}
+              alt={t("landing.alt.problems")}
+              sizes="(min-width: 1024px) 1024px, 100vw"
             />
           </div>
         </div>
@@ -253,13 +293,16 @@ export default function Home() {
         <div className="flex flex-wrap justify-center gap-3">
           {[
             "Next.js",
-            "Rust",
-            "tRPC",
+            "React Query",
+            "Tailwind CSS",
+            "Better Auth",
             "Drizzle",
             "PostgreSQL",
-            "SQS",
-            "Bun",
+            "Gemini",
+            "Rust",
+            "isolate",
             "Docker",
+            "Bun",
           ].map((tech) => (
             <div
               key={tech}
