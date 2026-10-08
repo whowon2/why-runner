@@ -509,7 +509,11 @@
     "landing": {
       "submission": {
         "title": "Live Submission Interface",
-        "description": "A real-time environment for solving problems, submitting code, and receiving feedback."
+        "description": "Solve problems in a real-time workspace, submit code, and get instant verdicts — plus AI hints that explain why a test case failed."
+      },
+      "problems": {
+        "title": "A growing problem library",
+        "description": "Browse, filter, and track problems by difficulty, author, and what you've already solved."
       },
       "features": {
         "title": "What makes it different?",
@@ -559,6 +563,11 @@
       "stack": {
         "title": "Built with modern tools",
         "description": "The architecture combines performance, safety, and developer experience."
+      },
+      "alt": {
+        "workspace": "Contest problem workspace with the problem statement, code editor, and a failed submission",
+        "aiHelp": "AI assistant dialog giving a concept and a hint for a failed submission",
+        "problems": "Problem list with search, difficulty filter, and solved status"
       }
     }
   },
