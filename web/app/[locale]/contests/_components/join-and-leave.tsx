@@ -69,7 +69,7 @@ export function JoinButton({
         }}
         variant={"destructive"}
       >
-        Sair
+        {t("Leave.button")}
       </Button>
     );
   }
@@ -101,7 +101,7 @@ export function JoinButton({
       }}
       variant={"outline"}
     >
-      Entrar
+      {t("Join.button")}
     </Button>
   );
 }
