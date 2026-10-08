@@ -24,6 +24,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { AvatarButton } from "./header/avatar-button";
+import { LanguageSwitcher } from "./language-switcher";
 import { NotificationBell } from "./notifications/notification-bell";
 import { Dock, DockIcon } from "./ui/dock";
 
@@ -90,6 +91,9 @@ export function UserDock() {
           <Separator orientation="vertical" className="h-full py-2" />
           <DockIcon onClick={handleChangeTheme}>
             {theme === "dark" ? <Moon size={20} /> : <Sun size={20} />}
+          </DockIcon>
+          <DockIcon>
+            <LanguageSwitcher />
           </DockIcon>
           {session ? (
             <>
