@@ -91,7 +91,7 @@ export function SubmissionList({
                   {submission.status ?? t("processing")}
                 </p>
               </AccordionTrigger>
-              <AccordionContent className="flex justify-between">
+              <AccordionContent className="flex flex-col gap-3">
                 {submission.output && (
                   <SubmissionDetails
                     constraintViolationDetail={
@@ -101,9 +101,15 @@ export function SubmissionList({
                     status={submission.status}
                   />
                 )}
-                {["PASSED", "FAILED", "ERROR"].includes(submission.status) && (
-                  <AIDialog problem={problem} submission={submission} />
-                )}
+                {contest.aiAssistance !== "off" &&
+                  ["PASSED", "FAILED", "ERROR"].includes(submission.status) && (
+                    <div className="flex justify-end">
+                      <AIDialog
+                        maxLevel={contest.aiAssistance}
+                        submission={submission}
+                      />
+                    </div>
+                  )}
               </AccordionContent>
             </AccordionItem>
           ))}

@@ -1,4 +1,5 @@
 import type {
+  AiAssistance,
   Language,
   Problem,
   ProblemPreview,
@@ -48,15 +49,51 @@ Your hint must only be about the order or nesting of lines (which part runs too 
   return "";
 };
 
+export type AiHintLevel = Exclude<AiAssistance, "off">;
+
+/**
+ * Contest hint-ladder rules. Each level caps how much the hint may reveal;
+ * the examples anchor the expected granularity.
+ */
+const getAssistanceLevelInstructions = (level: AiHintLevel) => {
+  switch (level) {
+    case "concept":
+      return `
+HINT LEVEL: CONCEPT (the least revealing level).
+Reply with ONE short sentence that only names the construct or area of the code at fault, e.g. "For loop badly implemented" or "Input reading is wrong".
+Do NOT explain what is wrong, do NOT mention line numbers, do NOT include any code, do NOT explain the test case.`;
+    case "hint":
+      return `
+HINT LEVEL: HINT (medium).
+In at most 2-3 sentences, explain what is wrong in the logic, e.g. "You forgot to exit the loop".
+Do NOT mention line numbers, do NOT quote or write any code, do NOT give the corrected statement.`;
+    case "pinpoint":
+      return `
+HINT LEVEL: PINPOINT (the most revealing level).
+The student code above is shown with line numbers ("14 | ..."). Point to the exact line and the statement that is missing or wrong, e.g. "Missing a break on line 14".
+Keep it short. You may name the single statement to add or change, but do NOT rewrite the program or give a full solution.`;
+  }
+};
+
+const withLineNumbers = (code: string) =>
+  code
+    .split("\n")
+    .map((line, i) => `${i + 1} | ${line}`)
+    .join("\n");
+
 export const getUserPrompt = (input: {
   submission: Submission;
   problem: ProblemPreview;
   locale: string;
   blockLabels?: string[];
+  /** Contest hint level; omitted outside contests (single free-form hint). */
+  level?: AiHintLevel;
 }) => {
   let details = "";
+  let passed = false;
   try {
     const report = JSON.parse(input.submission.output || "{}");
+    passed = !!report.passed;
 
     if (report.passed) {
       details = "The code passed all tests. Focus on optimization suggestions.";
@@ -81,6 +118,9 @@ ${f.error || "None"}
     details = `Raw Output: ${input.submission.output}`;
   }
 
+  // Passed submissions get optimization feedback, not the failure ladder.
+  const level = passed ? undefined : input.level;
+
   return `
 <problem_title>${input.problem.title}</problem_title>
 
@@ -89,7 +129,7 @@ ${input.problem.description}
 </problem_description>
 
 <student_code language="${input.submission.language}">
-${input.submission.code}
+${level === "pinpoint" ? withLineNumbers(input.submission.code) : input.submission.code}
 </student_code>
 
 <judge_result>
@@ -97,9 +137,13 @@ ${details}
 </judge_result>
 
 ${getAnswerModeInstructions(input.submission, input.blockLabels)}
-
+${
+  level
+    ? getAssistanceLevelInstructions(level)
+    : `
 If there is a logic error, explain why the input leads to the expected output and why the student output is wrong.
-If there is a runtime error (traceback), explain what it means in this context.
+If there is a runtime error (traceback), explain what it means in this context.`
+}
 Return your response in: ${input.locale}
 `;
 };

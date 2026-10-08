@@ -16,58 +16,100 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import type { ProblemPreview, Submission } from "@/drizzle/schema";
+  AI_ASSISTANCE_LEVELS,
+  type AiAssistance,
+  type Submission,
+} from "@/drizzle/schema";
 import { useAIHelp } from "@/hooks/use-ai-help";
+import type { AiHintLevel } from "@/lib/prompt";
+
+/**
+ * The hint steps to offer, in order. `null` is the single free-form hint used
+ * outside contests. Contest failures climb the ladder up to `maxLevel`;
+ * passed contest submissions get one (optimization) response.
+ */
+function getSteps(
+  maxLevel: AiAssistance | null,
+  passed: boolean,
+): (AiHintLevel | null)[] {
+  if (!maxLevel) return [null];
+  const enabled = AI_ASSISTANCE_LEVELS.slice(
+    1,
+    AI_ASSISTANCE_LEVELS.indexOf(maxLevel) + 1,
+  ) as AiHintLevel[];
+  return passed ? enabled.slice(0, 1) : enabled;
+}
+
+function cacheKey(submissionId: string, level: AiHintLevel | null) {
+  return level ? `ai-help-${submissionId}-${level}` : `ai-help-${submissionId}`;
+}
+
+function readCache(key: string) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(key: string, value: string) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // Storage unavailable (private mode, quota): hint just isn't cached.
+  }
+}
 
 export function AIDialog({
   submission,
-  problem,
+  maxLevel,
 }: {
   submission: Submission;
-  problem: ProblemPreview;
+  /** Contest's AI assistance level; `null` outside contests. */
+  maxLevel: AiAssistance | null;
 }) {
   const { mutate, isPending } = useAIHelp();
-
-  const [help, setHelp] = useState(() => {
-    if (typeof window !== "undefined") {
-      return window.localStorage.getItem(`ai-help-${submission.id}`) ?? "";
-    }
-    return "";
-  });
   const locale = useLocale();
   const t = useTranslations("ContestsPage.Tabs.Problem.Submissions.AI");
+  const tLevels = useTranslations("ContestsPage.AiAssistanceLevels");
 
-  // This effect will sync the state if localStorage changes from another tab,
-  // though its primary role here is to load data on mount on the client-side.
+  const steps = getSteps(maxLevel, submission.status === "PASSED");
+  const [hints, setHints] = useState<Record<string, string>>({});
+  const [error, setError] = useState<string | null>(null);
+
+  // Load cached hints on the client only, after mount.
   useEffect(() => {
-    const savedHelp = window.localStorage.getItem(`ai-help-${submission.id}`);
-    if (savedHelp) {
-      setHelp(savedHelp);
+    const loaded: Record<string, string> = {};
+    for (const level of getSteps(maxLevel, submission.status === "PASSED")) {
+      const key = cacheKey(submission.id, level);
+      const cached = readCache(key);
+      if (cached) loaded[key] = cached;
     }
-  }, [submission.id]);
+    setHints(loaded);
+  }, [submission.id, submission.status, maxLevel]);
+
+  const revealed = steps.filter(
+    (level) => hints[cacheKey(submission.id, level)],
+  );
+  const next = steps.find((level) => !hints[cacheKey(submission.id, level)]);
+  const isLadder = steps.length > 1;
 
   function handle() {
-    // Prevent new requests if help already exists
-    if (help) return;
+    if (next === undefined) return;
+    setError(null);
 
     mutate(
-      { problem, submission, locale },
+      { submissionId: submission.id, level: next ?? "hint", locale },
       {
         onError: (e) => {
           console.error("error", e);
-          // Optional: Display an error message to the user
-          setHelp(t("error"));
+          setError(t("error"));
         },
         onSuccess: (data) => {
-          const helpText = data ?? t("noResponse"); // Use a translation for empty response
-          console.log("success", data);
-          setHelp(helpText);
-          // Save the successful response to localStorage
-          window.localStorage.setItem(`ai-help-${submission.id}`, helpText);
+          const helpText = data ?? t("noResponse");
+          const key = cacheKey(submission.id, next);
+          setHints((prev) => ({ ...prev, [key]: helpText }));
+          writeCache(key, helpText);
         },
       },
     );
@@ -75,32 +117,45 @@ export function AIDialog({
 
   return (
     <Dialog>
-      <DialogTrigger>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="border cursor-pointer hover:bg-secondary px-2 py-2 rounded-none">
-              <Brain className="h-4 w-4" />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>{t("help")}</TooltipContent>
-        </Tooltip>
+      <DialogTrigger asChild>
+        <Button size="sm" variant="outline">
+          <Brain className="h-4 w-4" />
+          {t("help")}
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
-        <div className="text-sm py-4 whitespace-pre-wrap">
-          {isPending ? t("loading") : <ReactMarkdown>{help}</ReactMarkdown>}
+        <div className="text-sm py-4 space-y-4">
+          {revealed.map((level) => (
+            <div key={level ?? "single"} className="whitespace-pre-wrap">
+              {isLadder && level && (
+                <p className="text-xs font-semibold uppercase text-muted-foreground mb-1">
+                  {tLevels(`${level}.name`)}
+                </p>
+              )}
+              <ReactMarkdown>
+                {hints[cacheKey(submission.id, level)]}
+              </ReactMarkdown>
+            </div>
+          ))}
+          {isPending && <p>{t("loading")}</p>}
+          {error && <p className="text-destructive">{error}</p>}
+          {isLadder && next === undefined && (
+            <p className="text-xs text-muted-foreground">{t("maxReached")}</p>
+          )}
         </div>
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="outline">{t("cancel")}</Button>
           </DialogClose>
-          {/* Disable button if a request is pending OR if help text already exists */}
-          <Button onClick={handle} disabled={isPending || !!help}>
-            {t("request")}
-          </Button>
+          {next !== undefined && (
+            <Button onClick={handle} disabled={isPending}>
+              {revealed.length > 0 && isLadder ? t("next") : t("request")}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

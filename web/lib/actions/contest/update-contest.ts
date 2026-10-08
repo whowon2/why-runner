@@ -2,7 +2,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import { contest } from "@/drizzle/schema";
+import { AI_ASSISTANCE_LEVELS, contest } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { generateSlug } from "@/lib/slug";
 import type { UpdateContestInput } from "@/hooks/use-update-contest";
@@ -21,6 +21,12 @@ export async function updateContest(input: UpdateContestInput) {
   if (!existing) throw new Error("Contest not found.");
 
   const values = { ...input.contest };
+  if (
+    values.aiAssistance !== undefined &&
+    !AI_ASSISTANCE_LEVELS.includes(values.aiAssistance)
+  ) {
+    throw new Error("Invalid AI assistance level.");
+  }
   if (values.name && values.name !== existing.name) {
     values.slug = generateSlug(values.name);
   }

@@ -35,7 +35,7 @@ import { BlockWorkspace } from "@/components/blocks";
 import { PortugolCodePanel } from "@/components/blocks/portugol-code-panel";
 import { ParsonsEditor } from "@/components/parsons/parsons-editor";
 import { VisualAnswer } from "@/components/submissions/visual-answer";
-import type { Language, ProblemPreview } from "@/drizzle/schema";
+import type { Language } from "@/drizzle/schema";
 import { useCreateExerciseSubmission } from "@/hooks/use-create-exercise-submission";
 import { useExercise } from "@/hooks/use-exercise";
 import { useExerciseConstraints } from "@/hooks/use-exercise-constraints";
@@ -109,10 +109,7 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
 
         <ExerciseConstraintsNotice exerciseId={exercise.id} />
 
-        <ExerciseSubmissions
-          exerciseId={exercise.id}
-          problem={exercise.problem}
-        />
+        <ExerciseSubmissions exerciseId={exercise.id} />
       </ResizablePanel>
 
       <ResizableHandle withHandle />
@@ -413,13 +410,7 @@ function ExerciseConstraintsNotice({ exerciseId }: { exerciseId: string }) {
   );
 }
 
-function ExerciseSubmissions({
-  exerciseId,
-  problem,
-}: {
-  exerciseId: string;
-  problem: ProblemPreview;
-}) {
+function ExerciseSubmissions({ exerciseId }: { exerciseId: string }) {
   const t = useTranslations("RoadmapPage.Lesson");
   const tCommon = useTranslations("ContestsPage.Tabs.Problem.Submissions");
   const { data: submissions, isPending } = useExerciseSubmissions(exerciseId);
@@ -470,7 +461,7 @@ function ExerciseSubmissions({
                 <AccordionContent className="flex flex-col gap-2">
                   {(s.status === "FAILED" || s.status === "ERROR") && (
                     <div className="flex justify-end">
-                      <AIDialog problem={problem} submission={s} />
+                      <AIDialog maxLevel={null} submission={s} />
                     </div>
                   )}
                   <VisualAnswer submission={s} />

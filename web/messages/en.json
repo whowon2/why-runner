@@ -945,12 +945,14 @@
           "AI": {
             "title": "AI Assistant",
             "description": "Get help from our AI to understand why your solution might be failing. The AI will analyze your code against the problem and your solution and provide suggestions.",
-            "help": "AI Help",
+            "help": "Explain",
             "loading": "Analyzing your code, please wait...",
             "cancel": "Cancel",
             "request": "Request Help",
             "error": "An error occurred while trying to get help from the AI. Please try again later.",
-            "noResponse": "The AI did not provide a response. Please try again."
+            "noResponse": "The AI did not provide a response. Please try again.",
+            "next": "Show next hint",
+            "maxReached": "This is the most help allowed in this contest."
           },
           "Upload": {
             "languagePlaceholder": "Language",
@@ -1035,7 +1037,9 @@
           "failedUpdate": "Failed to update contest",
           "updated": "Contest updated",
           "nameMinError": "Name must be at least 2 characters",
-          "endDateAfterStartError": "End date must be after the start date"
+          "endDateAfterStartError": "End date must be after the start date",
+          "aiAssistanceLabel": "AI assistance",
+          "aiAssistanceDescription": "Maximum help participants can get from the AI on failed submissions. Hints are revealed one level at a time."
         },
         "Problems": {
           "placeholder": "Problem",
@@ -1070,6 +1074,24 @@
             "problems": "at least one problem"
           }
         }
+      }
+    },
+    "AiAssistanceLevels": {
+      "off": {
+        "name": "Off",
+        "example": "No AI help in this contest"
+      },
+      "concept": {
+        "name": "Concept",
+        "example": "\"For loop badly implemented\""
+      },
+      "hint": {
+        "name": "Hint",
+        "example": "\"You forgot to exit the loop\""
+      },
+      "pinpoint": {
+        "name": "Pinpoint",
+        "example": "\"Missing a break on line 14\""
       }
     }
   },

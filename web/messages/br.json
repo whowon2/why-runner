@@ -945,12 +945,14 @@
           "AI": {
             "title": "Assistente de IA",
             "description": "Receba ajuda da nossa IA para entender por que sua solução pode estar falhando ou no que melhorar. A IA analisará seu código com base no problema e na sua solução e fornecerá sugestões.",
-            "help": "Ajuda com IA",
+            "help": "Explicar",
             "loading": "Analisando seu código, por favor, aguarde...",
             "cancel": "Cancelar",
             "request": "Solicitar Ajuda",
             "error": "Ocorreu um erro ao tentar obter ajuda da IA. Por favor, tente novamente mais tarde.",
-            "noResponse": "A IA não forneceu uma resposta. Por favor, tente novamente."
+            "noResponse": "A IA não forneceu uma resposta. Por favor, tente novamente.",
+            "next": "Mostrar próxima dica",
+            "maxReached": "Esta é a ajuda máxima permitida neste torneio."
           },
           "Upload": {
             "languagePlaceholder": "Linguagem",
@@ -1035,7 +1037,9 @@
           "failedUpdate": "Falha ao atualizar torneio",
           "updated": "Torneio atualizado",
           "nameMinError": "O nome deve ter pelo menos 2 caracteres",
-          "endDateAfterStartError": "A data de término deve ser depois da data de início"
+          "endDateAfterStartError": "A data de término deve ser depois da data de início",
+          "aiAssistanceLabel": "Assistência de IA",
+          "aiAssistanceDescription": "Ajuda máxima que os participantes podem receber da IA em submissões com falha. As dicas são reveladas um nível por vez."
         },
         "Problems": {
           "placeholder": "Problema",
@@ -1070,6 +1074,24 @@
             "problems": "pelo menos um problema"
           }
         }
+      }
+    },
+    "AiAssistanceLevels": {
+      "off": {
+        "name": "Desligada",
+        "example": "Sem ajuda de IA neste torneio"
+      },
+      "concept": {
+        "name": "Conceito",
+        "example": "\"Laço for mal implementado\""
+      },
+      "hint": {
+        "name": "Dica",
+        "example": "\"Você esqueceu de sair do laço\""
+      },
+      "pinpoint": {
+        "name": "Precisa",
+        "example": "\"Falta um break na linha 14\""
       }
     }
   },
