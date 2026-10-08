@@ -6,7 +6,6 @@ import {
   Code2,
   GraduationCap,
   Lock,
-  Sparkles,
   Trophy,
   Zap,
 } from "lucide-react";
@@ -27,13 +26,6 @@ export default function Home() {
 
       {/* Hero */}
       <section className="relative flex flex-col items-center justify-center px-4 h-screen min-h-[800px] w-full  text-center -mt-10">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-none bg-muted/50 border border-border/50 text-sm font-medium mb-8 backdrop-blur-md animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <Sparkles className="w-4 h-4 text-indigo-500" />
-          <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-500 to-cyan-500 font-semibold">
-            {t("hero.badge")}
-          </span>
-        </div>
-
         <div className="flex flex-col font-extrabold text-5xl tracking-tight sm:text-[6rem] leading-[1.1] animate-in fade-in slide-in-from-bottom-6 duration-700 delay-150">
           <div>
             <FlipWords words={["Uai", "Why"]} />
