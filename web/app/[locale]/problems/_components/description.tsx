@@ -1,6 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import ReactMarkdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
+import "katex/dist/katex.min.css";
 import { Card, CardContent } from "@/components/ui/card";
 import { useProblem } from "@/hooks/use-problem";
 import { ProblemExamples } from "./examples";
@@ -29,15 +33,20 @@ export function ProblemDescription({ problemId }: { problemId: string }) {
               <span className="not-italic text-[10px] font-semibold uppercase tracking-wider">
                 {tProblems("Workspace.Task.narrativeLabel")}
               </span>
-              <pre className="mt-1 whitespace-pre-wrap font-sans">
-                {problem.narrative}
-              </pre>
+              <div className="prose dark:prose-invert prose-sm max-w-none mt-1">
+                <ReactMarkdown>{problem.narrative}</ReactMarkdown>
+              </div>
             </div>
           )}
 
-          <pre className="whitespace-pre-wrap rounded-md ">
-            {problem.description}
-          </pre>
+          <div className="prose dark:prose-invert max-w-none text-foreground prose-p:leading-relaxed prose-pre:bg-muted/50">
+            <ReactMarkdown
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+            >
+              {problem.description}
+            </ReactMarkdown>
+          </div>
 
           <h2 className="my-4 font-semibold text-xl">
             {t("Tabs.Problem.Examples.title")}
