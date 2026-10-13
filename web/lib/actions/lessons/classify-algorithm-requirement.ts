@@ -1,26 +1,18 @@
 "use server";
 
-import { GoogleGenAI, Type } from "@google/genai";
-import { env } from "@/env";
+import { z } from "zod";
+import { generateJson } from "@/lib/ai";
 import {
   SYSTEM_INSTRUCTION_ALGORITHM_CLASSIFICATION,
   getAlgorithmClassificationPrompt,
 } from "@/lib/prompt";
-import { GEMINI_MODEL } from "@/lib/gemini-model";
 
-export type AlgorithmClassification = {
-  satisfied: boolean;
-  rationale: string;
-};
+const ClassificationSchema = z.object({
+  satisfied: z.boolean(),
+  rationale: z.string(),
+});
 
-const RESPONSE_SCHEMA = {
-  type: Type.OBJECT,
-  properties: {
-    satisfied: { type: Type.BOOLEAN },
-    rationale: { type: Type.STRING },
-  },
-  required: ["satisfied", "rationale"],
-};
+export type AlgorithmClassification = z.infer<typeof ClassificationSchema>;
 
 // Not user-invoked directly (no auth check here by design) — only ever
 // called server-side from `resolvePendingConstraintClassifications`, which
@@ -30,28 +22,9 @@ export async function classifyAlgorithmRequirement(input: {
   code: string;
   language: string;
 }): Promise<AlgorithmClassification> {
-  const ai = new GoogleGenAI({ apiKey: env.GEMINI_KEY });
-
-  const response = await ai.models.generateContent({
-    model: GEMINI_MODEL,
-    config: {
-      systemInstruction: SYSTEM_INSTRUCTION_ALGORITHM_CLASSIFICATION,
-      responseMimeType: "application/json",
-      responseSchema: RESPONSE_SCHEMA,
-    },
-    contents: getAlgorithmClassificationPrompt(input),
+  return generateJson("algorithm-classification", {
+    system: SYSTEM_INSTRUCTION_ALGORITHM_CLASSIFICATION,
+    prompt: getAlgorithmClassificationPrompt(input),
+    schema: ClassificationSchema,
   });
-
-  try {
-    const parsed = JSON.parse(response.text ?? "{}");
-    return {
-      satisfied: Boolean(parsed.satisfied),
-      rationale:
-        typeof parsed.rationale === "string"
-          ? parsed.rationale
-          : "No rationale returned.",
-    };
-  } catch {
-    throw new Error("The AI classification could not be parsed.");
-  }
 }
