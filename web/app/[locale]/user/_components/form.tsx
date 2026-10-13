@@ -28,9 +28,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useUpdateProfile } from "@/hooks/user-update-profile";
+import { usernameSchema } from "@/lib/username";
 
 const updateProfileSchema = z.object({
-  username: z.string(),
+  username: usernameSchema,
   bio: z.string().max(280).optional(),
   location: z.string().max(120).optional(),
   website: z.union([z.url(), z.literal("")]).optional(),
@@ -91,7 +92,13 @@ export function UpdateForm({
                 <FormItem>
                   <FormLabel>{t("username")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("usernamePlaceholder")} {...field} />
+                    <Input
+                      placeholder={t("usernamePlaceholder")}
+                      {...field}
+                      onChange={(e) =>
+                        field.onChange(e.target.value.toLowerCase())
+                      }
+                    />
                   </FormControl>
                   <FormDescription>{t("usernameDescription")}</FormDescription>
                   <FormMessage />
