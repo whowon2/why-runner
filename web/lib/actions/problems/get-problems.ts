@@ -106,6 +106,18 @@ export async function getProblems({
         : sql`${solvedByCountExpr} desc`
       : desc(problem.createdAt);
 
+  // When searching, rank exact code matches first, then code/title prefixes,
+  // ahead of the regular sort (e.g. "A" puts problem [A] above "Factorial").
+  const term = search?.trim().toLowerCase();
+  const relevanceClause = term
+    ? sql`case
+        when lower(${problem.code}) = ${term} then 0
+        when lower(${problem.code}) like ${`${term}%`} then 1
+        when lower(${problem.title}) like ${`${term}%`} then 2
+        else 3
+      end`
+    : undefined;
+
   // 3. Run queries in parallel (Data + Total Count)
   const [data, totalResult] = await Promise.all([
     // Get the actual data
@@ -133,7 +145,9 @@ export async function getProblems({
       .leftJoin(solvedCounts, eq(solvedCounts.problemId, problem.id))
       .leftJoin(user, eq(user.id, problem.createdBy))
       .where(whereClause)
-      .orderBy(orderByClause)
+      .orderBy(
+        ...(relevanceClause ? [relevanceClause, orderByClause] : [orderByClause]),
+      )
       .limit(pageSize)
       .offset(offset),
 

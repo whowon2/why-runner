@@ -1117,6 +1117,9 @@
         },
         "Problems": {
           "placeholder": "Problema",
+          "searchPlaceholder": "Buscar por nome ou código…",
+          "searching": "Buscando…",
+          "empty": "Nenhum problema encontrado",
           "by": "por",
           "create": "Criar",
           "saveOrder": "Salvar Ordem",
