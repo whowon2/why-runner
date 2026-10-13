@@ -201,7 +201,7 @@ export function ImportProblems() {
                 setFileName(null);
                 updateText(e.target.value);
               }}
-              placeholder={t("pastePlaceholder")}
+              placeholder={t.raw("pastePlaceholder")}
               spellCheck={false}
               className="font-mono text-xs min-h-48 max-h-80"
             />
