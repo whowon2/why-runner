@@ -1,45 +1,32 @@
 "use server";
 
-import { z } from "zod";
 import { db } from "@/drizzle/db";
-import { PROBLEM_TAGS, problem } from "@/drizzle/schema";
+import { problem } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { generateProblemCode } from "@/lib/problem-code";
+import {
+  type ImportIssue,
+  parseImportPayload,
+} from "@/lib/problem-import/schema";
 import { generateSlug } from "@/lib/slug";
 
-const importSchema = z.array(
-  z.object({
-    title: z.string().min(1),
-    description: z.string().min(1),
-    difficulty: z.enum(["easy", "medium", "hard"]).nullable().optional(),
-    tags: z
-      .array(z.enum(PROBLEM_TAGS))
-      .default([])
-      .transform((tags) => [...new Set(tags)]),
-    exampleCount: z.number().int().min(1).default(1),
-    inputs: z.array(z.string()).min(1),
-    outputs: z.array(z.string()).min(1),
-  }),
-);
+export type ImportProblemsResult =
+  | { ok: true; count: number }
+  | { ok: false; errors: ImportIssue[] };
 
-export async function importProblems(data: unknown): Promise<number> {
+export async function importProblems(
+  data: unknown,
+): Promise<ImportProblemsResult> {
   const currentUser = await getCurrentUser({});
 
-  const parsed = importSchema.safeParse(data);
-  if (!parsed.success) {
-    throw new Error(
-      `Invalid format: ${parsed.error.issues[0]?.message ?? "unknown error"}`,
-    );
-  }
-
-  if (parsed.data.length === 0) {
-    throw new Error("File contains no problems");
-  }
+  const parsed = parseImportPayload(data);
+  if (!parsed.ok) return parsed;
 
   const values = await Promise.all(
-    parsed.data.map(async (p) => ({
+    parsed.problems.map(async (p) => ({
       ...p,
       difficulty: p.difficulty ?? null,
+      narrative: p.narrative ?? null,
       slug: generateSlug(p.title),
       code: await generateProblemCode(),
       createdBy: currentUser.id,
@@ -48,5 +35,5 @@ export async function importProblems(data: unknown): Promise<number> {
   );
 
   await db.insert(problem).values(values);
-  return values.length;
+  return { ok: true, count: values.length };
 }
