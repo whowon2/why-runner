@@ -96,9 +96,13 @@ async function runChain<T>(
     }
   }
 
-  throw lastError instanceof Error
-    ? lastError
-    : new Error("The AI service is unavailable. Please try again.");
+  // Raw provider errors (often JSON bodies) are logged above; the caller only
+  // ever sees a message fit for a toast.
+  throw new Error(
+    isRetryable(lastError)
+      ? "The AI service is busy right now. Please try again in a few moments."
+      : "The AI request could not be completed. Please try again later.",
+  );
 }
 
 function geminiConfig(system: string) {
