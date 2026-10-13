@@ -12,17 +12,10 @@ import { usePublishProblem } from "@/hooks/use-publish-problem";
 import { useProblemValidation } from "@/hooks/use-problem-validation";
 import {
   getMissingProblemFields,
-  PUBLISH_MISSING_FIELDS_PREFIX,
+  PUBLISH_MISSING_FIELDS,
   type PublishProblemFieldError,
 } from "@/lib/actions/problems/publish-problem-shared";
-
-function parseMissingFields(message: string): PublishProblemFieldError[] {
-  if (!message.startsWith(PUBLISH_MISSING_FIELDS_PREFIX)) return [];
-  return message
-    .slice(PUBLISH_MISSING_FIELDS_PREFIX.length)
-    .split(",")
-    .filter(Boolean) as PublishProblemFieldError[];
-}
+import { isActionError } from "@/lib/action-result";
 
 export function PublishProblem({ problem }: { problem: Problem }) {
   const t = useTranslations("ProblemsPage.Publish");
@@ -36,7 +29,9 @@ export function PublishProblem({ problem }: { problem: Problem }) {
   function handlePublish() {
     publishProblem(problem.id, {
       onError: (error) => {
-        const missingFields = parseMissingFields(error.message);
+        const missingFields = isActionError(error, PUBLISH_MISSING_FIELDS)
+          ? (error.params?.fields as PublishProblemFieldError[])
+          : [];
         toast.error(t("failed"), {
           description:
             missingFields.length > 0

@@ -5,7 +5,7 @@ export type PublishProblemFieldError =
   | "tests"
   | "validation";
 
-export const PUBLISH_MISSING_FIELDS_PREFIX = "MISSING_FIELDS:";
+export const PUBLISH_MISSING_FIELDS = "MISSING_FIELDS";
 
 export function getMissingProblemFields(problem: {
   title: string;
