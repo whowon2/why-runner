@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import {
   problem,
@@ -8,6 +8,7 @@ import {
   problemValidation,
 } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { notifyJudge } from "@/lib/judge";
 import { computeIoHash } from "@/lib/problem-io-hash";
 
 export async function triggerProblemValidation(problemId: string) {
@@ -51,8 +52,7 @@ export async function triggerProblemValidation(problemId: string) {
     })
     .returning();
 
-  // Send a notification to the judge worker via Postgres LISTEN/NOTIFY
-  await db.execute(sql`SELECT pg_notify('new_validation', ${validation.id})`);
+  await notifyJudge("new_validation", validation.id);
 
   return validation;
 }

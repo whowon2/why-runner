@@ -65,10 +65,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     listener.listen("new_validation").await?;
     println!("Listening for 'new_submission' and 'new_validation' notifications...");
 
-    // Optional idle auto-stop for on-demand hosts (e.g. a Fly Machine started
-    // manually on demo days): exit cleanly after this many seconds with no
-    // jobs, so the platform leaves the machine stopped instead of billing it.
-    // Unset = run forever.
+    // Optional idle auto-stop for on-demand hosts (e.g. a Fly Machine): exit
+    // cleanly after this many seconds with no jobs, so the platform leaves the
+    // machine stopped instead of billing it. Web restarts it via the Fly
+    // Machines API on each new job (web/lib/judge.ts). Unset = run forever.
     let idle_exit_after = env::var("JUDGE_IDLE_EXIT_SECS")
         .ok()
         .and_then(|v| v.parse::<u64>().ok())
