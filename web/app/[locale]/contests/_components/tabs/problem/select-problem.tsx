@@ -67,9 +67,11 @@ export function SelectProblem({
         return (
           <RadioGroup.Item
             className={cn(
-              "cursor-pointer rounded-none px-4 py-2 ring-[1px] ring-border transition-all duration-200 hover:bg-secondary data-[state=checked]:ring-2 data-[state=checked]:ring-secondary min-w-[60px]",
+              "cursor-pointer rounded-none min-w-[60px] border border-border bg-background px-4 py-2 text-foreground transition-colors duration-200 data-[state=unchecked]:hover:border-primary data-[state=unchecked]:hover:bg-primary/10",
+              "data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
               {
-                "bg-green-500 text-white": isAnswered,
+                "border-green-600/50 bg-green-500/15 text-green-700 dark:text-green-400 data-[state=checked]:border-green-600 data-[state=checked]:bg-green-600 data-[state=checked]:text-white":
+                  isAnswered,
               },
             )}
             key={option.value}
