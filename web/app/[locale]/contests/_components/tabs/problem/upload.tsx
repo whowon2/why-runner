@@ -167,8 +167,8 @@ export function UploadCode({
   }, [code, problem.id, language, tAI, tUpload]);
 
   return (
-    <Card className="h-full max-h-screen w-full bg-transparent border-none shadow-none">
-      <CardContent className="flex h-full w-full flex-col gap-4">
+    <Card className="h-full w-full gap-0 bg-transparent border-none py-0 shadow-none">
+      <CardContent className="flex h-full min-h-0 w-full flex-col gap-4 px-0">
         <div className="grid w-full items-center gap-1.5">
           <div className="flex justify-between gap-2">
             <Select onValueChange={handleLanguageChange}>
@@ -231,27 +231,29 @@ export function UploadCode({
             </TooltipProvider>
           </div>
         </div>
-        <Editor
-          className="rounded-none"
-          height={"100%"}
-          language={language || ""}
-          onChange={(c) => {
-            if (c) {
-              setCode(c);
+        <div className="min-h-0 flex-1">
+          <Editor
+            className="rounded-none"
+            height={"100%"}
+            language={language || ""}
+            onChange={(c) => {
+              if (c) {
+                setCode(c);
+              }
+            }}
+            theme={
+              theme === "system"
+                ? systemTheme === "dark"
+                  ? "vs-dark"
+                  : "light"
+                : theme === "dark"
+                  ? "vs-dark"
+                  : "light"
             }
-          }}
-          theme={
-            theme === "system"
-              ? systemTheme === "dark"
-                ? "vs-dark"
-                : "light"
-              : theme === "dark"
-                ? "vs-dark"
-                : "light"
-          }
-          value={code}
-          width={"100%"}
-        />
+            value={code}
+            width={"100%"}
+          />
+        </div>
       </CardContent>
     </Card>
   );
