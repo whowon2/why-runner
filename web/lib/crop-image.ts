@@ -13,11 +13,15 @@ function loadImage(url: string): Promise<HTMLImageElement> {
 export async function getCroppedImageBlob(
   imageSrc: string,
   croppedAreaPixels: Area,
+  maxWidth?: number,
 ): Promise<Blob> {
   const image = await loadImage(imageSrc);
+  // Downscale large crops (e.g. phone photos) so the upload stays small;
+  // the server resizes to its final dimensions anyway.
+  const scale = maxWidth ? Math.min(1, maxWidth / croppedAreaPixels.width) : 1;
   const canvas = document.createElement("canvas");
-  canvas.width = croppedAreaPixels.width;
-  canvas.height = croppedAreaPixels.height;
+  canvas.width = Math.round(croppedAreaPixels.width * scale);
+  canvas.height = Math.round(croppedAreaPixels.height * scale);
   const ctx = canvas.getContext("2d");
   if (!ctx) {
     throw new Error("Could not get canvas context");
@@ -31,8 +35,8 @@ export async function getCroppedImageBlob(
     croppedAreaPixels.height,
     0,
     0,
-    croppedAreaPixels.width,
-    croppedAreaPixels.height,
+    canvas.width,
+    canvas.height,
   );
 
   return new Promise((resolve, reject) => {

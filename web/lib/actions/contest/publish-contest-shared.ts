@@ -4,4 +4,4 @@ export type PublishContestFieldError =
   | "endDate"
   | "problems";
 
-export const PUBLISH_MISSING_FIELDS_PREFIX = "MISSING_FIELDS:";
+export const PUBLISH_MISSING_FIELDS = "MISSING_FIELDS";

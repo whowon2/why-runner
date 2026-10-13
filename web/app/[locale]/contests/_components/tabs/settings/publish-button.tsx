@@ -10,17 +10,10 @@ import { LoadingSwap } from "@/components/ui/loading-swap";
 import type { Contest } from "@/drizzle/schema";
 import { usePublishContest } from "@/hooks/use-publish-contest";
 import {
-  PUBLISH_MISSING_FIELDS_PREFIX,
+  PUBLISH_MISSING_FIELDS,
   type PublishContestFieldError,
 } from "@/lib/actions/contest/publish-contest-shared";
-
-function parseMissingFields(message: string): PublishContestFieldError[] {
-  if (!message.startsWith(PUBLISH_MISSING_FIELDS_PREFIX)) return [];
-  return message
-    .slice(PUBLISH_MISSING_FIELDS_PREFIX.length)
-    .split(",")
-    .filter(Boolean) as PublishContestFieldError[];
-}
+import { isActionError } from "@/lib/action-result";
 
 export function PublishContest({
   contest,
@@ -45,7 +38,9 @@ export function PublishContest({
   function handlePublish() {
     publishContest(contest.id, {
       onError: (error) => {
-        const missingFields = parseMissingFields(error.message);
+        const missingFields = isActionError(error, PUBLISH_MISSING_FIELDS)
+          ? (error.params?.fields as PublishContestFieldError[])
+          : [];
         toast.error(t("failed"), {
           description:
             missingFields.length > 0

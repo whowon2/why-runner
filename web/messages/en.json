@@ -1211,6 +1211,7 @@
     "avatarUpdated": "Avatar updated",
     "coverUpdated": "Cover updated",
     "uploadFailed": "Failed to upload image",
+    "uploadTooLarge": "Image is too large (max {max} MB). Try a smaller image.",
     "bio": "Bio",
     "location": "Location",
     "website": "Website",

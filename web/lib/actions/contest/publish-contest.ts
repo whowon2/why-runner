@@ -3,9 +3,10 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { contest } from "@/drizzle/schema";
+import { fail, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import {
-  PUBLISH_MISSING_FIELDS_PREFIX,
+  PUBLISH_MISSING_FIELDS,
   type PublishContestFieldError,
 } from "./publish-contest-shared";
 
@@ -30,8 +31,7 @@ export async function publishContest(contestId: string) {
     fields.push("endDate");
   if (found.problems.length === 0) fields.push("problems");
 
-  if (fields.length > 0)
-    throw new Error(`${PUBLISH_MISSING_FIELDS_PREFIX}${fields.join(",")}`);
+  if (fields.length > 0) return fail(PUBLISH_MISSING_FIELDS, { fields });
 
   const [result] = await db
     .update(contest)
@@ -39,5 +39,5 @@ export async function publishContest(contestId: string) {
     .where(eq(contest.id, contestId))
     .returning();
 
-  return result;
+  return ok(result);
 }
