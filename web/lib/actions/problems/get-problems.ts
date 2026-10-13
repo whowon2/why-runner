@@ -1,9 +1,21 @@
 "use server";
 
-import { and, count, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import {
+  and,
+  arrayContains,
+  count,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  or,
+  sql,
+} from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import {
+  PROBLEM_TAGS,
   type ProblemDifficulty,
+  type ProblemTag,
   problem,
   submission,
   user,
@@ -18,6 +30,8 @@ export interface GetProblemsParams {
   pageSize: number;
   search?: string;
   difficulty?: ProblemDifficulty | "all";
+  // Problem must have every listed tag (AND).
+  tags?: ProblemTag[];
   my?: boolean;
   userId?: string;
   sortBy?: ProblemSortBy;
@@ -29,6 +43,7 @@ export async function getProblems({
   pageSize = 10,
   search,
   difficulty,
+  tags,
   my,
   userId,
   sortBy,
@@ -48,6 +63,11 @@ export async function getProblems({
 
   if (difficulty && difficulty !== "all") {
     conditions.push(eq(problem.difficulty, difficulty));
+  }
+
+  const validTags = (tags ?? []).filter((tag) => PROBLEM_TAGS.includes(tag));
+  if (validTags.length > 0) {
+    conditions.push(arrayContains(problem.tags, validTags));
   }
 
   if (userId) {
@@ -92,6 +112,7 @@ export async function getProblems({
         code: problem.code,
         description: problem.description,
         difficulty: problem.difficulty,
+        tags: problem.tags,
         status: problem.status,
         createdBy: problem.createdBy,
         creatorName: user.name,

@@ -648,7 +648,13 @@
       "narrativePlaceholder": "Frame this problem with a short themed story (optional)",
       "generateNarrativeWithAi": "Generate with AI",
       "generatingNarrative": "Generating...",
-      "generateNarrativeFailed": "Failed to generate a narrative"
+      "generateNarrativeFailed": "Failed to generate a narrative",
+      "tagsLabel": "Tags",
+      "suggestTagsWithAi": "Suggest tags with AI",
+      "suggestingTags": "Suggesting...",
+      "suggestTagsFailed": "Failed to suggest tags",
+      "suggestTagsNeedsDescription": "Write a description before asking the AI for tags.",
+      "noTagsSuggested": "The AI didn't find any matching tags."
     },
     "Publish": {
       "button": "Publish",
@@ -685,7 +691,8 @@
         "all": "all",
         "undefined": "all",
         "null": "all"
-      }
+      },
+      "tags": "Tags"
     },
     "Table": {
       "code": "Code",
@@ -694,7 +701,8 @@
       "solvedBy": "Solved by",
       "solved": "Solved",
       "yes": "Yes",
-      "no": "No"
+      "no": "No",
+      "tags": "Tags"
     },
     "Workspace": {
       "tabs": {
@@ -746,6 +754,16 @@
         "download": "Download all tests as a zip file",
         "input": "Input",
         "output": "Output"
+      }
+    },
+    "TagPicker": {
+      "placeholder": "Select tags",
+      "search": "Search tags...",
+      "empty": "No tags found.",
+      "clear": "Clear",
+      "groups": {
+        "fundamentals": "Fundamentals",
+        "algorithms": "Algorithms"
       }
     }
   },
@@ -1405,5 +1423,31 @@
     "moveDown": "Move down",
     "indent": "Indent",
     "outdent": "Outdent"
+  },
+  "ProblemTags": {
+    "input-output": "Input & output",
+    "conditionals": "Conditionals",
+    "loops": "Loops",
+    "arrays": "Arrays",
+    "matrices": "Matrices",
+    "strings": "Strings",
+    "functions": "Functions",
+    "recursion": "Recursion",
+    "math": "Math",
+    "number-theory": "Number theory",
+    "combinatorics": "Combinatorics",
+    "geometry": "Geometry",
+    "sorting": "Sorting",
+    "binary-search": "Binary search",
+    "two-pointers": "Two pointers",
+    "greedy": "Greedy",
+    "brute-force": "Brute force",
+    "simulation": "Simulation",
+    "dynamic-programming": "Dynamic programming",
+    "graphs": "Graphs",
+    "trees": "Trees",
+    "shortest-paths": "Shortest paths",
+    "data-structures": "Data structures",
+    "bit-manipulation": "Bit manipulation"
   }
 }

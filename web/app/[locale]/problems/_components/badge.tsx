@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
-import type { ProblemDifficulty } from "@/drizzle/schema";
+import type { ProblemDifficulty, ProblemTag } from "@/drizzle/schema";
 
 export function DraftBadge() {
   const t = useTranslations("ProblemsPage");
@@ -23,6 +23,44 @@ export function DifficultyBadge({
     <Badge className={getColor(difficulty ?? "none")}>
       {t(`Difficults.${difficulty ?? "none"}`)}
     </Badge>
+  );
+}
+
+export function ProblemTags({
+  tags,
+  max,
+}: {
+  tags: ProblemTag[];
+  // Rows in the list stay compact: show the first `max` tags plus a "+N".
+  max?: number;
+}) {
+  const t = useTranslations("ProblemTags");
+
+  if (tags.length === 0) return null;
+
+  const visible = max === undefined ? tags : tags.slice(0, max);
+  const hidden = tags.length - visible.length;
+
+  return (
+    <div className="flex flex-wrap items-center gap-1">
+      {visible.map((tag) => (
+        <Badge key={tag} variant="outline" className="text-muted-foreground">
+          {t(tag)}
+        </Badge>
+      ))}
+      {hidden > 0 && (
+        <Badge
+          variant="outline"
+          className="text-muted-foreground"
+          title={tags
+            .slice(visible.length)
+            .map((tag) => t(tag))
+            .join(", ")}
+        >
+          +{hidden}
+        </Badge>
+      )}
+    </div>
   );
 }
 

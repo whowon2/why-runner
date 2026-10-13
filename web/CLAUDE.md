@@ -81,6 +81,10 @@ Better Auth with email/password + GitHub + Google OAuth. Session access:
 
 `problem.narrative` is an optional text field (nullable) shown above the description on the standalone problem page when set, styled as flavor text — never required for publish. `generateProblemNarrative()` (`lib/actions/problems/generate-problem-narrative.ts`) drafts an Advent-of-Code-style themed story via Gemini into the edit form's narrative field for the author to edit/save through the existing `updateProblem` action.
 
+### Problem Tags
+
+`problem.tags` is an array of the fixed `problem_tag` pg enum (`PROBLEM_TAGS` in `drizzle/schemas/problems.ts`); labels live under `ProblemTags` in `messages/`. Keys are permanent — add new ones via migration, don't rename/remove. The problems list filters with array-contains (problem must have all selected tags, URL param `tags=a,b`). `suggestProblemTags()` (`lib/actions/problems/suggest-problem-tags.ts`) asks Gemini (enum-constrained `responseSchema`) for 1–5 tags from the edit form's unsaved title/description; it only pre-fills the form's tag picker, saved via `updateProblem`.
+
 ### Exercise Answer Modes (code / blocks / parsons)
 
 Lesson exercises have `exercise.mode` (`exercise_mode` enum, default `code`), set per exercise via `setExerciseMode` (`lib/actions/lessons/exercise-mode.ts`) — never per problem.
