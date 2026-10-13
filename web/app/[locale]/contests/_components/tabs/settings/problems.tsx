@@ -28,6 +28,7 @@ import { useAddProblemToContest } from "@/hooks/use-add-problem";
 import { useProblems } from "@/hooks/use-problems";
 import { useRemoveProblemToContest as useRemoveProblemFromContest } from "@/hooks/use-remove-problem";
 import { Link } from "@/i18n/navigation";
+import { contestLeaderboardKey } from "@/hooks/use-contest-leaderboard";
 import { reorderProblems } from "@/lib/actions/contest/reorder-problems";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -95,6 +96,9 @@ export function EditContestProblems({
       toast.success(t("orderSaved"));
       queryClient.invalidateQueries({
         queryKey: ["contest", String(contest.id)],
+      });
+      queryClient.invalidateQueries({
+        queryKey: contestLeaderboardKey(contest.id),
       });
     } catch (e) {
       toast.error(t("orderError"), {

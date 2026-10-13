@@ -15,12 +15,13 @@ export function ExportContestData({ contest }: { contest: Contest }) {
   async function handleExport() {
     setIsPending(true);
     try {
-      const csv = await exportContestData(contest.id);
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const base64 = await exportContestData(contest.id);
+      const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+      const blob = new Blob([bytes], { type: "application/zip" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${contest.name.replace(/\s+/g, "_")}_results.csv`;
+      a.download = `${contest.slug}-export.zip`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success(t("success"));

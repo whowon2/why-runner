@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { contestLeaderboardKey } from "@/hooks/use-contest-leaderboard";
 import { removeProblemToContest } from "@/lib/actions/contest/remove-problem";
 
 export type RemoveProblemFromContestInput = {
@@ -16,6 +17,9 @@ export const useRemoveProblemToContest = () => {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["contest", String(variables.contestId)],
+      });
+      queryClient.invalidateQueries({
+        queryKey: contestLeaderboardKey(variables.contestId),
       });
     },
   });
