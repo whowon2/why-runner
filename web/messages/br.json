@@ -1211,6 +1211,7 @@
     "avatarUpdated": "Avatar atualizado",
     "coverUpdated": "Capa atualizada",
     "uploadFailed": "Falha ao enviar imagem",
+    "uploadTooLarge": "Imagem muito grande (máx. {max} MB). Tente uma imagem menor.",
     "bio": "Bio",
     "location": "Localização",
     "website": "Site",

@@ -23,6 +23,8 @@ interface CropImageDialogProps {
   title: string;
   onConfirm: (blob: Blob) => Promise<void>;
   extraControls?: ReactNode;
+  /** Cap on the output width in pixels; larger crops are downscaled. */
+  maxWidth?: number;
 }
 
 export function CropImageDialog({
@@ -34,6 +36,7 @@ export function CropImageDialog({
   title,
   onConfirm,
   extraControls,
+  maxWidth,
 }: CropImageDialogProps) {
   const t = useTranslations("Common");
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -56,7 +59,11 @@ export function CropImageDialog({
     if (!imageSrc || !croppedAreaPixels) return;
     try {
       setIsSubmitting(true);
-      const blob = await getCroppedImageBlob(imageSrc, croppedAreaPixels);
+      const blob = await getCroppedImageBlob(
+        imageSrc,
+        croppedAreaPixels,
+        maxWidth,
+      );
       await onConfirm(blob);
       handleClose();
     } catch (error) {

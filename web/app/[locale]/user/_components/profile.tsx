@@ -25,6 +25,10 @@ import { UpdateForm } from "./form";
 const COVER_TEXT_SHADOW =
   "[text-shadow:0_1px_3px_rgba(0,0,0,0.95),0_0_10px_rgba(0,0,0,0.75)]";
 
+// Mirrors MAX_FILE_SIZE in lib/actions/upload-profile-image.ts.
+const MAX_UPLOAD_MB = 5;
+const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
+
 const SWATCH_CLASSES = [
   "bg-slate-500",
   "bg-red-500",
@@ -89,16 +93,24 @@ export default function Profile({
     reader.readAsDataURL(file);
   }
 
+  async function upload(formData: FormData, blob: Blob, successMsg: string) {
+    if (blob.size > MAX_UPLOAD_BYTES) {
+      toast.error(t("uploadTooLarge", { max: MAX_UPLOAD_MB }));
+      return;
+    }
+    try {
+      await uploadImage(formData);
+      toast(successMsg);
+    } catch {
+      toast.error(t("uploadFailed"));
+    }
+  }
+
   async function handleConfirmUpload(blob: Blob) {
     const formData = new FormData();
     formData.append("file", blob, "avatar.webp");
     formData.append("kind", "avatar");
-    try {
-      await uploadImage(formData);
-      toast(t("avatarUpdated"));
-    } catch {
-      toast(t("uploadFailed"));
-    }
+    await upload(formData, blob, t("avatarUpdated"));
   }
 
   async function handleConfirmCoverUpload(blob: Blob) {
@@ -106,12 +118,7 @@ export default function Profile({
     formData.append("file", blob, "cover.webp");
     formData.append("kind", "cover");
     formData.append("dim", String(coverDim));
-    try {
-      await uploadImage(formData);
-      toast(t("coverUpdated"));
-    } catch {
-      toast(t("uploadFailed"));
-    }
+    await upload(formData, blob, t("coverUpdated"));
   }
 
   if (isPending) {
@@ -304,6 +311,7 @@ export default function Profile({
             cropShape="round"
             title={t("adjustAvatar")}
             onConfirm={handleConfirmUpload}
+            maxWidth={512}
           />
 
           <CropImageDialog
@@ -314,6 +322,7 @@ export default function Profile({
             cropShape="rect"
             title={t("adjustCover")}
             onConfirm={handleConfirmCoverUpload}
+            maxWidth={1600}
             extraControls={
               <div className="flex flex-col gap-1.5">
                 <label
