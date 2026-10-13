@@ -1,9 +1,10 @@
 "use server";
 
-import { and, count, eq, gte, sql } from "drizzle-orm";
+import { and, count, eq, gte } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { type Language, submission } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { notifyJudge } from "@/lib/judge";
 import {
   generatePortugol,
   type SerializedWorkspace,
@@ -133,7 +134,7 @@ export async function createExerciseSubmission(input: ExerciseSubmissionInput) {
     })
     .returning();
 
-  await db.execute(sql`SELECT pg_notify('new_submission', ${sub.id})`);
+  await notifyJudge("new_submission", sub.id);
 
   return sub;
 }

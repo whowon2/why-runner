@@ -58,7 +58,7 @@ Server actions handle auth checks, business logic, and DB queries. Hooks wrap ac
 ### Submission Pipeline
 
 1. `createSubmission` server action rate-limits (5/30s), validates user is accepted in contest, writes `PENDING` row
-2. Calls `pg_notify('new_submission', submissionId)` — picked up by external Judge worker (Rust, separate repo)
+2. Calls `notifyJudge()` (`lib/judge.ts`): `pg_notify('new_submission', submissionId)` for a running judge, plus (after the response, if `FLY_API_TOKEN` is set) a Fly Machines API start for a judge that idle-exited
 3. Judge executes code in Docker (python:3.9-slim or equivalent) and writes result back
 4. Frontend polls submission status via React Query
 
@@ -110,6 +110,7 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GEMINI_KEY=
 ANTHROPIC_API_KEY=   # optional, enables Claude as last AI fallback
+FLY_API_TOKEN=       # optional, wakes the idle-stopped Fly judge (lib/judge.ts)
 ```
 
 ## Conventions

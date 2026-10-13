@@ -1,9 +1,10 @@
 "use server";
 
-import { and, count, eq, gte, sql } from "drizzle-orm";
+import { and, count, eq, gte } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { type Language, submission } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { notifyJudge } from "@/lib/judge";
 
 const RATE_LIMIT_WINDOW_SECS = 30;
 const RATE_LIMIT_MAX = 5;
@@ -44,6 +45,5 @@ export async function createProblemSubmission(input: {
     })
     .returning();
 
-  // Send a notification to the judge worker via Postgres LISTEN/NOTIFY
-  await db.execute(sql`SELECT pg_notify('new_submission', ${sub.id})`);
+  await notifyJudge("new_submission", sub.id);
 }
