@@ -877,9 +877,56 @@
   },
   "ImportProblems": {
     "button": "Import JSON",
+    "title": "Import problems",
+    "description": "Create many published problems at once from a JSON file. Check the Format tab for the expected structure.",
+    "tabs": {
+      "upload": "Upload file",
+      "paste": "Paste JSON",
+      "format": "Format"
+    },
+    "chooseFile": "Click to choose a .json file",
+    "pastePlaceholder": "[\n  { \"title\": \"…\", \"description\": \"…\", \"inputs\": [\"…\"], \"outputs\": [\"…\"] }\n]",
+    "downloadTemplate": "Download template",
+    "copy": "Copy",
+    "copied": "Example copied to clipboard",
+    "formatIntro": "The file must contain an array of problems, or an object with a \"problems\" array. Each problem accepts the fields below; any other field is rejected.",
+    "requiredNote": "required field",
+    "example": "Example",
+    "fields": {
+      "name": "Field",
+      "type": "Type",
+      "details": "Description",
+      "default": "Default"
+    },
+    "fieldDocs": {
+      "title": "Problem title.",
+      "description": "Statement shown to students, in Markdown.",
+      "inputs": "Test case inputs (stdin), one string per test case.",
+      "outputs": "Expected outputs (stdout), same length and order as inputs.",
+      "difficulty": "Problem difficulty. Leave out to set it later.",
+      "tags": "Theme tags. Duplicates are removed.",
+      "exampleCount": "How many of the first test cases are shown to students as examples. At most the number of test cases.",
+      "narrative": "Optional story shown above the statement, in Markdown.",
+      "timeLimitMs": "Time limit per test case, in milliseconds.",
+      "memoryLimitMb": "Memory limit, in megabytes."
+    },
+    "previewTitle": "{count, plural, one {# problem ready to import} other {# problems ready to import}}",
+    "preview": {
+      "title": "Title",
+      "difficulty": "Difficulty",
+      "tests": "Tests",
+      "examples": "Examples",
+      "tags": "Tags"
+    },
+    "errorCount": "{count, plural, one {# error found} other {# errors found}}",
+    "moreErrors": "…and {count} more",
+    "serverRejected": "The server rejected the file:",
+    "cancel": "Cancel",
+    "importButton": "Import",
+    "importCount": "{count, plural, one {Import # problem} other {Import # problems}}",
     "success": "{count, plural, one {# problem imported} other {# problems imported}}",
     "failed": "Import failed",
-    "invalidJson": "Invalid JSON file"
+    "invalidJson": "Invalid JSON"
   },
   "ContestsPage": {
     "title": "Contests",
