@@ -1,6 +1,7 @@
 export type PublishContestFieldError =
   | "name"
   | "startDate"
+  | "startDatePast"
   | "endDate"
   | "problems";
 

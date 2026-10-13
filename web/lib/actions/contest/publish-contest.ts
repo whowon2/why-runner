@@ -25,8 +25,8 @@ export async function publishContest(contestId: string) {
 
   const fields: PublishContestFieldError[] = [];
   if (!found.name.trim()) fields.push("name");
-  if (!found.startDate || found.startDate <= new Date())
-    fields.push("startDate");
+  if (!found.startDate) fields.push("startDate");
+  else if (found.startDate <= new Date()) fields.push("startDatePast");
   if (!found.endDate || (found.startDate && found.endDate <= found.startDate))
     fields.push("endDate");
   if (found.problems.length === 0) fields.push("problems");

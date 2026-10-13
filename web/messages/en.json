@@ -1144,6 +1144,7 @@
           "missingField": {
             "name": "name",
             "startDate": "start date",
+            "startDatePast": "start date in the future",
             "endDate": "end date",
             "problems": "at least one problem"
           }

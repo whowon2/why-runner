@@ -32,7 +32,10 @@ import { useRouter } from "@/i18n/navigation";
 
 function toDateTimeLocal(date: Date | string | null) {
   if (!date) return "";
-  return new Date(date).toISOString().slice(0, 16);
+  // datetime-local inputs are in local time; toISOString() would shift by the UTC offset.
+  const d = new Date(date);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function DateTimeField({
