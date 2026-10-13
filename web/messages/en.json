@@ -680,7 +680,7 @@
     "creatingDraft": "Creating draft...",
     "failedCreateDraft": "Failed to create problem draft",
     "Filters": {
-      "searchPlaceholder": "Search problems...",
+      "searchPlaceholder": "Search by title or code...",
       "my": "My",
       "difficulty": "Difficulty",
       "Difficults": {

@@ -680,7 +680,7 @@
     "creatingDraft": "Criando rascunho...",
     "failedCreateDraft": "Falha ao criar rascunho de problema",
     "Filters": {
-      "searchPlaceholder": "Pesquisar problemas...",
+      "searchPlaceholder": "Pesquisar por título ou código...",
       "my": "Meus",
       "difficulty": "Dificuldade",
       "Difficults": {
