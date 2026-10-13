@@ -1,6 +1,5 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
 import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -26,7 +25,6 @@ export function JoinButton({
   const { mutate: leaveContest, isPending: isLeavePending } = useLeaveContest();
 
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   const isUserInContest = contest.users.some((u) => u.userId === user.id);
 
@@ -54,15 +52,6 @@ export function JoinButton({
               onSuccess: () => {
                 toast(t("Leave.success"));
                 router.refresh();
-                queryClient.invalidateQueries({
-                  queryKey: ["contest", String(contest.id)],
-                });
-                queryClient.invalidateQueries({
-                  queryKey: ["contests", String(contest.id)],
-                });
-                queryClient.invalidateQueries({
-                  queryKey: ["user-contest-status", contest.id],
-                });
               },
             },
           );
@@ -89,12 +78,6 @@ export function JoinButton({
             onSuccess: () => {
               toast(t("Join.success"));
               router.refresh();
-              queryClient.invalidateQueries({
-                queryKey: ["contest", String(contest.id)],
-              });
-              queryClient.invalidateQueries({
-                queryKey: ["contests", String(contest.id)],
-              });
             },
           },
         );
