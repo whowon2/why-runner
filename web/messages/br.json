@@ -877,9 +877,56 @@
   },
   "ImportProblems": {
     "button": "Importar JSON",
+    "title": "Importar problemas",
+    "description": "Crie vários problemas publicados de uma vez a partir de um arquivo JSON. Veja a aba Formato para a estrutura esperada.",
+    "tabs": {
+      "upload": "Enviar arquivo",
+      "paste": "Colar JSON",
+      "format": "Formato"
+    },
+    "chooseFile": "Clique para escolher um arquivo .json",
+    "pastePlaceholder": "[\n  { \"title\": \"…\", \"description\": \"…\", \"inputs\": [\"…\"], \"outputs\": [\"…\"] }\n]",
+    "downloadTemplate": "Baixar modelo",
+    "copy": "Copiar",
+    "copied": "Exemplo copiado",
+    "formatIntro": "O arquivo deve conter uma lista de problemas, ou um objeto com uma lista \"problems\". Cada problema aceita os campos abaixo; qualquer outro campo é rejeitado.",
+    "requiredNote": "campo obrigatório",
+    "example": "Exemplo",
+    "fields": {
+      "name": "Campo",
+      "type": "Tipo",
+      "details": "Descrição",
+      "default": "Padrão"
+    },
+    "fieldDocs": {
+      "title": "Título do problema.",
+      "description": "Enunciado mostrado aos alunos, em Markdown.",
+      "inputs": "Entradas dos casos de teste (stdin), uma string por caso.",
+      "outputs": "Saídas esperadas (stdout), mesmo tamanho e ordem das entradas.",
+      "difficulty": "Dificuldade do problema. Omita para definir depois.",
+      "tags": "Temas do problema. Duplicatas são removidas.",
+      "exampleCount": "Quantos dos primeiros casos de teste são mostrados aos alunos como exemplo. No máximo o número de casos de teste.",
+      "narrative": "História opcional exibida acima do enunciado, em Markdown.",
+      "timeLimitMs": "Limite de tempo por caso de teste, em milissegundos.",
+      "memoryLimitMb": "Limite de memória, em megabytes."
+    },
+    "previewTitle": "{count, plural, one {# problema pronto para importar} other {# problemas prontos para importar}}",
+    "preview": {
+      "title": "Título",
+      "difficulty": "Dificuldade",
+      "tests": "Testes",
+      "examples": "Exemplos",
+      "tags": "Temas"
+    },
+    "errorCount": "{count, plural, one {# erro encontrado} other {# erros encontrados}}",
+    "moreErrors": "…e mais {count}",
+    "serverRejected": "O servidor rejeitou o arquivo:",
+    "cancel": "Cancelar",
+    "importButton": "Importar",
+    "importCount": "{count, plural, one {Importar # problema} other {Importar # problemas}}",
     "success": "{count, plural, one {# problema importado} other {# problemas importados}}",
     "failed": "Falha ao importar",
-    "invalidJson": "Arquivo JSON inválido"
+    "invalidJson": "JSON inválido"
   },
   "ContestsPage": {
     "title": "Torneios",
