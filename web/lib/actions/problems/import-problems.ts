@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { db } from "@/drizzle/db";
-import { problem } from "@/drizzle/schema";
+import { PROBLEM_TAGS, problem } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { generateProblemCode } from "@/lib/problem-code";
 import { generateSlug } from "@/lib/slug";
@@ -12,6 +12,10 @@ const importSchema = z.array(
     title: z.string().min(1),
     description: z.string().min(1),
     difficulty: z.enum(["easy", "medium", "hard"]).nullable().optional(),
+    tags: z
+      .array(z.enum(PROBLEM_TAGS))
+      .default([])
+      .transform((tags) => [...new Set(tags)]),
     exampleCount: z.number().int().min(1).default(1),
     inputs: z.array(z.string()).min(1),
     outputs: z.array(z.string()).min(1),

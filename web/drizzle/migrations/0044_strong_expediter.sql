@@ -1,0 +1,2 @@
+CREATE TYPE "public"."problem_tag" AS ENUM('input-output', 'conditionals', 'loops', 'arrays', 'matrices', 'strings', 'functions', 'recursion', 'math', 'number-theory', 'combinatorics', 'geometry', 'sorting', 'binary-search', 'two-pointers', 'greedy', 'brute-force', 'simulation', 'dynamic-programming', 'graphs', 'trees', 'shortest-paths', 'data-structures', 'bit-manipulation');--> statement-breakpoint
+ALTER TABLE "problem" ADD COLUMN "tags" "problem_tag"[] DEFAULT '{}' NOT NULL;
