@@ -23,6 +23,48 @@ export const ProblemDifficulty = pgEnum("problem_difficulty", [
 
 export type ProblemDifficulty = (typeof ProblemDifficulty.enumValues)[number];
 
+// Order matters: the picker lists tags in this order, grouped by
+// PROBLEM_TAG_GROUPS below.
+export const ProblemTag = pgEnum("problem_tag", [
+  // Fundamentals — intro-programming topics
+  "input-output",
+  "conditionals",
+  "loops",
+  "arrays",
+  "matrices",
+  "strings",
+  "functions",
+  "recursion",
+  // Algorithms — competitive-programming techniques
+  "math",
+  "number-theory",
+  "combinatorics",
+  "geometry",
+  "sorting",
+  "binary-search",
+  "two-pointers",
+  "greedy",
+  "brute-force",
+  "simulation",
+  "dynamic-programming",
+  "graphs",
+  "trees",
+  "shortest-paths",
+  "data-structures",
+  "bit-manipulation",
+]);
+
+export type ProblemTag = (typeof ProblemTag.enumValues)[number];
+
+// Keys are permanent (Postgres enum values can't be cheaply removed or
+// renamed); only their localized labels under `ProblemTags` in messages/ change.
+export const PROBLEM_TAGS = ProblemTag.enumValues;
+
+export const PROBLEM_TAG_GROUPS = {
+  fundamentals: PROBLEM_TAGS.slice(0, PROBLEM_TAGS.indexOf("math")),
+  algorithms: PROBLEM_TAGS.slice(PROBLEM_TAGS.indexOf("math")),
+} as const satisfies Record<string, readonly ProblemTag[]>;
+
 export const ProblemStatus = pgEnum("problem_status", ["draft", "published"]);
 
 export const problem = pgTable("problem", {
@@ -34,6 +76,7 @@ export const problem = pgTable("problem", {
   narrative: text("narrative"),
   status: ProblemStatus().default("draft").notNull(),
   difficulty: ProblemDifficulty(),
+  tags: ProblemTag().array().default([]).notNull(),
   createdBy: text("created_by").notNull(),
   inputs: text("inputs").array().default([]).notNull(),
   outputs: text("outputs").array().default([]).notNull(),

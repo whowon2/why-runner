@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useProblem } from "@/hooks/use-problem";
-import { DifficultyBadge, DraftBadge } from "./badge";
+import { DifficultyBadge, DraftBadge, ProblemTags } from "./badge";
 
 export function ProblemPageHeader({ problemId }: { problemId: string }) {
   const t = useTranslations("ProblemsPage");
@@ -15,6 +15,7 @@ export function ProblemPageHeader({ problemId }: { problemId: string }) {
       <div className="flex items-center gap-3 flex-wrap justify-center">
         <DifficultyBadge difficulty={problem.difficulty} />
         {problem.status === "draft" && <DraftBadge />}
+        <ProblemTags tags={problem.tags} />
       </div>
 
       <h1 className="font-extrabold text-4xl sm:text-5xl text-center tracking-tight text-foreground bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/70">

@@ -1,13 +1,11 @@
 "use server";
 
-import { GoogleGenAI } from "@google/genai";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { problem } from "@/drizzle/schema";
-import { env } from "@/env";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { getNarrativePrompt, SYSTEM_INSTRUCTION_NARRATIVE } from "@/lib/prompt";
-import { GEMINI_MODEL } from "@/lib/gemini-model";
+import { generateText } from "@/lib/ai";
 
 export async function generateProblemNarrative(
   problemId: string,
@@ -27,13 +25,10 @@ export async function generateProblemNarrative(
     throw new Error("A description is required to generate a narrative.");
   }
 
-  const ai = new GoogleGenAI({ apiKey: env.GEMINI_KEY });
-
-  const response = await ai.models.generateContent({
-    model: GEMINI_MODEL,
-    config: { systemInstruction: SYSTEM_INSTRUCTION_NARRATIVE },
-    contents: getNarrativePrompt({ problem: found }),
+  const narrative = await generateText("narrative", {
+    system: SYSTEM_INSTRUCTION_NARRATIVE,
+    prompt: getNarrativePrompt({ problem: found }),
   });
 
-  return (response.text ?? "").trim();
+  return narrative.trim();
 }

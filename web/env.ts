@@ -5,6 +5,8 @@ export const env = createEnv({
   server: {
     DATABASE_URL: z.url(),
     GEMINI_KEY: z.string().min(1),
+    // Optional: enables Claude as the last AI fallback (see lib/ai.ts).
+    ANTHROPIC_API_KEY: z.string().min(1).optional(),
     GITHUB_ID: z.string().min(1),
     GITHUB_SECRET: z.string().min(1),
     GOOGLE_CLIENT_ID: z.string().min(1),
@@ -17,6 +19,7 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     GEMINI_KEY: process.env.GEMINI_KEY,
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     GITHUB_ID: process.env.GITHUB_ID,
     GITHUB_SECRET: process.env.GITHUB_SECRET,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,

@@ -45,7 +45,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { ProblemDifficulty } from "@/drizzle/schema";
+import {
+  PROBLEM_TAGS,
+  type ProblemDifficulty,
+  type ProblemTag,
+} from "@/drizzle/schema";
 import { useProblems } from "@/hooks/use-problems";
 import type {
   getProblems,
@@ -53,9 +57,10 @@ import type {
   SortDirection,
 } from "@/lib/actions/problems/get-problems";
 import { Link, useRouter } from "@/i18n/navigation";
-import { DifficultyBadge, DraftBadge } from "./badge";
+import { DifficultyBadge, DraftBadge, ProblemTags } from "./badge";
 import { CreateProblemButton } from "./create-button";
 import { ImportProblems } from "./import";
+import { TagMultiSelect } from "./tag-multi-select";
 
 type ProblemRow = Awaited<ReturnType<typeof getProblems>>["data"][number];
 
@@ -81,6 +86,17 @@ export function ProblemsList() {
     "difficulty",
   ) as ProblemFilters["difficulty"];
   const my = searchParams.get("my") === "true";
+  const tagsParam = searchParams.get("tags") || "";
+  // Hand-edited URLs may carry unknown keys; drop them before querying.
+  const tags = useMemo(
+    () =>
+      tagsParam
+        .split(",")
+        .filter((tag): tag is ProblemTag =>
+          PROBLEM_TAGS.includes(tag as ProblemTag),
+        ),
+    [tagsParam],
+  );
   const sortBy = (searchParams.get("sortBy") || undefined) as
     | ProblemSortBy
     | undefined;
@@ -97,6 +113,7 @@ export function ProblemsList() {
     pageSize: ITEMS_PER_PAGE,
     search,
     difficulty,
+    tags,
     my,
     sortBy,
     sortDirection,
@@ -201,6 +218,12 @@ export function ProblemsList() {
           ),
       },
       {
+        id: "tags",
+        header: t("Table.tags"),
+        enableSorting: false,
+        cell: ({ row }) => <ProblemTags tags={row.original.tags} max={3} />,
+      },
+      {
         accessorKey: "solvedByCount",
         header: t("Table.solvedBy"),
         enableSorting: true,
@@ -272,6 +295,13 @@ export function ProblemsList() {
                 </SelectContent>
               </Select>
             </div>
+
+            <TagMultiSelect
+              className="w-[160px]"
+              label={t("Filters.tags")}
+              value={tags}
+              onChange={(next) => updateFilter("tags", next.join(","))}
+            />
 
             <div className="flex items-center gap-2 border-l pl-4">
               <Checkbox
