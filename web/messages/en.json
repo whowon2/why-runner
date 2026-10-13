@@ -1117,6 +1117,9 @@
         },
         "Problems": {
           "placeholder": "Problem",
+          "searchPlaceholder": "Search by name or code…",
+          "searching": "Searching…",
+          "empty": "No problems found",
           "by": "by",
           "create": "Create",
           "saveOrder": "Save Order",
