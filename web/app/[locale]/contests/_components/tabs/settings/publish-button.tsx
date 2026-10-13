@@ -26,8 +26,8 @@ export function PublishContest({
 
   const missing: PublishContestFieldError[] = [];
   if (!contest.name.trim()) missing.push("name");
-  if (!contest.startDate || contest.startDate <= new Date())
-    missing.push("startDate");
+  if (!contest.startDate) missing.push("startDate");
+  else if (contest.startDate <= new Date()) missing.push("startDatePast");
   if (
     !contest.endDate ||
     (contest.startDate && contest.endDate <= contest.startDate)
