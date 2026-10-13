@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { contestLeaderboardKey } from "@/hooks/use-contest-leaderboard";
 import { approveJoin } from "@/lib/actions/contest/approve-join";
 import { getPendingJoins } from "@/lib/actions/contest/get-pending-joins";
 import { rejectJoin } from "@/lib/actions/contest/reject-join";
@@ -24,6 +25,9 @@ export function PendingJoins({ contestId }: { contestId: string }) {
       queryClient.invalidateQueries({ queryKey: ["pending-joins", contestId] });
       queryClient.invalidateQueries({ queryKey: ["participants", contestId] });
       queryClient.invalidateQueries({
+        queryKey: contestLeaderboardKey(contestId),
+      });
+      queryClient.invalidateQueries({
         queryKey: ["user-contest-status", contestId],
       });
       toast.success(t("approveSuccess"));
@@ -35,6 +39,9 @@ export function PendingJoins({ contestId }: { contestId: string }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pending-joins", contestId] });
       queryClient.invalidateQueries({ queryKey: ["participants", contestId] });
+      queryClient.invalidateQueries({
+        queryKey: contestLeaderboardKey(contestId),
+      });
       queryClient.invalidateQueries({
         queryKey: ["user-contest-status", contestId],
       });
