@@ -71,19 +71,21 @@ Better Auth with email/password + GitHub + Google OAuth. Session access:
 
 ### AI Help
 
-`getAIHelp()` server action calls Gemini (model id in `lib/gemini-model.ts`, shared by every AI feature) to explain submission failures. Contest submissions are capped by `contest.aiAssistance` (`off`/`concept`/`hint`/`pinpoint`), enforced server-side; the dialog reveals levels one at a time. Parses JSON output from Judge to identify which test cases failed.
+Every AI feature calls `generateText`/`generateJson` in `lib/ai.ts` (never the provider SDKs directly). It tries `gemini-3.5-flash` → `gemini-3.5-flash-lite` → `claude-haiku-5-5` (only if `ANTHROPIC_API_KEY` is set; ids in `lib/ai-models.ts`), 30s per attempt, falling through only on timeout/network/404/429/5xx/invalid output. `generateJson` takes a zod schema used for both providers and re-validates the result. `lib/ai.ts` is intentionally not a `"use server"` module.
+
+`getAIHelp()` server action uses it to explain submission failures. Contest submissions are capped by `contest.aiAssistance` (`off`/`concept`/`hint`/`pinpoint`), enforced server-side; the dialog reveals levels one at a time. Parses JSON output from Judge to identify which test cases failed.
 
 ### AI Problem Review
 
-`reviewProblem()` server action (`lib/actions/problems/review-problem.ts`) calls Gemini with structured JSON output (`responseSchema`) to critique a draft problem's description and suggest edge-case test cases (input/output/rationale). Nothing is persisted — the edit workspace's `ProblemReviewPanel` lets the author add any suggested edge case to the form's test cases with one click, saved only when the form is submitted normally.
+`reviewProblem()` server action (`lib/actions/problems/review-problem.ts`) uses `generateJson` to critique a draft problem's description and suggest edge-case test cases (input/output/rationale). Nothing is persisted — the edit workspace's `ProblemReviewPanel` lets the author add any suggested edge case to the form's test cases with one click, saved only when the form is submitted normally.
 
 ### Problem Narrative
 
-`problem.narrative` is an optional text field (nullable) shown above the description on the standalone problem page when set, styled as flavor text — never required for publish. `generateProblemNarrative()` (`lib/actions/problems/generate-problem-narrative.ts`) drafts an Advent-of-Code-style themed story via Gemini into the edit form's narrative field for the author to edit/save through the existing `updateProblem` action.
+`problem.narrative` is an optional text field (nullable) shown above the description on the standalone problem page when set, styled as flavor text — never required for publish. `generateProblemNarrative()` (`lib/actions/problems/generate-problem-narrative.ts`) drafts an Advent-of-Code-style themed story via `generateText` into the edit form's narrative field for the author to edit/save through the existing `updateProblem` action.
 
 ### Problem Tags
 
-`problem.tags` is an array of the fixed `problem_tag` pg enum (`PROBLEM_TAGS` in `drizzle/schemas/problems.ts`); labels live under `ProblemTags` in `messages/`. Keys are permanent — add new ones via migration, don't rename/remove. The problems list filters with array-contains (problem must have all selected tags, URL param `tags=a,b`). `suggestProblemTags()` (`lib/actions/problems/suggest-problem-tags.ts`) asks Gemini (enum-constrained `responseSchema`) for 1–5 tags from the edit form's unsaved title/description; it only pre-fills the form's tag picker, saved via `updateProblem`.
+`problem.tags` is an array of the fixed `problem_tag` pg enum (`PROBLEM_TAGS` in `drizzle/schemas/problems.ts`); labels live under `ProblemTags` in `messages/`. Keys are permanent — add new ones via migration, don't rename/remove. The problems list filters with array-contains (problem must have all selected tags, URL param `tags=a,b`). `suggestProblemTags()` (`lib/actions/problems/suggest-problem-tags.ts`) uses `generateJson` (zod enum schema) for 1–5 tags from the edit form's unsaved title/description; it only pre-fills the form's tag picker, saved via `updateProblem`.
 
 ### Exercise Answer Modes (code / blocks / parsons)
 
@@ -107,6 +109,7 @@ GITHUB_SECRET=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GEMINI_KEY=
+ANTHROPIC_API_KEY=   # optional, enables Claude as last AI fallback
 ```
 
 ## Conventions
