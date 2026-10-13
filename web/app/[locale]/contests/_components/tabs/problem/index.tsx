@@ -146,6 +146,10 @@ export function ProblemTab({
               minSize={25}
               order={1}
             >
+              <h2 className="font-bold text-2xl">
+                {currentProblemLetter && `${currentProblemLetter}. `}
+                {problem.title}
+              </h2>
               <ProblemDescription problemId={problem.id} />
               {isUserOnContest && (
                 <SubmissionList
