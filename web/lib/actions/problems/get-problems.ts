@@ -58,7 +58,12 @@ export async function getProblems({
   ];
 
   if (search) {
-    conditions.push(ilike(problem.title, `%${search}%`));
+    const pattern = `%${search.trim()}%`;
+    const searchCondition = or(
+      ilike(problem.title, pattern),
+      ilike(problem.code, pattern),
+    );
+    if (searchCondition) conditions.push(searchCondition);
   }
 
   if (difficulty && difficulty !== "all") {
