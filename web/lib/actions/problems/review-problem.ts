@@ -1,47 +1,29 @@
 "use server";
 
-import { GoogleGenAI, Type } from "@google/genai";
 import { and, eq } from "drizzle-orm";
+import { z } from "zod";
 import { db } from "@/drizzle/db";
 import { problem } from "@/drizzle/schema";
-import { env } from "@/env";
+import { generateJson } from "@/lib/ai";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import {
   getProblemReviewPrompt,
   SYSTEM_INSTRUCTION_PROBLEM_REVIEW,
 } from "@/lib/prompt";
-import { GEMINI_MODEL } from "@/lib/gemini-model";
 
-export type ProblemReviewEdgeCase = {
-  input: string;
-  output: string;
-  rationale: string;
-};
+const ReviewSchema = z.object({
+  descriptionFeedback: z.string(),
+  edgeCases: z.array(
+    z.object({
+      input: z.string(),
+      output: z.string(),
+      rationale: z.string(),
+    }),
+  ),
+});
 
-export type ProblemReview = {
-  descriptionFeedback: string;
-  edgeCases: ProblemReviewEdgeCase[];
-};
-
-const RESPONSE_SCHEMA = {
-  type: Type.OBJECT,
-  properties: {
-    descriptionFeedback: { type: Type.STRING },
-    edgeCases: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          input: { type: Type.STRING },
-          output: { type: Type.STRING },
-          rationale: { type: Type.STRING },
-        },
-        required: ["input", "output", "rationale"],
-      },
-    },
-  },
-  required: ["descriptionFeedback", "edgeCases"],
-};
+export type ProblemReview = z.infer<typeof ReviewSchema>;
+export type ProblemReviewEdgeCase = ProblemReview["edgeCases"][number];
 
 export async function reviewProblem(problemId: string): Promise<ProblemReview> {
   const currentUser = await getCurrentUser({});
@@ -55,28 +37,9 @@ export async function reviewProblem(problemId: string): Promise<ProblemReview> {
 
   if (!found) throw new Error("Problem not found.");
 
-  const ai = new GoogleGenAI({ apiKey: env.GEMINI_KEY });
-
-  const response = await ai.models.generateContent({
-    model: GEMINI_MODEL,
-    config: {
-      systemInstruction: SYSTEM_INSTRUCTION_PROBLEM_REVIEW,
-      responseMimeType: "application/json",
-      responseSchema: RESPONSE_SCHEMA,
-    },
-    contents: getProblemReviewPrompt({ problem: found }),
+  return generateJson("problem-review", {
+    system: SYSTEM_INSTRUCTION_PROBLEM_REVIEW,
+    prompt: getProblemReviewPrompt({ problem: found }),
+    schema: ReviewSchema,
   });
-
-  try {
-    const parsed = JSON.parse(response.text ?? "{}");
-    return {
-      descriptionFeedback:
-        typeof parsed.descriptionFeedback === "string"
-          ? parsed.descriptionFeedback
-          : "",
-      edgeCases: Array.isArray(parsed.edgeCases) ? parsed.edgeCases : [],
-    };
-  } catch {
-    throw new Error("The AI review could not be parsed. Please try again.");
-  }
 }

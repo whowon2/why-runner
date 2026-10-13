@@ -1,16 +1,14 @@
 "use server";
 
-import { GoogleGenAI } from "@google/genai";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { type Language, problem } from "@/drizzle/schema";
-import { env } from "@/env";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import {
   getReferenceSolutionPrompt,
   SYSTEM_INSTRUCTION_REFERENCE_SOLUTION,
 } from "@/lib/prompt";
-import { GEMINI_MODEL } from "@/lib/gemini-model";
+import { generateText } from "@/lib/ai";
 
 // Strips a single leading/trailing markdown code fence, in case the model
 // adds one despite being told not to. Defensive only — the prompt asks for
@@ -51,13 +49,10 @@ export async function generateReferenceSolution(
     );
   }
 
-  const ai = new GoogleGenAI({ apiKey: env.GEMINI_KEY });
-
-  const response = await ai.models.generateContent({
-    model: GEMINI_MODEL,
-    config: { systemInstruction: SYSTEM_INSTRUCTION_REFERENCE_SOLUTION },
-    contents: getReferenceSolutionPrompt({ problem: found, language }),
+  const text = await generateText("reference-solution", {
+    system: SYSTEM_INSTRUCTION_REFERENCE_SOLUTION,
+    prompt: getReferenceSolutionPrompt({ problem: found, language }),
   });
 
-  return stripCodeFence(response.text ?? "");
+  return stripCodeFence(text);
 }

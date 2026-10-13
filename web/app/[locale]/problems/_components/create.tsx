@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Brain, Delete } from "lucide-react";
+import { Brain, Delete, Sparkles } from "lucide-react";
 import { CopyButton } from "@/components/copy-button";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
@@ -32,12 +32,15 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import type { Problem } from "@/drizzle/schema";
+import { PROBLEM_TAGS, type Problem } from "@/drizzle/schema";
 import { useGenerateProblemNarrative } from "@/hooks/use-generate-problem-narrative";
+import { useSuggestProblemTags } from "@/hooks/use-suggest-problem-tags";
 import { useUpdateProblem } from "@/hooks/use-update-problem";
 import { useRouter } from "@/i18n/navigation";
 import "katex/dist/katex.min.css";
 import { Eye, Pencil } from "lucide-react";
+import { ProblemTags } from "./badge";
+import { TagMultiSelect } from "./tag-multi-select";
 import { ProblemReviewPanel } from "./workspace/problem-review-panel";
 import { ProblemValidationPanel } from "./workspace/validation";
 
@@ -53,6 +56,7 @@ export function NewProblem({ problem }: { problem: Problem }) {
     inputs: z.array(z.string()),
     narrative: z.string(),
     outputs: z.array(z.string()),
+    tags: z.array(z.enum(PROBLEM_TAGS)),
     title: z.string(),
   });
 
@@ -64,6 +68,7 @@ export function NewProblem({ problem }: { problem: Problem }) {
       inputs: problem.inputs,
       narrative: problem.narrative ?? "",
       outputs: problem.outputs,
+      tags: problem.tags,
       title: problem.title,
     },
     resolver: zodResolver(formSchema),
@@ -83,6 +88,8 @@ export function NewProblem({ problem }: { problem: Problem }) {
   const { mutate: updateProblem, isPending } = useUpdateProblem();
   const { mutate: generateNarrative, isPending: isGeneratingNarrative } =
     useGenerateProblemNarrative();
+  const { mutate: suggestTags, isPending: isSuggestingTags } =
+    useSuggestProblemTags();
   const router = useRouter();
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -100,6 +107,7 @@ export function NewProblem({ problem }: { problem: Problem }) {
           inputs: values.inputs,
           narrative: values.narrative || null,
           outputs: values.outputs,
+          tags: values.tags,
         },
       },
       {
@@ -154,6 +162,32 @@ export function NewProblem({ problem }: { problem: Problem }) {
         form.setValue("narrative", narrative, { shouldDirty: true });
       },
     });
+  }
+
+  function handleSuggestTags() {
+    const { title, description } = form.getValues();
+    // Checked client-side too so an empty form never costs an LLM call.
+    if (!description.trim()) {
+      toast.error(t("suggestTagsNeedsDescription"));
+      return;
+    }
+    suggestTags(
+      { problemId: problem.id, title, description },
+      {
+        onError: (error) => {
+          toast.error(t("suggestTagsFailed"), {
+            description: error.message,
+          });
+        },
+        onSuccess: (tags) => {
+          if (tags.length === 0) {
+            toast.info(t("noTagsSuggested"));
+            return;
+          }
+          form.setValue("tags", tags, { shouldDirty: true });
+        },
+      },
+    );
   }
 
   useEffect(() => {
@@ -292,6 +326,41 @@ export function NewProblem({ problem }: { problem: Problem }) {
 
               <FormField
                 control={form.control}
+                name="tags"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <div className="flex items-center justify-between">
+                      <FormLabel>{t("tagsLabel")}</FormLabel>
+                      <Button
+                        disabled={isSuggestingTags}
+                        onClick={handleSuggestTags}
+                        size="sm"
+                        type="button"
+                        variant="outline"
+                      >
+                        <Sparkles className="h-4 w-4" />
+                        {isSuggestingTags
+                          ? t("suggestingTags")
+                          : t("suggestTagsWithAi")}
+                      </Button>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <FormControl>
+                        <TagMultiSelect
+                          className="w-full sm:w-[260px]"
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                      <ProblemTags tags={field.value} />
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="exampleCount"
                 render={({ field }) => (
                   <FormItem className="max-w-[200px]">
@@ -408,9 +477,12 @@ export function NewProblem({ problem }: { problem: Problem }) {
         <TabsContent value="preview" className="mt-0">
           <div className="border rounded-xl p-8 bg-card shadow-sm space-y-8 min-h-[500px]">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b pb-6">
-              <h1 className="text-3xl font-extrabold tracking-tight">
-                {formValues.title || t("untitled")}
-              </h1>
+              <div className="flex flex-col gap-2">
+                <h1 className="text-3xl font-extrabold tracking-tight">
+                  {formValues.title || t("untitled")}
+                </h1>
+                <ProblemTags tags={formValues.tags ?? []} />
+              </div>
               <div className="shrink-0 mt-2 sm:mt-0">
                 <span
                   className={`px-4 py-1.5 rounded-none text-xs font-bold uppercase tracking-wider ${

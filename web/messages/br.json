@@ -648,7 +648,13 @@
       "narrativePlaceholder": "Contextualize este problema com uma pequena história temática (opcional)",
       "generateNarrativeWithAi": "Gerar com IA",
       "generatingNarrative": "Gerando...",
-      "generateNarrativeFailed": "Falha ao gerar narrativa"
+      "generateNarrativeFailed": "Falha ao gerar narrativa",
+      "tagsLabel": "Tags",
+      "suggestTagsWithAi": "Sugerir tags com IA",
+      "suggestingTags": "Sugerindo...",
+      "suggestTagsFailed": "Falha ao sugerir tags",
+      "suggestTagsNeedsDescription": "Escreva uma descrição antes de pedir tags à IA.",
+      "noTagsSuggested": "A IA não encontrou tags adequadas."
     },
     "Publish": {
       "button": "Publicar",
@@ -685,7 +691,8 @@
         "all": "todas",
         "undefined": "todas",
         "null": "todas"
-      }
+      },
+      "tags": "Tags"
     },
     "Table": {
       "code": "Código",
@@ -694,7 +701,8 @@
       "solvedBy": "Resolvido por",
       "solved": "Resolvido",
       "yes": "Sim",
-      "no": "Não"
+      "no": "Não",
+      "tags": "Tags"
     },
     "Workspace": {
       "tabs": {
@@ -746,6 +754,16 @@
         "download": "Baixar todos os testes em um arquivo zip",
         "input": "Entrada",
         "output": "Saída"
+      }
+    },
+    "TagPicker": {
+      "placeholder": "Selecionar tags",
+      "search": "Buscar tags...",
+      "empty": "Nenhuma tag encontrada.",
+      "clear": "Limpar",
+      "groups": {
+        "fundamentals": "Fundamentos",
+        "algorithms": "Algoritmos"
       }
     }
   },
@@ -1405,5 +1423,31 @@
     "moveDown": "Mover para baixo",
     "indent": "Aumentar indentação",
     "outdent": "Diminuir indentação"
+  },
+  "ProblemTags": {
+    "input-output": "Entrada e saída",
+    "conditionals": "Condicionais",
+    "loops": "Laços de repetição",
+    "arrays": "Vetores",
+    "matrices": "Matrizes",
+    "strings": "Strings",
+    "functions": "Funções",
+    "recursion": "Recursão",
+    "math": "Matemática",
+    "number-theory": "Teoria dos números",
+    "combinatorics": "Combinatória",
+    "geometry": "Geometria",
+    "sorting": "Ordenação",
+    "binary-search": "Busca binária",
+    "two-pointers": "Dois ponteiros",
+    "greedy": "Guloso",
+    "brute-force": "Força bruta",
+    "simulation": "Simulação",
+    "dynamic-programming": "Programação dinâmica",
+    "graphs": "Grafos",
+    "trees": "Árvores",
+    "shortest-paths": "Caminhos mínimos",
+    "data-structures": "Estruturas de dados",
+    "bit-manipulation": "Manipulação de bits"
   }
 }
