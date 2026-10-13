@@ -1046,11 +1046,19 @@
         "addProblemsLink": "Add problems in the Settings tab"
       },
       "Leaderboard": {
-        "name": "Name",
-        "correct": "Correct",
-        "score": "Score",
+        "rank": "#",
+        "participant": "Participant",
+        "solved": "Solved",
+        "penalty": "Penalty",
         "empty": "No participants yet",
-        "rank": "#"
+        "unavailable": "This leaderboard is not available to you.",
+        "you": "you",
+        "cellSolved": "Solved at minute {minute} after {attempts, plural, one {# attempt} other {# attempts}}",
+        "cellFirstSolve": "first to solve",
+        "cellAttempted": "Not solved, {attempts, plural, one {# wrong attempt} other {# wrong attempts}}",
+        "cellPending": "Being judged",
+        "cellUntouched": "Not attempted",
+        "legend": "Cell number = attempts · 34' = minute solved · ★ = first to solve · Penalty = solve minutes + {penalty} per wrong attempt on solved problems"
       },
       "Description": {
         "starts": "Starts in",
@@ -1086,7 +1094,7 @@
           "code": "Code"
         },
         "Export": {
-          "button": "Export Results (CSV)",
+          "button": "Export results (ZIP: standings, submissions, code)",
           "success": "Results exported",
           "failed": "Export failed",
           "unknownError": "Unknown error"

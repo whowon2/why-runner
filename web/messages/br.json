@@ -1046,11 +1046,19 @@
         "addProblemsLink": "Adicione problemas na aba Configurações"
       },
       "Leaderboard": {
-        "name": "Nome",
-        "correct": "Acertos",
-        "score": "Pontuação",
+        "rank": "#",
+        "participant": "Participante",
+        "solved": "Resolvidos",
+        "penalty": "Penalidade",
         "empty": "Nenhum participante ainda",
-        "rank": "#"
+        "unavailable": "Este placar não está disponível para você.",
+        "you": "você",
+        "cellSolved": "Resolvido no minuto {minute} após {attempts, plural, one {# tentativa} other {# tentativas}}",
+        "cellFirstSolve": "primeiro a resolver",
+        "cellAttempted": "Não resolvido, {attempts, plural, one {# tentativa errada} other {# tentativas erradas}}",
+        "cellPending": "Em julgamento",
+        "cellUntouched": "Não tentado",
+        "legend": "Número = tentativas · 34' = minuto da resolução · ★ = primeiro a resolver · Penalidade = minutos das resoluções + {penalty} por tentativa errada em problemas resolvidos"
       },
       "Description": {
         "starts": "Começa em",
@@ -1086,7 +1094,7 @@
           "code": "Código"
         },
         "Export": {
-          "button": "Exportar Resultados (CSV)",
+          "button": "Exportar resultados (ZIP: placar, submissões, código)",
           "success": "Resultados exportados",
           "failed": "Falha ao exportar",
           "unknownError": "Erro desconhecido"

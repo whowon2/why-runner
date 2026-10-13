@@ -145,7 +145,7 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
             className="w-full max-w-6xl mx-auto focus-visible:outline-none focus-visible:ring-0"
             value="leaderboard"
           >
-            <Leaderboard contest={contest} />
+            <Leaderboard contest={contest} userId={user.id} />
           </TabsContent>
           {isOwner && (
             <TabsContent

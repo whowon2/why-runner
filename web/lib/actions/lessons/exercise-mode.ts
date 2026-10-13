@@ -1,6 +1,6 @@
 "use server";
 
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import {
   type ExerciseMode,
@@ -10,6 +10,7 @@ import {
   type ProblemValidation,
 } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { notifyJudge } from "@/lib/judge";
 import { computeIoHash } from "@/lib/problem-io-hash";
 
 async function getOwnedExercise(exerciseId: string) {
@@ -64,7 +65,7 @@ export async function checkParsonsSolution(input: {
     })
     .returning();
 
-  await db.execute(sql`SELECT pg_notify('new_validation', ${run.id})`);
+  await notifyJudge("new_validation", run.id);
 
   return run;
 }

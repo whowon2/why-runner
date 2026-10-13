@@ -14,6 +14,9 @@ export const env = createEnv({
     BLOB_READ_WRITE_TOKEN: z.string().min(1),
     RESEND_API_KEY: z.string().min(1).optional(),
     EMAIL_FROM: z.string().min(1).optional(),
+    // Optional: lets submissions wake the idle-stopped Fly judge (lib/judge.ts).
+    FLY_API_TOKEN: z.string().min(1).optional(),
+    FLY_JUDGE_APP: z.string().min(1).default("why-runner-judge"),
   },
   client: {},
   runtimeEnv: {
@@ -27,5 +30,7 @@ export const env = createEnv({
     BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM,
+    FLY_API_TOKEN: process.env.FLY_API_TOKEN,
+    FLY_JUDGE_APP: process.env.FLY_JUDGE_APP,
   },
 });
