@@ -3,6 +3,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { classroomMembership, lesson } from "@/drizzle/schema";
+import { fail, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { computeExerciseScore } from "@/lib/exercise-score";
 
@@ -22,7 +23,7 @@ export async function getLessonReview(lessonId: string) {
   // snapshot of in-progress work. No due date set means review is always
   // open (matches the field's optional, non-blocking default elsewhere).
   if (found.dueDate && found.dueDate > new Date()) {
-    throw new Error("REVIEW_NOT_YET_AVAILABLE");
+    return fail("REVIEW_NOT_YET_AVAILABLE");
   }
 
   const [exercises, members, lessonSubmissions] = await Promise.all([
@@ -53,7 +54,7 @@ export async function getLessonReview(lessonId: string) {
     lessonSubmissions.map((s) => [s.userId, s]),
   );
 
-  return {
+  return ok({
     lesson: found,
     students: students.map((student) => {
       const answers = exercises.map((e) => {
@@ -83,5 +84,5 @@ export async function getLessonReview(lessonId: string) {
         answers,
       };
     }),
-  };
+  });
 }

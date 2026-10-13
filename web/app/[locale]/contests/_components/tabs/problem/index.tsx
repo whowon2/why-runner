@@ -16,6 +16,7 @@ import type {
   ProblemPreview,
   UserOnContest,
 } from "@/drizzle/schema";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { useUserContestStatus } from "@/hooks/use-user-contest-status";
 import { Link, usePathname } from "@/i18n/navigation";
 import { letters } from "@/lib/letters";
@@ -35,6 +36,7 @@ export function ProblemTab({
 }) {
   const t = useTranslations("ContestsPage.Tabs.Problem");
   const pathname = usePathname();
+  const isWide = useMediaQuery("(min-width: 1024px)");
   const { data: liveAnswered } = useUserContestStatus(contest.id);
   const [problem, setProblem] = useState<ProblemPreview | null>(null);
   const isOwner = contest.createdBy === user.id;
@@ -112,10 +114,15 @@ export function ProblemTab({
     : null;
   const isCurrentProblemSolved =
     currentProblemLetter && answeredLetters.includes(currentProblemLetter);
+  const showEditor =
+    !!isUserOnContest &&
+    !!contest.endDate &&
+    contest.endDate > new Date() &&
+    !isCurrentProblemSolved;
 
   return (
-    <Card className="w-full">
-      <CardContent className="flex flex-col w-full gap-4">
+    <Card className="w-full py-4">
+      <CardContent className="flex flex-col w-full gap-4 px-4">
         <SelectProblem
           contest={contest}
           setProblem={setProblem}
@@ -124,8 +131,21 @@ export function ProblemTab({
         />
 
         {problem && (
-          <ResizablePanelGroup direction="horizontal">
-            <ResizablePanel className="pr-4 gap-4 flex flex-col">
+          <ResizablePanelGroup
+            className={
+              isWide
+                ? "h-[calc(100dvh-8rem)] min-h-[560px]"
+                : "h-[140dvh] min-h-[900px]"
+            }
+            direction={isWide ? "horizontal" : "vertical"}
+          >
+            <ResizablePanel
+              className={`flex flex-col gap-4 overflow-y-auto! ${isWide ? "pr-3" : "pb-3"}`}
+              defaultSize={showEditor ? 45 : 100}
+              id="statement"
+              minSize={25}
+              order={1}
+            >
               <ProblemDescription problemId={problem.id} />
               {isUserOnContest && (
                 <SubmissionList
@@ -135,22 +155,25 @@ export function ProblemTab({
                 />
               )}
             </ResizablePanel>
-            {isUserOnContest &&
-              contest.endDate &&
-              contest.endDate > new Date() &&
-              !isCurrentProblemSolved && (
-                <Fragment>
-                  <ResizableHandle withHandle />
-                  <ResizablePanel className="pl-4">
-                    <UploadCode
-                      user={user}
-                      contest={contest}
-                      problem={problem}
-                      problemLetter={currentProblemLetter ?? ""}
-                    />
-                  </ResizablePanel>
-                </Fragment>
-              )}
+            {showEditor && (
+              <Fragment>
+                <ResizableHandle withHandle />
+                <ResizablePanel
+                  className={`flex min-h-0 flex-col ${isWide ? "pl-3" : "pt-3"}`}
+                  defaultSize={55}
+                  id="editor"
+                  minSize={30}
+                  order={2}
+                >
+                  <UploadCode
+                    user={user}
+                    contest={contest}
+                    problem={problem}
+                    problemLetter={currentProblemLetter ?? ""}
+                  />
+                </ResizablePanel>
+              </Fragment>
+            )}
           </ResizablePanelGroup>
         )}
       </CardContent>

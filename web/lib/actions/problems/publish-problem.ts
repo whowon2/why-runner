@@ -3,11 +3,12 @@
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { problem, problemValidation } from "@/drizzle/schema";
+import { fail, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { computeIoHash } from "@/lib/problem-io-hash";
 import {
   getMissingProblemFields,
-  PUBLISH_MISSING_FIELDS_PREFIX,
+  PUBLISH_MISSING_FIELDS,
 } from "./publish-problem-shared";
 
 export async function publishProblem(problemId: string) {
@@ -39,8 +40,7 @@ export async function publishProblem(problemId: string) {
     latestValidation.ioHash === currentIoHash;
   if (!hasFreshPass) fields.push("validation");
 
-  if (fields.length > 0)
-    throw new Error(`${PUBLISH_MISSING_FIELDS_PREFIX}${fields.join(",")}`);
+  if (fields.length > 0) return fail(PUBLISH_MISSING_FIELDS, { fields });
 
   const [result] = await db
     .update(problem)
@@ -48,5 +48,5 @@ export async function publishProblem(problemId: string) {
     .where(eq(problem.id, problemId))
     .returning();
 
-  return result;
+  return ok(result);
 }

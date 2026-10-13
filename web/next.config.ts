@@ -8,6 +8,13 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin();
 
 const config: NextConfig = {
+  experimental: {
+    serverActions: {
+      // Profile image uploads accept up to 5 MB (see upload-profile-image.ts),
+      // plus multipart overhead; the default 1 MB rejects them with a 413.
+      bodySizeLimit: "6mb",
+    },
+  },
   outputFileTracingIncludes: {
     "/**": ["./node_modules/@img/sharp-libvips-linux-x64/**"],
   },

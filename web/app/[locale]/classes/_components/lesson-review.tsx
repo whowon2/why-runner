@@ -21,6 +21,7 @@ import {
   useSetExerciseFeedback,
 } from "@/hooks/use-review-lesson-submission";
 import { useLessonReview } from "@/hooks/use-lesson-review";
+import { isActionError } from "@/lib/action-result";
 import { cn } from "@/lib/utils";
 
 export function LessonReview({ lessonId }: { lessonId: string }) {
@@ -30,7 +31,7 @@ export function LessonReview({ lessonId }: { lessonId: string }) {
   if (isPending) return <Skeleton className="h-96 w-full" />;
 
   if (isError) {
-    const notYetAvailable = error.message === "REVIEW_NOT_YET_AVAILABLE";
+    const notYetAvailable = isActionError(error, "REVIEW_NOT_YET_AVAILABLE");
     return (
       <div className="flex flex-col gap-6">
         <Button asChild className="w-fit px-0" variant="link">

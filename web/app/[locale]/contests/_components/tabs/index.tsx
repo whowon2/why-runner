@@ -70,13 +70,13 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
     tabFromQuery || (isOwner && !isPublished ? "settings" : "problems");
 
   return (
-    <div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">
+    <div className="flex w-full flex-col flex-1 items-center justify-center gap-4">
       <Tabs
-        className="w-full flex-1 max-w-6xl mx-auto"
+        className="w-full flex-1"
         value={tab}
         onValueChange={handleTabChange}
       >
-        <div className="flex w-full items-center justify-between gap-4 pb-4 mb-2">
+        <div className="flex w-full max-w-6xl mx-auto items-center justify-between gap-4 pb-4 mb-2">
           <div className="overflow-x-auto scrollbar-hide">
             <TabsList className="inline-flex min-w-max h-12 items-center justify-start rounded-none bg-muted/40 p-1 text-muted-foreground border border-muted/50">
               <TabsTrigger
@@ -122,7 +122,7 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
 
         <div className="mt-4">
           <TabsContent
-            className="flex w-full gap-4 focus-visible:outline-none focus-visible:ring-0"
+            className="flex w-full max-w-[1800px] mx-auto gap-4 focus-visible:outline-none focus-visible:ring-0"
             value="problems"
           >
             {contest.joinStatus === "pending" ? (
@@ -142,14 +142,14 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
             )}
           </TabsContent>
           <TabsContent
-            className="focus-visible:outline-none focus-visible:ring-0"
+            className="w-full max-w-6xl mx-auto focus-visible:outline-none focus-visible:ring-0"
             value="leaderboard"
           >
             <Leaderboard contest={contest} />
           </TabsContent>
           {isOwner && (
             <TabsContent
-              className="focus-visible:outline-none focus-visible:ring-0"
+              className="w-full max-w-6xl mx-auto focus-visible:outline-none focus-visible:ring-0"
               value="settings"
             >
               <ContestSettings contestId={contest.id} />
@@ -157,7 +157,7 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
           )}
           {isOwner && isPublished && (
             <TabsContent
-              className="focus-visible:outline-none focus-visible:ring-0"
+              className="w-full max-w-6xl mx-auto focus-visible:outline-none focus-visible:ring-0"
               value="manage"
             >
               <ContestManagement contest={contest} />
