@@ -31,6 +31,15 @@ Browser → React Query hook (/hooks/) → Server Action (/lib/actions/) → Dri
 
 Server actions handle auth checks, business logic, and DB queries. Hooks wrap actions with `useQuery`/`useMutation`.
 
+**Every export of a `"use server"` module is a public POST endpoint** callable with arbitrary arguments, whatever its TypeScript types say. So each action must:
+
+- authenticate (`getCurrentUser`) and check ownership itself;
+- parse its input with an explicit zod schema and write only listed fields (never `.values({ ...input })` / `.set({ ...input })`);
+- return other users' rows with `publicUserColumns` (`lib/public-user.ts`), never `email`;
+- pass any `submission.output` it returns through `redactReport` (`lib/judge-report.ts`) so hidden tests stay hidden.
+
+Server-only helpers (no auth of their own) go outside `lib/actions/` and start with `import "server-only"` (e.g. `lib/constraints/classify.ts`).
+
 ### Key Directory Map
 
 | Path                  | Purpose                                    |

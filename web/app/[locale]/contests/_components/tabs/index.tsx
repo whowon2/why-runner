@@ -80,14 +80,14 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
           <div className="overflow-x-auto scrollbar-hide">
             <TabsList className="inline-flex min-w-max h-12 items-center justify-start rounded-none bg-muted/40 p-1 text-muted-foreground border border-muted/50">
               <TabsTrigger
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm gap-2"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm gap-2"
                 value="problems"
               >
                 {t("Tabs.problems")}
                 <ListOrdered className="w-4 h-4" />
               </TabsTrigger>
               <TabsTrigger
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-amber-600 dark:data-[state=active]:text-amber-400 data-[state=active]:shadow-sm gap-2"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-amber-600 dark:data-[state=active]:text-amber-400 data-[state=active]:shadow-sm gap-2"
                 value="leaderboard"
               >
                 {t("Tabs.leaderboard")}
@@ -95,7 +95,7 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
               </TabsTrigger>
               {isOwner && (
                 <TabsTrigger
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:shadow-sm gap-2"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:shadow-sm gap-2"
                   value="settings"
                 >
                   {t("Tabs.settings")}
@@ -104,7 +104,7 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
               )}
               {isOwner && isPublished && (
                 <TabsTrigger
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-rose-600 dark:data-[state=active]:text-rose-400 data-[state=active]:shadow-sm"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-rose-600 dark:data-[state=active]:text-rose-400 data-[state=active]:shadow-sm"
                   value="manage"
                 >
                   {t("Tabs.manage")}

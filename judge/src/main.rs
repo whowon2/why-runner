@@ -75,7 +75,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .filter(|&secs| secs > 0)
         .map(Duration::from_secs);
     if let Some(after) = idle_exit_after {
-        println!("Idle auto-stop enabled: exiting after {:?} without jobs", after);
+        println!(
+            "Idle auto-stop enabled: exiting after {:?} without jobs",
+            after
+        );
     }
     let mut last_activity = Instant::now();
 
@@ -133,7 +136,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         if let Some(after) = idle_exit_after {
             if last_activity.elapsed() >= after {
-                println!("Idle for {:?} with no jobs, exiting (idle auto-stop)", after);
+                println!(
+                    "Idle for {:?} with no jobs, exiting (idle auto-stop)",
+                    after
+                );
                 return Ok(());
             }
         }
@@ -319,6 +325,42 @@ async fn grade(
     let mut runtime_ms: i64 = 0;
     let mut memory_kb: Option<i64> = None;
 
+    let time_limit = runner::time_limit_secs(language, problem.time_limit_ms);
+
+    // Compile once per submission, in its own box, outside the per-test time
+    // limit. A failed compile (or sandbox failure) is reported against test 1
+    // in the same shape a failed run has, since it applies to every test.
+    let prepared = if total_tests > 0 {
+        match runner::prepare(code, language).await {
+            Ok(prepared) => Some(prepared),
+            Err(result) => {
+                runtime_ms += result.duration_ms;
+                let error = if result.is_compile_error {
+                    println!("\t🛠️ Compile Error");
+                    format!("Compilation Error:\n{}", result.stderr)
+                } else {
+                    result.stderr
+                };
+                let report = JudgeReport {
+                    passed: false,
+                    total_tests,
+                    passed_count: 0,
+                    failure_details: Some(TestCaseResult {
+                        index: 1,
+                        input: problem.inputs[0].clone(),
+                        expected: problem.outputs.first().cloned().unwrap_or_default(),
+                        actual: String::new(),
+                        error: Some(error),
+                    }),
+                    constraint_violation: None,
+                };
+                return (report, runtime_ms, memory_kb);
+            }
+        }
+    } else {
+        None
+    };
+
     for (i, input) in problem.inputs.iter().enumerate() {
         let expected = match problem.outputs.get(i) {
             Some(o) => o,
@@ -328,32 +370,18 @@ async fn grade(
                 break;
             }
         };
-        let time_limit = 20;
+        let Some(prepared) = prepared.as_ref() else {
+            break;
+        };
 
-        // Run code
-        let result = runner::run(code, input, language, time_limit).await;
+        let result = runner::execute(prepared, input, time_limit).await;
         let actual = result.stdout.trim().to_string();
         runtime_ms += result.duration_ms;
         if let Some(kb) = result.peak_memory_kb {
             memory_kb = Some(memory_kb.map_or(kb, |current| current.max(kb)));
         }
 
-        if result.is_compile_error {
-            // Always stops, even when run_all: a compile error is identical
-            // on every test case (the code never runs), so re-running it
-            // would only waste sandbox time for no new information.
-            all_passed = false;
-            failure_details = Some(TestCaseResult {
-                index: i + 1,
-                input: input.clone(),
-                expected: expected.clone(),
-                actual: String::new(),
-                error: Some(format!("Compilation Error:\n{}", result.stderr)),
-            });
-
-            println!("\t🛠️ Compile Error on Test {}", i + 1);
-            break;
-        } else if result.is_timeout {
+        if result.is_timeout {
             all_passed = false;
             if failure_details.is_none() {
                 failure_details = Some(TestCaseResult {
@@ -432,7 +460,64 @@ mod grade_tests {
         Problem {
             inputs: inputs.iter().map(|s| s.to_string()).collect(),
             outputs: outputs.iter().map(|s| s.to_string()).collect(),
+            time_limit_ms: 1000,
         }
+    }
+
+    // Burns ~2s of CPU, then echoes its input. Used to check the problem's
+    // own time limit is what the judge enforces.
+    const BUSY_2S_C: &str = "#include <stdio.h>\n#include <time.h>\nint main(){clock_t s=clock();while((double)(clock()-s)/CLOCKS_PER_SEC<2.0){}int x;scanf(\"%d\",&x);printf(\"%d\\n\",x);return 0;}";
+
+    #[tokio::test]
+    async fn problem_time_limit_is_enforced() {
+        let p = problem(&["1"], &["1"]); // 1000ms → 1s for C
+        let (report, _, _) = grade(BUSY_2S_C, Language::C, &p, false).await;
+        assert!(!report.passed);
+        let details = report.failure_details.unwrap();
+        assert_eq!(details.actual, "Execution timed out");
+        assert!(details.error.unwrap_or_default().contains("(1s)"));
+    }
+
+    #[tokio::test]
+    async fn generous_time_limit_lets_slow_solution_pass() {
+        let mut p = problem(&["1"], &["1"]);
+        p.time_limit_ms = 5000;
+        let (report, _, _) = grade(BUSY_2S_C, Language::C, &p, false).await;
+        assert!(
+            report.passed,
+            "2s of CPU should fit a 5s limit, got: {:?}",
+            report.failure_details
+        );
+    }
+
+    #[tokio::test]
+    async fn compiled_once_runs_every_test_case() {
+        // The artifact from the single compile step must be reusable across
+        // fresh boxes, one per test.
+        let code = "#include <stdio.h>\nint main(){int x;scanf(\"%d\",&x);printf(\"%d\\n\",x*2);return 0;}";
+        let p = problem(&["1", "2", "3"], &["2", "4", "6"]);
+        let (report, _, _) = grade(code, Language::C, &p, false).await;
+        assert!(report.passed, "got: {:?}", report.failure_details);
+        assert_eq!(report.passed_count, 3);
+    }
+
+    #[tokio::test]
+    async fn java_inner_classes_survive_the_compile_step() {
+        let code = "public class Main{static class Twice{int f(int x){return 2*x;}}public static void main(String[] a){java.util.Scanner sc=new java.util.Scanner(System.in);System.out.println(new Twice().f(sc.nextInt()));}}";
+        let p = problem(&["4", "5"], &["8", "10"]);
+        let (report, _, _) = grade(code, Language::Java, &p, false).await;
+        assert!(report.passed, "got: {:?}", report.failure_details);
+    }
+
+    #[tokio::test]
+    async fn compile_error_keeps_compiler_output() {
+        let p = problem(&["1"], &["1"]);
+        let (report, _, _) = grade("int main( {", Language::C, &p, false).await;
+        let details = report.failure_details.unwrap();
+        let error = details.error.unwrap_or_default();
+        assert!(error.starts_with("Compilation Error:"), "got: {error}");
+        assert!(error.contains("solution.c"), "got: {error}");
+        assert_eq!(details.index, 1);
     }
 
     #[tokio::test]
@@ -470,7 +555,7 @@ mod grade_tests {
 
     #[tokio::test]
     async fn compile_error_stops_immediately_regardless_of_run_all() {
-        // Python has no compile step (see `run_python`), so this needs a
+        // Python has no compile step (see `runner::prepare`), so this needs a
         // compiled language to actually exercise `is_compile_error`.
         let p = problem(&["1", "2"], &["1", "2"]);
         let bad_code = "int main( { return 0; }"; // malformed C, won't compile
@@ -524,7 +609,7 @@ mod grade_tests {
         // Separate from `every_language_can_pass_a_trivial_echo` because
         // Portugol needs Portugol syntax, not a shared echo snippet, and its
         // input goes through the space/newline normalization in
-        // `run_portugol` before reaching the box's stdin file.
+        // `runner::execute` before reaching the box's stdin file.
         let p = problem(&["7"], &["7"]);
         let code =
             "programa {\n\tfuncao inicio() {\n\t\tinteiro x\n\t\tleia(x)\n\t\tescreva(x)\n\t}\n}";
@@ -553,7 +638,7 @@ mod grade_tests {
     #[tokio::test]
     async fn tle_is_detected_via_isolate_wall_time() {
         // Python busy-loop with no output — must be killed by isolate's
-        // --wall-time, not just hang until the crate's own 20s+5s watchdog.
+        // --wall-time, not just hang until the crate's own outer watchdog.
         let p = problem(&["1"], &["1"]);
         let code = "while True: pass";
         let (report, _, _) = grade(code, Language::Python, &p, false).await;

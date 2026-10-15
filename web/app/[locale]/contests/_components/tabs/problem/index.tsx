@@ -169,12 +169,7 @@ export function ProblemTab({
                   minSize={30}
                   order={2}
                 >
-                  <UploadCode
-                    user={user}
-                    contest={contest}
-                    problem={problem}
-                    problemLetter={currentProblemLetter ?? ""}
-                  />
+                  <UploadCode contest={contest} problem={problem} />
                 </ResizablePanel>
               </Fragment>
             )}

@@ -1,9 +1,40 @@
-"use server";
+import "server-only";
 
 import { and, eq, inArray, isNotNull } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { exerciseConstraint, submission } from "@/drizzle/schema";
-import { classifyAlgorithmRequirement } from "./classify-algorithm-requirement";
+import { z } from "zod";
+import { generateJson } from "@/lib/ai";
+import {
+  SYSTEM_INSTRUCTION_ALGORITHM_CLASSIFICATION,
+  getAlgorithmClassificationPrompt,
+} from "@/lib/prompt";
+
+// Server-only on purpose: these used to live in `"use server"` files, which
+// made them public, unauthenticated endpoints (a free LLM proxy). Every
+// export of a `lib/actions/` module is callable from the browser.
+
+const ClassificationSchema = z.object({
+  satisfied: z.boolean(),
+  rationale: z.string(),
+});
+
+export type AlgorithmClassification = z.infer<typeof ClassificationSchema>;
+
+// No auth check by design: only ever called from
+// `resolvePendingConstraintClassifications` below, which already scopes to
+// submissions tied to a constrained lesson.
+async function classifyAlgorithmRequirement(input: {
+  requirement: string;
+  code: string;
+  language: string;
+}): Promise<AlgorithmClassification> {
+  return generateJson("algorithm-classification", {
+    system: SYSTEM_INSTRUCTION_ALGORITHM_CLASSIFICATION,
+    prompt: getAlgorithmClassificationPrompt(input),
+    schema: ClassificationSchema,
+  });
+}
 
 // Web-side pickup of PENDING_CONSTRAINT_CLASSIFICATION rows (task 4.2). The
 // judge writes this status (never network-calling an LLM itself, see

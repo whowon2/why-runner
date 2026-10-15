@@ -50,8 +50,8 @@ fn alloc_box_id() -> u32 {
 }
 
 pub struct IsolateLimits {
-    pub time_secs: u64,
-    pub wall_time_secs: u64,
+    pub time_secs: f64,
+    pub wall_time_secs: f64,
     pub mem_kb: u64,
     pub processes: u32,
 }

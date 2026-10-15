@@ -37,7 +37,7 @@ const updateProfileSchema = z.object({
   website: z.union([z.url(), z.literal("")]).optional(),
 });
 
-type ProfileFormUser = User & {
+type ProfileFormUser = Pick<User, "id"> & {
   username?: string;
   bio?: string | null;
   location?: string | null;

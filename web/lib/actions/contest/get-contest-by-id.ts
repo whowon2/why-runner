@@ -51,9 +51,15 @@ export async function getContest(id: string) {
 }
 
 export async function getContestBySlug(slug: string) {
+  const currentUser = await getCurrentUser({});
+
   const found = await db.query.contest.findFirst({
     where: (contests, { eq }) => eq(contests.slug, slug),
   });
 
-  return found ?? null;
+  if (!found) return null;
+  if (found.status === "draft" && found.createdBy !== currentUser.id)
+    return null;
+
+  return found;
 }

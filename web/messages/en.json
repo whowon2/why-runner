@@ -1508,5 +1508,20 @@
     "shortest-paths": "Shortest paths",
     "data-structures": "Data structures",
     "bit-manipulation": "Bit manipulation"
+  },
+  "ActionErrors": {
+    "RATE_LIMITED": "Too many requests. Try again in {seconds} seconds.",
+    "CODE_TOO_LARGE": "Your code is too large (max {max} characters).",
+    "CONTEST_NOT_STARTED": "This contest hasn't started yet.",
+    "CONTEST_STARTED": "This contest has already started, so its dates and problems can no longer be changed.",
+    "unknown": "Something went wrong. Please try again."
+  },
+  "JudgeReport": {
+    "wrongAnswerOnTest": "Wrong answer on test {index}",
+    "runtimeErrorOnTest": "Runtime error on test {index}",
+    "timeLimitOnTest": "Time limit exceeded on test {index}",
+    "failedOnTest": "Failed on test {index}",
+    "hiddenTestNote": "This is a hidden test case, so its input and output are not shown.",
+    "passedCount": "{passed} of {total} tests passed"
   }
 }

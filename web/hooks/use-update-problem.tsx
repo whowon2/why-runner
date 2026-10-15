@@ -1,11 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import type { Problem } from "@/drizzle/schema";
-import { updateProblem } from "@/lib/actions/problems/update-problem";
+import {
+  type UpdateProblemInput,
+  updateProblem,
+} from "@/lib/actions/problems/update-problem";
 
-export type UpdateProblemInput = {
-  problemId: string;
-  problem: Partial<Problem>;
-};
+export type { UpdateProblemInput };
 
 export const useUpdateProblem = () =>
   useMutation({

@@ -53,10 +53,10 @@ html {
   --radius: 0rem;
   --background: oklch(0.99 0 0);
   --foreground: oklch(0.15 0 0);
-  --card: oklch(0.99 0 0);
-  --card-foreground: oklch(0.15 0 0);
-  --popover: oklch(0.99 0 0);
-  --popover-foreground: oklch(0.15 0 0);
+  --card: var(--background);
+  --card-foreground: var(--foreground);
+  --popover: var(--background);
+  --popover-foreground: var(--foreground);
   --primary: oklch(0.55 0.16 145);
   --primary-foreground: oklch(0.99 0 0);
   --secondary: oklch(0.93 0.03 145);
@@ -74,8 +74,8 @@ html {
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.99 0 0);
-  --sidebar-foreground: oklch(0.15 0 0);
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
   --sidebar-primary: oklch(0.55 0.16 145);
   --sidebar-primary-foreground: oklch(0.99 0 0);
   --sidebar-accent: oklch(0.93 0.03 145);
@@ -87,10 +87,10 @@ html {
 .dark {
   --background: oklch(0.09 0 0);
   --foreground: oklch(0.95 0 0);
-  --card: oklch(0.09 0 0);
-  --card-foreground: oklch(0.95 0 0);
-  --popover: oklch(0.09 0 0);
-  --popover-foreground: oklch(0.95 0 0);
+  --card: var(--background);
+  --card-foreground: var(--foreground);
+  --popover: var(--background);
+  --popover-foreground: var(--foreground);
   --primary: oklch(0.75 0.19 145);
   --primary-foreground: oklch(0.09 0 0);
   --secondary: oklch(0.2 0.05 145);
@@ -108,8 +108,8 @@ html {
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.09 0 0);
-  --sidebar-foreground: oklch(0.95 0 0);
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
   --sidebar-primary: oklch(0.75 0.19 145);
   --sidebar-primary-foreground: oklch(0.09 0 0);
   --sidebar-accent: oklch(0.2 0.05 145);
