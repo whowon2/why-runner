@@ -1,9 +1,7 @@
 ## Purpose
 
 Defines the standalone problem page as a tabbed workspace (Task, Submit, Results, Statistics, Tests), giving users a single, linkable place to read a problem, submit a solution outside a contest, review their own results, view solve statistics, and access test cases.
-
 ## Requirements
-
 ### Requirement: Standalone problem page is organized into tabs
 The system SHALL present the standalone problem page as a tabbed workspace with exactly 5 tabs: Task, Submit, Results, Statistics, and Tests. Tab selection SHALL be reflected in the URL so tabs are directly linkable and back/forward navigation switches tabs.
 
@@ -46,7 +44,11 @@ The Results tab SHALL show a table of the current user's own submissions to this
 
 #### Scenario: Submission details view
 - **WHEN** a user opens the details view for a submission row
-- **THEN** the system SHALL show the submission's status/result detail, the submitted code, and the input/output for the relevant test case(s)
+- **THEN** the system SHALL show the submission's status/result detail and the submitted code. The input/output for the failing test case SHALL be shown only as allowed by the submission-feedback-visibility capability: full detail for sample tests or when the viewer created the problem, and only the verdict and test number for hidden tests.
+
+#### Scenario: Hidden test failure details view
+- **WHEN** a user who did not create the problem opens the details view of a submission that failed a hidden test
+- **THEN** the system SHALL show a localized message naming the verdict and test number, and SHALL NOT show that test's input, expected output, actual output, or stderr
 
 ### Requirement: Statistics tab shows problem-wide solve statistics
 The Statistics tab SHALL show the number of users who solved the problem, the number of users who attempted it, and the resulting success rate.
@@ -73,3 +75,4 @@ The Tests tab SHALL list sample test cases (input/output pairs) for any user. If
 #### Scenario: Download locked before solving
 - **WHEN** a user with no `PASSED` submission for the problem requests to download tests from the Tests tab
 - **THEN** the system SHALL NOT provide the full test-case archive (only sample cases remain visible)
+

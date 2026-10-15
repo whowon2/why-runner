@@ -1,9 +1,7 @@
 ## Purpose
 
 Defines the contest lifecycle: how a contest is created as a draft, who can see draft contests, the validation required to publish a draft, and the editing restrictions that apply once a contest is published and has started.
-
 ## Requirements
-
 ### Requirement: Instant draft creation
 Clicking "Create Contest" SHALL immediately create a persisted contest with `status = draft` and no required user input, then navigate the user to that contest's Settings tab. The system SHALL NOT show a multi-step form before the contest row exists.
 
@@ -43,7 +41,7 @@ The system SHALL provide a publish action that transitions a contest from `draft
 - **THEN** the contest's status becomes `published` immediately and the user is not shown a modal dialog they must dismiss or fill out before continuing
 
 ### Requirement: Published contest editing restrictions
-Once a contest is `published`, its `startDate`, `endDate`, and problem list SHALL remain editable only until the contest's `startDate` has passed (matching existing pre-start editing behavior), and SHALL become read-only once the contest has started.
+Once a contest is `published`, its `startDate`, `endDate`, and problem list SHALL remain editable only until the contest's `startDate` has passed (matching existing pre-start editing behavior). They SHALL become read-only once the contest has started. The problem list covers adding, removing, and reordering. The server actions SHALL enforce this, not only the UI.
 
 #### Scenario: Editing a published contest before it starts
 - **WHEN** the creator edits a published contest whose `startDate` is still in the future
@@ -52,6 +50,10 @@ Once a contest is `published`, its `startDate`, `endDate`, and problem list SHAL
 #### Scenario: Editing a published contest after it starts
 - **WHEN** the creator attempts to edit a published contest whose `startDate` has already passed
 - **THEN** the editable fields are disabled/rejected, consistent with current pre-start-only editing behavior
+
+#### Scenario: Direct action call after start
+- **WHEN** the creator calls `updateContest` with new dates, or calls the add/remove/reorder problem actions, on a published contest whose `startDate` has passed, bypassing the UI
+- **THEN** the action SHALL fail with a `CONTEST_STARTED` action failure and SHALL NOT modify the contest. Name, description, privacy, and AI assistance level remain editable.
 
 ### Requirement: Draft status display is independent of dates
 While a contest's `status` is `draft`, the system SHALL display and treat it as `draft` regardless of whether `startDate`/`endDate` are set, in the future, in progress, or in the past. Only the explicit publish action SHALL change a contest's displayed/effective status away from `draft`.
@@ -71,3 +73,4 @@ While a contest's `status` is `draft`, the system SHALL display and treat it as 
 #### Scenario: Editing dates on a draft does not publish it
 - **WHEN** the creator edits and saves start/end dates on a draft contest via the Settings form
 - **THEN** the contest's `status` remains `draft` in the database and in the UI, without requiring the explicit publish action
+
