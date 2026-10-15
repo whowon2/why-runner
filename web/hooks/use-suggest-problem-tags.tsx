@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { unwrap } from "@/lib/action-result";
 import {
   type SuggestProblemTagsInput,
   suggestProblemTags,
@@ -9,6 +10,6 @@ import {
 export const useSuggestProblemTags = () =>
   useMutation({
     mutationFn: async (input: SuggestProblemTagsInput) => {
-      return await suggestProblemTags(input);
+      return unwrap(await suggestProblemTags(input));
     },
   });

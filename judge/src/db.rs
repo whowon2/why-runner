@@ -64,10 +64,12 @@ impl DbClient {
     }
 
     pub async fn get_problem(&self, problem_id: Uuid) -> Result<Problem> {
-        sqlx::query_as::<_, Problem>("SELECT inputs, outputs FROM problem WHERE id = $1")
-            .bind(problem_id)
-            .fetch_one(&self.pool)
-            .await
+        sqlx::query_as::<_, Problem>(
+            "SELECT inputs, outputs, time_limit_ms FROM problem WHERE id = $1",
+        )
+        .bind(problem_id)
+        .fetch_one(&self.pool)
+        .await
     }
 
     /// All active solution constraints for an exercise (structural rules,

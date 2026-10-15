@@ -1,18 +1,19 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { contestLeaderboardKey } from "@/hooks/use-contest-leaderboard";
-import { addProblemToContest } from "@/lib/actions/contest/add-problem";
+import { unwrap } from "@/lib/action-result";
+import {
+  type AddProblemToContestInput,
+  addProblemToContest,
+} from "@/lib/actions/contest/add-problem";
 
-export type AddProblemToContestInput = {
-  contestId: string;
-  problemId: string;
-};
+export type { AddProblemToContestInput };
 
 export const useAddProblemToContest = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (input: AddProblemToContestInput) => {
-      return await addProblemToContest(input);
+      return unwrap(await addProblemToContest(input));
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({

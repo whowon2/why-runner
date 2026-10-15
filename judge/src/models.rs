@@ -46,6 +46,9 @@ pub struct Submission {
 pub struct Problem {
     pub inputs: Vec<String>,
     pub outputs: Vec<String>,
+    /// Author-set per-test CPU limit; the judge scales it per language
+    /// (`runner::time_limit_secs`).
+    pub time_limit_ms: i32,
 }
 
 #[derive(Debug, Type, Clone, Copy, PartialEq)]

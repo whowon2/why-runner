@@ -4,9 +4,16 @@ import { eq } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/drizzle/db";
 import { AI_ASSISTANCE_LEVELS, contest } from "@/drizzle/schema";
+import { type ActionResult, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
-import { type AiHintLevel, SYSTEM_INSTRUCTION, getUserPrompt } from "../prompt";
+import {
+  type AiHintLevel,
+  clampLocale,
+  SYSTEM_INSTRUCTION,
+  getUserPrompt,
+} from "../prompt";
 import { generateText } from "@/lib/ai";
+import { consumeAiQuota } from "@/lib/rate-limit";
 
 export type GetAIHelpInput = {
   submissionId: string;
@@ -19,8 +26,9 @@ export async function getAIHelp({
   submissionId,
   level,
   locale,
-}: GetAIHelpInput) {
+}: GetAIHelpInput): Promise<ActionResult<string, "RATE_LIMITED">> {
   const currentUser = await getCurrentUser({});
+  const safeLocale = clampLocale(locale);
 
   // Load from the DB rather than trusting a client-sent submission object.
   const found = await db.query.submission.findFirst({
@@ -53,7 +61,7 @@ export async function getAIHelp({
   let blockLabels: string[] | undefined;
   if (submission.editorMode === "blocks") {
     const t = await getTranslations({
-      locale: locale === "en" ? "en" : "br",
+      locale: safeLocale,
       namespace: "Blocks",
     });
     blockLabels = [
@@ -67,14 +75,19 @@ export async function getAIHelp({
     ];
   }
 
-  return generateText("ai-help", {
+  const quota = await consumeAiQuota(currentUser.id, "ai-help");
+  if (!quota.ok) return quota;
+
+  const text = await generateText("ai-help", {
     system: SYSTEM_INSTRUCTION,
     prompt: getUserPrompt({
       problem,
       submission,
-      locale,
+      locale: safeLocale,
       blockLabels,
       level: hintLevel,
     }),
   });
+
+  return ok(text);
 }

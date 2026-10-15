@@ -2,6 +2,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
+import { publicUserColumns } from "@/lib/public-user";
 import { contest, userOnContest } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 
@@ -22,6 +23,6 @@ export async function getPendingJoins(contestId: string) {
       eq(userOnContest.contestId, contestId),
       eq(userOnContest.joinStatus, "pending"),
     ),
-    with: { user: true },
+    with: { user: { columns: publicUserColumns } },
   });
 }

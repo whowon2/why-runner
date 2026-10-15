@@ -20,7 +20,9 @@ import {
   type AiAssistance,
   type Submission,
 } from "@/drizzle/schema";
+import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useAIHelp } from "@/hooks/use-ai-help";
+import { isActionError } from "@/lib/action-result";
 import type { AiHintLevel } from "@/lib/prompt";
 
 /**
@@ -69,6 +71,7 @@ export function AIDialog({
   maxLevel: AiAssistance | null;
 }) {
   const { mutate, isPending } = useAIHelp();
+  const errorMessage = useActionErrorMessage();
   const locale = useLocale();
   const t = useTranslations("ContestsPage.Tabs.Problem.Submissions.AI");
   const tLevels = useTranslations("ContestsPage.AiAssistanceLevels");
@@ -103,7 +106,9 @@ export function AIDialog({
       {
         onError: (e) => {
           console.error("error", e);
-          setError(t("error"));
+          setError(
+            isActionError(e, "RATE_LIMITED") ? errorMessage(e) : t("error"),
+          );
         },
         onSuccess: (data) => {
           const helpText = data ?? t("noResponse");
