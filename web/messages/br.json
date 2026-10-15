@@ -1508,5 +1508,20 @@
     "shortest-paths": "Caminhos mínimos",
     "data-structures": "Estruturas de dados",
     "bit-manipulation": "Manipulação de bits"
+  },
+  "ActionErrors": {
+    "RATE_LIMITED": "Muitas solicitações. Tente novamente em {seconds} segundos.",
+    "CODE_TOO_LARGE": "Seu código é grande demais (máximo de {max} caracteres).",
+    "CONTEST_NOT_STARTED": "Esta competição ainda não começou.",
+    "CONTEST_STARTED": "Esta competição já começou, então suas datas e problemas não podem mais ser alterados.",
+    "unknown": "Algo deu errado. Tente novamente."
+  },
+  "JudgeReport": {
+    "wrongAnswerOnTest": "Resposta errada no teste {index}",
+    "runtimeErrorOnTest": "Erro de execução no teste {index}",
+    "timeLimitOnTest": "Tempo limite excedido no teste {index}",
+    "failedOnTest": "Falhou no teste {index}",
+    "hiddenTestNote": "Este é um caso de teste oculto, então a entrada e a saída não são exibidas.",
+    "passedCount": "{passed} de {total} testes aprovados"
   }
 }

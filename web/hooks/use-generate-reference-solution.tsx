@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { unwrap } from "@/lib/action-result";
 import type { Language } from "@/drizzle/schema";
 import { generateReferenceSolution } from "@/lib/actions/problems/generate-reference-solution";
 
@@ -10,6 +11,6 @@ type GenerateReferenceSolutionInput = {
 export const useGenerateReferenceSolution = () =>
   useMutation({
     mutationFn: async (input: GenerateReferenceSolutionInput) => {
-      return await generateReferenceSolution(input.problemId, input.language);
+      return unwrap(await generateReferenceSolution(input.problemId, input.language));
     },
   });

@@ -24,12 +24,15 @@ import type {
   ProblemPreview,
 } from "@/drizzle/schema";
 import { CreateProblemButton } from "@/app/[locale]/problems/_components/create-button";
+import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useAddProblemToContest } from "@/hooks/use-add-problem";
 import { useProblems } from "@/hooks/use-problems";
-import { useRemoveProblemToContest as useRemoveProblemFromContest } from "@/hooks/use-remove-problem";
+import { useRemoveProblemFromContest } from "@/hooks/use-remove-problem";
 import { Link } from "@/i18n/navigation";
 import { contestLeaderboardKey } from "@/hooks/use-contest-leaderboard";
+import { unwrap } from "@/lib/action-result";
 import { reorderProblems } from "@/lib/actions/contest/reorder-problems";
+import { isContestLocked } from "@/lib/contest/editable";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -55,8 +58,9 @@ export function EditContestProblems({
   });
   const { mutate: addProblem, isPending: isAddPending } =
     useAddProblemToContest();
+  const errorMessage = useActionErrorMessage();
   const queryClient = useQueryClient();
-  const canReorder = !contest.startDate || new Date() < contest.startDate;
+  const canReorder = !isContestLocked(contest);
 
   const sorted = [...contest.problems].sort((a, b) => a.order - b.order);
   const [localOrder, setLocalOrder] = useState<string[]>(
@@ -92,7 +96,7 @@ export function EditContestProblems({
   async function handleSaveOrder() {
     setIsSaving(true);
     try {
-      await reorderProblems(contest.id, localOrder);
+      unwrap(await reorderProblems(contest.id, localOrder));
       toast.success(t("orderSaved"));
       queryClient.invalidateQueries({
         queryKey: ["contest", String(contest.id)],
@@ -102,7 +106,7 @@ export function EditContestProblems({
       });
     } catch (e) {
       toast.error(t("orderError"), {
-        description: e instanceof Error ? e.message : String(e),
+        description: errorMessage(e),
       });
     } finally {
       setIsSaving(false);
@@ -119,7 +123,7 @@ export function EditContestProblems({
       { contestId: contest.id, problemId: id },
       {
         onError(error) {
-          toast.error(t("addError"), { description: error.message });
+          toast.error(t("addError"), { description: errorMessage(error) });
         },
         onSuccess() {
           toast.success(t("addSuccess"));
@@ -268,13 +272,16 @@ function RemoveProblemButton({
   const t = useTranslations("ContestsPage.Tabs.Settings.Problems");
   const { mutate: removeProblem, isPending: isRemovePending } =
     useRemoveProblemFromContest();
+  const errorMessage = useActionErrorMessage();
 
   function handleRemoveProblem(id: string) {
     removeProblem(
       { contestId: contest.id, problemId: id },
       {
         onError(error) {
-          toast.error(t("removeError"), { description: error.message });
+          toast.error(t("removeError"), {
+            description: errorMessage(error),
+          });
         },
         onSuccess() {
           toast.success(t("removeSuccess"));

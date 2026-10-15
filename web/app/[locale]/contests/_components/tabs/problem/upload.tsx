@@ -2,7 +2,6 @@
 
 import Editor from "@monaco-editor/react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { User } from "better-auth";
 import { FilePlus2, Save, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -25,18 +24,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { Contest, Language, ProblemPreview } from "@/drizzle/schema";
+import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useCreateSubmission } from "@/hooks/use-create-submission";
 
 export function UploadCode({
-  user,
   problem,
   contest,
-  problemLetter,
 }: {
-  user: User;
   problem: ProblemPreview;
   contest: Contest;
-  problemLetter: string;
 }) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [code, setCode] = useState("");
@@ -49,6 +45,7 @@ export function UploadCode({
   );
   const tAI = useTranslations("ContestsPage.Tabs.Problem.Submissions.AI");
   const queryClient = useQueryClient();
+  const errorMessage = useActionErrorMessage();
 
   const extensions = {
     c: ["c"],
@@ -76,12 +73,12 @@ export function UploadCode({
         contestId: contest.id,
         language,
         problemId: problem.id,
-        questionLetter: problemLetter,
-        userId: user.id,
       },
       {
         onError: (error) => {
-          toast.error(tUpload("failedSubmit"), { description: error.message });
+          toast.error(tUpload("failedSubmit"), {
+            description: errorMessage(error),
+          });
         },
         onSuccess: () => {
           toast.success(tUpload("submitted"));

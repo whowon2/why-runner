@@ -2,8 +2,10 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
+import { publicUserColumns } from "@/lib/public-user";
 import { contest } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { redactSubmission } from "@/lib/judge-report";
 
 const problemColumns = { inputs: false, outputs: false } as const;
 
@@ -21,7 +23,7 @@ export async function getContestSubmissions(input: {
 
   const isOwner = owned?.createdBy === currentUser.id;
 
-  return db.query.submission.findMany({
+  const rows = await db.query.submission.findMany({
     where: (submissions, { and, eq }) => {
       const conditions = [eq(submissions.contestId, input.contestId)];
       if (!isOwner) conditions.push(eq(submissions.userId, currentUser.id));
@@ -30,8 +32,10 @@ export async function getContestSubmissions(input: {
       return and(...conditions);
     },
     with: {
-      user: true,
+      user: { columns: publicUserColumns },
       problem: { columns: problemColumns },
     },
   });
+
+  return rows.map((row) => redactSubmission(row, currentUser.id));
 }

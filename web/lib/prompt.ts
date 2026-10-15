@@ -51,6 +51,12 @@ Your hint must only be about the order or nesting of lines (which part runs too 
 
 export type AiHintLevel = Exclude<AiAssistance, "off">;
 
+/** Maps any client-sent locale to a supported one before it reaches a prompt. */
+export const clampLocale = (locale: string): "en" | "br" =>
+  locale === "en" ? "en" : "br";
+
+const LOCALE_LANGUAGE = { en: "English", br: "Brazilian Portuguese" } as const;
+
 /**
  * Contest hint-ladder rules. Each level caps how much the hint may reveal;
  * the examples anchor the expected granularity.
@@ -144,7 +150,7 @@ ${
 If there is a logic error, explain why the input leads to the expected output and why the student output is wrong.
 If there is a runtime error (traceback), explain what it means in this context.`
 }
-Return your response in: ${input.locale}
+Return your response in: ${LOCALE_LANGUAGE[clampLocale(input.locale)]}
 `;
 };
 

@@ -21,6 +21,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import type { Language } from "@/drizzle/schema";
+import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useGenerateReferenceSolution } from "@/hooks/use-generate-reference-solution";
 import { useProblemValidation } from "@/hooks/use-problem-validation";
 import { useTriggerProblemValidation } from "@/hooks/use-trigger-problem-validation";
@@ -48,6 +49,7 @@ export function ProblemValidationPanel({ problemId }: { problemId: string }) {
     useTriggerProblemValidation();
   const { mutate: generateReference, isPending: isGenerating } =
     useGenerateReferenceSolution();
+  const errorMessage = useActionErrorMessage();
 
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState<Language | null>(null);
@@ -111,7 +113,9 @@ export function ProblemValidationPanel({ problemId }: { problemId: string }) {
       { problemId, language },
       {
         onError: (error) => {
-          toast.error(t("generateFailed"), { description: error.message });
+          toast.error(t("generateFailed"), {
+            description: errorMessage(error),
+          });
         },
         onSuccess: (generated) => {
           setCode(generated);

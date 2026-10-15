@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { AI_ASSISTANCE_LEVELS, type Contest } from "@/drizzle/schema";
+import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useUpdateContest } from "@/hooks/use-update-contest";
 import { useRouter } from "@/i18n/navigation";
 
@@ -98,6 +99,7 @@ export function EditContestForm({ contest }: { contest: Contest }) {
   const t = useTranslations("ContestsPage.Tabs.Settings.Form");
   const tLevels = useTranslations("ContestsPage.AiAssistanceLevels");
   const { mutate: updateContest, isPending } = useUpdateContest();
+  const errorMessage = useActionErrorMessage();
   const queryClient = useQueryClient();
   const router = useRouter();
   const formSchema = useSettingsFormSchema();
@@ -129,7 +131,9 @@ export function EditContestForm({ contest }: { contest: Contest }) {
       },
       {
         onError: (error) => {
-          toast.error(t("failedUpdate"), { description: error.message });
+          toast.error(t("failedUpdate"), {
+            description: errorMessage(error),
+          });
         },
         onSuccess: (updated) => {
           toast.success(t("updated"));

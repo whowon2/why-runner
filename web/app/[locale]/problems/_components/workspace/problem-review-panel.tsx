@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ProblemReview } from "@/lib/actions/problems/review-problem";
+import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useReviewProblem } from "@/hooks/use-review-problem";
 
 export function ProblemReviewPanel({
@@ -19,13 +20,14 @@ export function ProblemReviewPanel({
 }) {
   const t = useTranslations("ProblemsPage.Create.Review");
   const { mutate: review, isPending } = useReviewProblem();
+  const errorMessage = useActionErrorMessage();
   const [result, setResult] = useState<ProblemReview | null>(null);
   const [addedIndexes, setAddedIndexes] = useState<Set<number>>(new Set());
 
   function handleReview() {
     review(problemId, {
       onError: (error) => {
-        toast.error(t("reviewFailed"), { description: error.message });
+        toast.error(t("reviewFailed"), { description: errorMessage(error) });
       },
       onSuccess: (data) => {
         setResult(data);

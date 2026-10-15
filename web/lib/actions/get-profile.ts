@@ -3,11 +3,13 @@
 import { count, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { contest, problem } from "@/drizzle/schema";
+import { publicUserColumns } from "@/lib/public-user";
 
 export async function getProfile(userId: string) {
   const [user, contestCountResult, problemCountResult] = await Promise.all([
     db.query.user.findFirst({
       where: (u, { eq: eqOp }) => eqOp(u.id, userId),
+      columns: publicUserColumns,
     }),
     db.select({ count: count() }).from(contest).where(eq(contest.createdBy, userId)),
     db.select({ count: count() }).from(problem).where(eq(problem.createdBy, userId)),
