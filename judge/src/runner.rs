@@ -1,9 +1,6 @@
 use crate::models::Language;
-use base64::{Engine as _, engine::general_purpose};
 use std::time::{Duration, Instant};
 use tokio::time::timeout;
-
-const COMPILE_ERROR_MARKER: &str = "##COMPILE_ERROR##";
 
 /// Default box memory cap: 128MB, matches the previous `docker run --memory
 /// 128m`.
@@ -45,6 +42,11 @@ const JVM_TOOL_OPTIONS: &str = "-Xmx64m -XX:CompressedClassSpaceSize=32m -XX:Res
 /// clean, repeatable runs with margin.
 const RUST_MEM_KB: u64 = 786_432;
 
+/// CPU budget for a compile step. Compilation runs once per submission in its
+/// own box and never counts against the problem's time limit, so this only
+/// needs to stop a pathological compile (template/const-eval bombs).
+const COMPILE_TIME_SECS: f64 = 30.0;
+
 pub struct ExecutionResult {
     pub stdout: String,
     pub stderr: String,
@@ -59,244 +61,369 @@ pub struct ExecutionResult {
     pub peak_memory_kb: Option<i64>,
 }
 
-/// Wraps a compile step and a run step so compile failures are distinguishable
-/// from the compiled program's own runtime failures. The compiler's stderr is
-/// captured, and on non-zero compile exit the marker is emitted to stderr and
-/// the run step is skipped entirely.
-fn compile_and_run_command(write_source: &str, compile_cmd: &str, run_cmd: &str) -> String {
-    format!(
-        "{write} && {compile} 2>compile.log; ec=$?; if [ $ec -ne 0 ]; then cat compile.log >&2; echo '{marker}' >&2; exit 1; fi; {run}",
-        write = write_source,
-        compile = compile_cmd,
-        marker = COMPILE_ERROR_MARKER,
-        run = run_cmd,
-    )
-}
-
-pub async fn run(
-    code: &str,
-    input_data: &str,
-    language: Language,
-    time_limit_secs: u64,
-) -> ExecutionResult {
-    match language {
-        Language::Python => run_python(code, input_data, time_limit_secs).await,
-        Language::Rust => run_rust(code, input_data, time_limit_secs).await,
-        Language::Cpp => run_cpp(code, input_data, time_limit_secs).await,
-        Language::Portugol => run_portugol(code, input_data, time_limit_secs).await,
-        Language::C => run_c(code, input_data, time_limit_secs).await,
-        Language::Java => run_java(code, input_data, time_limit_secs).await,
-    }
-}
-
-pub async fn run_python(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
-    let b64_code = general_purpose::STANDARD.encode(code);
-    let shell_command = format!(
-        "echo \"{}\" | base64 -d > script.py && python3 script.py",
-        b64_code
-    );
-
-    run_in_isolate(
-        &shell_command,
-        input_data,
-        time_limit_secs,
-        DEFAULT_MEM_KB,
-        &[],
-    )
-    .await
-}
-
-pub async fn run_portugol(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
-    let b64_code = general_purpose::STANDARD.encode(code);
-    // `export JAVA_TOOL_OPTIONS=...` (rather than passing `-XX:...` flags
-    // directly to `java`) so the same tuning also reaches the nested `javac`
-    // process the Portugol console jar spawns internally to compile the
-    // generated Java — see `JVM_MEM_KB`/`JVM_TOOL_OPTIONS` above.
-    let shell_command = format!(
-        "export JAVA_TOOL_OPTIONS='{opts}'; echo \"{code}\" | base64 -d > script.por && java -jar /portugol/portugol-console.jar -no-wait script.por",
-        opts = JVM_TOOL_OPTIONS,
-        code = b64_code
-    );
-
-    let normalized_input = input_data.split_whitespace().collect::<Vec<_>>().join("\n");
-    run_in_isolate(
-        &shell_command,
-        &normalized_input,
-        time_limit_secs,
-        JVM_MEM_KB,
-        // `/portugol` for the console jar itself; `/etc/alternatives` because
-        // Debian/Temurin's `java`/`javac` under /usr/bin are symlinks through
-        // /etc/alternatives, and /etc isn't one of isolate's default-visible
-        // directories (only /bin, /lib, /lib64, /usr are) — without this the
-        // console jar's own internal `javac` subprocess call fails with
-        // "Cannot run program \"javac\"".
-        &["/portugol", "/etc/alternatives"],
-    )
-    .await
-}
-
-pub async fn run_cpp(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
-    let b64_code = general_purpose::STANDARD.encode(code);
-    let shell_command = compile_and_run_command(
-        &format!("echo \"{}\" | base64 -d > solution.cpp", b64_code),
-        "g++ -o program solution.cpp",
-        "./program",
-    );
-
-    run_in_isolate(
-        &shell_command,
-        input_data,
-        time_limit_secs,
-        DEFAULT_MEM_KB,
-        &[],
-    )
-    .await
-}
-
-pub async fn run_c(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
-    let b64_code = general_purpose::STANDARD.encode(code);
-    let shell_command = compile_and_run_command(
-        &format!("echo \"{}\" | base64 -d > solution.c", b64_code),
-        "gcc -o program solution.c",
-        "./program",
-    );
-
-    run_in_isolate(
-        &shell_command,
-        input_data,
-        time_limit_secs,
-        DEFAULT_MEM_KB,
-        &[],
-    )
-    .await
-}
-
-pub async fn run_java(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
-    let b64_code = general_purpose::STANDARD.encode(code);
-    let shell_command = compile_and_run_command(
-        &format!(
-            "export JAVA_TOOL_OPTIONS='{opts}'; echo \"{code}\" | base64 -d > Main.java",
-            opts = JVM_TOOL_OPTIONS,
-            code = b64_code
-        ),
-        "javac Main.java",
-        "java Main",
-    );
-
-    run_in_isolate(
-        &shell_command,
-        input_data,
-        time_limit_secs,
-        JVM_MEM_KB,
-        // See `run_portugol` above: /usr/bin/java(c) are symlinks through
-        // /etc/alternatives, which isn't one of isolate's default-visible
-        // directories.
-        &["/etc/alternatives"],
-    )
-    .await
-}
-
-pub async fn run_rust(code: &str, input_data: &str, time_limit_secs: u64) -> ExecutionResult {
-    let b64_code = general_purpose::STANDARD.encode(code);
-    let shell_command = compile_and_run_command(
-        &format!("echo \"{}\" | base64 -d > script.rs", b64_code),
-        "rustc script.rs -o program",
-        "./program",
-    );
-
-    run_in_isolate(
-        &shell_command,
-        input_data,
-        time_limit_secs,
-        RUST_MEM_KB,
-        // rustc's default linker is `cc`, which — like `java`/`javac` above —
-        // is an /etc/alternatives symlink on Debian, not a plain file under
-        // /usr/bin; without this, linking fails with "linker `cc` not found".
-        &["/etc/alternatives"],
-    )
-    .await
-}
-
-async fn run_in_isolate(
-    shell_command: &str,
-    input_data: &str,
-    time_limit_secs: u64,
-    mem_kb: u64,
-    extra_dirs: &[&str],
-) -> ExecutionResult {
-    println!("   🔒 Running in isolate sandbox");
-    let started_at = Instant::now();
-
-    let sandbox_box = match crate::isolate::box_init().await {
-        Ok(b) => b,
-        Err(e) => {
-            eprintln!("Failed to init isolate box: {}", e);
-            return ExecutionResult {
-                stdout: String::new(),
-                stderr: format!("Internal error: failed to start runner ({})", e),
-                exit_code: -1,
-                is_timeout: false,
-                is_compile_error: false,
-                duration_ms: started_at.elapsed().as_millis() as i64,
-                peak_memory_kb: None,
-            };
-        }
-    };
-
-    let stdin_file = "stdin.txt";
-    if let Err(e) = tokio::fs::write(sandbox_box.path.join(stdin_file), input_data).await {
-        crate::isolate::box_cleanup(sandbox_box.id).await;
-        eprintln!("Failed to write sandbox stdin: {}", e);
-        return ExecutionResult {
+impl ExecutionResult {
+    fn internal_error(message: String, started_at: Instant) -> Self {
+        ExecutionResult {
             stdout: String::new(),
-            stderr: format!("Internal error: failed to prepare runner input ({})", e),
+            stderr: message,
             exit_code: -1,
             is_timeout: false,
             is_compile_error: false,
             duration_ms: started_at.elapsed().as_millis() as i64,
             peak_memory_kb: None,
-        };
+        }
+    }
+}
+
+/// A file placed in the box's working directory before a run.
+struct BoxFile {
+    name: String,
+    contents: Vec<u8>,
+    executable: bool,
+}
+
+/// A submission ready to execute: its source (interpreted languages) or
+/// compiled artifacts, plus how to run them. Built once per submission by
+/// `prepare`, then reused for every test case by `execute`.
+pub struct Prepared {
+    files: Vec<BoxFile>,
+    run_command: String,
+    mem_kb: u64,
+    extra_dirs: &'static [&'static str],
+    /// Portugol's console runner expects one input token per line.
+    normalize_input: bool,
+}
+
+struct CompileSpec {
+    source_file: &'static str,
+    command: String,
+    /// Which files in the box are the build output.
+    artifacts: Artifacts,
+}
+
+enum Artifacts {
+    Executable(&'static str),
+    /// Every `*.class` file, since nested/inner classes compile separately.
+    JavaClasses,
+}
+
+/// Per-test CPU limit for `language`, derived from the problem's own
+/// `time_limit_ms`: a factor for slower runtimes plus a fixed allowance for
+/// runtime startup (JVM boot; Portugol also compiles its generated Java on
+/// every run, which can't be split out of the run step).
+pub fn time_limit_secs(language: Language, time_limit_ms: i32) -> f64 {
+    let base = f64::from(time_limit_ms.max(1)) / 1000.0;
+    match language {
+        Language::C | Language::Cpp | Language::Rust => base,
+        Language::Java => base * 2.0 + 0.5,
+        Language::Python => base * 3.0,
+        Language::Portugol => base * 2.0 + 3.0,
+    }
+}
+
+/// Compiles `code` once (compiled languages) or just stages the source
+/// (interpreted ones). `Err` carries the failed compile (`is_compile_error`)
+/// or an internal sandbox failure, in the same shape a failed run has.
+pub async fn prepare(code: &str, language: Language) -> Result<Prepared, ExecutionResult> {
+    let source = |name: &str| BoxFile {
+        name: name.to_string(),
+        contents: code.as_bytes().to_vec(),
+        executable: false,
+    };
+
+    match language {
+        Language::Python => Ok(Prepared {
+            files: vec![source("script.py")],
+            run_command: "python3 script.py".to_string(),
+            mem_kb: DEFAULT_MEM_KB,
+            extra_dirs: &[],
+            normalize_input: false,
+        }),
+        // `export JAVA_TOOL_OPTIONS=...` (rather than passing `-XX:...` flags
+        // directly to `java`) so the same tuning also reaches the nested
+        // `javac` process the Portugol console jar spawns internally to
+        // compile the generated Java — see `JVM_MEM_KB`/`JVM_TOOL_OPTIONS`.
+        Language::Portugol => Ok(Prepared {
+            files: vec![source("script.por")],
+            run_command: format!(
+                "export JAVA_TOOL_OPTIONS='{}'; java -jar /portugol/portugol-console.jar -no-wait script.por",
+                JVM_TOOL_OPTIONS
+            ),
+            mem_kb: JVM_MEM_KB,
+            // `/portugol` for the console jar itself; `/etc/alternatives`
+            // because Debian/Temurin's `java`/`javac` under /usr/bin are
+            // symlinks through /etc/alternatives, and /etc isn't one of
+            // isolate's default-visible directories (only /bin, /lib, /lib64,
+            // /usr are) — without this the console jar's own internal `javac`
+            // subprocess call fails with "Cannot run program \"javac\"".
+            extra_dirs: &["/portugol", "/etc/alternatives"],
+            normalize_input: true,
+        }),
+        Language::C => {
+            compile(
+                code,
+                CompileSpec {
+                    source_file: "solution.c",
+                    command: "gcc -o program solution.c".to_string(),
+                    artifacts: Artifacts::Executable("program"),
+                },
+                "./program",
+                DEFAULT_MEM_KB,
+                &[],
+            )
+            .await
+        }
+        Language::Cpp => {
+            compile(
+                code,
+                CompileSpec {
+                    source_file: "solution.cpp",
+                    command: "g++ -o program solution.cpp".to_string(),
+                    artifacts: Artifacts::Executable("program"),
+                },
+                "./program",
+                DEFAULT_MEM_KB,
+                &[],
+            )
+            .await
+        }
+        // rustc's default linker is `cc`, which — like `java`/`javac` — is an
+        // /etc/alternatives symlink on Debian, not a plain file under
+        // /usr/bin; without it, linking fails with "linker `cc` not found".
+        Language::Rust => {
+            compile(
+                code,
+                CompileSpec {
+                    source_file: "script.rs",
+                    command: "rustc script.rs -o program".to_string(),
+                    artifacts: Artifacts::Executable("program"),
+                },
+                "./program",
+                RUST_MEM_KB,
+                &["/etc/alternatives"],
+            )
+            .await
+        }
+        // Java submissions must define `public class Main`.
+        Language::Java => {
+            let opts = format!("export JAVA_TOOL_OPTIONS='{}'", JVM_TOOL_OPTIONS);
+            compile(
+                code,
+                CompileSpec {
+                    source_file: "Main.java",
+                    command: format!("{}; javac Main.java", opts),
+                    artifacts: Artifacts::JavaClasses,
+                },
+                &format!("{}; java Main", opts),
+                JVM_MEM_KB,
+                &["/etc/alternatives"],
+            )
+            .await
+        }
+    }
+}
+
+async fn compile(
+    code: &str,
+    spec: CompileSpec,
+    run_command: &str,
+    mem_kb: u64,
+    extra_dirs: &'static [&'static str],
+) -> Result<Prepared, ExecutionResult> {
+    let started_at = Instant::now();
+    let files = [BoxFile {
+        name: spec.source_file.to_string(),
+        contents: code.as_bytes().to_vec(),
+        executable: false,
+    }];
+    let limits = crate::isolate::IsolateLimits {
+        time_secs: COMPILE_TIME_SECS,
+        wall_time_secs: COMPILE_TIME_SECS * 2.0,
+        mem_kb,
+        processes: 64,
+    };
+
+    let (result, artifacts) = in_box(
+        &files,
+        None,
+        &limits,
+        extra_dirs,
+        &spec.command,
+        started_at,
+        |box_path| collect_artifacts(box_path, &spec.artifacts),
+    )
+    .await;
+
+    if result.is_timeout {
+        return Err(ExecutionResult {
+            is_compile_error: true,
+            is_timeout: false,
+            stderr: format!("Compilation timed out ({}s)", COMPILE_TIME_SECS),
+            ..result
+        });
+    }
+    if result.exit_code != 0 {
+        // exit -1 = the sandbox itself failed; anything else is the
+        // compiler rejecting the source.
+        let is_compile_error = result.exit_code != -1;
+        return Err(ExecutionResult {
+            is_compile_error,
+            ..result
+        });
     }
 
+    match artifacts {
+        Some(files) if !files.is_empty() => Ok(Prepared {
+            files,
+            run_command: run_command.to_string(),
+            mem_kb,
+            extra_dirs,
+            normalize_input: false,
+        }),
+        _ => Err(ExecutionResult::internal_error(
+            "Internal error: compiler produced no output".to_string(),
+            started_at,
+        )),
+    }
+}
+
+async fn collect_artifacts(
+    box_path: std::path::PathBuf,
+    artifacts: &Artifacts,
+) -> Option<Vec<BoxFile>> {
+    match artifacts {
+        Artifacts::Executable(name) => {
+            let contents = tokio::fs::read(box_path.join(name)).await.ok()?;
+            Some(vec![BoxFile {
+                name: name.to_string(),
+                contents,
+                executable: true,
+            }])
+        }
+        Artifacts::JavaClasses => {
+            let mut files = Vec::new();
+            let mut entries = tokio::fs::read_dir(&box_path).await.ok()?;
+            while let Ok(Some(entry)) = entries.next_entry().await {
+                let name = entry.file_name().to_string_lossy().to_string();
+                if name.ends_with(".class") {
+                    let contents = tokio::fs::read(entry.path()).await.ok()?;
+                    files.push(BoxFile {
+                        name,
+                        contents,
+                        executable: false,
+                    });
+                }
+            }
+            Some(files)
+        }
+    }
+}
+
+/// Runs a prepared submission against one test case in a fresh box, with
+/// `time_limit_secs` of CPU time (see `time_limit_secs`).
+pub async fn execute(
+    prepared: &Prepared,
+    input_data: &str,
+    time_limit_secs: f64,
+) -> ExecutionResult {
+    let started_at = Instant::now();
+    let input = if prepared.normalize_input {
+        input_data.split_whitespace().collect::<Vec<_>>().join("\n")
+    } else {
+        input_data.to_string()
+    };
     let limits = crate::isolate::IsolateLimits {
         time_secs: time_limit_secs,
-        wall_time_secs: time_limit_secs + 2,
-        mem_kb,
+        wall_time_secs: time_limit_secs * 2.0 + 1.0,
+        mem_kb: prepared.mem_kb,
         processes: 64, // fork-bomb cap; new, additive safety property vs the Docker version
     };
 
+    let (result, ()) = in_box(
+        &prepared.files,
+        Some(&input),
+        &limits,
+        prepared.extra_dirs,
+        &prepared.run_command,
+        started_at,
+        |_| async {},
+    )
+    .await;
+    result
+}
+
+/// One isolate box lifecycle: init, write `files` (+ stdin), run
+/// `/bin/sh -c shell_command` under `limits`, let `after_run` read the box
+/// (e.g. compiled artifacts), clean up.
+async fn in_box<T, F, Fut>(
+    files: &[BoxFile],
+    stdin: Option<&str>,
+    limits: &crate::isolate::IsolateLimits,
+    extra_dirs: &[&str],
+    shell_command: &str,
+    started_at: Instant,
+    after_run: F,
+) -> (ExecutionResult, T)
+where
+    T: Default,
+    F: FnOnce(std::path::PathBuf) -> Fut,
+    Fut: std::future::Future<Output = T>,
+{
+    println!("   🔒 Running in isolate sandbox");
+
+    let sandbox_box = match crate::isolate::box_init().await {
+        Ok(b) => b,
+        Err(e) => {
+            eprintln!("Failed to init isolate box: {}", e);
+            return (
+                ExecutionResult::internal_error(
+                    format!("Internal error: failed to start runner ({})", e),
+                    started_at,
+                ),
+                T::default(),
+            );
+        }
+    };
+
+    let stdin_file = "stdin.txt";
+    if let Err(e) = write_box_files(&sandbox_box.path, files, stdin.map(|s| (stdin_file, s))).await
+    {
+        crate::isolate::box_cleanup(sandbox_box.id).await;
+        eprintln!("Failed to prepare sandbox files: {}", e);
+        return (
+            ExecutionResult::internal_error(
+                format!("Internal error: failed to prepare runner input ({})", e),
+                started_at,
+            ),
+            T::default(),
+        );
+    }
+
+    let outer_watchdog = Duration::from_secs_f64(limits.wall_time_secs + 5.0);
     let run_result = timeout(
-        Duration::from_secs(time_limit_secs + 5),
+        outer_watchdog,
         crate::isolate::box_run(
             sandbox_box.id,
-            &limits,
-            Some(stdin_file),
+            limits,
+            stdin.map(|_| stdin_file),
             extra_dirs,
             &["/bin/sh", "-c", shell_command],
         ),
     )
     .await;
 
-    let box_id = sandbox_box.id;
-    crate::isolate::box_cleanup(box_id).await;
+    let extra = after_run(sandbox_box.path.clone()).await;
+    crate::isolate::box_cleanup(sandbox_box.id).await;
 
-    match run_result {
+    let result = match run_result {
         Ok(Ok((output, meta))) => {
-            let stderr = String::from_utf8_lossy(&output.stderr).to_string();
-            let is_compile_error = stderr.contains(COMPILE_ERROR_MARKER);
-            let stderr = if is_compile_error {
-                stderr.replace(COMPILE_ERROR_MARKER, "").trim().to_string()
-            } else {
-                stderr
-            };
             let is_timeout = meta.status.as_deref() == Some("TO");
-
             ExecutionResult {
                 stdout: String::from_utf8_lossy(&output.stdout).to_string(),
                 stderr: if is_timeout {
                     "Time Limit Exceeded".to_string()
                 } else {
-                    stderr
+                    String::from_utf8_lossy(&output.stderr).to_string()
                 },
                 exit_code: if is_timeout {
                     124
@@ -305,22 +432,17 @@ async fn run_in_isolate(
                         .unwrap_or_else(|| output.status.code().unwrap_or(-1))
                 },
                 is_timeout,
-                is_compile_error: is_compile_error && !is_timeout,
+                is_compile_error: false,
                 duration_ms: started_at.elapsed().as_millis() as i64,
                 peak_memory_kb: meta.max_rss_kb,
             }
         }
         Ok(Err(e)) => {
             eprintln!("Failed to run isolate box: {}", e);
-            ExecutionResult {
-                stdout: String::new(),
-                stderr: format!("Internal error: failed to read runner output ({})", e),
-                exit_code: -1,
-                is_timeout: false,
-                is_compile_error: false,
-                duration_ms: started_at.elapsed().as_millis() as i64,
-                peak_memory_kb: None,
-            }
+            ExecutionResult::internal_error(
+                format!("Internal error: failed to read runner output ({})", e),
+                started_at,
+            )
         }
         Err(_) => {
             println!("\t⏳ Time Limit Exceeded! (outer watchdog)");
@@ -334,5 +456,26 @@ async fn run_in_isolate(
                 peak_memory_kb: None,
             }
         }
+    };
+
+    (result, extra)
+}
+
+async fn write_box_files(
+    box_path: &std::path::Path,
+    files: &[BoxFile],
+    stdin: Option<(&str, &str)>,
+) -> std::io::Result<()> {
+    use std::os::unix::fs::PermissionsExt;
+
+    for file in files {
+        let path = box_path.join(&file.name);
+        tokio::fs::write(&path, &file.contents).await?;
+        let mode = if file.executable { 0o755 } else { 0o644 };
+        tokio::fs::set_permissions(&path, std::fs::Permissions::from_mode(mode)).await?;
     }
+    if let Some((name, contents)) = stdin {
+        tokio::fs::write(box_path.join(name), contents).await?;
+    }
+    Ok(())
 }

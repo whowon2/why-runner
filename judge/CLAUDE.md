@@ -13,11 +13,11 @@ Judge: Rust worker for the Runner platform. Polls Postgres for pending code subm
 - Build release: `cargo build --release`
 - Local stack (Postgres + judge-worker): `docker compose up` (compose.yml at repo root)
 
-24 tests exist in this crate: 4 `isolate::tests` unit tests (pure meta-parser tests) and 12 `constraints::tests` (pure static-analysis tests over source strings) both run fine on a bare host — neither touches `isolate` or spawns a process. The 8 `grade_tests` in `main.rs` (3 pre-existing, 5 added by the isolate-migration branch) shell out to the real sandbox end-to-end and need real `isolate` + elevated capabilities to run — they'll hang/fail confusingly on a bare host without them. Run the full suite via:
+29 tests exist in this crate: 4 `isolate::tests` unit tests (pure meta-parser tests) and 12 `constraints::tests` (pure static-analysis tests over source strings) both run fine on a bare host — neither touches `isolate` or spawns a process. The 13 `grade_tests` in `main.rs` shell out to the real sandbox end-to-end and need real `isolate` + elevated capabilities to run — they'll hang/fail confusingly on a bare host without them. Run the full suite via:
 
 ```sh
 docker build -t judge:test -f judge/Dockerfile judge
-docker run --rm --cap-add=SYS_ADMIN --cap-add=NET_ADMIN -v "$(pwd)/judge":/src -w /src judge:test \
+docker run --rm --cap-add=SYS_ADMIN --cap-add=NET_ADMIN -e CARGO_TARGET_DIR=/tmp/target -v "$(pwd)/judge":/src -w /src judge:test \
   sh -c "apt-get update -qq && apt-get install -y -qq curl pkg-config libssl-dev && curl https://sh.rustup.rs -sSf | sh -s -- -y -q && . \$HOME/.cargo/env && cargo test"
 ```
 
@@ -37,23 +37,23 @@ Three files, straight-line flow, no framework:
 
 - `src/main.rs` — main loop: reaps exhausted stuck-`RUNNING` submissions via `db.reap_exhausted_submissions()`, `PgListener` subscribes to `new_submission` channel; drains all claimable submissions via `db.get_next_submission()`, then blocks on `listener.recv()` with a 60s timeout fallback (periodic sweep in case a notify was missed). `process_job()` runs each submission through every test case sequentially, stopping at the first TLE / compile error / runtime error / wrong answer, and always writes a `JudgeReport` (JSON) back to the DB.
 - `src/db.rs` — all SQL. `get_next_submission` does the claim atomically (`UPDATE ... WHERE id = (SELECT ... FOR UPDATE SKIP LOCKED)`), safe for multiple judge-worker replicas; it claims `PENDING` rows and also reclaims `RUNNING` rows abandoned by a crashed/killed worker (`updated_at` older than `STALE_RUNNING_THRESHOLD`), bumping `retry_count` each time. `reap_exhausted_submissions` dead-letters (`status = 'ERROR'`) `RUNNING` rows that hit `MAX_RETRIES` — this is the DLQ; it's DB-only (no SQS), the `submission.retry_count` column added specifically for it. `update_submission_result` also appends to the contest leaderboard (`user_on_contest.answered`) inside the same transaction when a submission PASSES — this DB write is the only leaderboard-affecting side effect in the codebase.
-- `src/runner.rs` — per-language sandboxed execution via `isolate` (see "Sandboxed execution (isolate)" below). Each language builds a `sh -c` shell command (base64-encode source → write to file → compile/run) with language-specific memory limits and directory requirements, and hands it to `run_in_isolate` to sandbox.
+- `src/runner.rs` — per-language sandboxed execution via `isolate` (see "Sandboxed execution (isolate)" below). Two steps: `prepare()` runs once per submission — compiled languages (C, C++, Rust, Java) compile in their own box with a fixed `COMPILE_TIME_SECS` budget and the build output (`program`, or every `*.class`) is read back into memory; Python/Portugol just stage the source. `execute()` then runs the prepared files in a fresh box per test case, with the CPU limit from `time_limit_secs(language, problem.time_limit_ms)` (problem limit × per-language factor + startup allowance; Portugol compiles its generated Java inside every run, so it gets the biggest allowance). Compile time never counts against the problem's limit.
 - `src/models.rs` — `sqlx` row types (`Submission`, `Problem`) and serializable report types (`JudgeReport`, `TestCaseResult`). `Language` and `SubmissionStatus` are Postgres enums (`sqlx::Type`) — must match the DB schema's enum labels exactly (`language`/`submission_status` types, lowercase vs UPPERCASE rename rules differ per enum, see the `#[sqlx(...)]` attributes).
 
 ### Adding a new language
 
-Add a variant to `Language` in `models.rs` matching the DB enum, add a `run_<lang>` fn in `runner.rs` following the existing pattern (base64 the source, write+compile+run in one shell command, delegate to `run_in_isolate` with appropriate `mem_kb` and `extra_dirs` if needed), and wire it into the `match` in `runner::run`. All six DB enum variants (`C`, `Cpp`, `Java`, `Python`, `Portugol`, `Rust`) have runners. `Java` submissions must define `public class Main` (the shell command writes source to `Main.java`).
+Add a variant to `Language` in `models.rs` matching the DB enum, add an arm to the `match` in `runner::prepare` (interpreted: stage the source file + run command; compiled: a `CompileSpec` with the compile command and its artifacts, plus the run command, `mem_kb` and `extra_dirs` if needed), and an arm in `runner::time_limit_secs`. All six DB enum variants (`C`, `Cpp`, `Java`, `Python`, `Portugol`, `Rust`) have runners. `Java` submissions must define `public class Main` (the shell command writes source to `Main.java`).
 
 ### Sandboxed execution (isolate)
 
 `src/runner.rs` sandboxes submissions via `isolate` (github.com/ioi/isolate),
-not Docker — there is no host Docker daemon dependency at runtime. Each
-`run_<lang>` function builds the same `sh -c` shell command string as
-before (base64-decode source → write → compile → run, `COMPILE_ERROR_MARKER`
-for compile-error detection), and `run_in_isolate` (`src/isolate.rs`) runs
-it as `/bin/sh -c <command>` inside an `isolate` box: `isolate --box-id=N
---init`, then `--run` with `--time`/`--wall-time`/`--mem`/`--processes`
-limits and `--stdin=<file>`, then `--cleanup`. No `--share-net` flag is
+not Docker — there is no host Docker daemon dependency at runtime. Source and
+compiled artifacts are written straight into the box directory from the host,
+and `in_box` runs the language's command as `/bin/sh -c <command>` inside an
+`isolate` box (`src/isolate.rs`): `isolate --box-id=N --init`, then `--run`
+with `--time`/`--wall-time` (fractional seconds)/`--mem`/`--processes` limits
+and `--stdin=<file>`, then `--cleanup`. A compile step is just such a run
+whose non-zero exit means a compile error. No `--share-net` flag is
 passed, so boxes have no network access by default. Resource usage
 (exit code, wall time, peak RSS, TO/SG/RE status) comes from isolate's own
 `--meta` file (`src/isolate.rs::parse_meta`), not a polling approximation.
