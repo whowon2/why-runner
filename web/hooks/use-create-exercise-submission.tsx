@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { unwrap } from "@/lib/action-result";
 import {
   createExerciseSubmission,
   type ExerciseSubmissionInput,
@@ -9,7 +10,7 @@ export const useCreateExerciseSubmission = () => {
 
   return useMutation({
     mutationFn: async (input: ExerciseSubmissionInput) => {
-      return await createExerciseSubmission(input);
+      return unwrap(await createExerciseSubmission(input));
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({

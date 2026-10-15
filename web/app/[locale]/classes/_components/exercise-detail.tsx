@@ -36,6 +36,7 @@ import { PortugolCodePanel } from "@/components/blocks/portugol-code-panel";
 import { ParsonsEditor } from "@/components/parsons/parsons-editor";
 import { VisualAnswer } from "@/components/submissions/visual-answer";
 import type { Language } from "@/drizzle/schema";
+import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useCreateExerciseSubmission } from "@/hooks/use-create-exercise-submission";
 import { useExercise } from "@/hooks/use-exercise";
 import { useExerciseConstraints } from "@/hooks/use-exercise-constraints";
@@ -142,6 +143,7 @@ function BlocksSubmit({ exerciseId }: { exerciseId: string }) {
   const tUpload = useTranslations(
     "ContestsPage.Tabs.Problem.Submissions.Upload",
   );
+  const errorMessage = useActionErrorMessage();
   const [workspace, setWorkspace] = useState<SerializedWorkspace | null>(null);
   const [showCode, setShowCode] = useState(false);
   const { mutate, isPending } = useCreateExerciseSubmission();
@@ -161,7 +163,9 @@ function BlocksSubmit({ exerciseId }: { exerciseId: string }) {
       { exerciseId, mode: "blocks", workspace },
       {
         onError: (error) =>
-          toast.error(tUpload("failedSubmit"), { description: error.message }),
+          toast.error(tUpload("failedSubmit"), {
+            description: errorMessage(error),
+          }),
         onSuccess: () => toast.success(tUpload("submitted")),
       },
     );
@@ -205,6 +209,7 @@ function ParsonsSubmit({
   const tUpload = useTranslations(
     "ContestsPage.Tabs.Problem.Submissions.Upload",
   );
+  const errorMessage = useActionErrorMessage();
   const [answer, setAnswer] = useState<ParsonsLine[]>(() =>
     lines.map((text) => ({ text, indent: 0 })),
   );
@@ -215,7 +220,9 @@ function ParsonsSubmit({
       { exerciseId, mode: "parsons", lines: answer },
       {
         onError: (error) =>
-          toast.error(tUpload("failedSubmit"), { description: error.message }),
+          toast.error(tUpload("failedSubmit"), {
+            description: errorMessage(error),
+          }),
         onSuccess: () => toast.success(tUpload("submitted")),
       },
     );
@@ -239,6 +246,7 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
   const tUpload = useTranslations(
     "ContestsPage.Tabs.Problem.Submissions.Upload",
   );
+  const errorMessage = useActionErrorMessage();
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState<Language | null>(null);
   const { theme, systemTheme } = useTheme();
@@ -258,7 +266,9 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
       { exerciseId, mode: "code", code, language },
       {
         onError: (error) => {
-          toast.error(tUpload("failedSubmit"), { description: error.message });
+          toast.error(tUpload("failedSubmit"), {
+            description: errorMessage(error),
+          });
         },
         onSuccess: () => {
           toast.success(tUpload("submitted"));

@@ -33,6 +33,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { PROBLEM_TAGS, type Problem } from "@/drizzle/schema";
+import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useGenerateProblemNarrative } from "@/hooks/use-generate-problem-narrative";
 import { useSuggestProblemTags } from "@/hooks/use-suggest-problem-tags";
 import { useUpdateProblem } from "@/hooks/use-update-problem";
@@ -90,6 +91,7 @@ export function NewProblem({ problem }: { problem: Problem }) {
     useGenerateProblemNarrative();
   const { mutate: suggestTags, isPending: isSuggestingTags } =
     useSuggestProblemTags();
+  const errorMessage = useActionErrorMessage();
   const router = useRouter();
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -155,7 +157,7 @@ export function NewProblem({ problem }: { problem: Problem }) {
     generateNarrative(problem.id, {
       onError: (error) => {
         toast.error(t("generateNarrativeFailed"), {
-          description: error.message,
+          description: errorMessage(error),
         });
       },
       onSuccess: (narrative) => {
@@ -176,7 +178,7 @@ export function NewProblem({ problem }: { problem: Problem }) {
       {
         onError: (error) => {
           toast.error(t("suggestTagsFailed"), {
-            description: error.message,
+            description: errorMessage(error),
           });
         },
         onSuccess: (tags) => {

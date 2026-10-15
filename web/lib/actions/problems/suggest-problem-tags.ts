@@ -5,11 +5,13 @@ import { z } from "zod";
 import { db } from "@/drizzle/db";
 import { PROBLEM_TAGS, type ProblemTag, problem } from "@/drizzle/schema";
 import { generateJson } from "@/lib/ai";
+import { type ActionResult, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import {
   getTagSuggestionPrompt,
   SYSTEM_INSTRUCTION_TAG_SUGGESTION,
 } from "@/lib/prompt";
+import { consumeAiQuota } from "@/lib/rate-limit";
 
 const MAX_TAGS = 5;
 // Bounds token cost — the action takes unsaved form text, not the stored row.
@@ -30,7 +32,9 @@ export async function suggestProblemTags({
   problemId,
   title,
   description,
-}: SuggestProblemTagsInput): Promise<ProblemTag[]> {
+}: SuggestProblemTagsInput): Promise<
+  ActionResult<ProblemTag[], "RATE_LIMITED">
+> {
   const currentUser = await getCurrentUser({});
 
   const found = await db.query.problem.findFirst({
@@ -47,6 +51,9 @@ export async function suggestProblemTags({
     throw new Error("A description is required to suggest tags.");
   }
 
+  const quota = await consumeAiQuota(currentUser.id, "tag-suggestion");
+  if (!quota.ok) return quota;
+
   const { tags } = await generateJson("tag-suggestion", {
     system: SYSTEM_INSTRUCTION_TAG_SUGGESTION,
     prompt: getTagSuggestionPrompt({
@@ -57,5 +64,5 @@ export async function suggestProblemTags({
     schema: SuggestionSchema,
   });
 
-  return [...new Set(tags)].slice(0, MAX_TAGS);
+  return ok([...new Set(tags)].slice(0, MAX_TAGS));
 }

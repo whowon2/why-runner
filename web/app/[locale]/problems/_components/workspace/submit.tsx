@@ -23,6 +23,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { Language } from "@/drizzle/schema";
+import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useCreateProblemSubmission } from "@/hooks/use-create-problem-submission";
 
 const EXTENSIONS: Record<Language, string[]> = {
@@ -52,6 +53,7 @@ export function ProblemSubmitTab({
   const { theme, systemTheme } = useTheme();
   const t = useTranslations("ProblemsPage.Workspace.Submit");
   const tCommon = useTranslations("ToolTips");
+  const errorMessage = useActionErrorMessage();
 
   function handleSubmit() {
     if (!language) {
@@ -68,7 +70,9 @@ export function ProblemSubmitTab({
       { code, language, problemId },
       {
         onError: (error) => {
-          toast.error(t("failedSubmit"), { description: error.message });
+          toast.error(t("failedSubmit"), {
+            description: errorMessage(error),
+          });
         },
         onSuccess: () => {
           toast.success(t("submitted"));

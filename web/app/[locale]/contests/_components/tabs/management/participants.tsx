@@ -33,7 +33,7 @@ export function Participants({ contestId }: { contestId: string }) {
             <div>
               <p className="font-medium text-sm">{entry.user.name}</p>
               <p className="text-xs text-muted-foreground">
-                {entry.user.email}
+                @{entry.user.username}
               </p>
             </div>
           </div>

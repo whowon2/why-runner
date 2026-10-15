@@ -11,6 +11,7 @@ import {
   userOnContest,
 } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { redactReport } from "@/lib/judge-report";
 import {
   codeFilePath,
   standingsCellText,
@@ -79,9 +80,12 @@ export async function exportContestData(contestId: string): Promise<string> {
         userName: user.name,
         username: user.username,
         email: user.email,
+        problemCreatedBy: problem.createdBy,
+        exampleCount: problem.exampleCount,
       })
       .from(submission)
       .innerJoin(user, eq(user.id, submission.userId))
+      .innerJoin(problem, eq(problem.id, submission.problemId))
       .where(eq(submission.contestId, contestId))
       .orderBy(asc(submission.createdAt)),
   ]);
@@ -181,7 +185,14 @@ export async function exportContestData(contestId: string): Promise<string> {
       s.memoryKb ?? "",
       s.codeSize ?? "",
       s.constraintViolationDetail ?? "",
-      truncate(s.output),
+      // Same visibility as the submissions table: hidden-test details only
+      // for problems the contest owner wrote.
+      truncate(
+        redactReport(s.output, {
+          fullAccess: s.problemCreatedBy === currentUser.id,
+          exampleCount: s.exampleCount,
+        }),
+      ),
       path,
     ];
   });

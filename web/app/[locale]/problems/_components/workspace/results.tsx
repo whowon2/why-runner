@@ -25,24 +25,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  HiddenTestNotice,
+  isHiddenFailure,
+} from "@/components/submissions/hidden-test-notice";
 import { useProblemPracticeSubmissions } from "@/hooks/use-problem-practice-submissions";
 import { useProblemTests } from "@/hooks/use-problem-tests";
+import { type JudgeReport, parseReport } from "@/lib/judge-report";
 import { cn } from "@/lib/utils";
-
-interface TestCaseResult {
-  input: string;
-  expected: string;
-  actual: string;
-  error?: string;
-  index: number;
-}
-
-interface JudgeReport {
-  passed: boolean;
-  total_tests: number;
-  passed_count: number;
-  failure_details?: TestCaseResult;
-}
 
 export function ProblemResultsTab({ problemId }: { problemId: string }) {
   const t = useTranslations("ProblemsPage.Workspace.Results");
@@ -137,16 +127,10 @@ function SubmissionDetailsDialog({
   const t = useTranslations("ProblemsPage.Workspace.Results");
   const tTests = useTranslations("ProblemsPage.Workspace.Tests");
 
-  const report = useMemo(() => {
-    if (!output) return null;
-    try {
-      const parsed = JSON.parse(output);
-      if ("total_tests" in parsed) return parsed as JudgeReport;
-      return null;
-    } catch {
-      return null;
-    }
-  }, [output]);
+  const report: JudgeReport | null = useMemo(
+    () => parseReport(output),
+    [output],
+  );
 
   // Judge's report only carries per-test input/output on failure; on a pass
   // there's nothing test-specific to show, so fall back to the problem's own
@@ -187,7 +171,17 @@ function SubmissionDetailsDialog({
             </div>
           )}
 
-          {report && !report.passed && report.failure_details && (
+          {report &&
+            !report.passed &&
+            report.failure_details &&
+            isHiddenFailure(report.failure_details) && (
+              <HiddenTestNotice report={report} />
+            )}
+
+          {report &&
+            !report.passed &&
+            report.failure_details &&
+            !isHiddenFailure(report.failure_details) && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <span className="text-xs font-semibold text-muted-foreground">

@@ -2,6 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
+import { publicUserColumns } from "@/lib/public-user";
 import { classroomMembership, lesson } from "@/drizzle/schema";
 import { fail, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
@@ -33,13 +34,13 @@ export async function getLessonReview(lessonId: string) {
       with: {
         problem: { columns: { id: true, title: true } },
         completions: {
-          with: { user: true, submission: true },
+          with: { user: { columns: publicUserColumns }, submission: true },
         },
       },
     }),
     db.query.classroomMembership.findMany({
       where: eq(classroomMembership.classroomId, found.classroomId),
-      with: { user: true },
+      with: { user: { columns: publicUserColumns } },
     }),
     db.query.lessonSubmission.findMany({
       where: (s, { eq }) => eq(s.lessonId, lessonId),

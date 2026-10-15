@@ -13,9 +13,14 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  HiddenTestNotice,
+  isHiddenFailure,
+} from "@/components/submissions/hidden-test-notice";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Contest, ProblemPreview } from "@/drizzle/schema";
 import { useProblemSubmissions } from "@/hooks/use-problem-submissions";
+import { parseReport } from "@/lib/judge-report";
 import { cn } from "@/lib/utils";
 
 export function SubmissionList({
@@ -119,21 +124,6 @@ export function SubmissionList({
   );
 }
 
-interface TestCaseResult {
-  input: string;
-  expected: string;
-  actual: string;
-  error?: string;
-  index: number;
-}
-
-interface JudgeReport {
-  passed: boolean;
-  total_tests: number;
-  passed_count: number;
-  failure_details?: TestCaseResult;
-}
-
 export function SubmissionDetails({
   output,
   status,
@@ -146,19 +136,7 @@ export function SubmissionDetails({
   const t = useTranslations("ContestsPage.Tabs.Problem.Submissions");
 
   // 1. Safe JSON Parsing
-  const report = useMemo(() => {
-    if (!output) return null;
-    try {
-      const parsed = JSON.parse(output);
-      // Simple check to see if it matches our schema
-      if ("total_tests" in parsed) {
-        return parsed as JudgeReport;
-      }
-      return null;
-    } catch (_e) {
-      return null;
-    }
-  }, [output]);
+  const report = useMemo(() => parseReport(output), [output]);
 
   // 2. Fallback: If it's not JSON (e.g. old logs or raw crash), show text
   if (!report) {
@@ -209,6 +187,9 @@ export function SubmissionDetails({
   const fail = report.failure_details;
   if (!fail) return <div>{t("unknownError")}</div>;
 
+  // Hidden test: the server withheld its data, show the verdict only.
+  if (isHiddenFailure(fail)) return <HiddenTestNotice report={report} />;
+
   return (
     <div className="flex flex-col gap-3 w-full text-sm">
       {/* Summary Header */}
@@ -224,12 +205,14 @@ export function SubmissionDetails({
 
       {/* Grid Layout for Inputs/Outputs */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <CodeBlock label={t("inputLabel")} content={fail.input} />
-        <CodeBlock label={t("yourOutputLabel")} content={fail.actual} />
+        <CodeBlock label={t("inputLabel")} content={fail.input ?? ""} />
+        <CodeBlock label={t("yourOutputLabel")} content={fail.actual ?? ""} />
       </div>
 
       {/* Expected Output (Full Width) */}
-      <CodeBlock label={t("expectedOutputLabel")} content={fail.expected} />
+      {fail.expected !== undefined && (
+        <CodeBlock label={t("expectedOutputLabel")} content={fail.expected} />
+      )}
 
       {/* Runtime Errors (Stderr) */}
       {fail.error && (
