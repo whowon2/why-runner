@@ -61,8 +61,8 @@ The system was designed with modularity, scalability, and pedagogical value as c
 
 \begin{itemize}
   \item \textbf{Modularity}: Components such as code execution, feedback generation, user interface, and contest management were developed as loosely coupled modules, enabling easier maintenance and future upgrades.
-  \item \textbf{Scalability}: The system leverages message queues and container orchestration to handle multiple concurrent submissions with minimal latency.
-  \item \textbf{Security}: All submitted code is executed in a per-run \texttt{isolate} sandbox \cite{mares2012isolate}, with no network access and capped time, memory, and process count, minimizing the risk of malicious code affecting the system.
+  \item \textbf{Scalability}: Submissions are dispatched through PostgreSQL \texttt{LISTEN/NOTIFY}, and judge workers claim them with row-level locking, so several workers can share the load without an external queue.
+  \item \textbf{Security}: All submitted code is executed in a per-run \texttt{isolate} sandbox \cite{mares2012isolate}, with no network access and capped time, memory, and process count, minimizing the risk of malicious code affecting the system. On the web side, every Server Action authenticates the caller, checks ownership, and validates its input against an explicit list of accepted fields.
   \item \textbf{Educational Feedback}: Instead of reporting only binary results (e.g., ``Accepted'' or ``Wrong Answer''), the system uses AI to generate contextual explanations and suggestions for improvement.
 \end{itemize}
 
@@ -79,6 +79,8 @@ Similarly, Supabase was dropped in favor of a standalone PostgreSQL instance (vi
 \subsection{Development Process}
 
 Development occurred in cycles, each involving implementation, integration, informal testing, and refinement. A minimum viable product (MVP) was shown in a Discord server to a small group of students for informal feedback outside any classroom setting. That feedback led to rapid improvements, including enhancements to the user interface, better error reporting, and more detailed AI explanations. Each subsequent cycle refactored code, adjusted parameters (e.g., time/memory limits), and improved usability based on the author's own testing.
+
+A security review of the web layer was also carried out during development. Next.js turns every exported Server Action into a public HTTP endpoint that any client can call with arbitrary arguments, and TypeScript types are erased at runtime, so the end-to-end type safety of the stack does not by itself validate anything. The review found actions that copied client input directly into database writes, an action with no authentication, and submission reports that exposed hidden test cases. These were fixed with explicit input schemas, server-side ownership checks, and the report filtering described in \S\ref{sec:test-confidentiality}.
 
 \subsection{Current Validation Status}
 
@@ -169,7 +171,7 @@ The core implementation revolves around a pipeline that ensures decoupling betwe
 \node[box] (submit) {Student submits code (contest, standalone, or lesson exercise)};
 \node[box, below=of submit] (save) {Server Action validates, saves submission as \texttt{PENDING}, issues \texttt{NOTIFY}};
 \node[box, below=of save] (pickup) {Judge worker (\texttt{PgListener}) picks up the submission and its test cases};
-\node[box, below=of pickup] (exec) {\texttt{isolate} sandbox compiles and runs the code against each test case};
+\node[box, below=of pickup] (exec) {\texttt{isolate} sandbox compiles the code once, then runs it against each test case in a fresh box};
 \node[note, right=of exec] (policy) {Contest/standalone: stop at first failing case. Lesson exercise: run every case, for a per-exercise pass fraction};
 \node[box, below=of exec] (constraints) {If the exercise has solution constraints, run structural static analysis, then (if configured) an LLM classification for the algorithm requirement};
 \node[note, right=of constraints] (statuses) {Outcomes: \texttt{PASSED}, \texttt{FAILED}, \texttt{ERROR}, or \texttt{CONSTRAINT\_VIOLATION}};
@@ -191,22 +193,35 @@ The core implementation revolves around a pipeline that ensures decoupling betwe
 \end{figure}
 
 \subsubsection{Sending Submission}
-The user submits code via the web interface. A Next.js Server Action validates the submission, checks contest membership and rate limits, and saves it to PostgreSQL with a \texttt{PENDING} status. A \texttt{NOTIFY} is then issued on the \texttt{submission\_created} channel.
+The user submits code via the web interface. A Next.js Server Action validates the submission, checks contest membership and rate limits, and saves it to PostgreSQL with a \texttt{PENDING} status. The action accepts only the problem, contest, language, and source code from the browser; every other field of the stored row (status, author, contest question letter, code size) is decided on the server, and the action also checks that the problem belongs to the contest and that the contest has started. A \texttt{NOTIFY} is then issued on the \texttt{new\_submission} channel.
 
 \subsubsection{Queue Dispatch}
 The judge worker holds a persistent connection to PostgreSQL and listens on the \texttt{new\_submission} channel using \texttt{PgListener} from the \texttt{sqlx} library. Upon receiving a notification, it fetches the submission and its associated test cases from the database.
 
 \subsubsection{Execution and Grading Policy}
-For each test case, the judge worker runs the submission inside a fresh \texttt{isolate} box with per-language memory caps, a CPU-time and wall-clock limit, and a process-count cap (\S\ref{sec:execution-environment}). Contest and standalone submissions stop at the first failing test case; lesson-exercise submissions run every declared test case, so the pass count reflects exactly how many cases the code got right (\S\ref{sec:class-lesson-model}).
+Compiled languages are compiled once per submission; then, for each test case, the judge worker runs the program inside a fresh \texttt{isolate} box with per-language memory caps, a CPU-time limit derived from the problem's own time limit, a wall-clock limit, and a process-count cap (\S\ref{sec:execution-environment}). Contest and standalone submissions stop at the first failing test case; lesson-exercise submissions run every declared test case, so the pass count reflects exactly how many cases the code got right (\S\ref{sec:class-lesson-model}).
 
 \subsubsection{Constraint Checking}
 If the exercise has active solution constraints, the checks described in \S\ref{sec:prepublish-validation} run once I/O grading completes: structural static analysis first, then, if configured, an algorithm-requirement classification via Gemini. Either violation path resolves the submission to \texttt{CONSTRAINT\_VIOLATION} instead of \texttt{PASSED}.
 
+\subsubsection{Test-Case Confidentiality}\label{sec:test-confidentiality}
+A problem's test cases are split into public samples, shown in the statement, and hidden cases that only the judge sees. When a submission fails, the judge stores a report of the first failing case: its input, the expected output, the program's output, and its error output. If that report reached the student unchanged, hidden cases could be extracted one per submission and hard-coded. Following the practice of contest judges such as BOCA \cite{de2004boca}, the web application therefore filters the report on the server before returning it, according to who is viewing it:
+
+\begin{itemize}
+  \item \textbf{Problem author:} sees the full report, for any submission.
+  \item \textbf{Failure on a sample case:} the full report is shown, since the case is already public.
+  \item \textbf{Failure on a hidden case:} only the verdict (wrong answer, runtime error, or time limit exceeded), the case number, and the number of cases passed are shown. The program's own output and error output are withheld too, because a submission can simply print its input there and read it back.
+  \item \textbf{Compile errors:} the compiler output is always shown, since it does not depend on any test input.
+  \item \textbf{Lesson exercises:} inputs are already visible on the exercise page, so only the expected output is withheld, unless the lesson's output-visibility toggle is on (\S\ref{sec:class-lesson-model}).
+\end{itemize}
+
+A contest organizer who did not write the problem is treated like a participant: since any user may create a contest, granting organizers the full report would expose the hidden cases of every public problem. The same filter applies to every place a report leaves the server, including the contest export.
+
 \subsubsection{AI Feedback}
-On failed submissions, the student may request AI assistance. The system calls the Gemini API with a structured prompt containing the problem statement, the student's code, and the judge's failure report. The AI is instructed to provide vague but directional hints, supporting learning rather than providing direct solutions.
+On failed submissions, the student may request AI assistance. The system calls the Gemini API with a structured prompt containing the problem statement, the student's code, and the judge's failure report. The AI is instructed to provide vague but directional hints, supporting learning rather than providing direct solutions. The model receives the unfiltered report on the server, so its hints can reason about the actual failing case; only its answer is returned to the student.
 
 \subsubsection{Result Notification}
-The final status and optional feedback are persisted. The front-end polls for updates via TanStack Query, and students can view their submission history with detailed results per test case. Beyond polling, the system raises an in-app notification whenever a submission finishes grading, alongside notifications for contest (join request/approval) and lesson (newly unlocked, assignment-related) events; each user has a notification inbox with an unread count and read/unread state, and repeated same-type events are aggregated into a single running-count entry rather than flooding the inbox.
+The final status and optional feedback are persisted. The front-end polls for updates via TanStack Query, and students can view their submission history with the result of each submission, including the failing case's details when they may see it (\S\ref{sec:test-confidentiality}). Beyond polling, the system raises an in-app notification whenever a submission finishes grading, alongside notifications for contest (join request/approval) and lesson (newly unlocked, assignment-related) events; each user has a notification inbox with an unread count and read/unread state, and repeated same-type events are aggregated into a single running-count entry rather than flooding the inbox.
 
 \subsection{Class, Lesson, and Exercise Model}\label{sec:class-lesson-model}
 
@@ -222,11 +237,11 @@ Grading differs from the contest path in one respect: the judge runs every decla
 
 To address this, execution was migrated to \texttt{isolate} \cite{mares2012isolate}, the sandbox developed for the International Olympiad in Informatics and used by contest systems such as CMS. Instead of a full container runtime, \texttt{isolate} confines a single process using Linux namespaces and resource limits, so the judge worker no longer depends on a Docker daemon at runtime. All language toolchains (Python, GCC/G++, \texttt{rustc}, JDK 21, and the Portugol interpreter) are installed in the judge's own image.
 
-\textbf{Per-run lifecycle.} For each test case, the worker initializes a box (\texttt{isolate --init}), writes the source code and the test input into it, runs the compile-and-run command under the limits below, reads the outcome from \texttt{isolate}'s metadata file, and destroys the box (\texttt{--cleanup}). The limits are:
+\textbf{Per-run lifecycle.} Submissions in compiled languages (C, C++, Rust, and Java) are first compiled once, in a box of their own with a fixed 30\,s budget; the resulting program is copied out and the box destroyed. A compile failure ends grading with a compile-error verdict. Then, for each test case, the worker initializes a fresh box (\texttt{isolate --init}), writes the program (or, for Python and Portugol, the source code) and the test input into it, runs it under the limits below, reads the outcome from \texttt{isolate}'s metadata file, and destroys the box (\texttt{--cleanup}). Compiling once keeps compilation time out of the per-test limit and avoids recompiling the same code for every test case. The limits are:
 
 \begin{itemize}
   \item \textbf{Network}: none; boxes are created without network access.
-  \item \textbf{Time}: a CPU-time limit (currently 20\,s per test case) plus a wall-clock limit 2\,s longer, so a program that sleeps or blocks on input is also stopped.
+  \item \textbf{Time}: a CPU-time limit per test case derived from the problem's configured time limit (1\,s by default), scaled by language: unchanged for C, C++, and Rust; doubled plus 0.5\,s for Java, to cover JVM startup; tripled for Python; and doubled plus 3\,s for Portugol, whose interpreter compiles the program again on every run. A wall-clock limit of twice the CPU limit plus 1\,s also stops programs that sleep or block on input.
   \item \textbf{Memory}: 128\,MB of address space for C, C++, and Python; larger caps for Rust (768\,MB) and the JVM-based languages, Java and Portugol (2\,GB), because their toolchains reserve large amounts of virtual memory up front. For the JVM, actual heap use is bounded separately through JVM flags (\texttt{-Xmx64m}).
   \item \textbf{Processes}: at most 64 processes/threads per box, which contains fork bombs, a protection the previous Docker setup lacked.
 \end{itemize}
@@ -237,7 +252,7 @@ Exit code, CPU and wall time, peak resident memory, and the termination cause (t
 
 \subsection{AI-Assisted Authoring and Feedback}
 
-The Gemini API backs four distinct capabilities in WhyRunner, one student-facing and three professor-facing, all following the same pattern: a structured prompt with user-supplied content enclosed in XML delimiters to prevent prompt injection, and a result that is either returned directly to the requester or left as an editable draft that must be explicitly saved before it affects the problem.
+The Gemini API backs four distinct capabilities in WhyRunner, one student-facing and three professor-facing, all following the same pattern: a structured prompt with user-supplied content enclosed in XML delimiters to prevent prompt injection, and a result that is either returned directly to the requester or left as an editable draft that must be explicitly saved before it affects the problem. Every AI call is also counted per user and feature, and requests beyond a fixed limit within a ten-minute window are refused with a localized message, which bounds API cost per user.
 
 \subsubsection{Student Hint Feedback}
 
@@ -290,10 +305,11 @@ WhyRunner exhibits several notable strengths:
 Despite its strengths, WhyRunner has some limitations:
 
 \begin{itemize}
-  \item \textbf{Dependency on third-party AI APIs:} The feedback system relies on the availability and consistency of the Gemini API, which may be subject to rate limits or cost constraints at scale.
+  \item \textbf{Dependency on third-party AI APIs:} The feedback system relies on the availability and consistency of the Gemini API. Per-user limits bound the cost a single user can generate, but total cost still grows with the number of active users.
   \item \textbf{Sandbox deployment and memory accounting:} \texttt{isolate} requires the \texttt{CAP\_SYS\_ADMIN} and \texttt{CAP\_NET\_ADMIN} capabilities, which many managed container platforms do not grant, so the judge is in practice deployed on a self-managed virtual machine. In addition, memory caps are currently applied per process (as an address-space limit) rather than to the whole box, so a submission that spawns several processes can use more memory in total than its nominal cap; enabling \texttt{isolate}'s control-group mode would fix this but requires further host configuration.
   \item \textbf{Deployment complexity:} The initial setup requires knowledge of Docker, Linux capabilities, and PostgreSQL configuration, which may present a barrier for non-technical instructors.
   \item \textbf{No classroom validation yet:} As noted in \S\ref{sec:methodology}, WhyRunner as a whole, including contests, the Class/Lesson/Exercise model (\S\ref{sec:class-lesson-model}), AI-assisted authoring, and solution-constraint enforcement (\S\ref{sec:prepublish-validation}), is functionally complete but has not been evaluated with a real cohort of students or instructors.
+  \item \textbf{Lesson output visibility crosses problem ownership:} The lesson toggle that reveals expected outputs (\S\ref{sec:class-lesson-model}) can be enabled by any class owner, including for problems written by other authors, which exposes those problems' hidden outputs to the class. Restricting the toggle to the problem's author, or to sample cases only, is planned.
   \item \textbf{Structural constraint analysis is heuristic, not a real parser:} Loop-nesting and forbidden/required-construct checks (\S\ref{sec:prepublish-validation}) scan raw source text (indentation width or brace depth, plus word-boundary substring search) rather than building an AST, so a matching token inside a string literal or comment can produce a false positive.
 \end{itemize}
 
