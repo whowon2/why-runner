@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CopyButton } from "@/components/copy-button";
 import {
   HiddenTestNotice,
   isHiddenFailure,
@@ -92,11 +93,17 @@ export function SubmissionList({
                 <p className="flex-1 text-gray-500 text-sm">
                   {submission.createdAt.toLocaleTimeString()}:
                 </p>
+                {submission.language && (
+                  <p className="text-muted-foreground text-xs">
+                    {submission.language}
+                  </p>
+                )}
                 <p className="text-xs">
                   {submission.status ?? t("processing")}
                 </p>
               </AccordionTrigger>
               <AccordionContent className="flex flex-col gap-3">
+                <SubmittedCode code={submission.code} />
                 {submission.output && (
                   <SubmissionDetails
                     constraintViolationDetail={
@@ -225,6 +232,26 @@ export function SubmissionDetails({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// Neutral colors on purpose: the accordion item is tinted by status, and the
+// code shouldn't inherit that. `whitespace-pre` keeps indentation intact.
+function SubmittedCode({ code }: { code: string }) {
+  const t = useTranslations("ContestsPage.Tabs.Problem.Submissions");
+
+  return (
+    <div className="flex flex-col gap-1 w-full min-w-0 text-foreground">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold text-muted-foreground">
+          {t("codeLabel")}
+        </span>
+        <CopyButton value={code} />
+      </div>
+      <pre className="bg-muted/50 border rounded-md p-2 font-mono text-xs whitespace-pre max-h-80 overflow-auto">
+        {code}
+      </pre>
     </div>
   );
 }

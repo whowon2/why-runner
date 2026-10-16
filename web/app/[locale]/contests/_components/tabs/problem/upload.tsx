@@ -1,9 +1,9 @@
 "use client";
 
-import Editor from "@monaco-editor/react";
+import Editor, { type OnMount } from "@monaco-editor/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { FilePlus2, Save, Upload } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { Check, FilePlus2, Save, Upload } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -26,6 +26,7 @@ import {
 import type { Contest, Language, ProblemPreview } from "@/drizzle/schema";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useCreateSubmission } from "@/hooks/use-create-submission";
+import { cn } from "@/lib/utils";
 
 export function UploadCode({
   problem,
@@ -37,6 +38,16 @@ export function UploadCode({
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState<Language | null>(null);
+  // When the code was last written to localStorage (manual or on blur), and
+  // whether to flash the save button's "saved" state.
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
+  const [justSaved, setJustSaved] = useState(false);
+  const justSavedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Monaco's blur listener is registered once on mount, so it reads the
+  // latest values through refs instead of a stale closure.
+  const codeRef = useRef(code);
+  codeRef.current = code;
+  const format = useFormatter();
   const { mutate, isPending } = useCreateSubmission();
   const { theme, systemTheme } = useTheme();
   const t = useTranslations();
@@ -129,39 +140,112 @@ export function UploadCode({
     setLanguage(value as Language);
   }
 
-  function handleSaveCode() {
-    if (code) {
-      localStorage.setItem(`code-${problem.id}-${language}`, code);
+  // Every problem + language pair has its own localStorage slot, so each
+  // language's version of each problem is kept separately.
+  const slotKey = language ? `code-${problem.id}-${language}` : null;
+  const slotKeyRef = useRef(slotKey);
+  slotKeyRef.current = slotKey;
 
-      toast.success(tUpload("codeSaved"));
-    } else {
-      toast.warning(tUpload("noCodeToSave"));
+  // Returns whether anything was written: empty code never overwrites a
+  // saved version, and unchanged code is not rewritten.
+  function writeSlot(key: string, value: string): boolean {
+    if (!value) return false;
+    try {
+      if (localStorage.getItem(key) === value) return false;
+      localStorage.setItem(key, value);
+      return true;
+    } catch {
+      return false;
     }
   }
 
-  useEffect(() => {
-    if (language) {
-      if (!code) {
-        const savedCode = localStorage.getItem(
-          `code-${problem.id}-${language}`,
-        );
-
-        if (savedCode) {
-          toast(tUpload("loadSavedPrompt"), {
-            action: {
-              label: tUpload("load"),
-              onClick: () => setCode(savedCode),
-            },
-            cancel: {
-              label: tAI("cancel"),
-              onClick: () => {},
-            },
-            duration: 100000,
-          });
-        }
-      }
+  function readSlot(key: string): string | null {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
     }
-  }, [code, problem.id, language, tAI, tUpload]);
+  }
+
+  function markSaved() {
+    setSavedAt(new Date());
+    setJustSaved(true);
+    if (justSavedTimer.current) clearTimeout(justSavedTimer.current);
+    justSavedTimer.current = setTimeout(() => setJustSaved(false), 2000);
+  }
+
+  function handleSaveCode() {
+    if (!code) {
+      toast.warning(tUpload("noCodeToSave"));
+      return;
+    }
+    if (!slotKey) {
+      toast.warning(tUpload("selectLanguage"));
+      return;
+    }
+    writeSlot(slotKey, code);
+    markSaved();
+    toast.success(tUpload("codeSaved"));
+  }
+
+  const handleEditorMount: OnMount = (editor) => {
+    editor.onDidBlurEditorText(() => {
+      const key = slotKeyRef.current;
+      if (key && writeSlot(key, codeRef.current)) markSaved();
+    });
+  };
+
+  // Switching problem or language: save the editor into the slot being left,
+  // then show the saved version of the slot being entered (or an empty editor).
+  // The component is not remounted per problem, so without this the previous
+  // slot's code would stay in the editor and be saved over the new slot.
+  const prevSlotKeyRef = useRef(slotKey);
+  useEffect(() => {
+    const prev = prevSlotKeyRef.current;
+    prevSlotKeyRef.current = slotKey;
+    if (prev === slotKey) return;
+
+    if (prev) writeSlot(prev, codeRef.current);
+    setSavedAt(null);
+    setJustSaved(false);
+    if (!slotKey) return;
+
+    const stored = readSlot(slotKey);
+
+    // Code typed before any language was chosen belongs to no slot yet: keep
+    // it, and only offer the saved version instead of silently replacing it.
+    if (!prev && codeRef.current) {
+      if (stored && stored !== codeRef.current) {
+        toast(tUpload("loadSavedPrompt"), {
+          action: {
+            label: tUpload("load"),
+            onClick: () => setCode(stored),
+          },
+          cancel: {
+            label: tAI("cancel"),
+            onClick: () => {},
+          },
+          duration: 100000,
+        });
+      }
+      return;
+    }
+
+    setCode(stored ?? "");
+  }, [slotKey, tAI, tUpload]);
+
+  // Closing or reloading the tab doesn't blur the editor; save then too.
+  useEffect(() => {
+    function onPageHide() {
+      const key = slotKeyRef.current;
+      if (key) writeSlot(key, codeRef.current);
+    }
+    window.addEventListener("pagehide", onPageHide);
+    return () => {
+      window.removeEventListener("pagehide", onPageHide);
+      if (justSavedTimer.current) clearTimeout(justSavedTimer.current);
+    };
+  }, []);
 
   return (
     <Card className="h-full w-full gap-0 bg-transparent border-none py-0 shadow-none">
@@ -208,8 +292,20 @@ export function UploadCode({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button onClick={handleSaveCode} variant={"outline"}>
-                    <Save />
+                  <Button
+                    className={cn(
+                      "transition-colors",
+                      justSaved &&
+                        "border-green-500 text-green-600 dark:text-green-500",
+                    )}
+                    onClick={handleSaveCode}
+                    variant={"outline"}
+                  >
+                    {justSaved ? (
+                      <Check className="animate-in zoom-in-50 fade-in duration-300" />
+                    ) : (
+                      <Save />
+                    )}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>{t("ToolTips.save")}</TooltipContent>
@@ -227,17 +323,29 @@ export function UploadCode({
               </Tooltip>
             </TooltipProvider>
           </div>
+          <p
+            aria-live="polite"
+            className={cn(
+              "h-4 text-muted-foreground text-xs transition-opacity",
+              savedAt ? "opacity-100" : "opacity-0",
+            )}
+          >
+            {savedAt &&
+              tUpload("savedLocallyAt", {
+                time: format.dateTime(savedAt, {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+              })}
+          </p>
         </div>
         <div className="min-h-0 flex-1">
           <Editor
             className="rounded-none"
             height={"100%"}
             language={language || ""}
-            onChange={(c) => {
-              if (c) {
-                setCode(c);
-              }
-            }}
+            onMount={handleEditorMount}
+            onChange={(c) => setCode(c ?? "")}
             theme={
               theme === "system"
                 ? systemTheme === "dark"
