@@ -27,13 +27,15 @@ import { cn } from "@/lib/utils";
 
 const MEDAL_COLORS = ["#FFD700", "#C0C0C0", "#CD7F32"] as const;
 
-// Fixed widths (rem) so every problem column is identical regardless of
-// content; the participant column takes whatever is left.
+// Fixed widths (rem) for every column except the problems: those share the
+// leftover width equally (never below PROBLEM_W, via the table's minWidth),
+// so a wide screen spreads the problems instead of the participant column.
+// SOLVED_W/PENALTY_W fit the longest header label ("Resolvidos").
 const RANK_W = 3;
-const PARTICIPANT_MIN_W = 12;
+const PARTICIPANT_W = 16;
 const PROBLEM_W = 4;
-const SOLVED_W = 4;
-const PENALTY_W = 5;
+const SOLVED_W = 7;
+const PENALTY_W = 7;
 
 // Sticky cells need an opaque background; the viewer's highlight is mixed in
 // rather than layered with opacity so scrolled content doesn't show through.
@@ -277,7 +279,7 @@ export function Leaderboard({
   const { problems, rows } = standings;
   const minWidth =
     RANK_W +
-    PARTICIPANT_MIN_W +
+    PARTICIPANT_W +
     problems.length * PROBLEM_W +
     SOLVED_W +
     PENALTY_W;
@@ -294,9 +296,9 @@ export function Leaderboard({
           >
             <colgroup>
               <col style={{ width: `${RANK_W}rem` }} />
-              <col />
+              <col style={{ width: `${PARTICIPANT_W}rem` }} />
               {problems.map((p) => (
-                <col key={p.problemId} style={{ width: `${PROBLEM_W}rem` }} />
+                <col key={p.problemId} />
               ))}
               <col style={{ width: `${SOLVED_W}rem` }} />
               <col style={{ width: `${PENALTY_W}rem` }} />
