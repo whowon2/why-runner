@@ -28,11 +28,11 @@
 \maketitle
 
 \begin{abstract}
-  Existing online judges primarily focus on correctness-based evaluation, often neglecting pedagogical feedback and real-time contest dynamics essential for educational contexts. This paper introduces WhyRunner: Programming Online Judge, a modular and secure system that integrates sandboxed code execution, real-time contest management, a professor-curated lesson/exercise authoring model, and AI-powered feedback. This paper presents the system's architecture, development methodology, and implementation; classroom evaluation is left to future work.
+  Existing online judges primarily focus on correctness-based evaluation, often neglecting pedagogical feedback and real-time contest dynamics essential for educational contexts. This paper introduces WhyRunner: Programming Online Judge, a modular and secure system that integrates sandboxed code execution, real-time contest management, a professor-curated lesson/exercise authoring model, AI-assisted problem authoring with mandatory pre-publish validation, and AI-powered feedback. This paper presents the system's architecture, development methodology, and implementation; classroom evaluation is left to future work.
 \end{abstract}
 
 \begin{resumo}
-  Os juízes online existentes focam principalmente na avaliação baseada em correção, negligenciando o feedback pedagógico e a dinâmica de competições em tempo real, essenciais em contextos educacionais. Este artigo apresenta o WhyRunner: Programming Online Judge, um sistema modular e seguro que integra execução de código em ambiente isolado (sandbox), gerenciamento de competições em tempo real, um modelo de autoria de aulas/exercícios curado pelo docente e feedback assistido por inteligência artificial. Este artigo descreve a arquitetura do sistema, a metodologia de desenvolvimento e a implementação; a avaliação em sala de aula fica como trabalho futuro.
+  Os juízes online existentes focam principalmente na avaliação baseada em correção, negligenciando o feedback pedagógico e a dinâmica de competições em tempo real, essenciais em contextos educacionais. Este artigo apresenta o WhyRunner: Programming Online Judge, um sistema modular e seguro que integra execução de código em ambiente isolado (sandbox), gerenciamento de competições em tempo real, um modelo de autoria de aulas/exercícios curado pelo docente, autoria de problemas assistida por IA com validação obrigatória antes da publicação e feedback assistido por inteligência artificial. Este artigo descreve a arquitetura do sistema, a metodologia de desenvolvimento e a implementação; a avaliação em sala de aula fica como trabalho futuro.
 \end{resumo}
 
 \section{Introduction}
@@ -78,7 +78,7 @@ Similarly, Supabase was dropped in favor of a standalone PostgreSQL instance (vi
 
 \subsection{Development Process}
 
-Development occurred in cycles, each involving implementation, integration, informal testing, and refinement. A minimum viable product (MVP) was shown in a Discord server to a small group of students for informal feedback outside any classroom setting. That feedback led to rapid improvements, including enhancements to the user interface, better error reporting, and more detailed AI explanations. Each subsequent cycle refactored code, adjusted parameters (e.g., time/memory limits), and improved usability based on the author's own testing.
+Development occurred in cycles, each involving implementation, integration, informal testing, and refinement. A minimum viable product (MVP) was used informally by five colleagues on the author's Discord server, outside any classroom setting and with no script or questionnaire. Three of their complaints became changes to the system: a contest's attempt list did not show the code submitted in each attempt, which is now shown with a copy button; the leaderboard showed only medals, and was rebuilt in the style of programming marathons, with attempt counts, solve minute, first-to-solve marks, and penalty (\S\ref{sec:contests-bank}); and the JSON problem import returned generic errors, and now documents the expected format and reports the failing field and problem. Positive comments concerned the visual design, a dark terminal-like theme, and the name, read as the Minas Gerais interjection ``uai'', a nod to the goal of explaining \emph{why} code failed. Being small, informal, and without instructors, this session does not replace a user evaluation. Each subsequent cycle refactored code, adjusted parameters (e.g., time/memory limits), and improved usability based on the author's own testing.
 
 A security review of the web layer was also carried out during development. Next.js turns every exported Server Action into a public HTTP endpoint that any client can call with arbitrary arguments, and TypeScript types are erased at runtime, so the end-to-end type safety of the stack does not by itself validate anything. The review found actions that copied client input directly into database writes, an action with no authentication, and submission reports that exposed hidden test cases. These were fixed with explicit input schemas, server-side ownership checks, and the report filtering described in \S\ref{sec:test-confidentiality}.
 
@@ -114,22 +114,25 @@ Comparing the analyzed platforms to WhyRunner:
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|c|c|c|c|}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|l|c|c|c|c|c|c|}
 \hline
-\textbf{System} & \textbf{AI Feedback} & \textbf{Multi-Language} & \textbf{Real-time Features} & \textbf{Curated Lessons} \\
+\rule{0pt}{5.6ex}\textbf{System} & \shortstack{\textbf{AI}\\\textbf{Feedback}} & \shortstack{\textbf{Multi-}\\\textbf{Language}} & \shortstack{\textbf{Real-time}\\\textbf{Features}} & \shortstack{\textbf{Curated}\\\textbf{Lessons}} & \shortstack{\textbf{Solution}\\\textbf{Constraints}} & \shortstack{\textbf{Portugol}\\\textbf{+ Blocks}} \\
 \hline
-Ataux      & No  & Limited   & No   & No \\
-GOJ        & No  & Moderate  & Limited & No \\
-Run Codes  & No  & Extensive & Yes  & No \\
-BOCA       & No  & Moderate  & Yes  & No \\
-WhyRunner  & Yes & Extensive & Yes  & Yes \\
+Ataux      & No  & Limited   & No      & No  & No  & No \\
+GOJ        & No  & Moderate  & Limited & No  & No  & No \\
+Run Codes  & No  & Extensive & Yes     & No  & No  & No \\
+BOCA       & No  & Moderate  & Yes     & No  & No  & No \\
+WhyRunner  & Yes & Extensive & Yes     & Yes & Yes & Yes \\
 \hline
 \end{tabular}
 \caption{Comparison of programming judge systems}
 \label{tab:judge-comparison}
 \end{table}
 
-Beyond AI feedback, WhyRunner's second differentiator is the professor-curated Class/Lesson/Exercise model (\S\ref{sec:class-lesson-model}): none of the compared systems let an instructor assemble an ordered, gradable assignment from existing problems and review it per exercise outside of a timed contest. Solution-constraint enforcement (\S\ref{sec:prepublish-validation}) is a related but separate differentiator: it lets a professor require a specific algorithmic approach, not just a correct output, which none of the compared systems support either.
+Beyond AI feedback, WhyRunner's second differentiator is the professor-curated Class/Lesson/Exercise model (\S\ref{sec:class-lesson-model}): none of the compared systems let an instructor assemble an ordered, gradable assignment from existing problems and review it per exercise outside of a timed contest. Solution-constraint enforcement (\S\ref{sec:prepublish-validation}) is a related but separate differentiator: it lets a professor require a specific algorithmic approach, not just a correct output, which none of the compared systems support either. Finally, block-based answers that compile to Portugol (\S\ref{sec:class-lesson-model}) give beginners a visual entry point that the compared judges, all text-only, do not offer.
 
 \section{System Design}
 
@@ -137,7 +140,7 @@ Beyond AI feedback, WhyRunner's second differentiator is the professor-curated C
 
 WhyRunner is structured as two cooperating services: a \textbf{Next.js web application} responsible for the user interface, authentication, and all server-side business logic via Server Actions; and a \textbf{Rust-based judge worker} responsible for code execution and result evaluation.
 
-The system's backend relies on \textbf{PostgreSQL} for persistent data storage, managed by \textbf{Drizzle ORM}. Asynchronous communication between the web application and the judge worker is handled through PostgreSQL's native \texttt{LISTEN/NOTIFY} mechanism, eliminating the need for an external message broker. When a user submits code, the web application inserts a row into the \texttt{submission} table and issues a \texttt{NOTIFY}; the judge worker, which holds an open connection via \texttt{PgListener}, receives the notification and begins processing. The \textbf{Google Gemini API} generates AI-powered feedback for students on failed submissions.
+The system's backend relies on \textbf{PostgreSQL} for persistent data storage, managed by \textbf{Drizzle ORM}. Asynchronous communication between the web application and the judge worker is handled through PostgreSQL's native \texttt{LISTEN/NOTIFY} mechanism, eliminating the need for an external message broker. When a user submits code, the web application inserts a row into the \texttt{submission} table and issues a \texttt{NOTIFY}; the judge worker, which holds an open connection via \texttt{PgListener}, receives the notification and begins processing. AI features (student hints and professor-facing authoring aids) are served by a chain of large language models, called only by the web application (\S\ref{sec:ai-chain}).
 
 Beyond timed contests, WhyRunner also supports a professor-curated Class/Lesson/Exercise model: a professor assembles lessons from existing problems for their class, and students submit and are graded exercise-by-exercise, independent of the contest scoreboard flow (\S\ref{sec:class-lesson-model}).
 
@@ -151,7 +154,7 @@ Beyond timed contests, WhyRunner also supports a professor-curated Class/Lesson/
     \item \textbf{Rust} \cite{matsakis2014rust}: Systems language used for the judge worker, chosen for performance and memory safety.
     \item \textbf{isolate} \cite{mares2012isolate}: Linux namespace/cgroup sandbox, originally built for the International Olympiad in Informatics, used to run each submission with no network and enforced resource limits.
     \item \textbf{Docker} \cite{merkel2014docker}: Packaging of the judge worker, the sandbox, and every language toolchain into a single deployable image.
-    \item \textbf{Gemini API} \cite{gemini2023}: Powers AI-driven feedback on failed submissions.
+    \item \textbf{Gemini 3.5 Flash and Flash-Lite} \cite{gemini2023} \textbf{and Claude Haiku 5.5} \cite{anthropic2026haiku}: Language models behind hints, authoring aids, and algorithm-requirement checks, tried in that order (\S\ref{sec:ai-chain}).
 \end{itemize}
 
 \newpage
@@ -202,7 +205,7 @@ The judge worker holds a persistent connection to PostgreSQL and listens on the 
 Compiled languages are compiled once per submission; then, for each test case, the judge worker runs the program inside a fresh \texttt{isolate} box with per-language memory caps, a CPU-time limit derived from the problem's own time limit, a wall-clock limit, and a process-count cap (\S\ref{sec:execution-environment}). Contest and standalone submissions stop at the first failing test case; lesson-exercise submissions run every declared test case, so the pass count reflects exactly how many cases the code got right (\S\ref{sec:class-lesson-model}).
 
 \subsubsection{Constraint Checking}
-If the exercise has active solution constraints, the checks described in \S\ref{sec:prepublish-validation} run once I/O grading completes: structural static analysis first, then, if configured, an algorithm-requirement classification via Gemini. Either violation path resolves the submission to \texttt{CONSTRAINT\_VIOLATION} instead of \texttt{PASSED}.
+If the exercise has active solution constraints, the checks described in \S\ref{sec:prepublish-validation} run once I/O grading completes: structural static analysis first, then, if configured, an algorithm-requirement classification by a language model. Either violation path resolves the submission to \texttt{CONSTRAINT\_VIOLATION} instead of \texttt{PASSED}.
 
 \subsubsection{Test-Case Confidentiality}\label{sec:test-confidentiality}
 A problem's test cases are split into public samples, shown in the statement, and hidden cases that only the judge sees. When a submission fails, the judge stores a report of the first failing case: its input, the expected output, the program's output, and its error output. If that report reached the student unchanged, hidden cases could be extracted one per submission and hard-coded. Following the practice of contest judges such as BOCA \cite{de2004boca}, the web application therefore filters the report on the server before returning it, according to who is viewing it:
@@ -218,7 +221,7 @@ A problem's test cases are split into public samples, shown in the statement, an
 A contest organizer who did not write the problem is treated like a participant: since any user may create a contest, granting organizers the full report would expose the hidden cases of every public problem. The same filter applies to every place a report leaves the server, including the contest export.
 
 \subsubsection{AI Feedback}
-On failed submissions, the student may request AI assistance. The system calls the Gemini API with a structured prompt containing the problem statement, the student's code, and the judge's failure report. The AI is instructed to provide vague but directional hints, supporting learning rather than providing direct solutions. The model receives the unfiltered report on the server, so its hints can reason about the actual failing case; only its answer is returned to the student.
+On failed submissions, the student may request AI assistance. The system calls the language-model chain (\S\ref{sec:ai-chain}) with a structured prompt containing the problem statement, the student's code, and the judge's failure report. The AI is instructed to provide vague but directional hints, supporting learning rather than providing direct solutions. The model receives the unfiltered report on the server, so its hints can reason about the actual failing case; only its answer is returned to the student.
 
 \subsubsection{Result Notification}
 The final status and optional feedback are persisted. The front-end polls for updates via TanStack Query, and students can view their submission history with the result of each submission, including the failing case's details when they may see it (\S\ref{sec:test-confidentiality}). Beyond polling, the system raises an in-app notification whenever a submission finishes grading, alongside notifications for contest (join request/approval) and lesson (newly unlocked, assignment-related) events; each user has a notification inbox with an unread count and read/unread state, and repeated same-type events are aggregated into a single running-count entry rather than flooding the inbox.
@@ -230,6 +233,21 @@ Alongside timed contests, WhyRunner offers a second, asynchronous mode built on 
 Grading differs from the contest path in one respect: the judge runs every declared test case for a lesson-exercise submission instead of stopping at the first failure, so each exercise's score is derived automatically as the fraction of test cases passed, and a lesson's total score sums those fractions, weighting every exercise equally regardless of its test-case count.
 
 \textbf{Visual answer modes.} Following the recommendation that programming education start with friendly, visual environments and move gradually to more algorithmic, text-based work \cite{audrito2012contests}, each exercise has an answer mode chosen by the professor for that lesson: \emph{code} (the default text editor), \emph{blocks}, or \emph{Parsons}. In block mode the student assembles the program from Blockly blocks (variables, input/output, decisions, and loops, labeled in the user's language); the blocks are converted into Portugol, and the student can open a read-only panel showing the generated code, which serves as a bridge from blocks to text. In Parsons mode the student receives the lines of a professor-provided solution in shuffled order and only has to arrange their order and indentation; the professor's solution must pass the problem's test cases before it can be used. In both modes the program the judge runs is generated on the server from what the student built, never taken from the browser, and is graded by the same judge pipeline, so solution constraints, scores, and AI hints work unchanged. Hints are adapted to the mode: they refer to blocks by their on-screen labels, or, for Parsons exercises, only to the order and nesting of lines. The professor's review shows the student's blocks or ordered lines alongside the generated code.
+
+\subsection{Contests, Problem Bank, and Solving Workspace}\label{sec:contests-bank}
+
+\textbf{Problem bank.} Every problem has a short code (e.g., \texttt{DEMO-101}). The problem list can be searched by title or code and filtered by difficulty, by topic tags drawn from a fixed catalog, and to the viewer's own problems; several problems can be imported at once from a JSON file whose expected format is documented in the import dialog, with errors reported per problem and field.
+
+\textbf{Contests.} A professor sets a contest's name, period, whether it is private (participants must request to join and be approved), and the maximum AI assistance participants may receive: \emph{off}, \emph{concept}, \emph{hint}, or \emph{pinpoint}. The cap is enforced on the server for every request, and a change applies to the next request. Problems are added by searching their code and are labeled A, B, C, and so on. The leaderboard follows programming-marathon conventions: each cell shows the attempt count and the minute of the accepted submission, the first solver of each problem is marked, ties on solved count are broken by penalty (solve minutes plus 20 minutes per rejected attempt on solved problems), and the table refreshes while the contest runs.
+
+\textbf{Solving workspace.} Students write code in an editor with syntax highlighting, whose content is saved automatically in the browser per problem and language (Figure~\ref{fig:workspace}). Every attempt keeps the code that was submitted, which can be expanded next to its verdict and copied; for failures the student may see (\S\ref{sec:test-confidentiality}), the input, the program's output, and the expected output are shown, and an ``Explain'' button requests an AI hint within the contest's cap.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{resolucao.png}
+\caption{Solving workspace in a contest: statement, attempts with their submitted code and the ``Explain'' button, and the editor with its autosave indicator}
+\label{fig:workspace}
+\end{figure}
 
 \subsection{Execution Environment}\label{sec:execution-environment}
 
@@ -252,29 +270,41 @@ Exit code, CPU and wall time, peak resident memory, and the termination cause (t
 
 \subsection{AI-Assisted Authoring and Feedback}
 
-The Gemini API backs four distinct capabilities in WhyRunner, one student-facing and three professor-facing, all following the same pattern: a structured prompt with user-supplied content enclosed in XML delimiters to prevent prompt injection, and a result that is either returned directly to the requester or left as an editable draft that must be explicitly saved before it affects the problem. Every AI call is also counted per user and feature, and requests beyond a fixed limit within a ten-minute window are refused with a localized message, which bounds API cost per user.
+\label{sec:ai-chain}Every AI call goes through a single server-side module, invoked only by the web application and never by the judge, which tries an ordered chain of models: Gemini 3.5 Flash \cite{gemini2023}, then Gemini 3.5 Flash-Lite, then Claude Haiku 5.5 \cite{anthropic2026haiku} when an Anthropic API key is configured. Each attempt is aborted after 30\,s, and only transient failures (timeout, network error, model not found, rate limiting, server errors, or output that fails to parse against the expected schema) fall through to the next model; other errors fail immediately. Every failed attempt is logged, so fallback frequency can be monitored.
+
+This chain backs five distinct capabilities in WhyRunner, one student-facing and four professor-facing, all following the same pattern: a structured prompt with user-supplied content enclosed in XML delimiters to prevent prompt injection, and a result that is either returned directly to the requester or left as an editable draft that must be explicitly saved before it affects the problem. Every AI call is also counted per user and feature, and requests beyond a fixed limit within a ten-minute window are refused with a localized message, which bounds API cost per user.
 
 \subsubsection{Student Hint Feedback}
 
-On a failed submission, a student may explicitly request AI help rather than receiving it automatically, supporting learner autonomy and limiting API usage. The \texttt{getAIHelp} Server Action sends the problem statement, the student's code and language, and the judge's failure report (status, failing input, expected vs. actual output) to Gemini, with an instruction to stay vague about the direct fix while explaining the logical error; user-supplied content is XML-delimited against prompt injection, and the response is localized to the user's language. This reduces teacher workload while giving contextual, constructivist-aligned assistance instead of a binary verdict.
+On a failed submission, a student may explicitly request AI help rather than receiving it automatically, supporting learner autonomy and limiting API usage. The \texttt{getAIHelp} Server Action sends the problem statement, the student's code and language, and the judge's failure report (status, failing input, expected vs. actual output) to the model, with an instruction to stay vague about the direct fix while explaining the logical error; user-supplied content is XML-delimited against prompt injection, and the response is localized to the user's language. This reduces teacher workload while giving contextual, constructivist-aligned assistance instead of a binary verdict. In contests, the hint is capped by the contest's assistance level (\S\ref{sec:contests-bank}) and revealed one level at a time.
 
 \subsubsection{AI-Assisted Problem Authoring}
 
-Three further, non-mutating capabilities target the problem creator from the edit workspace, each returning an editable draft rather than writing directly:
+Four further, non-mutating capabilities target the problem creator from the edit workspace, each returning an editable draft rather than writing directly:
 
 \begin{itemize}
-  \item \textbf{AI-drafted reference solution:} from a title/topic, proposes a description, example I/O, and a reference solution for pre-publish validation (\S\ref{sec:prepublish-validation}).
+  \item \textbf{AI-drafted reference solution:} in the pre-publish validation panel, writes a reference solution in the chosen language from the problem's last saved description and test cases, ready to be run by the judge (\S\ref{sec:prepublish-validation}).
   \item \textbf{AI problem review:} critiques the draft's description and suggests edge-case test cases (input, output, rationale), each addable with one click.
   \item \textbf{AI-generated narrative:} short, optional themed flavor text framing the problem, never required for publishing.
+  \item \textbf{AI tag suggestion:} proposes one to five topic tags from the fixed catalog, pre-filling the tag picker.
 \end{itemize}
+
+A preview tab renders the problem exactly as students will see it, with Markdown and \LaTeX, before it is published.
 
 \subsection{Pre-Publish Validation and Solution Constraints}\label{sec:prepublish-validation}
 
 Two mechanisms let a professor set stricter grading guarantees than ordinary test-case matching.
 
-\textbf{Pre-publish I/O validation.} A draft problem's reference solution runs through the same sandboxed judge execution used for student submissions, against the problem's current test cases, before the problem can be published; validation runs are stored separately and never appear in leaderboards or history. A passing run is tied to the exact test-case content (and any constraints, below) it ran against, so editing either after a pass marks it stale and re-blocks publish.
+\textbf{Pre-publish I/O validation.} A draft problem's reference solution runs through the same sandboxed judge execution used for student submissions, against the problem's current test cases, before the problem can be published; validation runs are stored separately and never appear in leaderboards or history. A passing run is tied to the exact test-case content (and any constraints, below) it ran against, so editing either after a pass marks it stale and re-blocks publish. Figure~\ref{fig:validation} shows a passing validation of a reference solution drafted by the AI.
 
-\textbf{Solution constraints.} Attached per exercise, constraints come in two kinds: \emph{structural} rules from a fixed catalog (max loop-nesting depth, forbidden/required constructs), checked via lightweight source-text scanning across all six submission languages rather than a real parser, which can false-positive on a token inside a string or comment; and a single optional \emph{algorithm-requirement} constraint, a free-text description (e.g. ``must use Dijkstra's algorithm'') checked once test cases and structural rules pass, via a Gemini 2.5 Flash call given only the requirement text, submission language, and source (never the problem statement, since correctness was already verified), returning a structured \texttt{\{satisfied, rationale\}} result. Either kind of violation resolves the submission to a distinct \texttt{CONSTRAINT\_VIOLATION} status, separate from \texttt{PASSED}/\texttt{FAILED}/\texttt{ERROR}, denying contest and completion credit even though every test case passed, with the violated rule (and, for algorithm requirements, the model's rationale) shown to the student.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{validacao.png}
+\caption{Pre-publish validation: the author picks a language, drafts the reference solution with AI (or pastes one), and runs it against every test case}
+\label{fig:validation}
+\end{figure}
+
+\textbf{Solution constraints.} Attached per exercise, constraints come in two kinds: \emph{structural} rules from a fixed catalog (max loop-nesting depth, forbidden/required constructs), checked via lightweight source-text scanning across all six submission languages rather than a real parser, which can false-positive on a token inside a string or comment; and a single optional \emph{algorithm-requirement} constraint, a free-text description (e.g. ``must use Dijkstra's algorithm'') checked once test cases and structural rules pass, via a call to the language-model chain (\S\ref{sec:ai-chain}) given only the requirement text, submission language, and source (never the problem statement, since correctness was already verified), returning a structured \texttt{\{satisfied, rationale\}} result. Either kind of violation resolves the submission to a distinct \texttt{CONSTRAINT\_VIOLATION} status, separate from \texttt{PASSED}/\texttt{FAILED}/\texttt{ERROR}, denying contest and completion credit even though every test case passed, with the violated rule (and, for algorithm requirements, the model's rationale) shown to the student.
 
 \subsection{Integration and Deployment}
 
@@ -305,7 +335,7 @@ WhyRunner exhibits several notable strengths:
 Despite its strengths, WhyRunner has some limitations:
 
 \begin{itemize}
-  \item \textbf{Dependency on third-party AI APIs:} The feedback system relies on the availability and consistency of the Gemini API. Per-user limits bound the cost a single user can generate, but total cost still grows with the number of active users.
+  \item \textbf{Dependency on third-party AI APIs:} The feedback system relies on external model providers. The fallback chain (\S\ref{sec:ai-chain}) tolerates the outage of a single model, but not of every provider at once, and answers may vary between models. Per-user limits bound the cost a single user can generate, but total cost still grows with the number of active users.
   \item \textbf{Sandbox deployment and memory accounting:} \texttt{isolate} requires the \texttt{CAP\_SYS\_ADMIN} and \texttt{CAP\_NET\_ADMIN} capabilities, which many managed container platforms do not grant, so the judge is in practice deployed on a self-managed virtual machine. In addition, memory caps are currently applied per process (as an address-space limit) rather than to the whole box, so a submission that spawns several processes can use more memory in total than its nominal cap; enabling \texttt{isolate}'s control-group mode would fix this but requires further host configuration.
   \item \textbf{Deployment complexity:} The initial setup requires knowledge of Docker, Linux capabilities, and PostgreSQL configuration, which may present a barrier for non-technical instructors.
   \item \textbf{No classroom validation yet:} As noted in \S\ref{sec:methodology}, WhyRunner as a whole, including contests, the Class/Lesson/Exercise model (\S\ref{sec:class-lesson-model}), AI-assisted authoring, and solution-constraint enforcement (\S\ref{sec:prepublish-validation}), is functionally complete but has not been evaluated with a real cohort of students or instructors.
@@ -318,7 +348,7 @@ Despite its strengths, WhyRunner has some limitations:
 Planned improvements include:
 
 \begin{itemize}
-  \item \textbf{Classroom evaluation:} Deploy WhyRunner, both the contest path and the Class/Lesson/Exercise model, in a real classroom setting with students and an instructor, and apply standardized usability questionnaires (e.g., SUS or PSSUQ) to collect measurable data on satisfaction and usability across the full feature set, including AI-assisted authoring and solution-constraint enforcement.
+  \item \textbf{Classroom evaluation:} Deploy WhyRunner, both the contest path and the Class/Lesson/Exercise model, in a real classroom setting with students and an instructor, record the instructor's perspective on creating the lesson and the contest, reviewing submissions, and dosing the AI assistance, and apply standardized usability questionnaires (e.g., SUS \cite{brooke1996sus} or PSSUQ) to collect measurable data on satisfaction and usability across the full feature set, including AI-assisted authoring and solution-constraint enforcement.
   \item \textbf{Language support expansion:} Add further languages, such as Kotlin, by installing their toolchains in the judge image and adding a runner for each.
   \item \textbf{Plagiarism detection:} Integrate code similarity analysis to support academic integrity in contest and lesson settings.
   \item \textbf{Improved test case management:} Develop tooling for automated test case generation and validation based on problem constraints, building on the AI-assisted edge-case suggestions already available in problem review.
@@ -326,7 +356,7 @@ Planned improvements include:
 
 \section{Conclusion}
 
-WhyRunner introduces a novel approach to online code evaluation in educational settings by combining real-time contest features, secure multi-language execution, and AI-powered feedback. It has grown beyond timed contests into a professor-curated Class/Lesson/Exercise authoring platform, adding AI-assisted problem drafting, review, and narrative generation; pre-publish reference-solution validation; solution-constraint enforcement; per-exercise grading; and an in-app notification system, extending the same secure judge pipeline to asynchronous, instructor-led coursework. The system as described here is implemented and self-tested by the author, but not yet evaluated with real students or instructors; that classroom evaluation is the immediate next step (\S\ref{sec:future-work}).
+WhyRunner introduces a novel approach to online code evaluation in educational settings by combining real-time contest features, secure multi-language execution, and AI-powered feedback. It has grown beyond timed contests into a professor-curated Class/Lesson/Exercise authoring platform, adding AI-assisted reference solutions, problem review, narrative generation, and tag suggestion behind a multi-provider model chain; pre-publish reference-solution validation; solution-constraint enforcement; per-exercise grading; and an in-app notification system, extending the same secure judge pipeline to asynchronous, instructor-led coursework. The system as described here is implemented and self-tested by the author, but not yet evaluated with real students or instructors; that classroom evaluation is the immediate next step (\S\ref{sec:future-work}).
 
 With a modular and extensible design, WhyRunner can evolve to meet broader needs in computer science teaching and competitive programming training. The continued integration of AI technologies and developer tooling positions it as a promising platform for the future of automated learning environments.
 
