@@ -1014,6 +1014,7 @@
           "expectedOutputLabel": "Saída Esperada",
           "errorLog": "Log de Erro (Stderr)",
           "processing": "Processando...",
+          "codeLabel": "Seu código",
           "constraintViolation": "Passou em todos os {count} testes, mas violou uma restrição de solução",
           "pendingClassification": "Passou em todos os testes — verificando algoritmo exigido...",
           "AI": {
@@ -1037,6 +1038,7 @@
             "invalidExtension": "Extensão de arquivo inválida",
             "expectedExtensions": "Esperado: {extensions}",
             "codeSaved": "Código salvo com sucesso!",
+            "savedLocallyAt": "Salvo neste navegador às {time}",
             "noCodeToSave": "Nenhum código para salvar!",
             "loadSavedPrompt": "Deseja carregar o código salvo?",
             "load": "Carregar"
