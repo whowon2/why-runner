@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { SurveyCta } from "@/components/survey-cta";
 import { db } from "@/drizzle/db";
 import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
 import { LessonRoadmap } from "../../../_components/lesson-roadmap";
@@ -20,6 +21,7 @@ export default async function LessonPage({
   return (
     <div className="flex w-full flex-1 flex-col items-center gap-4 p-4">
       <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col gap-4 py-8">
+        <SurveyCta kind="lesson" entityId={lesson.id} />
         <LessonRoadmap lessonId={lesson.id} />
       </div>
     </div>

@@ -120,6 +120,8 @@ GOOGLE_CLIENT_SECRET=
 GEMINI_KEY=
 ANTHROPIC_API_KEY=   # optional, enables Claude as last AI fallback
 FLY_API_TOKEN=       # optional, wakes the idle-stopped Fly judge (lib/judge.ts)
+SURVEY_ADMIN_EMAILS= # optional, comma-separated emails that can open /surveys/results
+SURVEY_PREVIEW_EMAILS= # optional, comma-separated emails that can open read-only /surveys/preview/[form]
 ```
 
 ## Conventions

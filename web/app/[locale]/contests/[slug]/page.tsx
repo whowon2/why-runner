@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { SurveyCta } from "@/components/survey-cta";
 import { getContestBySlug } from "@/lib/actions/contest/get-contest-by-id";
 import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
 import { ContestDescription } from "../_components/description";
@@ -20,6 +21,7 @@ export default async function Page({
 
   return (
     <div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">
+      <SurveyCta kind="contest" entityId={contest.id} className="max-w-6xl" />
       <ContestDescription contestId={contest.id} />
       <ContestTabs user={user} id={contest.id} />
     </div>

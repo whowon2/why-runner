@@ -50,7 +50,8 @@
     "roadmap": "Turmas",
     "login": "Entrar",
     "settings": "Configurações",
-    "notifications": "Notificações"
+    "notifications": "Notificações",
+    "surveys": "Pesquisas"
   },
   "Footer": {
     "copyright": "© {year} Why Runner",
@@ -1516,7 +1517,10 @@
     "CODE_TOO_LARGE": "Seu código é grande demais (máximo de {max} caracteres).",
     "CONTEST_NOT_STARTED": "Esta competição ainda não começou.",
     "CONTEST_STARTED": "Esta competição já começou, então suas datas e problemas não podem mais ser alterados.",
-    "unknown": "Algo deu errado. Tente novamente."
+    "unknown": "Algo deu errado. Tente novamente.",
+    "SURVEY_NOT_ELIGIBLE": "Você não pode responder esta pesquisa.",
+    "SURVEY_ALREADY_ANSWERED": "Você já respondeu esta pesquisa.",
+    "SURVEY_INVALID": "Algumas respostas estão faltando ou são inválidas."
   },
   "JudgeReport": {
     "wrongAnswerOnTest": "Resposta errada no teste {index}",
@@ -1525,5 +1529,221 @@
     "failedOnTest": "Falhou no teste {index}",
     "hiddenTestNote": "Este é um caso de teste oculto, então a entrada e a saída não são exibidas.",
     "passedCount": "{passed} de {total} testes aprovados"
+  },
+  "Surveys": {
+    "hub": {
+      "title": "Pesquisas",
+      "subtitle": "Avalie o WhyRunner nas competições e listas de que você participou ou que criou.",
+      "pending": "Para responder",
+      "answered": "Respondidas",
+      "emptyPending": "Nenhuma pesquisa pendente. Elas aparecem aqui depois que você cria ou participa de uma competição ou lista.",
+      "emptyAnswered": "Você ainda não respondeu nenhuma pesquisa.",
+      "answer": "Responder",
+      "answeredOn": "Respondida em {date}",
+      "results": "Resultados"
+    },
+    "formLabels": {
+      "contest_author": "Professor · competição",
+      "contest_participant": "Aluno · competição",
+      "lesson_author": "Professor · lista de exercícios",
+      "lesson_student": "Aluno · lista de exercícios"
+    },
+    "page": {
+      "consentTitle": "Termo de consentimento",
+      "consentText": "Esta pesquisa faz parte do Trabalho de Conclusão de Curso sobre o WhyRunner (IFMG). Suas respostas são anônimas na análise: nenhum professor vê as respostas individuais, e nome e e-mail não aparecem nos resultados. Os dados são usados apenas para fins acadêmicos. Responder leva cerca de 5 minutos e você pode parar a qualquer momento.",
+      "consentLabel": "Concordo em participar desta pesquisa.",
+      "profileTitle": "Sobre você",
+      "susTitle": "Usabilidade geral",
+      "susHint": "Escala de Usabilidade do Sistema (SUS). Responda pensando no WhyRunner como um todo.",
+      "itemsTitle": "Recursos usados",
+      "itemsHint": "Marque \"Não usei\" quando o recurso não fez parte da sua experiência.",
+      "openTitle": "Comentários",
+      "submit": "Enviar respostas",
+      "submitted": "Respostas enviadas. Obrigado!",
+      "required": "Obrigatório",
+      "optional": "Opcional",
+      "selectPlaceholder": "Selecione",
+      "incomplete": "Responda todos os itens obrigatórios antes de enviar.",
+      "alreadyTitle": "Pesquisa já respondida",
+      "alreadyText": "Você respondeu esta pesquisa em {date}. As respostas não podem ser alteradas.",
+      "notEligibleTitle": "Pesquisa indisponível",
+      "notEligibleText": "Esta pesquisa é para quem {who}.",
+      "tryOther": "Responder a pesquisa de {label}",
+      "backToHub": "Voltar para pesquisas",
+      "who": {
+        "contest_author": "criou e publicou esta competição",
+        "contest_participant": "participou desta competição e enviou ao menos uma submissão",
+        "lesson_author": "criou e publicou esta lista de exercícios",
+        "lesson_student": "entregou esta lista de exercícios ao professor"
+      }
+    },
+    "scale": {
+      "1": "Discordo totalmente",
+      "2": "Discordo",
+      "3": "Neutro",
+      "4": "Concordo",
+      "5": "Concordo totalmente",
+      "na": "Não usei"
+    },
+    "sus": {
+      "sus1": "Acho que gostaria de usar o WhyRunner com frequência.",
+      "sus2": "Achei o WhyRunner desnecessariamente complexo.",
+      "sus3": "Achei o WhyRunner fácil de usar.",
+      "sus4": "Acho que precisaria de ajuda de uma pessoa técnica para conseguir usar o WhyRunner.",
+      "sus5": "Achei que as funções do WhyRunner estão bem integradas.",
+      "sus6": "Achei que o WhyRunner tem muita inconsistência.",
+      "sus7": "Imagino que a maioria das pessoas aprenderia a usar o WhyRunner rapidamente.",
+      "sus8": "Achei o WhyRunner muito complicado de usar.",
+      "sus9": "Me senti muito confiante usando o WhyRunner.",
+      "sus10": "Precisei aprender muitas coisas antes de conseguir usar o WhyRunner."
+    },
+    "profile": {
+      "teachingYears": {
+        "label": "Há quantos anos você ensina programação?",
+        "options": {
+          "0-2": "0 a 2 anos",
+          "3-5": "3 a 5 anos",
+          "6-10": "6 a 10 anos",
+          "10+": "Mais de 10 anos"
+        }
+      },
+      "previousTools": {
+        "label": "Quais ferramentas de correção automática você já usou?",
+        "options": {
+          "boca": "BOCA",
+          "beecrowd": "beecrowd (URI)",
+          "runcodes": "run.codes",
+          "moodle_vpl": "Moodle / VPL",
+          "codeforces": "Codeforces / AtCoder",
+          "none": "Nenhuma",
+          "other": "Outra"
+        }
+      },
+      "course": {
+        "label": "Curso e período",
+        "placeholder": "Ex.: Ciência da Computação, 3º período"
+      },
+      "judgeExperience": {
+        "label": "Você já usava juízes online antes?",
+        "options": {
+          "never": "Nunca",
+          "few": "Poucas vezes",
+          "often": "Frequentemente"
+        }
+      },
+      "language": {
+        "label": "Linguagem que você mais usou nesta atividade",
+        "options": {
+          "c": "C",
+          "cpp": "C++",
+          "java": "Java",
+          "python": "Python",
+          "portugol": "Portugol",
+          "rust": "Rust"
+        }
+      }
+    },
+    "forms": {
+      "contest_author": {
+        "title": "Avaliação do professor: competição",
+        "items": {
+          "setup": "Criar e configurar a competição (datas, visibilidade, regras) foi simples.",
+          "problemList": "Montar a lista de problemas (banco, importação, criação) atendeu minhas necessidades.",
+          "validation": "Validar o problema com uma solução de referência antes de publicar me deu confiança nos casos de teste.",
+          "aiAuthoring": "As sugestões da IA na autoria (revisão, casos de borda, narrativa, tags) foram úteis.",
+          "aiLevel": "Escolher o nível de ajuda de IA dos alunos (desligada, conceito, dica, apontar o erro) foi adequado.",
+          "leaderboard": "O placar em tempo real me ajudou a acompanhar a turma.",
+          "attemptCode": "Ver o código das tentativas dos alunos me ajudou a entender as dificuldades deles.",
+          "judgeSpeed": "O tempo até o veredito do juiz foi aceitável.",
+          "reuse": "Usaria o WhyRunner em uma próxima competição ou avaliação."
+        }
+      },
+      "contest_participant": {
+        "title": "Avaliação do aluno: competição",
+        "items": {
+          "joinFind": "Entrar na competição e encontrar os problemas foi fácil.",
+          "editor": "O editor de código foi confortável de usar.",
+          "verdictSpeed": "O veredito das minhas submissões chegou rápido.",
+          "judgeFeedback": "O retorno do juiz (quais casos falharam) me ajudou a corrigir meu código.",
+          "aiHelp": "A ajuda da IA me orientou sem entregar a resposta.",
+          "leaderboard": "O placar me motivou durante a competição.",
+          "fairness": "Confiei que a correção foi justa.",
+          "reuse": "Participaria de outra competição no WhyRunner."
+        }
+      },
+      "lesson_author": {
+        "title": "Avaliação do professor: lista de exercícios",
+        "items": {
+          "classSetup": "Criar a turma e trazer os alunos (código de acesso) foi simples.",
+          "listSetup": "Montar a lista de exercícios foi simples.",
+          "answerModes": "Os modos de resposta (código, blocos, Parsons) atenderam às necessidades da turma.",
+          "constraints": "As restrições de solução (ex.: proibir construções, exigir algoritmo) funcionaram como eu esperava.",
+          "aiAuthoring": "As sugestões da IA na autoria foram úteis.",
+          "timeSaved": "A correção automática economizou tempo em relação à correção manual.",
+          "review": "Acompanhar e revisar as entregas dos alunos foi fácil.",
+          "reuse": "Usaria o WhyRunner para as próximas listas da disciplina."
+        }
+      },
+      "lesson_student": {
+        "title": "Avaliação do aluno: lista de exercícios",
+        "items": {
+          "joinFind": "Entrar na turma e encontrar a lista foi fácil.",
+          "answerMode": "O modo de resposta dos exercícios (código, blocos ou Parsons) me ajudou a resolver.",
+          "judgeFeedback": "O retorno do juiz me ajudou a corrigir meus erros.",
+          "aiHints": "As dicas da IA me ajudaram a avançar sem entregar a resposta.",
+          "handIn": "Ficou claro como entregar a lista ao professor.",
+          "confidence": "Me sinto mais seguro(a) programando depois desta lista.",
+          "selfStudy": "Usaria o WhyRunner para estudar por conta própria."
+        }
+      }
+    },
+    "open": {
+      "helped": "O que mais ajudou no WhyRunner?",
+      "hindered": "O que atrapalhou, faltou ou deveria mudar?",
+      "comments": "Comentários livres"
+    },
+    "cta": {
+      "title": "Avalie o WhyRunner",
+      "contest": "Conte como foi esta competição. Leva cerca de 5 minutos e ajuda o TCC.",
+      "lesson": "Conte como foi esta lista. Leva cerca de 5 minutos e ajuda o TCC.",
+      "button": "Responder pesquisa",
+      "dismiss": "Agora não"
+    },
+    "results": {
+      "title": "Resultados das pesquisas",
+      "subtitle": "Respostas anônimas por formulário, com pontuação SUS.",
+      "susMean": "SUS médio",
+      "median": "Mediana",
+      "sd": "Desvio padrão",
+      "filterAll": "Todas",
+      "filterLabel": "Filtrar por",
+      "export": "Exportar CSV",
+      "empty": "Nenhuma resposta neste formulário ainda.",
+      "susItems": "Itens SUS",
+      "featureItems": "Recursos",
+      "profile": "Perfil",
+      "openAnswers": "Respostas abertas",
+      "mean": "Média",
+      "na": "Não usei: {count}",
+      "noOpenAnswers": "Nenhuma resposta.",
+      "bands": {
+        "worst": "Pior imaginável",
+        "poor": "Ruim",
+        "ok": "OK",
+        "good": "Bom",
+        "excellent": "Excelente",
+        "best": "Melhor imaginável"
+      },
+      "count": "Respostas",
+      "item": "Item"
+    },
+    "preview": {
+      "section": "Prévia dos formulários",
+      "sectionHint": "Veja como cada formulário aparece para quem responde. Nada é salvo.",
+      "open": "Ver prévia",
+      "banner": "Prévia: você pode preencher e testar a validação, mas as respostas não são salvas.",
+      "subtitle": "Prévia do formulário",
+      "notSaved": "Prévia: todas as respostas são válidas, mas nada foi salvo."
+    }
   }
 }

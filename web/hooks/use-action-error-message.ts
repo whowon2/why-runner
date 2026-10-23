@@ -6,6 +6,9 @@ const KNOWN_CODES = [
   "CODE_TOO_LARGE",
   "CONTEST_NOT_STARTED",
   "CONTEST_STARTED",
+  "SURVEY_NOT_ELIGIBLE",
+  "SURVEY_ALREADY_ANSWERED",
+  "SURVEY_INVALID",
 ] as const;
 
 type KnownCode = (typeof KNOWN_CODES)[number];
