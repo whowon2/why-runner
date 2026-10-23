@@ -232,9 +232,12 @@ export function Leaderboard({
     if (!target || !scrollRef.current) return;
     const observer = new IntersectionObserver(
       ([entry]) => setViewerRowVisible(entry.isIntersecting),
-      // Shrink the root by roughly the sticky header/footer height so a row
-      // hidden behind them counts as not visible.
-      { root: scrollRef.current, rootMargin: "-48px 0px -56px 0px" },
+      // Shrink the root by roughly the sticky header height so a row hidden
+      // behind it counts as not visible. No bottom margin: the pinned footer
+      // only exists once the row is already out of view, and reserving its
+      // height up front made a short table's last row toggle the footer on
+      // and off forever (showing it grows the table, which reveals the row).
+      { root: scrollRef.current, rootMargin: "-48px 0px 0px 0px" },
     );
     observer.observe(target);
     return () => observer.disconnect();
