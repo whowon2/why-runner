@@ -1,7 +1,7 @@
 "use client";
 
 import type { User } from "better-auth";
-import { LogOut, User as UserIcon } from "lucide-react";
+import { ClipboardList, LogOut, User as UserIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -36,6 +36,12 @@ export function AvatarButton({ user }: { user: User }) {
             <DropdownMenuItem>
               <UserIcon />
               <span>{t("AvatarButton.profile")}</span>
+            </DropdownMenuItem>
+          </Link>
+          <Link href={"/surveys"}>
+            <DropdownMenuItem>
+              <ClipboardList />
+              <span>{t("Dock.surveys")}</span>
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>

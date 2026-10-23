@@ -10,6 +10,8 @@ export const useSubmitLesson = () => {
     },
     onSuccess: (_data, lessonId) => {
       queryClient.invalidateQueries({ queryKey: ["lessons", lessonId] });
+      // Handing the lesson in makes the student eligible for its survey.
+      queryClient.invalidateQueries({ queryKey: ["surveys"] });
     },
   });
 };

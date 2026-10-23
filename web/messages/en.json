@@ -50,7 +50,8 @@
     "roadmap": "Classes",
     "login": "Login",
     "settings": "Settings",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "surveys": "Surveys"
   },
   "Footer": {
     "copyright": "© {year} Why Runner",
@@ -1516,7 +1517,10 @@
     "CODE_TOO_LARGE": "Your code is too large (max {max} characters).",
     "CONTEST_NOT_STARTED": "This contest hasn't started yet.",
     "CONTEST_STARTED": "This contest has already started, so its dates and problems can no longer be changed.",
-    "unknown": "Something went wrong. Please try again."
+    "unknown": "Something went wrong. Please try again.",
+    "SURVEY_NOT_ELIGIBLE": "You can't answer this survey.",
+    "SURVEY_ALREADY_ANSWERED": "You already answered this survey.",
+    "SURVEY_INVALID": "Some answers are missing or invalid."
   },
   "JudgeReport": {
     "wrongAnswerOnTest": "Wrong answer on test {index}",
@@ -1525,5 +1529,221 @@
     "failedOnTest": "Failed on test {index}",
     "hiddenTestNote": "This is a hidden test case, so its input and output are not shown.",
     "passedCount": "{passed} of {total} tests passed"
+  },
+  "Surveys": {
+    "hub": {
+      "title": "Surveys",
+      "subtitle": "Rate WhyRunner for the contests and exercise lists you took part in or created.",
+      "pending": "To answer",
+      "answered": "Answered",
+      "emptyPending": "No pending surveys. They show up here after you create or take part in a contest or list.",
+      "emptyAnswered": "You haven't answered any survey yet.",
+      "answer": "Answer",
+      "answeredOn": "Answered on {date}",
+      "results": "Results"
+    },
+    "formLabels": {
+      "contest_author": "Professor · contest",
+      "contest_participant": "Student · contest",
+      "lesson_author": "Professor · exercise list",
+      "lesson_student": "Student · exercise list"
+    },
+    "page": {
+      "consentTitle": "Consent",
+      "consentText": "This survey is part of an undergraduate thesis about WhyRunner (IFMG). Your answers are anonymous in the analysis: no professor sees individual answers, and your name and email don't appear in the results. The data is used for academic purposes only. It takes about 5 minutes and you can stop at any time.",
+      "consentLabel": "I agree to take part in this survey.",
+      "profileTitle": "About you",
+      "susTitle": "Overall usability",
+      "susHint": "System Usability Scale (SUS). Answer thinking about WhyRunner as a whole.",
+      "itemsTitle": "Features you used",
+      "itemsHint": "Pick \"Didn't use\" when a feature wasn't part of your experience.",
+      "openTitle": "Comments",
+      "submit": "Submit answers",
+      "submitted": "Answers submitted. Thank you!",
+      "required": "Required",
+      "optional": "Optional",
+      "selectPlaceholder": "Select",
+      "incomplete": "Answer every required item before submitting.",
+      "alreadyTitle": "Survey already answered",
+      "alreadyText": "You answered this survey on {date}. Answers can't be changed.",
+      "notEligibleTitle": "Survey unavailable",
+      "notEligibleText": "This survey is for people who {who}.",
+      "tryOther": "Answer the {label} survey",
+      "backToHub": "Back to surveys",
+      "who": {
+        "contest_author": "created and published this contest",
+        "contest_participant": "took part in this contest and made at least one submission",
+        "lesson_author": "created and published this exercise list",
+        "lesson_student": "handed this exercise list in to the professor"
+      }
+    },
+    "scale": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree",
+      "na": "Didn't use"
+    },
+    "sus": {
+      "sus1": "I think that I would like to use WhyRunner frequently.",
+      "sus2": "I found WhyRunner unnecessarily complex.",
+      "sus3": "I thought WhyRunner was easy to use.",
+      "sus4": "I think that I would need the support of a technical person to be able to use WhyRunner.",
+      "sus5": "I found the various functions in WhyRunner were well integrated.",
+      "sus6": "I thought there was too much inconsistency in WhyRunner.",
+      "sus7": "I would imagine that most people would learn to use WhyRunner very quickly.",
+      "sus8": "I found WhyRunner very cumbersome to use.",
+      "sus9": "I felt very confident using WhyRunner.",
+      "sus10": "I needed to learn a lot of things before I could get going with WhyRunner."
+    },
+    "profile": {
+      "teachingYears": {
+        "label": "How many years have you taught programming?",
+        "options": {
+          "0-2": "0 to 2 years",
+          "3-5": "3 to 5 years",
+          "6-10": "6 to 10 years",
+          "10+": "More than 10 years"
+        }
+      },
+      "previousTools": {
+        "label": "Which automatic grading tools have you used?",
+        "options": {
+          "boca": "BOCA",
+          "beecrowd": "beecrowd (URI)",
+          "runcodes": "run.codes",
+          "moodle_vpl": "Moodle / VPL",
+          "codeforces": "Codeforces / AtCoder",
+          "none": "None",
+          "other": "Other"
+        }
+      },
+      "course": {
+        "label": "Program and semester",
+        "placeholder": "E.g. Computer Science, 3rd semester"
+      },
+      "judgeExperience": {
+        "label": "Had you used online judges before?",
+        "options": {
+          "never": "Never",
+          "few": "A few times",
+          "often": "Often"
+        }
+      },
+      "language": {
+        "label": "Language you used most in this activity",
+        "options": {
+          "c": "C",
+          "cpp": "C++",
+          "java": "Java",
+          "python": "Python",
+          "portugol": "Portugol",
+          "rust": "Rust"
+        }
+      }
+    },
+    "forms": {
+      "contest_author": {
+        "title": "Professor evaluation: contest",
+        "items": {
+          "setup": "Creating and configuring the contest (dates, visibility, rules) was simple.",
+          "problemList": "Building the problem list (bank, import, authoring) met my needs.",
+          "validation": "Validating problems against a reference solution before publishing gave me confidence in the test cases.",
+          "aiAuthoring": "The AI authoring suggestions (review, edge cases, narrative, tags) were useful.",
+          "aiLevel": "Choosing the students' AI help level (off, concept, hint, pinpoint) was adequate.",
+          "leaderboard": "The live leaderboard helped me follow the class.",
+          "attemptCode": "Seeing the code of students' attempts helped me understand their difficulties.",
+          "judgeSpeed": "The time until the judge's verdict was acceptable.",
+          "reuse": "I would use WhyRunner for a future contest or assessment."
+        }
+      },
+      "contest_participant": {
+        "title": "Student evaluation: contest",
+        "items": {
+          "joinFind": "Joining the contest and finding the problems was easy.",
+          "editor": "The code editor was comfortable to use.",
+          "verdictSpeed": "Verdicts for my submissions arrived quickly.",
+          "judgeFeedback": "The judge's feedback (which cases failed) helped me fix my code.",
+          "aiHelp": "The AI help guided me without giving away the answer.",
+          "leaderboard": "The leaderboard motivated me during the contest.",
+          "fairness": "I trusted that grading was fair.",
+          "reuse": "I would take part in another WhyRunner contest."
+        }
+      },
+      "lesson_author": {
+        "title": "Professor evaluation: exercise list",
+        "items": {
+          "classSetup": "Creating the class and bringing students in (join code) was simple.",
+          "listSetup": "Building the exercise list was simple.",
+          "answerModes": "The answer modes (code, blocks, Parsons) met the class's needs.",
+          "constraints": "Solution constraints (e.g. forbidding constructs, requiring an algorithm) worked as I expected.",
+          "aiAuthoring": "The AI authoring suggestions were useful.",
+          "timeSaved": "Automatic grading saved time compared to grading by hand.",
+          "review": "Following and reviewing students' hand-ins was easy.",
+          "reuse": "I would use WhyRunner for the course's next lists."
+        }
+      },
+      "lesson_student": {
+        "title": "Student evaluation: exercise list",
+        "items": {
+          "joinFind": "Joining the class and finding the list was easy.",
+          "answerMode": "The exercises' answer mode (code, blocks or Parsons) helped me solve them.",
+          "judgeFeedback": "The judge's feedback helped me fix my mistakes.",
+          "aiHints": "The AI hints helped me move forward without giving away the answer.",
+          "handIn": "It was clear how to hand the list in to the professor.",
+          "confidence": "I feel more confident programming after this list.",
+          "selfStudy": "I would use WhyRunner to study on my own."
+        }
+      }
+    },
+    "open": {
+      "helped": "What helped you most in WhyRunner?",
+      "hindered": "What got in the way, was missing, or should change?",
+      "comments": "Other comments"
+    },
+    "cta": {
+      "title": "Rate WhyRunner",
+      "contest": "Tell us how this contest went. It takes about 5 minutes and helps the thesis.",
+      "lesson": "Tell us how this list went. It takes about 5 minutes and helps the thesis.",
+      "button": "Answer survey",
+      "dismiss": "Not now"
+    },
+    "results": {
+      "title": "Survey results",
+      "subtitle": "Anonymous answers per form, with SUS score.",
+      "susMean": "Mean SUS",
+      "median": "Median",
+      "sd": "Std. deviation",
+      "filterAll": "All",
+      "filterLabel": "Filter by",
+      "export": "Export CSV",
+      "empty": "No responses for this form yet.",
+      "susItems": "SUS items",
+      "featureItems": "Features",
+      "profile": "Profile",
+      "openAnswers": "Open answers",
+      "mean": "Mean",
+      "na": "Didn't use: {count}",
+      "noOpenAnswers": "No answers.",
+      "bands": {
+        "worst": "Worst imaginable",
+        "poor": "Poor",
+        "ok": "OK",
+        "good": "Good",
+        "excellent": "Excellent",
+        "best": "Best imaginable"
+      },
+      "count": "Responses",
+      "item": "Item"
+    },
+    "preview": {
+      "section": "Form previews",
+      "sectionHint": "See each form as respondents will. Nothing is saved.",
+      "open": "Preview",
+      "banner": "Preview: you can fill it in and try the validation, but answers aren't saved.",
+      "subtitle": "Form preview",
+      "notSaved": "Preview: every answer is valid, but nothing was saved."
+    }
   }
 }
