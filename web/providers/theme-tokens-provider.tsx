@@ -25,6 +25,8 @@ type ThemeTokensContextValue = {
   activeTokens: ThemeTokens;
   setPreset: (presetId: string) => void;
   setCustomTokens: (tokens: ThemeTokens) => void;
+  // Temporarily shows a preset without persisting it; null restores `stored`.
+  previewPreset: (presetId: string | null) => void;
 };
 
 const ThemeTokensContext = createContext<ThemeTokensContextValue | null>(null);
@@ -48,6 +50,7 @@ export function ThemeTokensProvider({
   const { resolvedTheme } = useTheme();
   const activeMode: ThemeMode = resolvedTheme === "light" ? "light" : "dark";
   const [stored, setStored] = useState<StoredTheme>(defaultStoredTheme);
+  const [previewId, setPreviewId] = useState<string | null>(null);
 
   useEffect(() => {
     const fromStorage = readStoredTheme();
@@ -55,12 +58,16 @@ export function ThemeTokensProvider({
   }, []);
 
   useEffect(() => {
-    applyThemeTokens(tokensFor(stored, activeMode));
-  }, [stored, activeMode]);
+    const shown: StoredTheme = previewId
+      ? { mode: "preset", presetId: previewId }
+      : stored;
+    applyThemeTokens(tokensFor(shown, activeMode));
+  }, [stored, previewId, activeMode]);
 
   const setPreset = useCallback((presetId: string) => {
     const next: StoredTheme = { mode: "preset", presetId };
     setStored(next);
+    setPreviewId(null);
     writeStoredTheme(next);
   }, []);
 
@@ -96,7 +103,14 @@ export function ThemeTokensProvider({
   );
 
   const value = useMemo(
-    () => ({ stored, activeMode, activeTokens, setPreset, setCustomTokens }),
+    () => ({
+      stored,
+      activeMode,
+      activeTokens,
+      setPreset,
+      setCustomTokens,
+      previewPreset: setPreviewId,
+    }),
     [stored, activeMode, activeTokens, setPreset, setCustomTokens],
   );
 

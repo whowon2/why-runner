@@ -16,26 +16,48 @@
   },
   "CommandPalette": {
     "title": "Command Palette",
-    "searchPlaceholder": "Search for a command...",
+    "searchPlaceholder": "Search commands, problems, contests...",
+    "themePlaceholder": "Search themes (↑↓ preview, ⌫ back)",
+    "languagePlaceholder": "Search languages (⌫ back)",
     "empty": "No results found.",
-    "themeActive": "Active",
+    "active": "Active",
+    "linkCopied": "Link copied to clipboard",
+    "linkCopyFailed": "Could not copy the link",
     "groups": {
+      "problems": "Problems",
+      "contests": "Contests",
       "navigation": "Navigation",
       "create": "Create",
+      "preferences": "Preferences",
       "account": "Account",
-      "theme": "Theme"
+      "legal": "Legal",
+      "mode": "Mode",
+      "palette": "Palette",
+      "language": "Language"
+    },
+    "modes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
     },
     "commands": {
       "goHome": "Go to Home",
       "goProblems": "Go to Problems",
       "goContests": "Go to Contests",
-      "goRoadmap": "Go to Roadmap",
-      "goSettings": "Go to Settings",
+      "goClasses": "Go to Classes",
       "goProfile": "Go to Profile",
+      "goMyContests": "Go to My contests",
+      "goMyProblems": "Go to My problems",
+      "goSettings": "Go to Settings",
       "newProblem": "New problem",
       "newContest": "New contest",
-      "logout": "Log out",
-      "changeTheme": "Change theme"
+      "newClass": "New class",
+      "changeTheme": "Change theme...",
+      "toggleMode": "Toggle light/dark mode",
+      "changeLanguage": "Change language...",
+      "copyLink": "Copy link to this page",
+      "signIn": "Sign in",
+      "logout": "Log out"
     }
   },
   "ToolTips": {
