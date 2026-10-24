@@ -16,26 +16,48 @@
   },
   "CommandPalette": {
     "title": "Paleta de Comandos",
-    "searchPlaceholder": "Buscar um comando...",
+    "searchPlaceholder": "Buscar comandos, problemas, contests...",
+    "themePlaceholder": "Buscar temas (↑↓ pré-visualiza, ⌫ volta)",
+    "languagePlaceholder": "Buscar idiomas (⌫ volta)",
     "empty": "Nenhum resultado encontrado.",
-    "themeActive": "Ativo",
+    "active": "Ativo",
+    "linkCopied": "Link copiado para a área de transferência",
+    "linkCopyFailed": "Não foi possível copiar o link",
     "groups": {
+      "problems": "Problemas",
+      "contests": "Contests",
       "navigation": "Navegação",
       "create": "Criar",
+      "preferences": "Preferências",
       "account": "Conta",
-      "theme": "Tema"
+      "legal": "Legal",
+      "mode": "Modo",
+      "palette": "Paleta",
+      "language": "Idioma"
+    },
+    "modes": {
+      "light": "Claro",
+      "dark": "Escuro",
+      "system": "Sistema"
     },
     "commands": {
       "goHome": "Ir para Início",
       "goProblems": "Ir para Problemas",
       "goContests": "Ir para Contests",
-      "goRoadmap": "Ir para Trilha",
-      "goSettings": "Ir para Configurações",
+      "goClasses": "Ir para Turmas",
       "goProfile": "Ir para Perfil",
+      "goMyContests": "Ir para Meus contests",
+      "goMyProblems": "Ir para Meus problemas",
+      "goSettings": "Ir para Configurações",
       "newProblem": "Novo problema",
       "newContest": "Novo contest",
-      "logout": "Sair",
-      "changeTheme": "Mudar tema"
+      "newClass": "Nova turma",
+      "changeTheme": "Mudar tema...",
+      "toggleMode": "Alternar modo claro/escuro",
+      "changeLanguage": "Mudar idioma...",
+      "copyLink": "Copiar link desta página",
+      "signIn": "Entrar",
+      "logout": "Sair"
     }
   },
   "ToolTips": {
