@@ -3,7 +3,7 @@
 # Usage: scripts/new-worktree.sh <branch-name> [base-ref] [prompt]
 #   scripts/new-worktree.sh feat/cmdk-commands        -> ../why-runner-cmdk-commands, based on main
 # Gives the worktree its own dev port (3001+, recorded as DEV_PORT in web/.env.local, with
-# BETTER_AUTH_URL pointed at it). Inside zellij, also opens a tab named after the worktree with
+# BETTER_AUTH_URL and NEXT_PUBLIC_BETTER_AUTH_URL pointed at it). Inside zellij, also opens a tab named after the worktree with
 # `claude` (seeded with [prompt] if given) and `bun dev` on that port side by side.
 set -euo pipefail
 
@@ -41,8 +41,11 @@ while ss -ltnH "sport = :$port" | grep -q . || grep -qx "$port" <<<"$claimed"; d
 done
 env_local="$dest/web/.env.local"
 touch "$env_local"
-sed -i '/^DEV_PORT=/d; /^BETTER_AUTH_URL=/d' "$env_local"
-printf 'DEV_PORT=%s\nBETTER_AUTH_URL="http://localhost:%s"\n' "$port" "$port" >>"$env_local"
+# The browser auth client (web/lib/auth/client.ts) reads NEXT_PUBLIC_BETTER_AUTH_URL and
+# falls back to :3000, so without it the worktree's pages look signed out.
+sed -i '/^DEV_PORT=/d; /^BETTER_AUTH_URL=/d; /^NEXT_PUBLIC_BETTER_AUTH_URL=/d' "$env_local"
+printf 'DEV_PORT=%s\nBETTER_AUTH_URL="http://localhost:%s"\nNEXT_PUBLIC_BETTER_AUTH_URL="http://localhost:%s"\n' \
+  "$port" "$port" "$port" >>"$env_local"
 
 (cd "$dest/web" && bun install)
 
