@@ -38,15 +38,29 @@ pub fn parse_meta(text: &str) -> IsolateMeta {
     meta
 }
 
-/// isolate box ids range 0..1000 (see `num_boxes` in `judge/isolate.cfg`). A
-/// process-local counter is enough: `process_job` in main.rs runs test cases
-/// strictly sequentially within one submission, and each judge-worker
-/// replica is its own OS process / cgroup hierarchy (judge/CLAUDE.md's
-/// multi-replica note) — no cross-process coordination needed.
+/// isolate box ids range 0..1000 (see `num_boxes` in `judge/isolate.cfg`).
+/// Ids `0..MAX_WORKERS` are reserved for the worker pool in main.rs: each
+/// worker owns the id equal to its slot (`WORKER_SLOT`), which is safe because
+/// a job uses its boxes strictly sequentially (compile box, then one box per
+/// test case, each init→run→cleanup). Each judge-worker replica is its own OS
+/// process / box_root, so no cross-process coordination is needed.
+pub const MAX_WORKERS: u32 = 64;
+const NUM_BOXES: u32 = 1000;
+
+tokio::task_local! {
+    /// Set by main.rs around each job a pool worker runs; selects that
+    /// worker's box id.
+    pub static WORKER_SLOT: u32;
+}
+
+/// Sandbox runs outside a pool worker (e.g. tests, which grade concurrently
+/// on their own) rotate through the ids above the worker range.
 static NEXT_BOX_ID: AtomicU32 = AtomicU32::new(0);
 
 fn alloc_box_id() -> u32 {
-    NEXT_BOX_ID.fetch_add(1, Ordering::Relaxed) % 1000
+    WORKER_SLOT.try_with(|slot| *slot).unwrap_or_else(|_| {
+        MAX_WORKERS + NEXT_BOX_ID.fetch_add(1, Ordering::Relaxed) % (NUM_BOXES - MAX_WORKERS)
+    })
 }
 
 pub struct IsolateLimits {
@@ -67,7 +81,7 @@ pub struct IsolateBox {
 pub async fn box_init() -> std::io::Result<IsolateBox> {
     let id = alloc_box_id();
 
-    // Best-effort: `NEXT_BOX_ID` restarts at 0 every process start, so a box
+    // Best-effort: box ids are reused across process restarts, so a box
     // directory left behind by a previous crashed run (never `--cleanup`'d)
     // can still exist on disk and make `--init` fail. Clear it first; errors
     // are ignored the same way `box_cleanup`'s own callers already do.
@@ -153,8 +167,8 @@ pub async fn box_run(
     Ok((output, meta))
 }
 
-/// Best-effort: a failed cleanup leaks one box slot (of 1000) until the
-/// judge-worker process restarts — not worth failing the caller over.
+/// Best-effort: a failed cleanup leaves the box behind, but the next
+/// `box_init` on that id clears it first — not worth failing the caller over.
 pub async fn box_cleanup(box_id: u32) {
     let _ = Command::new("isolate")
         .args(["--box-id", &box_id.to_string(), "--cleanup"])
@@ -197,5 +211,21 @@ mod tests {
     #[test]
     fn empty_text_gives_all_none() {
         assert_eq!(parse_meta(""), IsolateMeta::default());
+    }
+
+    #[tokio::test]
+    async fn worker_slot_selects_its_own_box_id() {
+        for slot in [0, 7, MAX_WORKERS - 1] {
+            let id = WORKER_SLOT.scope(slot, async { alloc_box_id() }).await;
+            assert_eq!(id, slot);
+        }
+    }
+
+    #[test]
+    fn ids_outside_a_worker_never_hit_the_worker_range() {
+        for _ in 0..2 * NUM_BOXES {
+            let id = alloc_box_id();
+            assert!((MAX_WORKERS..NUM_BOXES).contains(&id), "got {id}");
+        }
     }
 }
