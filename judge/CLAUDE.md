@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Judge: Rust worker for the Runner platform. Polls Postgres for pending code submissions (via `LISTEN/NOTIFY` + periodic sweep), runs submitted code in sandboxed `isolate` boxes per language, compares stdout to expected output, writes results back to Postgres.
+Judge: Rust worker for the Runner platform. Polls Postgres for pending code submissions (via `LISTEN/NOTIFY` + periodic sweep), runs submitted code in sandboxed `isolate` boxes per language, compares stdout to expected output (per-problem compare mode, see "Verdicts and output comparison"), writes results back to Postgres.
 
 ## Commands
 
@@ -13,7 +13,7 @@ Judge: Rust worker for the Runner platform. Polls Postgres for pending code subm
 - Build release: `cargo build --release`
 - Local stack (Postgres + judge-worker): `docker compose up` (compose.yml at repo root)
 
-29 tests exist in this crate: 4 `isolate::tests` unit tests (pure meta-parser tests) and 12 `constraints::tests` (pure static-analysis tests over source strings) both run fine on a bare host — neither touches `isolate` or spawns a process. The 13 `grade_tests` in `main.rs` shell out to the real sandbox end-to-end and need real `isolate` + elevated capabilities to run — they'll hang/fail confusingly on a bare host without them. Run the full suite via:
+44 tests exist in this crate: 4 `isolate::tests` unit tests (pure meta-parser tests), 12 `constraints::tests` (pure static-analysis tests over source strings), 6 `compare::tests` (output comparison modes) and 3 `runner::tests` (memory-limit heuristic) all run fine on a bare host — none touches `isolate` or spawns a process. The 19 `grade_tests` in `main.rs` shell out to the real sandbox end-to-end and need real `isolate` + elevated capabilities to run — they'll hang/fail confusingly on a bare host without them. Run the full suite via:
 
 ```sh
 docker build -t judge:test -f judge/Dockerfile judge
@@ -23,7 +23,7 @@ docker run --rm --cap-add=SYS_ADMIN --cap-add=NET_ADMIN -e CARGO_TARGET_DIR=/tmp
 
 (Build the full final-stage image, not `--target builder` — the builder stage alone has no `isolate` binary, since that's only copied into the final stage; `grade_tests` would fail with "isolate: command not found" against a builder-only image. Installing Rust inside a container of the final image is the working pattern — the shipped image itself doesn't need a Rust toolchain at runtime, only for this test invocation.)
 
-`cargo test isolate::tests constraints::tests` is the subset that runs directly on a bare host without isolate/Docker; `cargo test grade_tests` needs the sandboxed invocation above.
+`cargo test isolate::tests`, `cargo test constraints::tests`, `cargo test compare` and `cargo test runner::tests` are the subset that runs directly on a bare host without isolate/Docker; `cargo test grade_tests` needs the sandboxed invocation above.
 
 ### Required `.env`
 
@@ -39,6 +39,13 @@ Three files, straight-line flow, no framework:
 - `src/db.rs` — all SQL. `get_next_submission` does the claim atomically (`UPDATE ... WHERE id = (SELECT ... FOR UPDATE SKIP LOCKED)`), safe for multiple judge-worker replicas; it claims `PENDING` rows and also reclaims `RUNNING` rows abandoned by a crashed/killed worker (`updated_at` older than `STALE_RUNNING_THRESHOLD`), bumping `retry_count` each time. `reap_exhausted_submissions` dead-letters (`status = 'ERROR'`) `RUNNING` rows that hit `MAX_RETRIES` — this is the DLQ; it's DB-only (no SQS), the `submission.retry_count` column added specifically for it. `update_submission_result` also appends to the contest leaderboard (`user_on_contest.answered`) inside the same transaction when a submission PASSES — this DB write is the only leaderboard-affecting side effect in the codebase.
 - `src/runner.rs` — per-language sandboxed execution via `isolate` (see "Sandboxed execution (isolate)" below). Two steps: `prepare()` runs once per submission — compiled languages (C, C++, Rust, Java) compile in their own box with a fixed `COMPILE_TIME_SECS` budget and the build output (`program`, or every `*.class`) is read back into memory; Python/Portugol just stage the source. `execute()` then runs the prepared files in a fresh box per test case, with the CPU limit from `time_limit_secs(language, problem.time_limit_ms)` (problem limit × per-language factor + startup allowance; Portugol compiles its generated Java inside every run, so it gets the biggest allowance). Compile time never counts against the problem's limit.
 - `src/models.rs` — `sqlx` row types (`Submission`, `Problem`) and serializable report types (`JudgeReport`, `TestCaseResult`). `Language` and `SubmissionStatus` are Postgres enums (`sqlx::Type`) — must match the DB schema's enum labels exactly (`language`/`submission_status` types, lowercase vs UPPERCASE rename rules differ per enum, see the `#[sqlx(...)]` attributes).
+- `src/compare.rs` — pure output comparison for the built-in `problem.compare_mode`s.
+
+### Verdicts and output comparison
+
+A failing submission's status is the verdict of its first failing test case (`JudgeReport.verdict` holds the same value, `PASSED` on success): sandbox failure → `ERROR`, timeout → `TIME_LIMIT_EXCEEDED`, failed run that looks like memory exhaustion → `MEMORY_LIMIT_EXCEEDED` (`runner::looks_like_memory_limit`: peak RSS ≥ 90% of the box cap, or an allocation-failure message in stderr — the box cap is `RLIMIT_AS`, so there's no clean OOM signal), other non-zero exit → `RUNTIME_ERROR`, output mismatch → `WRONG_ANSWER`, failed compile → `COMPILATION_ERROR`. `FAILED` is legacy (old rows) and is only still written as a failed `problem_validation` row's status; `ERROR` means a judge-side fault and is never penalised.
+
+`problem.compare_mode`: `exact` (`trim() ==`, the pre-compare-modes behaviour; every problem that existed before migration 0048), `tokens` (whitespace-separated tokens equal; default for new problems), `float` (tokens, numbers within `problem.float_epsilon` absolute-or-relative), `checker` (the author's program from `problem_checker`). The checker is compiled once per graded submission (`runner::prepare`) and run per successful test by `runner::execute_checker` with `input.txt output.txt answer.txt` as arguments: exit 0 accepted, exit 1 `WRONG_ANSWER` (its stdout, truncated, becomes the message), anything else / timeout / compile failure / missing checker → `ERROR`.
 
 ### Adding a new language
 
