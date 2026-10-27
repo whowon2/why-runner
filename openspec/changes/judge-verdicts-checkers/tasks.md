@@ -40,4 +40,4 @@
 
 - [x] 6.1 Update `judge/CLAUDE.md` (verdicts, compare modes, checker protocol) and `web/CLAUDE.md` (status list, problem compare fields)
 - [x] 6.2 `bun lint`, `bunx tsc --noEmit`, `bun test lib`; `cargo fmt`, `cargo build`, bare-host tests
-- [ ] 6.3 Apply migration to local DB and smoke-test: submit WA/TLE/RE/CE in a problem, float mode, checker mode (migration applied + edit form verified in browser; verdict badges on real submissions deferred until the judge is redeployed from this branch)
+- [x] 6.3 Apply migration to local DB and smoke-test: submit WA/TLE/RE/CE in a problem, float mode, checker mode (judge rebuilt from this branch; all verdicts + checker verified end-to-end and in the UI)
