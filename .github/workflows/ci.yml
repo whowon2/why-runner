@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.12
+      - run: bun install --frozen-lockfile
+      # next-env.d.ts (CSS/image module types) and route types are gitignored.
+      - name: Generate Next.js types
+        run: bunx next typegen
+      - name: Typecheck
+        run: bunx tsc --noEmit
+      - name: Lint
+        run: bun run lint
+      - name: Test
+        run: bun test
+
+  judge:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: judge
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: judge
+      - name: Format
+        run: cargo fmt --check
+      # Allowed (pre-existing, intentional):
+      # - upper_case_acronyms / non_camel_case_types: SubmissionStatus variants
+      #   spell the Postgres labels verbatim (PENDING, CONSTRAINT_VIOLATION, ...).
+      # - collapsible_if: style only.
+      # - dead_code: sqlx FromRow fields kept for Debug / future use.
+      - name: Clippy
+        run: >-
+          cargo clippy --locked --all-targets --
+          -D warnings
+          -A clippy::upper_case_acronyms
+          -A non_camel_case_types
+          -A clippy::collapsible_if
+          -A dead_code
+      # grade_tests run real submissions through isolate, which needs the
+      # judge image + elevated capabilities (see judge/CLAUDE.md).
+      - name: Test
+        run: cargo test --locked -- --skip grade_tests
+
+  enum-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.12
+      - name: Rust enums match Drizzle pgEnums
+        run: bun scripts/check-enum-sync.ts

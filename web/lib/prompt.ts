@@ -120,7 +120,7 @@ Error Message (Stderr):
 ${f.error || "None"}
 `;
     }
-  } catch (_e) {
+  } catch {
     details = `Raw Output: ${input.submission.output}`;
   }
 
