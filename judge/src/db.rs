@@ -1,5 +1,5 @@
 use crate::models::{Problem, ProblemConstraint, ProblemValidation, Submission, SubmissionStatus};
-use sqlx::{PgPool, Result};
+use sqlx::{PgPool, Result, postgres::PgPoolOptions};
 use uuid::Uuid;
 
 /// A submission stuck in RUNNING for longer than this was almost certainly
@@ -10,13 +10,28 @@ const STALE_RUNNING_THRESHOLD: &str = "5 minutes";
 /// dead-lettered (moved to ERROR) instead of retried forever.
 pub const MAX_RETRIES: i32 = 3;
 
+/// Rows `get_next_submission` may claim: pending, or abandoned by a crashed
+/// worker with retries left. `$1` is `MAX_RETRIES`.
+fn claimable_submission() -> String {
+    format!(
+        "status = 'PENDING'
+            OR (status = 'RUNNING' AND retry_count < $1 AND updated_at < now() - interval '{}')",
+        STALE_RUNNING_THRESHOLD
+    )
+}
+
 pub struct DbClient {
     pool: PgPool,
 }
 
 impl DbClient {
-    pub async fn new(database_url: &str) -> Result<Self> {
-        let pool = PgPool::connect(database_url).await?;
+    /// `max_connections` should cover one in-flight query per pool worker
+    /// plus the dispatcher's reaper (see main.rs).
+    pub async fn new(database_url: &str, max_connections: u32) -> Result<Self> {
+        let pool = PgPoolOptions::new()
+            .max_connections(max_connections)
+            .connect(database_url)
+            .await?;
         Ok(Self { pool })
     }
 
@@ -49,14 +64,13 @@ impl DbClient {
                  retry_count = CASE WHEN status = 'RUNNING' THEN retry_count + 1 ELSE retry_count END
              WHERE id = (
                  SELECT id FROM submission
-                 WHERE status = 'PENDING'
-                    OR (status = 'RUNNING' AND retry_count < $1 AND updated_at < now() - interval '{}')
+                 WHERE {}
                  ORDER BY created_at ASC
                  FOR UPDATE SKIP LOCKED
                  LIMIT 1
              )
              RETURNING id, code, language, problem_id, user_id, contest_id, question_letter, retry_count, exercise_id",
-            STALE_RUNNING_THRESHOLD
+            claimable_submission()
         ))
         .bind(MAX_RETRIES)
         .fetch_optional(&self.pool)
@@ -160,6 +174,21 @@ impl DbClient {
              RETURNING id, code, language, problem_id",
         )
         .fetch_optional(&self.pool)
+        .await
+    }
+
+    /// Whether `get_next_submission` / `get_next_validation` would claim
+    /// something right now. The idle auto-stop checks this before exiting, so
+    /// a job whose notification is what woke the dispatcher still gets
+    /// drained by the workers instead of being left PENDING.
+    pub async fn has_claimable_jobs(&self) -> Result<bool> {
+        sqlx::query_scalar(&format!(
+            "SELECT EXISTS (SELECT 1 FROM submission WHERE {})
+                 OR EXISTS (SELECT 1 FROM problem_validation WHERE status = 'PENDING')",
+            claimable_submission()
+        ))
+        .bind(MAX_RETRIES)
+        .fetch_one(&self.pool)
         .await
     }
 
