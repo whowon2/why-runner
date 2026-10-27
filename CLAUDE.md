@@ -19,7 +19,9 @@ This root directory is the git repo root for both `web/` and `judge/`, plus non-
 
 ## Parallel tasks → new worktree
 
-Each branch holds one task. When the user asks for work unrelated to the current branch's task (e.g. on `feat/evaluation-surveys`, asked to change the ctrl+k command palette), do not do it in this checkout:
+Each branch holds one task, and each checkout holds one agent. Never start a new task in the main checkout (`why-runner/`), even when it is on `main`: other sessions may be running there and can switch its branch under you. The session-start git snapshot is not refreshed; the `UserPromptSubmit` hook (`scripts/claude-branch-guard.sh`) injects the live branch each prompt and warns when another Claude session shares this checkout. Trust it over the snapshot, and if it warns, move new work to a worktree.
+
+When the user asks for new work, or work unrelated to the current branch's task (e.g. on `feat/evaluation-surveys`, asked to change the ctrl+k command palette), do not do it in this checkout:
 
 1. Say it looks like a separate task and propose a branch name (`feat/...` / `fix/...`).
 2. Run `scripts/new-worktree.sh <branch> main "<self-contained task prompt>"`. It creates `../why-runner-<name>`, copies `web/.env*` and `judge/.env*`, and runs `bun install`. Inside zellij it also opens a tab named `<name>` running `claude "<prompt>"`, so the new session starts on the task right away; write the prompt so it stands alone (the new session has none of this conversation).
