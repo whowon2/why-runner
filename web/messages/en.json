@@ -1497,7 +1497,20 @@
     "leaveClass": "Leave class",
     "leaveClassTitle": "Leave this class?",
     "leaveClassDescription": "You'll lose access to this class and its lessons unless you rejoin with the class code.",
-    "leaveClassSuccess": "You left the class."
+    "leaveClassSuccess": "You left the class.",
+    "gradebook": "Gradebook",
+    "gradebookSubtitle": "Scores of every student on every published assignment, from their handed-in submissions.",
+    "gradebookExport": "Export CSV",
+    "gradebookStudent": "Student",
+    "gradebookTotal": "Total",
+    "gradebookLessonTotal": "Σ",
+    "gradebookNotSubmitted": "Not submitted",
+    "gradebookOpen": "Open",
+    "gradebookOpenHint": "Due date not reached — students can still resubmit.",
+    "gradebookNoStudents": "No students have joined yet.",
+    "gradebookNoLessons": "No published assignments yet.",
+    "gradebookLegend": "Each exercise scores the fraction of test cases passed (0–1); — means the assignment was not handed in.",
+    "backToClass": "Back to class"
   },
   "Blocks": {
     "start": "when the program starts",

@@ -40,6 +40,8 @@ export const useSetLessonPublished = () => {
       queryClient.invalidateQueries({
         queryKey: ["lessons", variables.lessonId],
       });
+      // Class-page "unpublished" badge; gradebook only lists published lessons.
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
     },
   });
 };
