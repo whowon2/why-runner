@@ -23,6 +23,8 @@ import type { Contest, ProblemPreview } from "@/drizzle/schema";
 import { useProblemSubmissions } from "@/hooks/use-problem-submissions";
 import { parseReport } from "@/lib/judge-report";
 import { cn } from "@/lib/utils";
+import { StatusBadge } from "@/components/submissions/status-badge";
+import { isFinalFailure, statusTone } from "@/lib/submission-status";
 
 export function SubmissionList({
   problem,
@@ -71,21 +73,10 @@ export function SubmissionList({
         <Accordion className="w-full space-y-2" collapsible type="single">
           {submissions.map((submission) => (
             <AccordionItem
-              className={cn("rounded-md border px-4 last:border flex-wrap", {
-                "text-green-500 border-green-500":
-                  submission.status === "PASSED",
-                "text-red-500 border-red-500": submission.status === "FAILED",
-                "text-orange-500 border-orange-500":
-                  submission.status === "ERROR",
-                "text-gray-500 border-gray-500":
-                  submission.status === "PENDING",
-                "text-blue-500 border-blue-500":
-                  submission.status === "RUNNING",
-                "text-purple-500 border-purple-500":
-                  submission.status === "CONSTRAINT_VIOLATION",
-                "text-indigo-500 border-indigo-500":
-                  submission.status === "PENDING_CONSTRAINT_CLASSIFICATION",
-              })}
+              className={cn(
+                "rounded-md border px-4 last:border flex-wrap",
+                statusTone(submission.status),
+              )}
               key={submission.id}
               value={`item-${submission.id}`}
             >
@@ -99,7 +90,11 @@ export function SubmissionList({
                   </p>
                 )}
                 <p className="text-xs">
-                  {submission.status ?? t("processing")}
+                  {submission.status ? (
+                    <StatusBadge status={submission.status} />
+                  ) : (
+                    t("processing")
+                  )}
                 </p>
               </AccordionTrigger>
               <AccordionContent className="flex flex-col gap-3">
@@ -114,7 +109,8 @@ export function SubmissionList({
                   />
                 )}
                 {contest.aiAssistance !== "off" &&
-                  ["PASSED", "FAILED", "ERROR"].includes(submission.status) && (
+                  (submission.status === "PASSED" ||
+                    isFinalFailure(submission.status)) && (
                     <div className="flex justify-end">
                       <AIDialog
                         maxLevel={contest.aiAssistance}

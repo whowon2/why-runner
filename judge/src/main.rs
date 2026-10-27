@@ -1,3 +1,4 @@
+mod compare;
 mod constraints;
 mod db;
 mod isolate;
@@ -14,8 +15,8 @@ use tokio::time::{Duration, Instant, timeout};
 use crate::{
     db::DbClient,
     models::{
-        ConstraintKind, JudgeReport, Language, Problem, ProblemConstraint, ProblemValidation,
-        Submission, SubmissionStatus, TestCaseResult,
+        CompareMode, ConstraintKind, JudgeReport, Language, Problem, ProblemConstraint,
+        ProblemValidation, Submission, SubmissionStatus, TestCaseResult,
     },
 };
 
@@ -388,7 +389,7 @@ fn resolve_constraint_status(
     exercise_constraints: &[ProblemConstraint],
 ) -> (SubmissionStatus, Option<String>) {
     if !report.passed {
-        return (SubmissionStatus::FAILED, None);
+        return (report.verdict, None);
     }
 
     if exercise_constraints.is_empty() {
@@ -414,13 +415,12 @@ fn resolve_constraint_status(
 
 /// Shared grading core: runs `code` against every declared input/output pair
 /// of `problem`. When `run_all` is false (contests, standalone/practice,
-/// pre-publish validation), stops at the first TLE / compile error / runtime
-/// error / wrong answer, same as before this parameter existed. When
+/// pre-publish validation), stops at the first failing test case. When
 /// `run_all` is true (lesson exercises), keeps running every remaining test
-/// case after a TLE/runtime-error/wrong-answer so `passed_count` reflects
-/// true correctness — only a compile error still stops immediately either
-/// way, since it applies identically to every test case. `failure_details`
-/// always captures just the first failure encountered, matching
+/// case after a failure so `passed_count` reflects true correctness — only a
+/// compile error (or a broken checker) still stops immediately either way,
+/// since it applies identically to every test case. `failure_details` and
+/// `verdict` always describe just the first failure encountered, matching
 /// `JudgeReport`'s single-`Option<TestCaseResult>` shape.
 async fn grade(
     code: &str,
@@ -430,41 +430,64 @@ async fn grade(
 ) -> (JudgeReport, i64, Option<i64>) {
     let total_tests = problem.inputs.len();
     let mut passed_count = 0;
-    let mut failure_details: Option<TestCaseResult> = None;
+    let mut failure: Option<(SubmissionStatus, TestCaseResult)> = None;
     let mut all_passed = true;
     let mut runtime_ms: i64 = 0;
     let mut memory_kb: Option<i64> = None;
 
     let time_limit = runner::time_limit_secs(language, problem.time_limit_ms);
 
+    // A failure before any test ran (compile error, sandbox failure, broken
+    // checker) is reported against test 1 in the same shape a failed run
+    // has, since it applies to every test.
+    let early_failure = |verdict: SubmissionStatus, error: String| JudgeReport {
+        passed: false,
+        verdict,
+        total_tests,
+        passed_count: 0,
+        failure_details: Some(TestCaseResult {
+            index: 1,
+            input: problem.inputs[0].clone(),
+            expected: problem.outputs.first().cloned().unwrap_or_default(),
+            actual: String::new(),
+            error: Some(error),
+        }),
+        constraint_violation: None,
+    };
+
     // Compile once per submission, in its own box, outside the per-test time
-    // limit. A failed compile (or sandbox failure) is reported against test 1
-    // in the same shape a failed run has, since it applies to every test.
+    // limit.
     let prepared = if total_tests > 0 {
         match runner::prepare(code, language).await {
             Ok(prepared) => Some(prepared),
             Err(result) => {
                 runtime_ms += result.duration_ms;
-                let error = if result.is_compile_error {
+                let report = if result.is_compile_error {
                     println!("\t🛠️ Compile Error");
-                    format!("Compilation Error:\n{}", result.stderr)
+                    early_failure(
+                        SubmissionStatus::COMPILATION_ERROR,
+                        format!("Compilation Error:\n{}", result.stderr),
+                    )
                 } else {
-                    result.stderr
-                };
-                let report = JudgeReport {
-                    passed: false,
-                    total_tests,
-                    passed_count: 0,
-                    failure_details: Some(TestCaseResult {
-                        index: 1,
-                        input: problem.inputs[0].clone(),
-                        expected: problem.outputs.first().cloned().unwrap_or_default(),
-                        actual: String::new(),
-                        error: Some(error),
-                    }),
-                    constraint_violation: None,
+                    early_failure(SubmissionStatus::ERROR, result.stderr)
                 };
                 return (report, runtime_ms, memory_kb);
+            }
+        }
+    } else {
+        None
+    };
+
+    let checker = if total_tests > 0 && problem.compare_mode == CompareMode::Checker {
+        match prepare_checker(problem).await {
+            Ok(checker) => Some(checker),
+            Err(error) => {
+                println!("\t🧰 Checker unavailable");
+                return (
+                    early_failure(SubmissionStatus::ERROR, error),
+                    runtime_ms,
+                    memory_kb,
+                );
             }
         }
     } else {
@@ -485,68 +508,55 @@ async fn grade(
         };
 
         let result = runner::execute(prepared, input, time_limit).await;
-        let actual = result.stdout.trim().to_string();
         runtime_ms += result.duration_ms;
         if let Some(kb) = result.peak_memory_kb {
             memory_kb = Some(memory_kb.map_or(kb, |current| current.max(kb)));
         }
 
-        if result.is_timeout {
-            all_passed = false;
-            if failure_details.is_none() {
-                failure_details = Some(TestCaseResult {
-                    index: i + 1,
-                    input: input.clone(),
-                    expected: expected.clone(),
-                    actual: "Execution timed out".to_string(),
-                    error: Some(format!("Time Limit Exceeded ({}s)", time_limit)),
-                });
-            }
-
-            println!("\t⏳ TLE on Test {}", i + 1);
-            if !run_all {
-                break;
-            }
-        } else if result.exit_code != 0 {
-            // CASE 1: Runtime Error (Crash)
-            all_passed = false;
-            if failure_details.is_none() {
-                failure_details = Some(TestCaseResult {
-                    index: i + 1,
-                    input: input.clone(), // We save the input that killed it
-                    expected: expected.clone(),
-                    actual: actual.clone(), // Sometimes partial output exists
-                    error: Some(result.stderr.clone()), // The Traceback
-                });
-            }
-            println!("\t❌ Runtime Error on Test {}", i + 1);
-            if !run_all {
-                break;
-            }
-        } else if actual.trim() != expected.trim() {
-            // CASE 2: Wrong Answer
-            all_passed = false;
-            if failure_details.is_none() {
-                failure_details = Some(TestCaseResult {
-                    index: i + 1,
-                    input: input.clone(),
-                    expected: expected.clone(),
-                    actual: actual.clone(),
-                    error: None,
-                });
-            }
-            println!("\t❌ Wrong Answer on Test {}", i + 1);
-            if !run_all {
-                break;
-            }
-        } else {
+        let Some((verdict, actual, error)) = judge_test_case(
+            &result,
+            input,
+            expected,
+            problem,
+            checker.as_ref(),
+            time_limit,
+        )
+        .await
+        else {
             passed_count += 1;
+            continue;
+        };
+
+        all_passed = false;
+        println!("\t❌ {:?} on Test {}", verdict, i + 1);
+        if failure.is_none() {
+            failure = Some((
+                verdict,
+                TestCaseResult {
+                    index: i + 1,
+                    input: input.clone(),
+                    expected: expected.clone(),
+                    actual,
+                    error,
+                },
+            ));
+        }
+        if !run_all {
+            break;
         }
     }
 
-    // Prepare the Report
+    let (verdict, failure_details) = match failure {
+        Some((verdict, details)) => (verdict, Some(details)),
+        // Only reachable with a missing expected output: a malformed
+        // problem, not the submission's fault.
+        None if !all_passed => (SubmissionStatus::ERROR, None),
+        None => (SubmissionStatus::PASSED, None),
+    };
+
     let report = JudgeReport {
         passed: all_passed,
+        verdict,
         total_tests,
         passed_count,
         failure_details,
@@ -554,6 +564,106 @@ async fn grade(
     };
 
     (report, runtime_ms, memory_kb)
+}
+
+/// The verdict of one executed test case: `None` when it passed, otherwise
+/// the verdict plus the `actual`/`error` shown in the report.
+async fn judge_test_case(
+    result: &runner::ExecutionResult,
+    input: &str,
+    expected: &str,
+    problem: &Problem,
+    checker: Option<&runner::Prepared>,
+    time_limit: f64,
+) -> Option<(SubmissionStatus, String, Option<String>)> {
+    let actual = result.stdout.trim().to_string();
+
+    if result.is_internal_error {
+        return Some((SubmissionStatus::ERROR, actual, Some(result.stderr.clone())));
+    }
+    if result.is_timeout {
+        return Some((
+            SubmissionStatus::TIME_LIMIT_EXCEEDED,
+            "Execution timed out".to_string(),
+            Some(format!("Time Limit Exceeded ({}s)", time_limit)),
+        ));
+    }
+    if result.exit_code != 0 {
+        // Partial output is kept; stderr carries the traceback.
+        let verdict = if result.is_memory_limit {
+            SubmissionStatus::MEMORY_LIMIT_EXCEEDED
+        } else {
+            SubmissionStatus::RUNTIME_ERROR
+        };
+        return Some((verdict, actual, Some(result.stderr.clone())));
+    }
+
+    let Some(checker) = checker else {
+        let accepted = compare::matches(
+            problem.compare_mode,
+            problem.float_epsilon,
+            &actual,
+            expected,
+        );
+        return (!accepted).then_some((SubmissionStatus::WRONG_ANSWER, actual, None));
+    };
+
+    let verdict = runner::execute_checker(checker, input, &result.stdout, expected).await;
+    match verdict.exit_code {
+        _ if verdict.is_timeout || verdict.is_internal_error => Some((
+            SubmissionStatus::ERROR,
+            actual,
+            Some(format!("Checker failed: {}", verdict.stderr.trim())),
+        )),
+        0 => None,
+        1 => {
+            let message = truncate(verdict.stdout.trim(), CHECKER_MESSAGE_MAX_BYTES);
+            Some((
+                SubmissionStatus::WRONG_ANSWER,
+                actual,
+                (!message.is_empty()).then(|| format!("Checker: {}", message)),
+            ))
+        }
+        code => Some((
+            SubmissionStatus::ERROR,
+            actual,
+            Some(format!(
+                "Checker failed (exit code {}): {}",
+                code,
+                verdict.stderr.trim()
+            )),
+        )),
+    }
+}
+
+/// Longest checker stdout kept as a wrong-answer message.
+const CHECKER_MESSAGE_MAX_BYTES: usize = 1024;
+
+fn truncate(text: &str, max_bytes: usize) -> &str {
+    if text.len() <= max_bytes {
+        return text;
+    }
+    let mut end = max_bytes;
+    while !text.is_char_boundary(end) {
+        end -= 1;
+    }
+    &text[..end]
+}
+
+/// Compiles the problem's custom checker once per graded submission. `Err`
+/// is a judge-side fault (missing/unsupported/uncompilable checker), shown to
+/// the author through validation runs.
+async fn prepare_checker(problem: &Problem) -> Result<runner::Prepared, String> {
+    let (Some(language), Some(code)) = (problem.checker_language, problem.checker_code.as_deref())
+    else {
+        return Err("Checker failed: the problem has no checker configured".to_string());
+    };
+    if language == Language::Portugol {
+        return Err("Checker failed: Portugol checkers are not supported".to_string());
+    }
+    runner::prepare(code, language)
+        .await
+        .map_err(|result| format!("Checker failed to compile:\n{}", result.stderr))
 }
 
 #[cfg(test)]
@@ -604,7 +714,18 @@ mod grade_tests {
             inputs: inputs.iter().map(|s| s.to_string()).collect(),
             outputs: outputs.iter().map(|s| s.to_string()).collect(),
             time_limit_ms: 1000,
+            compare_mode: CompareMode::Exact,
+            float_epsilon: 1e-6,
+            checker_language: None,
+            checker_code: None,
         }
+    }
+
+    fn with_checker(mut p: Problem, language: Language, code: &str) -> Problem {
+        p.compare_mode = CompareMode::Checker;
+        p.checker_language = Some(language);
+        p.checker_code = Some(code.to_string());
+        p
     }
 
     // Burns ~2s of CPU, then echoes its input. Used to check the problem's
@@ -616,6 +737,7 @@ mod grade_tests {
         let p = problem(&["1"], &["1"]); // 1000ms → 1s for C
         let (report, _, _) = grade(BUSY_2S_C, Language::C, &p, false).await;
         assert!(!report.passed);
+        assert_eq!(report.verdict, SubmissionStatus::TIME_LIMIT_EXCEEDED);
         let details = report.failure_details.unwrap();
         assert_eq!(details.actual, "Execution timed out");
         assert!(details.error.unwrap_or_default().contains("(1s)"));
@@ -656,6 +778,7 @@ mod grade_tests {
     async fn compile_error_keeps_compiler_output() {
         let p = problem(&["1"], &["1"]);
         let (report, _, _) = grade("int main( {", Language::C, &p, false).await;
+        assert_eq!(report.verdict, SubmissionStatus::COMPILATION_ERROR);
         let details = report.failure_details.unwrap();
         let error = details.error.unwrap_or_default();
         assert!(error.starts_with("Compilation Error:"), "got: {error}");
@@ -671,6 +794,7 @@ mod grade_tests {
         let (report, _, _) = grade(ECHO_CODE, Language::Python, &p, true).await;
 
         assert!(!report.passed);
+        assert_eq!(report.verdict, SubmissionStatus::WRONG_ANSWER);
         assert_eq!(report.total_tests, 3);
         assert_eq!(
             report.passed_count, 2,
@@ -801,6 +925,70 @@ mod grade_tests {
             !report.passed,
             "500MB allocation should fail under the 128MB box limit"
         );
+        assert_eq!(report.verdict, SubmissionStatus::MEMORY_LIMIT_EXCEEDED);
+    }
+
+    #[tokio::test]
+    async fn crash_is_a_runtime_error() {
+        let p = problem(&["1"], &["1"]);
+        let (report, _, _) = grade("print(1 // 0)", Language::Python, &p, false).await;
+        assert_eq!(report.verdict, SubmissionStatus::RUNTIME_ERROR);
+        let error = report.failure_details.unwrap().error.unwrap_or_default();
+        assert!(error.contains("ZeroDivisionError"), "got: {error}");
+    }
+
+    #[tokio::test]
+    async fn passing_report_has_passed_verdict() {
+        let p = problem(&["1"], &["1"]);
+        let (report, _, _) = grade(ECHO_CODE, Language::Python, &p, false).await;
+        assert_eq!(report.verdict, SubmissionStatus::PASSED);
+    }
+
+    #[tokio::test]
+    async fn tokens_mode_ignores_spacing() {
+        let mut p = problem(&["1 2"], &["1\n2"]);
+        p.compare_mode = CompareMode::Tokens;
+        let (report, _, _) = grade(ECHO_CODE, Language::Python, &p, false).await;
+        assert!(report.passed, "got: {:?}", report.failure_details);
+
+        p.compare_mode = CompareMode::Exact;
+        let (report, _, _) = grade(ECHO_CODE, Language::Python, &p, false).await;
+        assert_eq!(report.verdict, SubmissionStatus::WRONG_ANSWER);
+    }
+
+    // Accepts any output whose integers sum to the answer's.
+    const SUM_CHECKER: &str = "import sys\nout=open(sys.argv[2]).read().split()\nans=open(sys.argv[3]).read().split()\nif sum(map(int,out))==sum(map(int,ans)):\n    sys.exit(0)\nprint('wrong sum')\nsys.exit(1)";
+
+    #[tokio::test]
+    async fn checker_accepts_alternative_answer() {
+        let p = with_checker(problem(&["3"], &["1 2"]), Language::Python, SUM_CHECKER);
+        let (report, _, _) = grade(ECHO_CODE, Language::Python, &p, false).await;
+        assert!(report.passed, "got: {:?}", report.failure_details);
+    }
+
+    #[tokio::test]
+    async fn checker_rejection_is_wrong_answer_with_message() {
+        let p = with_checker(problem(&["4"], &["1 2"]), Language::Python, SUM_CHECKER);
+        let (report, _, _) = grade(ECHO_CODE, Language::Python, &p, false).await;
+        assert_eq!(report.verdict, SubmissionStatus::WRONG_ANSWER);
+        let error = report.failure_details.unwrap().error.unwrap_or_default();
+        assert!(error.contains("wrong sum"), "got: {error}");
+    }
+
+    #[tokio::test]
+    async fn broken_checker_is_a_judge_error() {
+        let p = with_checker(
+            problem(&["1"], &["1"]),
+            Language::Python,
+            "import sys\nsys.exit(3)",
+        );
+        let (report, _, _) = grade(ECHO_CODE, Language::Python, &p, false).await;
+        assert_eq!(report.verdict, SubmissionStatus::ERROR);
+
+        let p = with_checker(problem(&["1"], &["1"]), Language::C, "int main( {");
+        let (report, _, _) = grade(ECHO_CODE, Language::Python, &p, false).await;
+        assert_eq!(report.verdict, SubmissionStatus::ERROR);
+        assert_eq!(report.passed_count, 0);
     }
 
     const DOUBLE_C: &str =
@@ -922,6 +1110,10 @@ mod grade_tests {
                             inputs: p.inputs.clone(),
                             outputs: p.outputs.clone(),
                             time_limit_ms: p.time_limit_ms,
+                            compare_mode: p.compare_mode,
+                            float_epsilon: p.float_epsilon,
+                            checker_language: p.checker_language,
+                            checker_code: p.checker_code.clone(),
                         },
                     )
                 })

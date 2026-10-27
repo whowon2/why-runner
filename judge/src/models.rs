@@ -7,11 +7,30 @@ use uuid::Uuid;
 pub enum SubmissionStatus {
     PENDING,
     PASSED,
+    /// Legacy: rows judged before the distinct verdicts below existed. Still
+    /// written for failed `problem_validation` runs, never for submissions.
     FAILED,
+    /// Judge-side fault (dead-lettered row, sandbox or checker failure).
     ERROR,
     RUNNING,
     CONSTRAINT_VIOLATION,
     PENDING_CONSTRAINT_CLASSIFICATION,
+    WRONG_ANSWER,
+    TIME_LIMIT_EXCEEDED,
+    MEMORY_LIMIT_EXCEEDED,
+    COMPILATION_ERROR,
+    RUNTIME_ERROR,
+}
+
+/// How a run's stdout is compared with the declared output (`compare.rs`).
+#[derive(Debug, Type, PartialEq, Clone, Copy)]
+#[sqlx(type_name = "problem_compare_mode", rename_all = "lowercase")]
+pub enum CompareMode {
+    Exact,
+    Tokens,
+    Float,
+    /// Run the author's `problem_checker` program.
+    Checker,
 }
 
 #[derive(Debug, Type, Serialize, PartialEq, Clone, Copy)]
@@ -49,6 +68,11 @@ pub struct Problem {
     /// Author-set per-test CPU limit; the judge scales it per language
     /// (`runner::time_limit_secs`).
     pub time_limit_ms: i32,
+    pub compare_mode: CompareMode,
+    pub float_epsilon: f64,
+    /// From `problem_checker`; only set when the author saved one.
+    pub checker_language: Option<Language>,
+    pub checker_code: Option<String>,
 }
 
 #[derive(Debug, Type, Clone, Copy, PartialEq)]
@@ -117,6 +141,9 @@ pub struct TestCaseResult {
 #[derive(Serialize)]
 pub struct JudgeReport {
     pub passed: bool,
+    /// `PASSED`, or the verdict of the first failing test case (or
+    /// `COMPILATION_ERROR` / `ERROR` when the submission never ran).
+    pub verdict: SubmissionStatus,
     pub total_tests: usize,
     pub passed_count: usize,
     pub failure_details: Option<TestCaseResult>, // None if all passed

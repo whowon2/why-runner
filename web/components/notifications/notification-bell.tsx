@@ -17,6 +17,7 @@ import {
 } from "@/hooks/use-notifications";
 import { useUnreadNotificationCount } from "@/hooks/use-unread-notification-count";
 import { cn } from "@/lib/utils";
+import { isFinalFailure } from "@/lib/submission-status";
 
 type NotificationItem = Awaited<
   ReturnType<typeof useNotifications>
@@ -85,7 +86,8 @@ function useDescribeNotification() {
         const key =
           n.submission?.status === "PASSED"
             ? "SUBMISSION_GRADED_PASSED"
-            : n.submission?.status === "FAILED"
+            : n.submission?.status && n.submission.status !== "ERROR" &&
+                isFinalFailure(n.submission.status)
               ? "SUBMISSION_GRADED_FAILED"
               : "SUBMISSION_GRADED_ERROR";
         return {

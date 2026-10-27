@@ -32,7 +32,8 @@ import {
 import { useProblemPracticeSubmissions } from "@/hooks/use-problem-practice-submissions";
 import { useProblemTests } from "@/hooks/use-problem-tests";
 import { type JudgeReport, parseReport } from "@/lib/judge-report";
-import { cn } from "@/lib/utils";
+import { StatusBadge } from "@/components/submissions/status-badge";
+import { statusTone } from "@/lib/submission-status";
 
 export function ProblemResultsTab({ problemId }: { problemId: string }) {
   const t = useTranslations("ProblemsPage.Workspace.Results");
@@ -80,20 +81,8 @@ export function ProblemResultsTab({ problemId }: { problemId: string }) {
                   count: submission.codeSize ?? submission.code.length,
                 })}
               </TableCell>
-              <TableCell
-                className={cn({
-                  "text-green-500": submission.status === "PASSED",
-                  "text-red-500": submission.status === "FAILED",
-                  "text-orange-500": submission.status === "ERROR",
-                  "text-gray-500": submission.status === "PENDING",
-                  "text-blue-500": submission.status === "RUNNING",
-                  "text-purple-500":
-                    submission.status === "CONSTRAINT_VIOLATION",
-                  "text-indigo-500":
-                    submission.status === "PENDING_CONSTRAINT_CLASSIFICATION",
-                })}
-              >
-                {submission.status}
+              <TableCell className={statusTone(submission.status)}>
+                <StatusBadge status={submission.status} />
               </TableCell>
               <TableCell>
                 <SubmissionDetailsDialog

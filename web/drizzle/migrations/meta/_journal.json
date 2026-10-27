@@ -337,6 +337,13 @@
       "when": 1793129176832,
       "tag": "0047_colorful_alice",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1793131176702,
+      "tag": "0048_judge_verdicts_checkers",
+      "breakpoints": true
     }
   ]
 }

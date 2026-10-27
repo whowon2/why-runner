@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/table";
 import type { Contest } from "@/drizzle/schema";
 import { useContestSubmissions } from "@/hooks/use-contest-submissions";
-import { cn } from "@/lib/utils";
+import { StatusBadge } from "@/components/submissions/status-badge";
+import { statusTone } from "@/lib/submission-status";
 
 export function ContestSubmissions({ contest }: { contest: Contest }) {
   const { data: submissions } = useContestSubmissions({
@@ -56,21 +57,8 @@ export function ContestSubmissions({ contest }: { contest: Contest }) {
                   />
                 </TableCell>
                 <TableCell>{submission.user.name}</TableCell>
-                <TableCell
-                  className={cn({
-                    "text-green-500": submission.status === "PASSED",
-                    "text-red-500": submission.status === "FAILED",
-                    "text-orange-500": submission.status === "ERROR",
-                    "text-gray-500": submission.status === "PENDING",
-                    "text-blue-500": submission.status === "RUNNING",
-                    "text-purple-500":
-                      submission.status === "CONSTRAINT_VIOLATION",
-                    "text-indigo-500":
-                      submission.status ===
-                      "PENDING_CONSTRAINT_CLASSIFICATION",
-                  })}
-                >
-                  {submission.status}
+                <TableCell className={statusTone(submission.status)}>
+                  <StatusBadge status={submission.status} />
                 </TableCell>
                 <TableCell>
                   {new Date(submission.createdAt).toLocaleTimeString()}

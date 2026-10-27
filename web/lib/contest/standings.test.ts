@@ -84,6 +84,27 @@ describe("cells", () => {
     expect(row(input, "alice").penalty).toBe(7);
   });
 
+  test("COMPILATION_ERROR is not penalised", () => {
+    const input = base([
+      sub("alice", "pa", "COMPILATION_ERROR", 3),
+      sub("alice", "pa", "PASSED", 7),
+    ]);
+    expect(row(input, "alice").cells.pa).toMatchObject({ attempts: 1 });
+    expect(row(input, "alice").penalty).toBe(7);
+  });
+
+  test("distinct rejection verdicts each add a penalty", () => {
+    const input = base([
+      sub("alice", "pa", "WRONG_ANSWER", 1),
+      sub("alice", "pa", "TIME_LIMIT_EXCEEDED", 2),
+      sub("alice", "pa", "MEMORY_LIMIT_EXCEEDED", 3),
+      sub("alice", "pa", "RUNTIME_ERROR", 4),
+      sub("alice", "pa", "PASSED", 7),
+    ]);
+    expect(row(input, "alice").cells.pa).toMatchObject({ attempts: 5 });
+    expect(row(input, "alice").penalty).toBe(7 + 4 * PENALTY_PER_REJECTION_MIN);
+  });
+
   test("submission after end is ignored", () => {
     const input = base([sub("alice", "pa", "PASSED", 200)]);
     expect(row(input, "alice").cells.pa).toEqual({ state: "untouched" });

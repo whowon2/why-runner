@@ -58,7 +58,7 @@ Server-only helpers (no auth of their own) go outside `lib/actions/` and start w
 
 - `user`, `session`, `account`, `verification` — Better Auth tables
 - `problem` — Code problems with test `inputs[]`/`outputs[]` arrays, `difficulty` enum
-- `submission` — Execution results, `status`: `PENDING|RUNNING|PASSED|FAILED|ERROR`, supports languages: `c|cpp|java|python|portugol|rust`
+- `submission` — Execution results, `status`: `PENDING|RUNNING|PASSED|WRONG_ANSWER|TIME_LIMIT_EXCEEDED|MEMORY_LIMIT_EXCEEDED|COMPILATION_ERROR|RUNTIME_ERROR|ERROR|CONSTRAINT_VIOLATION|PENDING_CONSTRAINT_CLASSIFICATION` (+ legacy `FAILED` on old rows; `ERROR` = judge fault), supports languages: `c|cpp|java|python|portugol|rust`. Show statuses with `StatusBadge` (`components/submissions/status-badge.tsx`, labels under `SubmissionStatus` in `messages/`) and branch on them via `lib/submission-status.ts`
 - `contest` — Contests with date range, `isPrivate` flag
 - `userOnContest` — Join table with `joinStatus`: `pending|accepted`
 - `problemOnContest` — Problem assignment to contest
@@ -92,6 +92,10 @@ Every AI feature calls `generateText`/`generateJson` in `lib/ai.ts` (never the p
 
 `problem.narrative` is an optional text field (nullable) shown above the description on the standalone problem page when set, styled as flavor text — never required for publish. `generateProblemNarrative()` (`lib/actions/problems/generate-problem-narrative.ts`) drafts an Advent-of-Code-style themed story via `generateText` into the edit form's narrative field for the author to edit/save through the existing `updateProblem` action.
 
+### Output Comparison
+
+`problem.compareMode` (`exact|tokens|float|checker`, default `tokens`; pre-0048 problems are `exact`) and `problem.floatEpsilon` tell the judge how to compare output (semantics in `judge/CLAUDE.md`). A custom checker lives in the separate `problem_checker` table so student queries that load whole `problem` rows can't leak it: read it only via `getProblemChecker` (`lib/problem-checker.ts`, server-only) and only send it to the problem's owner (`getProblemForEdit`). `updateProblem` writes the settings and upserts/deletes the checker in one transaction. `computeIoHash` includes the comparison settings when the mode isn't `exact`, so changing them makes the validation stale.
+
 ### Problem Tags
 
 `problem.tags` is an array of the fixed `problem_tag` pg enum (`PROBLEM_TAGS` in `drizzle/schemas/problems.ts`); labels live under `ProblemTags` in `messages/`. Keys are permanent — add new ones via migration, don't rename/remove. The problems list filters with array-contains (problem must have all selected tags, URL param `tags=a,b`). `suggestProblemTags()` (`lib/actions/problems/suggest-problem-tags.ts`) uses `generateJson` (zod enum schema) for 1–5 tags from the edit form's unsaved title/description; it only pre-fills the form's tag picker, saved via `updateProblem`.
@@ -123,6 +127,17 @@ FLY_API_TOKEN=       # optional, wakes the idle-stopped Fly judge (lib/judge.ts)
 SURVEY_ADMIN_EMAILS= # optional, comma-separated emails that can open /surveys/results
 SURVEY_PREVIEW_EMAILS= # optional, comma-separated emails that can open read-only /surveys/preview/[form]
 ```
+
+## Local Test Accounts
+
+Email/password accounts in the local dev database (shared by every worktree), for driving the app in a browser. Test-only, never real credentials:
+
+| Role    | Email               | Password         |
+| ------- | ------------------- | ---------------- |
+| teacher | `teacher@email.com` | `teacherteacher` |
+| student | `user@email.com`    | `useruser`       |
+
+If one is missing (fresh DB), create it through the normal sign-up page. Social login only works on `:3000`, so use these on other worktree ports.
 
 ## Conventions
 

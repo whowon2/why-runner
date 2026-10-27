@@ -10,6 +10,7 @@ import {
   getMissingProblemFields,
   PUBLISH_MISSING_FIELDS,
 } from "./publish-problem-shared";
+import { getProblemChecker } from "@/lib/problem-checker";
 
 export async function publishProblem(problemId: string) {
   const currentUser = await getCurrentUser({});
@@ -34,7 +35,10 @@ export async function publishProblem(problemId: string) {
     ),
     orderBy: desc(problemValidation.createdAt),
   });
-  const currentIoHash = computeIoHash(found.inputs, found.outputs);
+  const currentIoHash = computeIoHash(found.inputs, found.outputs, {
+    ...found,
+    checker: await getProblemChecker(problemId),
+  });
   const hasFreshPass =
     latestValidation?.status === "PASSED" &&
     latestValidation.ioHash === currentIoHash;

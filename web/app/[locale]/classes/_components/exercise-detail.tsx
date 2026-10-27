@@ -48,6 +48,8 @@ import {
 import type { ParsonsLine } from "@/lib/parsons";
 import { cn } from "@/lib/utils";
 import { AIDialog } from "../../contests/_components/ai-dialog";
+import { StatusBadge } from "@/components/submissions/status-badge";
+import { isFinalFailure, statusTone } from "@/lib/submission-status";
 
 const LANGUAGES: Language[] = [
   "rust",
@@ -445,17 +447,10 @@ function ExerciseSubmissions({ exerciseId }: { exerciseId: string }) {
           >
             {submissions.map((s) => (
               <AccordionItem
-                className={cn("rounded-md border px-3 last:border", {
-                  "text-green-500 border-green-500": s.status === "PASSED",
-                  "text-red-500 border-red-500": s.status === "FAILED",
-                  "text-orange-500 border-orange-500": s.status === "ERROR",
-                  "text-gray-500 border-gray-500": s.status === "PENDING",
-                  "text-blue-500 border-blue-500": s.status === "RUNNING",
-                  "text-purple-500 border-purple-500":
-                    s.status === "CONSTRAINT_VIOLATION",
-                  "text-indigo-500 border-indigo-500":
-                    s.status === "PENDING_CONSTRAINT_CLASSIFICATION",
-                })}
+                className={cn(
+                  "rounded-md border px-3 last:border",
+                  statusTone(s.status),
+                )}
                 key={s.id}
                 value={s.id}
               >
@@ -465,11 +460,11 @@ function ExerciseSubmissions({ exerciseId }: { exerciseId: string }) {
                     {s.status === "PASSED" && (
                       <CheckCircle2 className="size-4" />
                     )}
-                    {s.language} · {s.status}
+                    {s.language} · <StatusBadge status={s.status} />
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="flex flex-col gap-2">
-                  {(s.status === "FAILED" || s.status === "ERROR") && (
+                  {isFinalFailure(s.status) && (
                     <div className="flex justify-end">
                       <AIDialog maxLevel={null} submission={s} />
                     </div>

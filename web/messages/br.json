@@ -717,7 +717,37 @@
       "suggestingTags": "Sugerindo...",
       "suggestTagsFailed": "Falha ao sugerir tags",
       "suggestTagsNeedsDescription": "Escreva uma descrição antes de pedir tags à IA.",
-      "noTagsSuggested": "A IA não encontrou tags adequadas."
+      "noTagsSuggested": "A IA não encontrou tags adequadas.",
+      "Compare": {
+        "title": "Comparação da saída",
+        "subtitle": "Como o juiz decide se a saída do programa corresponde à saída esperada.",
+        "modeLabel": "Modo de comparação",
+        "modes": {
+          "exact": {
+            "label": "Exata",
+            "help": "A saída deve ser idêntica, ignorando apenas espaços no início e no fim."
+          },
+          "tokens": {
+            "label": "Ignorar espaços",
+            "help": "Compara a saída palavra por palavra: espaços extras, linhas em branco e quebras de linha não importam."
+          },
+          "float": {
+            "label": "Números com tolerância",
+            "help": "Como \"ignorar espaços\", mas números são aceitos quando diferem no máximo ε (absoluto ou relativo)."
+          },
+          "checker": {
+            "label": "Corretor personalizado",
+            "help": "Um programa seu decide se cada resposta está correta. Use quando várias respostas são válidas."
+          }
+        },
+        "epsilonLabel": "Tolerância (ε)",
+        "epsilonHelp": "Entre 0 e 1, por exemplo 0.000001.",
+        "checkerLanguageLabel": "Linguagem do corretor",
+        "checkerCodeLabel": "Programa corretor",
+        "checkerCodePlaceholder": "import sys\ninp, out, ans = (open(f).read() for f in sys.argv[1:4])\nsys.exit(0 if out.split() == ans.split() else 1)",
+        "checkerHelp": "Recebe input.txt, output.txt (a saída do aluno) e answer.txt (a saída esperada) como argumentos. Código de saída 0 = aceito, 1 = resposta errada (o que ele imprimir aparece como motivo); qualquer outro resultado é reportado como erro do corretor. Os alunos nunca veem este código.",
+        "checkerRequired": "Escreva o programa corretor ou escolha outro modo."
+      }
     },
     "Publish": {
       "button": "Publicar",
@@ -1603,7 +1633,9 @@
     "timeLimitOnTest": "Tempo limite excedido no teste {index}",
     "failedOnTest": "Falhou no teste {index}",
     "hiddenTestNote": "Este é um caso de teste oculto, então a entrada e a saída não são exibidas.",
-    "passedCount": "{passed} de {total} testes aprovados"
+    "passedCount": "{passed} de {total} testes aprovados",
+    "memoryLimitOnTest": "Limite de memória excedido no teste {index}",
+    "judgeErrorOnTest": "Erro do juiz no teste {index}"
   },
   "Surveys": {
     "hub": {
@@ -1857,5 +1889,19 @@
       "regions": "{count, plural, one {# região coincidente} other {# regiões coincidentes}}",
       "hint": "Mesma cor = mesmo bloco nos dois programas. Clique em um bloco para ir até o correspondente."
     }
+  },
+  "SubmissionStatus": {
+    "PENDING": "Pendente",
+    "RUNNING": "Executando",
+    "PASSED": "Aceito",
+    "FAILED": "Falhou",
+    "ERROR": "Erro do juiz",
+    "CONSTRAINT_VIOLATION": "Restrição violada",
+    "PENDING_CONSTRAINT_CLASSIFICATION": "Verificando restrições",
+    "WRONG_ANSWER": "Resposta errada",
+    "TIME_LIMIT_EXCEEDED": "Tempo limite excedido",
+    "MEMORY_LIMIT_EXCEEDED": "Limite de memória excedido",
+    "COMPILATION_ERROR": "Erro de compilação",
+    "RUNTIME_ERROR": "Erro de execução"
   }
 }

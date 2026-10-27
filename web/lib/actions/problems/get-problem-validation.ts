@@ -10,6 +10,7 @@ import {
 } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { computeIoHash } from "@/lib/problem-io-hash";
+import { getProblemChecker } from "@/lib/problem-checker";
 
 export interface ProblemValidationState {
   reference: { code: string; language: string | null } | null;
@@ -28,7 +29,12 @@ export async function getProblemValidation(
       eq(problem.id, problemId),
       eq(problem.createdBy, currentUser.id),
     ),
-    columns: { inputs: true, outputs: true },
+    columns: {
+      inputs: true,
+      outputs: true,
+      compareMode: true,
+      floatEpsilon: true,
+    },
   });
 
   if (!found) throw new Error("Problem not found.");
@@ -48,7 +54,10 @@ export async function getProblemValidation(
     }),
   ]);
 
-  const currentIoHash = computeIoHash(found.inputs, found.outputs);
+  const currentIoHash = computeIoHash(found.inputs, found.outputs, {
+    ...found,
+    checker: await getProblemChecker(problemId),
+  });
   const isStale =
     !latest || latest.status !== "PASSED" || latest.ioHash !== currentIoHash;
 

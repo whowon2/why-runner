@@ -45,6 +45,6 @@ COPY portugol/portugol-console-2.7.5.jar /portugol/portugol-console.jar
 COPY portugol/lib /portugol/lib
 
 COPY --from=builder /app/target/release/judge /app/judge
-COPY entrypoint.sh /app/entrypoint.sh
+COPY --chmod=755 entrypoint.sh /app/entrypoint.sh
 
 CMD ["./entrypoint.sh"]

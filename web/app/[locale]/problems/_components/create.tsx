@@ -41,31 +41,60 @@ import { useRouter } from "@/i18n/navigation";
 import "katex/dist/katex.min.css";
 import { Eye, Pencil } from "lucide-react";
 import { ProblemTags } from "./badge";
+import {
+  CHECKER_LANGUAGES,
+  COMPARE_MODES,
+  CompareSettingsFields,
+} from "./compare-settings";
 import { TagMultiSelect } from "./tag-multi-select";
 import { ProblemReviewPanel } from "./workspace/problem-review-panel";
 import { ProblemValidationPanel } from "./workspace/validation";
 
-export function NewProblem({ problem }: { problem: Problem }) {
+export function NewProblem({
+  problem,
+}: {
+  problem: Problem & {
+    /** Only loaded for the owner's edit view (getProblemForEdit). */
+    checker?: { language: string; code: string } | null;
+  };
+}) {
   const t = useTranslations("ProblemsPage.Create");
   const tDifficulty = useTranslations("Difficults");
   const queryClient = useQueryClient();
 
-  const formSchema = z.object({
+  const formSchema = z
+    .object({
+    checkerCode: z.string(),
+    checkerLanguage: z.enum(CHECKER_LANGUAGES),
+    compareMode: z.enum(COMPARE_MODES),
     description: z.string(),
     difficulty: z.enum(["easy", "medium", "hard"]).optional(),
     exampleCount: z.number().int().min(1),
     inputs: z.array(z.string()),
     narrative: z.string(),
     outputs: z.array(z.string()),
+    floatEpsilon: z.number().gt(0).lte(1),
     tags: z.array(z.enum(PROBLEM_TAGS)),
     title: z.string(),
-  });
+  })
+    .refine(
+      (v) => v.compareMode !== "checker" || v.checkerCode.trim().length > 0,
+      { message: t("Compare.checkerRequired"), path: ["checkerCode"] },
+    );
+
+  const storedCheckerLanguage = CHECKER_LANGUAGES.find(
+    (language) => language === problem.checker?.language,
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
+      checkerCode: problem.checker?.code ?? "",
+      checkerLanguage: storedCheckerLanguage ?? "python",
+      compareMode: problem.compareMode,
       description: problem.description,
       difficulty: problem.difficulty ?? undefined,
       exampleCount: problem.exampleCount,
+      floatEpsilon: problem.floatEpsilon,
       inputs: problem.inputs,
       narrative: problem.narrative ?? "",
       outputs: problem.outputs,
@@ -110,6 +139,18 @@ export function NewProblem({ problem }: { problem: Problem }) {
           narrative: values.narrative || null,
           outputs: values.outputs,
           tags: values.tags,
+          compareMode: values.compareMode,
+          floatEpsilon: values.floatEpsilon,
+          // Leaving checker mode keeps the stored checker, so switching back
+          // doesn't lose it.
+          ...(values.compareMode === "checker"
+            ? {
+                checker: {
+                  language: values.checkerLanguage,
+                  code: values.checkerCode,
+                },
+              }
+            : {}),
         },
       },
       {
@@ -453,6 +494,10 @@ export function NewProblem({ problem }: { problem: Problem }) {
               >
                 {t("addInputOutput")}
               </Button>
+
+              <Separator />
+
+              <CompareSettingsFields form={form} />
 
               <Separator />
 

@@ -7,6 +7,8 @@ const VERDICT_KEY = {
   wrong_answer: "wrongAnswerOnTest",
   runtime_error: "runtimeErrorOnTest",
   time_limit: "timeLimitOnTest",
+  memory_limit: "memoryLimitOnTest",
+  judge_error: "judgeErrorOnTest",
 } as const;
 
 /** True when the server withheld this failing test's input (hidden test). */

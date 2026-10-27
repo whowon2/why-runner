@@ -23,6 +23,7 @@ import {
 import { useLessonReview } from "@/hooks/use-lesson-review";
 import { isActionError } from "@/lib/action-result";
 import { cn } from "@/lib/utils";
+import { StatusBadge } from "@/components/submissions/status-badge";
 
 export function LessonReview({ lessonId }: { lessonId: string }) {
   const t = useTranslations("RoadmapPage.Review");
@@ -136,7 +137,7 @@ export function LessonReview({ lessonId }: { lessonId: string }) {
                               : "outline"
                           }
                         >
-                          {answer.submission.status}
+                          <StatusBadge status={answer.submission.status} />
                         </Badge>
                         <Button
                           className="absolute top-2 right-2 size-7"

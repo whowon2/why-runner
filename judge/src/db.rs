@@ -79,7 +79,11 @@ impl DbClient {
 
     pub async fn get_problem(&self, problem_id: Uuid) -> Result<Problem> {
         sqlx::query_as::<_, Problem>(
-            "SELECT inputs, outputs, time_limit_ms FROM problem WHERE id = $1",
+            "SELECT p.inputs, p.outputs, p.time_limit_ms, p.compare_mode, p.float_epsilon,
+                    c.language AS checker_language, c.code AS checker_code
+             FROM problem p
+             LEFT JOIN problem_checker c ON c.problem_id = p.id
+             WHERE p.id = $1",
         )
         .bind(problem_id)
         .fetch_one(&self.pool)

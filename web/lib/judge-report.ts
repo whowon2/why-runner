@@ -8,11 +8,17 @@
  * Pure module: no DB, runs in `bun test`.
  */
 
+import type { Submission } from "@/drizzle/schema";
+
+type SubmissionStatus = Submission["status"];
+
 export type FailureKind =
   | "compile_error"
   | "time_limit"
+  | "memory_limit"
   | "runtime_error"
-  | "wrong_answer";
+  | "wrong_answer"
+  | "judge_error";
 
 export interface TestCaseResult {
   index: number;
@@ -27,6 +33,11 @@ export interface TestCaseResult {
 
 export interface JudgeReport {
   passed: boolean;
+  /**
+   * `PASSED` or the first failure's verdict. Missing on reports written
+   * before the judge had distinct verdicts.
+   */
+  verdict?: SubmissionStatus;
   total_tests: number;
   passed_count: number;
   failure_details?: TestCaseResult | null;
@@ -44,7 +55,22 @@ export type RedactContext = {
 
 const TIMEOUT_ACTUAL = "Execution timed out";
 
-export function failureKind(f: TestCaseResult): FailureKind {
+const VERDICT_KIND: Partial<Record<SubmissionStatus, FailureKind>> = {
+  WRONG_ANSWER: "wrong_answer",
+  TIME_LIMIT_EXCEEDED: "time_limit",
+  MEMORY_LIMIT_EXCEEDED: "memory_limit",
+  COMPILATION_ERROR: "compile_error",
+  RUNTIME_ERROR: "runtime_error",
+  ERROR: "judge_error",
+};
+
+/** Prefers the report's verdict; old reports fall back to text sniffing. */
+export function failureKind(
+  f: TestCaseResult,
+  verdict?: SubmissionStatus,
+): FailureKind {
+  const fromVerdict = verdict && VERDICT_KIND[verdict];
+  if (fromVerdict) return fromVerdict;
   if (f.error?.startsWith("Compilation Error")) return "compile_error";
   if (f.actual === TIMEOUT_ACTUAL) return "time_limit";
   if (f.error) return "runtime_error";
@@ -65,8 +91,9 @@ export function parseReport(raw: string | null): JudgeReport | null {
 function redactFailure(
   f: TestCaseResult,
   ctx: RedactContext,
+  verdict?: SubmissionStatus,
 ): TestCaseResult {
-  const kind = failureKind(f);
+  const kind = failureKind(f, verdict);
   if (ctx.fullAccess) return { ...f, failure_kind: kind };
 
   // Exercise inputs are already shown on the exercise page; only the
@@ -103,7 +130,7 @@ export function redactReport(
 
   return JSON.stringify({
     ...report,
-    failure_details: redactFailure(report.failure_details, ctx),
+    failure_details: redactFailure(report.failure_details, ctx, report.verdict),
   });
 }
 

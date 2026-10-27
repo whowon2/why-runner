@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  doublePrecision,
   integer,
   pgEnum,
   pgSequence,
@@ -65,6 +66,17 @@ export const PROBLEM_TAG_GROUPS = {
   algorithms: PROBLEM_TAGS.slice(PROBLEM_TAGS.indexOf("math")),
 } as const satisfies Record<string, readonly ProblemTag[]>;
 
+// How the judge compares a run's stdout with the declared output (see
+// judge/src/compare.rs). `checker` runs the author's `problemChecker`.
+export const ProblemCompareMode = pgEnum("problem_compare_mode", [
+  "exact",
+  "tokens",
+  "float",
+  "checker",
+]);
+
+export type ProblemCompareMode = (typeof ProblemCompareMode.enumValues)[number];
+
 export const ProblemStatus = pgEnum("problem_status", ["draft", "published"]);
 
 export const problem = pgTable("problem", {
@@ -83,6 +95,9 @@ export const problem = pgTable("problem", {
   exampleCount: integer("example_count").default(1).notNull(),
   timeLimitMs: integer("time_limit_ms").default(1000).notNull(),
   memoryLimitMb: integer("memory_limit_mb").default(512).notNull(),
+  // Problems created before compare modes existed were migrated to `exact`.
+  compareMode: ProblemCompareMode("compare_mode").default("tokens").notNull(),
+  floatEpsilon: doublePrecision("float_epsilon").default(0.000001).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
