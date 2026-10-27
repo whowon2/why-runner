@@ -131,6 +131,9 @@ export const userOnContest = pgTable(
       .$type<JoinStatus>()
       .default("accepted")
       .notNull(),
+    // Null for rows created before this column existed — order by
+    // COALESCE(joined_at, contest.start_date, contest.created_at).
+    joinedAt: timestamp("joined_at").defaultNow(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.contestId] })],
 );

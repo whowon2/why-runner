@@ -42,7 +42,11 @@ export function UserDock() {
 
   const DATA = {
     navbar: [
-      { href: "/", icon: HomeIcon, label: t("Dock.home") },
+      {
+        href: session ? "/home" : "/",
+        icon: HomeIcon,
+        label: t("Dock.home"),
+      },
       { href: "/contests", icon: Trophy, label: t("Dock.contests") },
       { href: "/problems", icon: ScrollText, label: t("Dock.problems") },
       { href: "/classes", icon: GraduationCap, label: t("Dock.roadmap") },

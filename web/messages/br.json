@@ -522,9 +522,9 @@
     }
   },
   "HomePage": {
-    "buttons": {
-      "contests": "Torneios",
-      "problems": "Problemas"
+    "cta": {
+      "getStarted": "Começar",
+      "goHome": "Ir para o início"
     },
     "hero": {
       "description": "Uma plataforma algorítmica premium feita para capacitar alunos, instrutores e desenvolvedores no mundo todo.",
@@ -593,6 +593,45 @@
         "aiHelp": "Diálogo do assistente de IA com um conceito e uma dica para uma submissão com falha",
         "problems": "Lista de problemas com busca, filtro de dificuldade e status de resolvido"
       }
+    }
+  },
+  "Home": {
+    "title": "Início",
+    "subtitle": "Suas turmas, competições e problemas num relance.",
+    "pending": {
+      "title": "Exercícios pendentes",
+      "empty": "Nenhum exercício de turma pendente. Tudo em dia!",
+      "cta": "Ir para turmas",
+      "due": "Prazo: {date}",
+      "noDue": "Sem prazo",
+      "overdue": "Atrasado",
+      "progress": "{passed}/{total} resolvidos"
+    },
+    "running": {
+      "title": "Acontecendo agora",
+      "endsIn": "termina {time}"
+    },
+    "lastContest": {
+      "title": "Última competição",
+      "empty": "Você ainda não entrou em nenhuma competição.",
+      "cta": "Ver competições"
+    },
+    "solves": {
+      "title": "Resolvidos recentemente",
+      "empty": "Você ainda não resolveu nenhum problema.",
+      "cta": "Ver problemas"
+    },
+    "suggestions": {
+      "title": "Sugestões para você",
+      "problems": "Problemas",
+      "contests": "Competições",
+      "empty": "Nada para sugerir agora.",
+      "cta": "Ver problemas"
+    },
+    "contestStatus": {
+      "upcoming": "Em breve",
+      "running": "Em andamento",
+      "finished": "Encerrada"
     }
   },
   "ProblemsPage": {

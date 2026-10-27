@@ -3,10 +3,12 @@ import { routing } from "@/i18n/routing";
 export const PATHNAME_HEADER = "x-pathname";
 
 // Only same-origin, locale-less paths are allowed as post-auth destinations,
-// so `?redirectTo=` can't be used as an open redirect.
+// so `?redirectTo=` can't be used as an open redirect. Without a usable
+// destination the user lands on their personal home.
 export function safeRedirectPath(value: string | null | undefined) {
-  if (!value || !value.startsWith("/") || value.startsWith("//")) return "/";
-  if (value.includes("\\")) return "/";
+  if (!value || !value.startsWith("/") || value.startsWith("//"))
+    return "/home";
+  if (value.includes("\\")) return "/home";
   return value;
 }
 

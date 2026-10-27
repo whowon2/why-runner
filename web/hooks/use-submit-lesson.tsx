@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { homeDataKey } from "@/hooks/use-home-data";
 import { submitLesson } from "@/lib/actions/lessons/submit-lesson";
 
 export const useSubmitLesson = () => {
@@ -12,6 +13,7 @@ export const useSubmitLesson = () => {
       queryClient.invalidateQueries({ queryKey: ["lessons", lessonId] });
       // Handing the lesson in makes the student eligible for its survey.
       queryClient.invalidateQueries({ queryKey: ["surveys"] });
+      queryClient.invalidateQueries({ queryKey: homeDataKey });
     },
   });
 };

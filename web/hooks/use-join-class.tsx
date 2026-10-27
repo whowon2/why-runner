@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { homeDataKey } from "@/hooks/use-home-data";
 import { joinClass } from "@/lib/actions/classes/join-class";
 
 export const useJoinClass = () => {
@@ -10,6 +11,7 @@ export const useJoinClass = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["classes"] });
+      queryClient.invalidateQueries({ queryKey: homeDataKey });
     },
   });
 };
