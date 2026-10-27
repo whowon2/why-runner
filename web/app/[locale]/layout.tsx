@@ -38,11 +38,12 @@ export default function RootLayout({
         <NextIntlClientProvider>
           <NuqsAdapter>
             <Providers>
-              <CommandPaletteMount />
-              {children}
-              <Toaster />
-              <UserDock />
-              <Footer />
+              <CommandPaletteMount>
+                {children}
+                <Toaster />
+                <UserDock />
+                <Footer />
+              </CommandPaletteMount>
             </Providers>
           </NuqsAdapter>
         </NextIntlClientProvider>

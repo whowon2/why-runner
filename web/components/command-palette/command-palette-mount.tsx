@@ -9,11 +9,16 @@ function Shortcut() {
   return null;
 }
 
-export function CommandPaletteMount() {
+export function CommandPaletteMount({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <CommandPaletteProvider>
       <Shortcut />
       <CommandPalette />
+      {children}
     </CommandPaletteProvider>
   );
 }
