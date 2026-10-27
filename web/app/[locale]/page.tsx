@@ -20,10 +20,12 @@ import problemsDark from "@/assets/problems-dark.png";
 import problemsLight from "@/assets/problems-light.png";
 import { FlipWords } from "@/components/ui/flip-words";
 import { Link } from "@/i18n/navigation";
+import { authClient } from "@/lib/auth/client";
 import { ThemedScreenshot } from "./_components/themed-screenshot";
 
 export default function Home() {
   const t = useTranslations("HomePage");
+  const { data: session } = authClient.useSession();
 
   return (
     <main className="flex flex-col items-center justify-center flex-1 w-full overflow-hidden relative">
@@ -45,23 +47,14 @@ export default function Home() {
           {t("hero.description")}
         </p>
 
-        {/* Navigation Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-10 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-500">
-          <Link href="contests">
+        {/* Call to action: sign-in for visitors, the personal home once signed in */}
+        <div className="mt-10 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-500">
+          <Link href={session ? "/home" : "/auth/signin"}>
             <Button
               size="lg"
               className="rounded-none px-8 h-12 text-base font-semibold shadow-[0_0_40px_-10px_rgba(99,102,241,0.5)] transition-all hover:scale-105 hover:shadow-[0_0_60px_-10px_rgba(99,102,241,0.6)]"
             >
-              {t("buttons.contests")}
-            </Button>
-          </Link>
-          <Link href="problems">
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-none px-8 h-12 text-base font-semibold hover:bg-muted/50 backdrop-blur-md border-border/50 transition-all hover:scale-105"
-            >
-              {t("buttons.problems")}
+              {session ? t("cta.goHome") : t("cta.getStarted")}
             </Button>
           </Link>
         </div>

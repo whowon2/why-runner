@@ -62,7 +62,8 @@ export function useCommands(): Command[] {
         group: "navigation",
         label: t("commands.goHome"),
         icon: HomeIcon,
-        action: () => router.push("/"),
+        // Signed-in users get their personal home, visitors the landing page.
+        action: () => router.push(session ? "/home" : "/"),
       },
       {
         id: "go-problems",

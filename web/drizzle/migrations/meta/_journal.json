@@ -330,6 +330,13 @@
       "when": 1792786705670,
       "tag": "0046_legal_silver_centurion",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1793129176832,
+      "tag": "0047_colorful_alice",
+      "breakpoints": true
     }
   ]
 }

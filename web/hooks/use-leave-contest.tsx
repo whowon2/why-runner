@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { homeDataKey } from "@/hooks/use-home-data";
 import { contestLeaderboardKey } from "@/hooks/use-contest-leaderboard";
 import { leaveContest } from "@/lib/actions/contest/leave-contest";
 
@@ -24,6 +25,7 @@ export const useLeaveContest = () => {
       queryClient.invalidateQueries({
         queryKey: ["user-contest-status", contestId],
       });
+      queryClient.invalidateQueries({ queryKey: homeDataKey });
     },
   });
 };

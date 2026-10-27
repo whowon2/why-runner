@@ -522,9 +522,9 @@
     }
   },
   "HomePage": {
-    "buttons": {
-      "contests": "Contests",
-      "problems": "Problems"
+    "cta": {
+      "getStarted": "Get started",
+      "goHome": "Go to home"
     },
     "hero": {
       "description": "A premium algorithmic platform designed to empower students, instructors, and developers world-wide.",
@@ -593,6 +593,45 @@
         "aiHelp": "AI assistant dialog giving a concept and a hint for a failed submission",
         "problems": "Problem list with search, difficulty filter, and solved status"
       }
+    }
+  },
+  "Home": {
+    "title": "Home",
+    "subtitle": "Your classes, contests and problems at a glance.",
+    "pending": {
+      "title": "Pending exercises",
+      "empty": "No pending class exercises. You're all caught up!",
+      "cta": "Go to classes",
+      "due": "Due {date}",
+      "noDue": "No due date",
+      "overdue": "Overdue",
+      "progress": "{passed}/{total} passed"
+    },
+    "running": {
+      "title": "Running now",
+      "endsIn": "ends {time}"
+    },
+    "lastContest": {
+      "title": "Last contest joined",
+      "empty": "You haven't joined a contest yet.",
+      "cta": "Browse contests"
+    },
+    "solves": {
+      "title": "Recently solved",
+      "empty": "You haven't solved any problem yet.",
+      "cta": "Browse problems"
+    },
+    "suggestions": {
+      "title": "Suggested for you",
+      "problems": "Problems",
+      "contests": "Contests",
+      "empty": "Nothing to suggest right now.",
+      "cta": "Browse problems"
+    },
+    "contestStatus": {
+      "upcoming": "Upcoming",
+      "running": "Running",
+      "finished": "Finished"
     }
   },
   "ProblemsPage": {
