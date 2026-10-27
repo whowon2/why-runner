@@ -10,6 +10,7 @@ import {
   Send,
   Settings2,
   Blocks,
+  ScanSearch,
   Trash2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -56,6 +57,7 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
   const tReview = useTranslations("RoadmapPage.Review");
   const tLessons = useTranslations("TracksPage");
   const tMode = useTranslations("RoadmapPage.Mode");
+  const tSimilarity = useTranslations("Similarity");
   const { data, isPending } = useLesson(lessonId);
   const { mutate: submitLesson, isPending: isSubmitting } = useSubmitLesson();
 
@@ -190,6 +192,16 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
                 )}
                 {isOwner && <ExerciseModeDialog exerciseId={e.id} />}
                 {isOwner && <ExerciseConstraintsDialog exerciseId={e.id} />}
+                {isOwner && e.mode !== "parsons" && (
+                  <Button asChild size="sm" variant="outline">
+                    <Link
+                      href={`/classes/${classroom.slug}/lessons/${lesson.slug}/exercises/${e.slug}/similarity`}
+                    >
+                      <ScanSearch className="size-3.5" />
+                      {tSimilarity("trigger")}
+                    </Link>
+                  </Button>
+                )}
                 {isOwner && (
                   <ExerciseOwnerControls
                     canRemove={!lesson.isPublished}
