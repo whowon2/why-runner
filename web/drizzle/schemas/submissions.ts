@@ -51,6 +51,15 @@ export const SubmissionStatus = pgEnum("submission_status", [
   // active algorithm-requirement constraint, awaiting the web-side AI
   // classification pass before the judge's verdict is final.
   "PENDING_CONSTRAINT_CLASSIFICATION",
+  // Final verdicts written by the judge for a failing submission: the
+  // verdict of the first failing test case. `FAILED` above is legacy (rows
+  // judged before these existed); `ERROR` stays reserved for judge-side
+  // faults (dead-lettered rows, sandbox or checker failures).
+  "WRONG_ANSWER",
+  "TIME_LIMIT_EXCEEDED",
+  "MEMORY_LIMIT_EXCEEDED",
+  "COMPILATION_ERROR",
+  "RUNTIME_ERROR",
 ]);
 
 export const submission = pgTable("submission", {
