@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 export function SelectProblem({
   contest,
   setProblem,
-  user,
+  user: _user,
   answered,
 }: {
   contest: Contest & {
