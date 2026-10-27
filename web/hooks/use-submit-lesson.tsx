@@ -11,6 +11,8 @@ export const useSubmitLesson = () => {
     },
     onSuccess: (_data, lessonId) => {
       queryClient.invalidateQueries({ queryKey: ["lessons", lessonId] });
+      // Class-page "submitted" badge and the class gradebook.
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
       // Handing the lesson in makes the student eligible for its survey.
       queryClient.invalidateQueries({ queryKey: ["surveys"] });
       queryClient.invalidateQueries({ queryKey: homeDataKey });

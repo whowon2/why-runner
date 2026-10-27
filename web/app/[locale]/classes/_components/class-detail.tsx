@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Lock, School } from "lucide-react";
+import { Copy, Lock, School, Sheet } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
@@ -44,6 +44,12 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
               >
                 <Copy className="size-4" />
                 {t("joinCode")}: {classroom.joinCode}
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={`/classes/${classroom.slug}/gradebook`}>
+                  <Sheet className="size-4" />
+                  {t("gradebook")}
+                </Link>
               </Button>
               <EditClassDialog
                 classroomId={classroomId}

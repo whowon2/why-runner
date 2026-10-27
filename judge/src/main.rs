@@ -7,6 +7,9 @@ mod runner;
 
 use sqlx::postgres::PgListener;
 use std::env;
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+use std::sync::{Arc, Mutex};
+use tokio::sync::Notify;
 use tokio::time::{Duration, Instant, timeout};
 
 use crate::{
@@ -49,14 +52,56 @@ where
     }
 }
 
+/// Default worker count when `JUDGE_CONCURRENCY` is unset: one per CPU, but
+/// at most this many. Concurrent jobs share the VM's memory (2GB on Fly.io,
+/// where one rustc compile or JVM run alone can take hundreds of MB) and the
+/// box_root tmpfs, and oversubscribed CPUs stretch wall time towards
+/// isolate's `--wall-time` limit.
+const DEFAULT_MAX_CONCURRENCY: usize = 4;
+
+/// Periodic sweep in case a notify was missed.
+const SWEEP_INTERVAL: Duration = Duration::from_secs(60);
+
+/// Worker count from `JUDGE_CONCURRENCY`, falling back to the CPU-based
+/// default when unset or not a positive integer. Never more than the box ids
+/// reserved for workers (`isolate::MAX_WORKERS`).
+fn parse_concurrency(value: Option<&str>, cpus: usize) -> usize {
+    value
+        .and_then(|v| v.trim().parse::<usize>().ok())
+        .filter(|&n| n > 0)
+        .unwrap_or_else(|| cpus.min(DEFAULT_MAX_CONCURRENCY))
+        .clamp(1, isolate::MAX_WORKERS as usize)
+}
+
+/// Shared between the dispatcher (main) and the pool workers.
+struct PoolState {
+    /// Dispatcher → idle workers: new notification, periodic sweep, or stop.
+    wake: Notify,
+    /// Workers currently claiming or processing a job.
+    active: AtomicUsize,
+    /// When a worker last finished a job (idle auto-stop).
+    last_activity: Mutex<Instant>,
+    /// Set once by the idle auto-stop: workers finish their current job and
+    /// stop claiming new ones.
+    stopping: AtomicBool,
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
 
-    // DB
+    let concurrency = parse_concurrency(
+        env::var("JUDGE_CONCURRENCY").ok().as_deref(),
+        std::thread::available_parallelism().map_or(1, |n| n.get()),
+    );
+
+    // DB: one connection per worker plus the dispatcher's reaper.
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     println!("Connecting to database...");
-    let db = connect_with_retry("Database", || DbClient::new(&database_url)).await;
+    let max_connections = (concurrency as u32 + 2).max(10);
+    let db = Arc::new(
+        connect_with_retry("Database", || DbClient::new(&database_url, max_connections)).await,
+    );
     println!("Database connected");
 
     // PgListener
@@ -81,76 +126,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             after
         );
     }
-    let mut last_activity = Instant::now();
+
+    let state = Arc::new(PoolState {
+        wake: Notify::new(),
+        active: AtomicUsize::new(0),
+        last_activity: Mutex::new(Instant::now()),
+        stopping: AtomicBool::new(false),
+    });
+
+    // Reap before the workers' first drain, so exhausted rows are
+    // dead-lettered rather than left for the claim query to skip.
+    reap_exhausted(&db).await;
+
+    println!("Starting {} judge worker(s)", concurrency);
+    let workers: Vec<_> = (0..concurrency as u32)
+        .map(|slot| tokio::spawn(worker(slot, db.clone(), state.clone())))
+        .collect();
 
     loop {
-        // 0. Dead-letter submissions abandoned by a crashed/killed worker that
-        // already exhausted their retry budget, so they aren't reclaimed below.
-        match db.reap_exhausted_submissions().await {
-            Ok(n) if n > 0 => println!("Dead-lettered {} exhausted submission(s)", n),
-            Ok(_) => {}
-            Err(e) => eprintln!("Failed to reap exhausted submissions: {}", e),
-        }
-
-        // 1. Try to fetch any pending (or crashed-worker-abandoned) submission
-        println!("Checking for pending jobs...");
-        loop {
-            match db.get_next_submission().await {
-                Ok(Some(sub)) => {
-                    if sub.retry_count > 0 {
-                        println!(
-                            "Processing submission: {} (retry {}/{})",
-                            sub.id,
-                            sub.retry_count,
-                            db::MAX_RETRIES
-                        );
-                    } else {
-                        println!("Processing submission: {}", sub.id);
-                    }
-                    process_job(&db, sub).await;
-                    last_activity = Instant::now();
-                }
-                Ok(None) => break,
-                Err(e) => {
-                    eprintln!("Failed to fetch next submission: {}", e);
-                    break;
-                }
-            }
-        }
-
-        // 1b. Same drain, for pending problem validation runs.
-        println!("Checking for pending validation jobs...");
-        loop {
-            match db.get_next_validation().await {
-                Ok(Some(validation)) => {
-                    println!("Processing validation: {}", validation.id);
-                    process_validation_job(&db, validation).await;
-                    last_activity = Instant::now();
-                }
-                Ok(None) => break,
-                Err(e) => {
-                    eprintln!("Failed to fetch next validation: {}", e);
-                    break;
-                }
-            }
-        }
-
-        if let Some(after) = idle_exit_after {
-            if last_activity.elapsed() >= after {
-                println!(
-                    "Idle for {:?} with no jobs, exiting (idle auto-stop)",
-                    after
-                );
-                return Ok(());
-            }
-        }
-
-        // 2. No more jobs? Wait for a notification OR a periodic sweep (60s)
-        println!("No pending jobs. Sleeping until notification...");
-
-        let wait_result = timeout(Duration::from_secs(60), listener.recv()).await;
-
-        match wait_result {
+        // Wait for a notification OR a periodic sweep, then wake every idle
+        // worker to drain. Busy workers drain again on their own once their
+        // current job finishes.
+        match timeout(SWEEP_INTERVAL, listener.recv()).await {
             Ok(Ok(notification)) => {
                 println!(
                     "Woke up! Received notification on channel: {}",
@@ -162,8 +159,121 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 tokio::time::sleep(Duration::from_secs(5)).await;
             }
             Err(_) => {
-                println!("Periodic sweep (60s timeout reached)");
+                println!("Periodic sweep ({:?} timeout reached)", SWEEP_INTERVAL);
             }
+        }
+
+        // Dead-letter submissions abandoned by a crashed/killed worker that
+        // already exhausted their retry budget, so they aren't reclaimed.
+        reap_exhausted(&db).await;
+
+        if let Some(after) = idle_exit_after {
+            // Workers drain only after the wake below, so a job that arrived
+            // with this very notification isn't reflected in `active` or
+            // `last_activity` yet: ask the DB too. A failed check counts as
+            // "not idle" and is retried on the next wake.
+            let idle = state.active.load(Ordering::SeqCst) == 0
+                && state.last_activity.lock().unwrap().elapsed() >= after
+                && matches!(db.has_claimable_jobs().await, Ok(false));
+            if idle {
+                println!(
+                    "Idle for {:?} with no jobs, exiting (idle auto-stop)",
+                    after
+                );
+                // A worker may have started a claim right after the check
+                // above; joining lets it finish and save that job instead of
+                // leaving the row RUNNING until the stale reclaim.
+                state.stopping.store(true, Ordering::SeqCst);
+                state.wake.notify_waiters();
+                for handle in workers {
+                    let _ = handle.await;
+                }
+                return Ok(());
+            }
+        }
+
+        state.wake.notify_waiters();
+    }
+}
+
+async fn reap_exhausted(db: &DbClient) {
+    match db.reap_exhausted_submissions().await {
+        Ok(n) if n > 0 => println!("Dead-lettered {} exhausted submission(s)", n),
+        Ok(_) => {}
+        Err(e) => eprintln!("Failed to reap exhausted submissions: {}", e),
+    }
+}
+
+/// One pool worker: drains every claimable job, then sleeps until the
+/// dispatcher wakes it. `slot` is also its isolate box id (see
+/// `isolate::WORKER_SLOT`).
+async fn worker(slot: u32, db: Arc<DbClient>, state: Arc<PoolState>) {
+    loop {
+        // Register for the next wake-up before draining, so a notify that
+        // lands between the last empty claim and the await below isn't lost.
+        let notified = state.wake.notified();
+        tokio::pin!(notified);
+        notified.as_mut().enable();
+
+        while claim_and_process(slot, &db, &state).await {}
+
+        if state.stopping.load(Ordering::SeqCst) {
+            return;
+        }
+        notified.await;
+    }
+}
+
+/// Claims and runs one job. Returns false when there was nothing to claim or
+/// the pool is stopping.
+async fn claim_and_process(slot: u32, db: &DbClient, state: &PoolState) -> bool {
+    // Counted as active from before the claim, so the idle auto-stop never
+    // sees a claimed-but-unfinished job as idle.
+    state.active.fetch_add(1, Ordering::SeqCst);
+    let worked = !state.stopping.load(Ordering::SeqCst)
+        && isolate::WORKER_SLOT
+            .scope(slot, run_next_job(slot, db))
+            .await;
+    if worked {
+        *state.last_activity.lock().unwrap() = Instant::now();
+    }
+    state.active.fetch_sub(1, Ordering::SeqCst);
+    worked
+}
+
+/// Pending (or crashed-worker-abandoned) submissions first, then pending
+/// problem validation runs.
+async fn run_next_job(slot: u32, db: &DbClient) -> bool {
+    match db.get_next_submission().await {
+        Ok(Some(sub)) => {
+            if sub.retry_count > 0 {
+                println!(
+                    "[w{}] Processing submission: {} (retry {}/{})",
+                    slot,
+                    sub.id,
+                    sub.retry_count,
+                    db::MAX_RETRIES
+                );
+            } else {
+                println!("[w{}] Processing submission: {}", slot, sub.id);
+            }
+            process_job(db, sub).await;
+            return true;
+        }
+        Ok(None) => {}
+        Err(e) => eprintln!("[w{}] Failed to fetch next submission: {}", slot, e),
+    }
+
+    match db.get_next_validation().await {
+        Ok(Some(validation)) => {
+            println!("[w{}] Processing validation: {}", slot, validation.id);
+            process_validation_job(db, validation).await;
+            true
+        }
+        Ok(None) => false,
+        Err(e) => {
+            eprintln!("[w{}] Failed to fetch next validation: {}", slot, e);
+            false
         }
     }
 }
@@ -557,6 +667,39 @@ async fn prepare_checker(problem: &Problem) -> Result<runner::Prepared, String> 
 }
 
 #[cfg(test)]
+mod pool_tests {
+    use super::*;
+
+    #[test]
+    fn explicit_concurrency_wins_over_cpu_count() {
+        assert_eq!(parse_concurrency(Some("3"), 1), 3);
+        assert_eq!(parse_concurrency(Some(" 8 "), 2), 8);
+    }
+
+    #[test]
+    fn default_is_cpu_count_capped() {
+        assert_eq!(parse_concurrency(None, 1), 1);
+        assert_eq!(parse_concurrency(None, 2), 2);
+        assert_eq!(parse_concurrency(None, 32), DEFAULT_MAX_CONCURRENCY);
+    }
+
+    #[test]
+    fn invalid_values_fall_back_to_default() {
+        for bad in ["", "0", "-2", "abc", "1.5"] {
+            assert_eq!(parse_concurrency(Some(bad), 2), 2, "value {bad:?}");
+        }
+    }
+
+    #[test]
+    fn never_exceeds_reserved_worker_box_ids() {
+        assert_eq!(
+            parse_concurrency(Some("5000"), 1),
+            isolate::MAX_WORKERS as usize
+        );
+    }
+}
+
+#[cfg(test)]
 mod grade_tests {
     use super::*;
 
@@ -846,5 +989,150 @@ mod grade_tests {
         let (report, _, _) = grade(ECHO_CODE, Language::Python, &p, false).await;
         assert_eq!(report.verdict, SubmissionStatus::ERROR);
         assert_eq!(report.passed_count, 0);
+    }
+
+    const DOUBLE_C: &str =
+        "#include <stdio.h>\nint main(){int x;scanf(\"%d\",&x);printf(\"%d\\n\",x*2);return 0;}";
+
+    /// Runs `jobs` gradings across `slots` concurrent pool slots (each its own
+    /// `isolate::WORKER_SLOT`, like the real worker pool) and returns each
+    /// job's report, in job order.
+    async fn grade_in_slots(
+        jobs: Vec<(Language, &'static str, Problem)>,
+        slots: u32,
+    ) -> Vec<JudgeReport> {
+        let queue = Arc::new(Mutex::new(jobs.into_iter().enumerate().collect::<Vec<_>>()));
+        let handles: Vec<_> = (0..slots)
+            .map(|slot| {
+                let queue = queue.clone();
+                tokio::spawn(isolate::WORKER_SLOT.scope(slot, async move {
+                    let mut done = Vec::new();
+                    loop {
+                        let Some((i, (lang, code, p))) = queue.lock().unwrap().pop() else {
+                            return done;
+                        };
+                        let (report, _, _) = grade(code, lang, &p, false).await;
+                        done.push((i, report));
+                    }
+                }))
+            })
+            .collect();
+        let mut all = Vec::new();
+        for handle in handles {
+            all.extend(handle.await.unwrap());
+        }
+        all.sort_by_key(|(i, _)| *i);
+        all.into_iter().map(|(_, report)| report).collect()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn concurrent_slots_grade_independently() {
+        // Different programs and expectations on 4 slots at once: each must
+        // get its own verdict, i.e. no two jobs ever share a box.
+        let jobs = vec![
+            (Language::C, DOUBLE_C, problem(&["1", "2"], &["2", "4"])),
+            (Language::C, DOUBLE_C, problem(&["1", "2"], &["2", "5"])),
+            (Language::C, "int main( {", problem(&["1"], &["1"])),
+            (
+                Language::Python,
+                ECHO_CODE,
+                problem(&["3", "4"], &["3", "4"]),
+            ),
+            (
+                Language::Cpp,
+                "#include <iostream>\nint main(){int x;std::cin>>x;std::cout<<x+1;}",
+                problem(&["1"], &["2"]),
+            ),
+            (Language::Python, ECHO_CODE, problem(&["5"], &["6"])),
+        ];
+        let reports = grade_in_slots(jobs, 4).await;
+
+        assert!(reports[0].passed, "got: {:?}", reports[0].failure_details);
+        assert!(!reports[1].passed);
+        assert_eq!(reports[1].passed_count, 1);
+        let compile_error = reports[2].failure_details.as_ref().unwrap();
+        assert!(
+            compile_error
+                .error
+                .as_deref()
+                .unwrap_or_default()
+                .starts_with("Compilation Error:")
+        );
+        assert!(reports[3].passed, "got: {:?}", reports[3].failure_details);
+        assert!(reports[4].passed, "got: {:?}", reports[4].failure_details);
+        assert!(!reports[5].passed);
+    }
+
+    /// Throughput measurement for the thesis, not a correctness check:
+    /// grades the same mixed batch with 1 slot (the old sequential judge)
+    /// and with `BENCH_CONCURRENCY` slots (default 4), printing jobs/s.
+    /// `cargo test --release throughput_bench -- --ignored --nocapture`
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore]
+    async fn throughput_bench() {
+        let env_num = |key: &str, default: u32| {
+            std::env::var(key)
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(default)
+        };
+        let jobs = env_num("BENCH_JOBS", 24) as usize;
+        let concurrency = env_num("BENCH_CONCURRENCY", 4);
+
+        let inputs = ["1", "2", "3", "4", "5"];
+        let doubled = ["2", "4", "6", "8", "10"];
+        let cases: [(Language, &'static str, Problem); 4] = [
+            (Language::C, DOUBLE_C, problem(&inputs, &doubled)),
+            (
+                Language::Cpp,
+                "#include <iostream>\nint main(){int x;std::cin>>x;std::cout<<2*x<<std::endl;}",
+                problem(&inputs, &doubled),
+            ),
+            (
+                Language::Python,
+                "print(2*int(input()))",
+                problem(&inputs, &doubled),
+            ),
+            (
+                Language::Java,
+                "public class Main{public static void main(String[] a){System.out.println(2*new java.util.Scanner(System.in).nextInt());}}",
+                problem(&inputs, &doubled),
+            ),
+        ];
+        let batch = || -> Vec<_> {
+            (0..jobs)
+                .map(|i| {
+                    let (lang, code, p) = &cases[i % cases.len()];
+                    (
+                        *lang,
+                        *code,
+                        Problem {
+                            inputs: p.inputs.clone(),
+                            outputs: p.outputs.clone(),
+                            time_limit_ms: p.time_limit_ms,
+                            compare_mode: p.compare_mode,
+                            float_epsilon: p.float_epsilon,
+                            checker_language: p.checker_language,
+                            checker_code: p.checker_code.clone(),
+                        },
+                    )
+                })
+                .collect()
+        };
+
+        let mut baseline = None;
+        for slots in [1, concurrency] {
+            let started = std::time::Instant::now();
+            let reports = grade_in_slots(batch(), slots).await;
+            let secs = started.elapsed().as_secs_f64();
+            assert!(reports.iter().all(|r| r.passed), "bench batch must pass");
+            let rate = jobs as f64 / secs;
+            let speedup = baseline.map_or(1.0, |b| rate / b);
+            baseline.get_or_insert(rate);
+            println!(
+                "BENCH slots={slots} jobs={jobs} wall={secs:.2}s throughput={rate:.2} jobs/s speedup={speedup:.2}x cpus={}",
+                std::thread::available_parallelism().map_or(1, |n| n.get())
+            );
+        }
     }
 }

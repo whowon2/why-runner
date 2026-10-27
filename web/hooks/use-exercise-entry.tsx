@@ -17,6 +17,8 @@ export const useCreateExerciseEntry = () => {
       queryClient.invalidateQueries({
         queryKey: ["lessons", variables.lessonId],
       });
+      // Class-page exercise counts and the gradebook's columns.
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
     },
   });
 };
@@ -35,6 +37,8 @@ export const useMoveExerciseEntry = (lessonId: string) => {
       queryClient.invalidateQueries({ queryKey: ["lessons", lessonId] });
       // Exercise pages' next/previous links follow lesson order.
       queryClient.invalidateQueries({ queryKey: ["exercises"] });
+      // Gradebook columns follow lesson order too.
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
     },
   });
 };

@@ -1527,7 +1527,20 @@
     "leaveClass": "Leave class",
     "leaveClassTitle": "Leave this class?",
     "leaveClassDescription": "You'll lose access to this class and its lessons unless you rejoin with the class code.",
-    "leaveClassSuccess": "You left the class."
+    "leaveClassSuccess": "You left the class.",
+    "gradebook": "Gradebook",
+    "gradebookSubtitle": "Scores of every student on every published assignment, from their handed-in submissions.",
+    "gradebookExport": "Export CSV",
+    "gradebookStudent": "Student",
+    "gradebookTotal": "Total",
+    "gradebookLessonTotal": "Σ",
+    "gradebookNotSubmitted": "Not submitted",
+    "gradebookOpen": "Open",
+    "gradebookOpenHint": "Due date not reached — students can still resubmit.",
+    "gradebookNoStudents": "No students have joined yet.",
+    "gradebookNoLessons": "No published assignments yet.",
+    "gradebookLegend": "Each exercise scores the fraction of test cases passed (0–1); — means the assignment was not handed in.",
+    "backToClass": "Back to class"
   },
   "Blocks": {
     "start": "when the program starts",
@@ -1618,11 +1631,11 @@
     "wrongAnswerOnTest": "Wrong answer on test {index}",
     "runtimeErrorOnTest": "Runtime error on test {index}",
     "timeLimitOnTest": "Time limit exceeded on test {index}",
-    "memoryLimitOnTest": "Memory limit exceeded on test {index}",
-    "judgeErrorOnTest": "Judge error on test {index}",
     "failedOnTest": "Failed on test {index}",
     "hiddenTestNote": "This is a hidden test case, so its input and output are not shown.",
-    "passedCount": "{passed} of {total} tests passed"
+    "passedCount": "{passed} of {total} tests passed",
+    "memoryLimitOnTest": "Memory limit exceeded on test {index}",
+    "judgeErrorOnTest": "Judge error on test {index}"
   },
   "Surveys": {
     "hub": {
@@ -1838,6 +1851,43 @@
       "banner": "Preview: you can fill it in and try the validation, but answers aren't saved.",
       "subtitle": "Form preview",
       "notSaved": "Preview: every answer is valid, but nothing was saved."
+    }
+  },
+  "Similarity": {
+    "title": "Code similarity",
+    "exerciseSubtitle": "{problem} · {lesson}",
+    "contestSubtitle": "Compare participants' answers to each problem of {contest}",
+    "backToLesson": "Back to lesson",
+    "backToContest": "Back to contest",
+    "trigger": "Similarity",
+    "openReport": "Open similarity report",
+    "contestCta": "Find pairs of participants whose code for the same problem is suspiciously similar, even after renaming variables or reformatting.",
+    "problem": "Problem",
+    "noProblems": "This contest has no problems yet.",
+    "pick": {
+      "label": "Compare",
+      "latest": "Latest submission",
+      "best": "Best submission"
+    },
+    "threshold": "Minimum similarity",
+    "disclaimer": "Scores come from token fingerprints (MOSS-style): identifiers, literals, comments and layout are ignored, and code most students share is discounted. A high score is a reason to read both programs, not proof of copying.",
+    "parsonsNotSupported": "Similarity is not available for Parsons exercises: every answer reorders the same lines.",
+    "truncatedSubmissions": "Only the {count} most recent students were compared.",
+    "truncatedPairs": "Showing only the {count} most similar pairs.",
+    "empty": {
+      "title": "No suspicious pairs",
+      "description": "{count, plural, =0 {No student has submitted yet.} one {Only one student has submitted.} other {No pair among # students reaches {min}% similarity.}}"
+    },
+    "columns": {
+      "students": "Students",
+      "language": "Language",
+      "similarity": "Similarity",
+      "coverage": "Matched (each)"
+    },
+    "Compare": {
+      "coverage": "{percent}% matched",
+      "regions": "{count, plural, one {# matched region} other {# matched regions}}",
+      "hint": "Same color = same block in both programs. Click a block to jump to its match."
     }
   },
   "SubmissionStatus": {
