@@ -59,6 +59,12 @@ pub struct ExecutionResult {
     /// comes from `getrusage`-based max-RSS tracking, not real cgroup memory
     /// accounting. `None` if the box failed to start before any run.
     pub peak_memory_kb: Option<i64>,
+    /// The run failed in a way that looks like it ran out of memory (see
+    /// `looks_like_memory_limit`). Only ever set on a failed run.
+    pub is_memory_limit: bool,
+    /// The sandbox itself failed (box init, file staging, reading output) —
+    /// a judge-side fault, not the submission's.
+    pub is_internal_error: bool,
 }
 
 impl ExecutionResult {
@@ -71,8 +77,42 @@ impl ExecutionResult {
             is_compile_error: false,
             duration_ms: started_at.elapsed().as_millis() as i64,
             peak_memory_kb: None,
+            is_memory_limit: false,
+            is_internal_error: true,
         }
     }
+}
+
+/// Error output markers of an allocation failure, per runtime: Python,
+/// C++, the JVM, Rust's default alloc error handler, and libc/perror.
+const OUT_OF_MEMORY_MARKERS: &[&str] = &[
+    "MemoryError",
+    "std::bad_alloc",
+    "java.lang.OutOfMemoryError",
+    "memory allocation of",
+    "Cannot allocate memory",
+    "out of memory",
+];
+
+/// Whether a run that already failed (non-zero exit or signal) most likely
+/// died from its memory cap. The box cap is `RLIMIT_AS` (see `JVM_MEM_KB`),
+/// so exceeding it never yields a clean isolate status — the program sees a
+/// failed allocation and crashes, so this goes by peak RSS near the cap,
+/// isolate's own message, or the runtime's out-of-memory error text.
+pub fn looks_like_memory_limit(
+    stderr: &str,
+    isolate_message: Option<&str>,
+    peak_memory_kb: Option<i64>,
+    mem_kb: u64,
+) -> bool {
+    let near_cap = peak_memory_kb.is_some_and(|kb| kb as f64 >= mem_kb as f64 * 0.9);
+    let isolate_says_memory =
+        isolate_message.is_some_and(|m| m.to_ascii_lowercase().contains("memory"));
+    near_cap
+        || isolate_says_memory
+        || OUT_OF_MEMORY_MARKERS
+            .iter()
+            .any(|marker| stderr.contains(marker))
 }
 
 /// A file placed in the box's working directory before a run.
@@ -263,9 +303,9 @@ async fn compile(
         });
     }
     if result.exit_code != 0 {
-        // exit -1 = the sandbox itself failed; anything else is the
-        // compiler rejecting the source.
-        let is_compile_error = result.exit_code != -1;
+        // A sandbox failure isn't the source's fault; anything else is the
+        // compiler rejecting it.
+        let is_compile_error = !result.is_internal_error;
         return Err(ExecutionResult {
             is_compile_error,
             ..result
@@ -352,6 +392,62 @@ pub async fn execute(
     result
 }
 
+/// CPU budget for one custom-checker run. Fixed rather than derived from the
+/// problem's limit: the checker is the author's code, not the submission's.
+pub const CHECKER_TIME_SECS: f64 = 10.0;
+
+/// Runs a prepared custom checker (`problem.compare_mode = 'checker'`) in a
+/// fresh box with `input.txt`, `output.txt` (the submission's stdout) and
+/// `answer.txt` (the declared output) staged next to it and passed as
+/// arguments in that order, testlib-style. No stdin.
+pub async fn execute_checker(
+    checker: &Prepared,
+    input: &str,
+    output: &str,
+    answer: &str,
+) -> ExecutionResult {
+    let started_at = Instant::now();
+    let mut files: Vec<BoxFile> = checker
+        .files
+        .iter()
+        .map(|f| BoxFile {
+            name: f.name.clone(),
+            contents: f.contents.clone(),
+            executable: f.executable,
+        })
+        .collect();
+    for (name, contents) in [
+        ("input.txt", input),
+        ("output.txt", output),
+        ("answer.txt", answer),
+    ] {
+        files.push(BoxFile {
+            name: name.to_string(),
+            contents: contents.as_bytes().to_vec(),
+            executable: false,
+        });
+    }
+    let limits = crate::isolate::IsolateLimits {
+        time_secs: CHECKER_TIME_SECS,
+        wall_time_secs: CHECKER_TIME_SECS * 2.0 + 1.0,
+        mem_kb: checker.mem_kb,
+        processes: 64,
+    };
+    let command = format!("{} input.txt output.txt answer.txt", checker.run_command);
+
+    let (result, ()) = in_box(
+        &files,
+        None,
+        &limits,
+        checker.extra_dirs,
+        &command,
+        started_at,
+        |_| async {},
+    )
+    .await;
+    result
+}
+
 /// One isolate box lifecycle: init, write `files` (+ stdin), run
 /// `/bin/sh -c shell_command` under `limits`, let `after_run` read the box
 /// (e.g. compiled artifacts), clean up.
@@ -418,23 +514,35 @@ where
     let result = match run_result {
         Ok(Ok((output, meta))) => {
             let is_timeout = meta.status.as_deref() == Some("TO");
+            let stderr = if is_timeout {
+                "Time Limit Exceeded".to_string()
+            } else {
+                String::from_utf8_lossy(&output.stderr).to_string()
+            };
+            let exit_code = if is_timeout {
+                124
+            } else {
+                meta.exit_code
+                    .unwrap_or_else(|| output.status.code().unwrap_or(-1))
+            };
+            let is_memory_limit = !is_timeout
+                && exit_code != 0
+                && looks_like_memory_limit(
+                    &stderr,
+                    meta.message.as_deref(),
+                    meta.max_rss_kb,
+                    limits.mem_kb,
+                );
             ExecutionResult {
                 stdout: String::from_utf8_lossy(&output.stdout).to_string(),
-                stderr: if is_timeout {
-                    "Time Limit Exceeded".to_string()
-                } else {
-                    String::from_utf8_lossy(&output.stderr).to_string()
-                },
-                exit_code: if is_timeout {
-                    124
-                } else {
-                    meta.exit_code
-                        .unwrap_or_else(|| output.status.code().unwrap_or(-1))
-                },
+                stderr,
+                exit_code,
                 is_timeout,
                 is_compile_error: false,
                 duration_ms: started_at.elapsed().as_millis() as i64,
                 peak_memory_kb: meta.max_rss_kb,
+                is_memory_limit,
+                is_internal_error: false,
             }
         }
         Ok(Err(e)) => {
@@ -454,6 +562,8 @@ where
                 is_compile_error: false,
                 duration_ms: started_at.elapsed().as_millis() as i64,
                 peak_memory_kb: None,
+                is_memory_limit: false,
+                is_internal_error: false,
             }
         }
     };
@@ -478,4 +588,57 @@ async fn write_box_files(
         tokio::fs::write(box_path.join(name), contents).await?;
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn memory_markers_are_detected() {
+        assert!(looks_like_memory_limit(
+            "Traceback (most recent call last):\nMemoryError\n",
+            None,
+            Some(9_000),
+            DEFAULT_MEM_KB,
+        ));
+        assert!(looks_like_memory_limit(
+            "terminate called after throwing an instance of 'std::bad_alloc'",
+            None,
+            None,
+            DEFAULT_MEM_KB,
+        ));
+        assert!(looks_like_memory_limit(
+            "Exception in thread \"main\" java.lang.OutOfMemoryError: Java heap space",
+            None,
+            None,
+            JVM_MEM_KB,
+        ));
+    }
+
+    #[test]
+    fn peak_rss_near_cap_counts_as_memory_limit() {
+        assert!(looks_like_memory_limit(
+            "",
+            None,
+            Some(125_000),
+            DEFAULT_MEM_KB
+        ));
+        assert!(!looks_like_memory_limit(
+            "",
+            None,
+            Some(20_000),
+            DEFAULT_MEM_KB
+        ));
+    }
+
+    #[test]
+    fn ordinary_crash_is_not_memory_limit() {
+        assert!(!looks_like_memory_limit(
+            "ZeroDivisionError: division by zero",
+            Some("Exited with error status 1"),
+            Some(9_000),
+            DEFAULT_MEM_KB,
+        ));
+    }
 }
