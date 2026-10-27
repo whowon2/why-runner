@@ -1807,5 +1807,42 @@
       "subtitle": "Prévia do formulário",
       "notSaved": "Prévia: todas as respostas são válidas, mas nada foi salvo."
     }
+  },
+  "Similarity": {
+    "title": "Similaridade de código",
+    "exerciseSubtitle": "{problem} · {lesson}",
+    "contestSubtitle": "Compare as respostas dos participantes a cada problema de {contest}",
+    "backToLesson": "Voltar para a lição",
+    "backToContest": "Voltar para a competição",
+    "trigger": "Similaridade",
+    "openReport": "Abrir relatório de similaridade",
+    "contestCta": "Encontre pares de participantes cujo código para o mesmo problema é suspeitamente parecido, mesmo após renomear variáveis ou reformatar.",
+    "problem": "Problema",
+    "noProblems": "Esta competição ainda não tem problemas.",
+    "pick": {
+      "label": "Comparar",
+      "latest": "Última submissão",
+      "best": "Melhor submissão"
+    },
+    "threshold": "Similaridade mínima",
+    "disclaimer": "As notas vêm de impressões digitais de tokens (estilo MOSS): identificadores, literais, comentários e formatação são ignorados, e o código que a maioria dos alunos compartilha é descontado. Uma nota alta é motivo para ler os dois programas, não prova de cópia.",
+    "parsonsNotSupported": "Similaridade não está disponível para exercícios de Parsons: toda resposta reordena as mesmas linhas.",
+    "truncatedSubmissions": "Apenas os {count} alunos mais recentes foram comparados.",
+    "truncatedPairs": "Mostrando apenas os {count} pares mais parecidos.",
+    "empty": {
+      "title": "Nenhum par suspeito",
+      "description": "{count, plural, =0 {Nenhum aluno enviou ainda.} one {Apenas um aluno enviou.} other {Nenhum par entre # alunos chega a {min}% de similaridade.}}"
+    },
+    "columns": {
+      "students": "Alunos",
+      "language": "Linguagem",
+      "similarity": "Similaridade",
+      "coverage": "Coincidência (cada)"
+    },
+    "Compare": {
+      "coverage": "{percent}% coincidente",
+      "regions": "{count, plural, one {# região coincidente} other {# regiões coincidentes}}",
+      "hint": "Mesma cor = mesmo bloco nos dois programas. Clique em um bloco para ir até o correspondente."
+    }
   }
 }

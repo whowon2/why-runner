@@ -1807,5 +1807,42 @@
       "subtitle": "Form preview",
       "notSaved": "Preview: every answer is valid, but nothing was saved."
     }
+  },
+  "Similarity": {
+    "title": "Code similarity",
+    "exerciseSubtitle": "{problem} · {lesson}",
+    "contestSubtitle": "Compare participants' answers to each problem of {contest}",
+    "backToLesson": "Back to lesson",
+    "backToContest": "Back to contest",
+    "trigger": "Similarity",
+    "openReport": "Open similarity report",
+    "contestCta": "Find pairs of participants whose code for the same problem is suspiciously similar, even after renaming variables or reformatting.",
+    "problem": "Problem",
+    "noProblems": "This contest has no problems yet.",
+    "pick": {
+      "label": "Compare",
+      "latest": "Latest submission",
+      "best": "Best submission"
+    },
+    "threshold": "Minimum similarity",
+    "disclaimer": "Scores come from token fingerprints (MOSS-style): identifiers, literals, comments and layout are ignored, and code most students share is discounted. A high score is a reason to read both programs, not proof of copying.",
+    "parsonsNotSupported": "Similarity is not available for Parsons exercises: every answer reorders the same lines.",
+    "truncatedSubmissions": "Only the {count} most recent students were compared.",
+    "truncatedPairs": "Showing only the {count} most similar pairs.",
+    "empty": {
+      "title": "No suspicious pairs",
+      "description": "{count, plural, =0 {No student has submitted yet.} one {Only one student has submitted.} other {No pair among # students reaches {min}% similarity.}}"
+    },
+    "columns": {
+      "students": "Students",
+      "language": "Language",
+      "similarity": "Similarity",
+      "coverage": "Matched (each)"
+    },
+    "Compare": {
+      "coverage": "{percent}% matched",
+      "regions": "{count, plural, one {# matched region} other {# matched regions}}",
+      "hint": "Same color = same block in both programs. Click a block to jump to its match."
+    }
   }
 }
