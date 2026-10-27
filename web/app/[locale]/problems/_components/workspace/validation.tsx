@@ -26,9 +26,12 @@ import { useGenerateReferenceSolution } from "@/hooks/use-generate-reference-sol
 import { useProblemValidation } from "@/hooks/use-problem-validation";
 import { useTriggerProblemValidation } from "@/hooks/use-trigger-problem-validation";
 import { useUpdateProblemReferenceSolution } from "@/hooks/use-update-problem-reference-solution";
+import { StatusBadge } from "@/components/submissions/status-badge";
 
 interface JudgeReport {
   passed: boolean;
+  /** First failure's verdict; validation rows themselves stay PASSED/FAILED. */
+  verdict?: string;
   total_tests: number;
   passed_count: number;
   failure_details?: {
@@ -276,6 +279,12 @@ function ValidationStatusBadge({
             total: report.total_tests,
           })
         : t("errored")}
+      {report?.verdict && report.verdict !== "PASSED" && (
+        <>
+          <span aria-hidden>·</span>
+          <StatusBadge status={report.verdict} />
+        </>
+      )}
     </span>
   );
 }

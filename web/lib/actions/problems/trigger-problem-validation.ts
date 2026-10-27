@@ -10,6 +10,7 @@ import {
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { notifyJudge } from "@/lib/judge";
 import { computeIoHash } from "@/lib/problem-io-hash";
+import { getProblemChecker } from "@/lib/problem-checker";
 
 export async function triggerProblemValidation(problemId: string) {
   const currentUser = await getCurrentUser({});
@@ -40,7 +41,10 @@ export async function triggerProblemValidation(problemId: string) {
     );
   }
 
-  const ioHash = computeIoHash(found.inputs, found.outputs);
+  const ioHash = computeIoHash(found.inputs, found.outputs, {
+    ...found,
+    checker: await getProblemChecker(problemId),
+  });
 
   const [validation] = await db
     .insert(problemValidation)

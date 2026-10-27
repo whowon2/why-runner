@@ -11,7 +11,8 @@ import {
 } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { notifyJudge } from "@/lib/judge";
-import { computeIoHash } from "@/lib/problem-io-hash";
+import { type CompareSettings, computeIoHash } from "@/lib/problem-io-hash";
+import { getProblemChecker } from "@/lib/problem-checker";
 
 async function getOwnedExercise(exerciseId: string) {
   const currentUser = await getCurrentUser({});
@@ -24,7 +25,9 @@ async function getOwnedExercise(exerciseId: string) {
   if (found.lesson.createdBy !== currentUser.id) {
     throw new Error("Not the lesson owner");
   }
-  return found;
+  // The checker only feeds the staleness hash; it never leaves the server.
+  const checker = await getProblemChecker(found.problemId);
+  return { ...found, problem: { ...found.problem, checker } };
 }
 
 function latestParsonsCheck(exerciseId: string) {
@@ -61,7 +64,11 @@ export async function checkParsonsSolution(input: {
       exerciseId: found.id,
       code: input.code,
       language: input.language,
-      ioHash: computeIoHash(found.problem.inputs, found.problem.outputs),
+      ioHash: computeIoHash(
+        found.problem.inputs,
+        found.problem.outputs,
+        found.problem,
+      ),
     })
     .returning();
 
@@ -96,11 +103,12 @@ export async function getExerciseModeState(
 
 function isFreshPass(
   run: ProblemValidation | null | undefined,
-  linkedProblem: { inputs: string[]; outputs: string[] },
+  linkedProblem: { inputs: string[]; outputs: string[] } & CompareSettings,
 ) {
   return (
     run?.status === "PASSED" &&
-    run.ioHash === computeIoHash(linkedProblem.inputs, linkedProblem.outputs)
+    run.ioHash ===
+      computeIoHash(linkedProblem.inputs, linkedProblem.outputs, linkedProblem)
   );
 }
 

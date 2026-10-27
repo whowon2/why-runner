@@ -717,7 +717,37 @@
       "suggestingTags": "Suggesting...",
       "suggestTagsFailed": "Failed to suggest tags",
       "suggestTagsNeedsDescription": "Write a description before asking the AI for tags.",
-      "noTagsSuggested": "The AI didn't find any matching tags."
+      "noTagsSuggested": "The AI didn't find any matching tags.",
+      "Compare": {
+        "title": "Output comparison",
+        "subtitle": "How the judge decides whether a program's output matches the expected output.",
+        "modeLabel": "Comparison mode",
+        "modes": {
+          "exact": {
+            "label": "Exact",
+            "help": "Output must match exactly, ignoring only leading and trailing whitespace."
+          },
+          "tokens": {
+            "label": "Ignore whitespace",
+            "help": "Compares the output word by word: extra spaces, blank lines and line breaks don't matter."
+          },
+          "float": {
+            "label": "Numbers with tolerance",
+            "help": "Like \"ignore whitespace\", but numbers are accepted when they differ by at most ε (absolute or relative)."
+          },
+          "checker": {
+            "label": "Custom checker",
+            "help": "Your own program decides whether each answer is correct. Use it when several answers are valid."
+          }
+        },
+        "epsilonLabel": "Tolerance (ε)",
+        "epsilonHelp": "Between 0 and 1, e.g. 0.000001.",
+        "checkerLanguageLabel": "Checker language",
+        "checkerCodeLabel": "Checker program",
+        "checkerCodePlaceholder": "import sys\ninp, out, ans = (open(f).read() for f in sys.argv[1:4])\nsys.exit(0 if out.split() == ans.split() else 1)",
+        "checkerHelp": "Receives input.txt, output.txt (the student's output) and answer.txt (the expected output) as arguments. Exit 0 = accepted, exit 1 = wrong answer (whatever it prints is shown as the reason); any other result is reported as a checker error. Students never see this code.",
+        "checkerRequired": "Write the checker program, or choose another mode."
+      }
     },
     "Publish": {
       "button": "Publish",
@@ -1588,6 +1618,8 @@
     "wrongAnswerOnTest": "Wrong answer on test {index}",
     "runtimeErrorOnTest": "Runtime error on test {index}",
     "timeLimitOnTest": "Time limit exceeded on test {index}",
+    "memoryLimitOnTest": "Memory limit exceeded on test {index}",
+    "judgeErrorOnTest": "Judge error on test {index}",
     "failedOnTest": "Failed on test {index}",
     "hiddenTestNote": "This is a hidden test case, so its input and output are not shown.",
     "passedCount": "{passed} of {total} tests passed"
@@ -1807,5 +1839,19 @@
       "subtitle": "Form preview",
       "notSaved": "Preview: every answer is valid, but nothing was saved."
     }
+  },
+  "SubmissionStatus": {
+    "PENDING": "Pending",
+    "RUNNING": "Running",
+    "PASSED": "Accepted",
+    "FAILED": "Failed",
+    "ERROR": "Judge error",
+    "CONSTRAINT_VIOLATION": "Constraint violation",
+    "PENDING_CONSTRAINT_CLASSIFICATION": "Checking constraints",
+    "WRONG_ANSWER": "Wrong answer",
+    "TIME_LIMIT_EXCEEDED": "Time limit exceeded",
+    "MEMORY_LIMIT_EXCEEDED": "Memory limit exceeded",
+    "COMPILATION_ERROR": "Compilation error",
+    "RUNTIME_ERROR": "Runtime error"
   }
 }

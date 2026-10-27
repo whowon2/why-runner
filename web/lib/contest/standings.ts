@@ -14,7 +14,11 @@ export function classifyStatus(status: Submission["status"]): StatusClass {
   switch (status) {
     case "PASSED":
       return "solved";
-    case "FAILED":
+    case "WRONG_ANSWER":
+    case "TIME_LIMIT_EXCEEDED":
+    case "MEMORY_LIMIT_EXCEEDED":
+    case "RUNTIME_ERROR":
+    case "FAILED": // legacy: judged before the distinct verdicts existed
     case "CONSTRAINT_VIOLATION":
       return "rejected";
     case "PENDING":
@@ -22,8 +26,10 @@ export function classifyStatus(status: Submission["status"]): StatusClass {
     case "PENDING_CONSTRAINT_CLASSIFICATION":
       return "pending";
     // The judge dead-letters submissions it couldn't run into ERROR, so
-    // penalising it would punish participants for judge faults.
+    // penalising it would punish participants for judge faults. Compile
+    // errors aren't penalised either (ICPC convention).
     case "ERROR":
+    case "COMPILATION_ERROR":
       return "ignored";
   }
 }

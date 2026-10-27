@@ -106,7 +106,7 @@ export const getUserPrompt = (input: {
     } else if (report.failure_details) {
       const f = report.failure_details;
       details = `
-The submission FAILED on Test Case #${f.index}.
+The submission FAILED on Test Case #${f.index}${report.verdict ? ` (verdict: ${report.verdict})` : ""}.
 Input:
 ${f.input}
 
