@@ -5,6 +5,7 @@ import {
   HomeIcon,
   Moon,
   ScrollText,
+  Search,
   Settings,
   Sun,
   Trophy,
@@ -12,7 +13,10 @@ import {
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { useCommandPalette } from "@/components/command-palette/palette-context";
+import { getPaletteShortcutKeys } from "@/components/command-palette/shortcut-label";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
@@ -34,6 +38,7 @@ export function UserDock() {
   const t = useTranslations();
   const pathname = usePathname();
   const { data: session } = authClient.useSession();
+  const { setOpen: setPaletteOpen } = useCommandPalette();
 
   const DATA = {
     navbar: [
@@ -89,6 +94,32 @@ export function UserDock() {
             </DockIcon>
           ))}
           <Separator orientation="vertical" className="h-full py-2" />
+          <DockIcon>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={() => setPaletteOpen(true)}
+                  aria-label={t("CommandPalette.open")}
+                  aria-keyshortcuts="Control+K Meta+K"
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "icon" }),
+                    "size-12 rounded-none",
+                  )}
+                >
+                  <Search className="size-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="flex items-center gap-2">
+                <p>{t("CommandPalette.open")}</p>
+                <KbdGroup>
+                  {getPaletteShortcutKeys().map((key) => (
+                    <Kbd key={key}>{key}</Kbd>
+                  ))}
+                </KbdGroup>
+              </TooltipContent>
+            </Tooltip>
+          </DockIcon>
           <DockIcon onClick={handleChangeTheme}>
             {theme === "dark" ? <Moon size={20} /> : <Sun size={20} />}
           </DockIcon>

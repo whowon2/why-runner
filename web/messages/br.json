@@ -15,6 +15,7 @@
     "tryAgain": "Tentar novamente"
   },
   "CommandPalette": {
+    "open": "Buscar e comandos",
     "title": "Paleta de Comandos",
     "searchPlaceholder": "Buscar comandos, problemas, contests...",
     "themePlaceholder": "Buscar temas (↑↓ pré-visualiza, ⌫ volta)",
