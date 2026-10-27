@@ -3,9 +3,7 @@
 ## Purpose
 
 Ensure that mutations across the app (contest problem management, join approvals, submissions, profile edits, contest creation) invalidate the appropriate cached queries so affected views update immediately without requiring a manual page refresh.
-
 ## Requirements
-
 ### Requirement: Contest problem list refreshes on add/remove
 Adding or removing a problem from a contest SHALL invalidate the contest's cached data so the problem list updates immediately, and this invalidation SHALL be guaranteed by the mutation itself rather than depending on the calling component to trigger it.
 
@@ -66,3 +64,15 @@ Joining or leaving a contest, approving or rejecting a pending join, and adding,
 #### Scenario: Leaving removes the row
 - **WHEN** a participant leaves the contest
 - **THEN** the contest leaderboard refetches without their row
+
+### Requirement: Class gradebook refreshes when its inputs change
+Mutations that change which lessons/exercises a class gradebook lists, or which lessons a student has handed in, SHALL invalidate the class queries (`["classes"]` prefix, which covers `["classes", classroomId, "gradebook"]`): publishing/unpublishing a lesson, adding, moving or removing a lesson exercise, updating or deleting a lesson, removing a member, and submitting a lesson.
+
+#### Scenario: Professor publishes a lesson then opens the gradebook
+- **WHEN** the class owner publishes a lesson and then navigates to the class gradebook in the same session
+- **THEN** the gradebook SHALL be refetched and include that lesson's exercise columns
+
+#### Scenario: Professor adds an exercise to a published lesson
+- **WHEN** the class owner adds an exercise to a published lesson
+- **THEN** any cached gradebook for that class SHALL be invalidated so the new column appears
+

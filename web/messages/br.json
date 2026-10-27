@@ -1497,7 +1497,20 @@
     "leaveClass": "Sair da turma",
     "leaveClassTitle": "Sair desta turma?",
     "leaveClassDescription": "Você perderá acesso a esta turma e suas aulas, a menos que entre novamente com o código.",
-    "leaveClassSuccess": "Você saiu da turma."
+    "leaveClassSuccess": "Você saiu da turma.",
+    "gradebook": "Notas",
+    "gradebookSubtitle": "Notas de cada aluno em cada tarefa publicada, a partir das entregas.",
+    "gradebookExport": "Exportar CSV",
+    "gradebookStudent": "Aluno",
+    "gradebookTotal": "Total",
+    "gradebookLessonTotal": "Σ",
+    "gradebookNotSubmitted": "Não entregue",
+    "gradebookOpen": "Aberta",
+    "gradebookOpenHint": "Prazo ainda não encerrado — alunos ainda podem reenviar.",
+    "gradebookNoStudents": "Nenhum aluno entrou ainda.",
+    "gradebookNoLessons": "Nenhuma tarefa publicada ainda.",
+    "gradebookLegend": "Cada exercício vale a fração de casos de teste aprovados (0–1); — indica tarefa não entregue.",
+    "backToClass": "Voltar para a turma"
   },
   "Blocks": {
     "start": "quando o programa começar",
