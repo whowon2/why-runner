@@ -46,4 +46,4 @@
 
 ## 8. Ship
 
-- [ ] 8.1 Commit (no Co-authored-by trailer), open PR, list slides ranked "safest to cut"
+- [x] 8.1 Commit (no Co-authored-by trailer), open PR, list slides ranked "safest to cut"
