@@ -1,5 +1,7 @@
 # PROBLEMAS EM ABERTO — WhyRunner TCC
-> Atualizado: 2026-04-19 | Código: sem pendências | LaTeX: atualizado
+> Atualizado: 2026-10-28 | Código: sem pendências | LaTeX: atualizado
+>
+> **Correção (2026-10-28):** a versão anterior deste arquivo afirmava um contest em sala com 23 alunos, 6 problemas e 50+ submissões. **Isso é falso**: nenhuma avaliação em sala aconteceu até esta data. O primeiro teste em sala está agendado para **29/10/2026**.
 
 ---
 
@@ -35,12 +37,14 @@ Adicionar: screenshots do scoreboard, contagem de submissões por status, tempo 
 
 `refs.bib` expandido: Docker, Rust, PostgreSQL, Next.js, Drizzle ORM, Gemini, Run Codes adicionados. Run Codes agora tem `\cite{}` no texto. Total: 11 entradas.
 
-## ~~Avaliação sem dados mensuráveis~~ ✅ Resolvido
+## Avaliação sem dados mensuráveis — parcialmente resolvido
 
-Seção de avaliação reescrita com duas tabelas: parâmetros do contest (23 alunos, 6 problemas, 50+ submissões, 0 crashes) e resultados observados. Seções Evaluation e Results agora separadas com dados concretos.
+- ~~"Contest com 23 alunos, 6 problemas, 50+ submissões"~~: **afirmação falsa, removida.** Nunca houve esse contest.
+- Dados técnicos medidos agora existem: `bench/` (suíte de benchmarks reproduzível, resultados brutos em `bench/results/`), usados na seção *Performance Evaluation* de `overleaf/main.tex` e nos slides v4.
+- Avaliação com usuários: instrumento pronto (TCLE, 4 questionários, SUS automático, página de resultados); **primeiro teste em sala em 29/10/2026, ainda sem resultados.**
 
 ---
 
-## SEM PENDÊNCIAS
+## PENDENTE
 
-Código e documento estão prontos para defesa.
+- Aplicar o teste em sala (29/10/2026), analisar os dados e atualizar *Evaluation Status* em `overleaf/main.tex` e os slides.
