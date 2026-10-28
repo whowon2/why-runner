@@ -1,3 +1,5 @@
+#[cfg(test)]
+mod bench;
 mod compare;
 mod constraints;
 mod db;

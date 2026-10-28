@@ -1,0 +1,215 @@
+warning: variant `CONSTRAINT_VIOLATION` should have an upper camel case name
+  --> src/models.rs:16:5
+   |
+16 |     CONSTRAINT_VIOLATION,
+   |     ^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `ConstraintViolation`
+   |
+   = note: `#[warn(non_camel_case_types)]` (part of `#[warn(nonstandard_style)]`) on by default
+
+warning: variant `PENDING_CONSTRAINT_CLASSIFICATION` should have an upper camel case name
+  --> src/models.rs:17:5
+   |
+17 |     PENDING_CONSTRAINT_CLASSIFICATION,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `PendingConstraintClassification`
+
+warning: variant `WRONG_ANSWER` should have an upper camel case name
+  --> src/models.rs:18:5
+   |
+18 |     WRONG_ANSWER,
+   |     ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `WrongAnswer`
+
+warning: variant `TIME_LIMIT_EXCEEDED` should have an upper camel case name
+  --> src/models.rs:19:5
+   |
+19 |     TIME_LIMIT_EXCEEDED,
+   |     ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `TimeLimitExceeded`
+
+warning: variant `MEMORY_LIMIT_EXCEEDED` should have an upper camel case name
+  --> src/models.rs:20:5
+   |
+20 |     MEMORY_LIMIT_EXCEEDED,
+   |     ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `MemoryLimitExceeded`
+
+warning: variant `COMPILATION_ERROR` should have an upper camel case name
+  --> src/models.rs:21:5
+   |
+21 |     COMPILATION_ERROR,
+   |     ^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CompilationError`
+
+warning: variant `RUNTIME_ERROR` should have an upper camel case name
+  --> src/models.rs:22:5
+   |
+22 |     RUNTIME_ERROR,
+   |     ^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `RuntimeError`
+
+warning: field `description` is never read
+   --> src/models.rs:108:9
+    |
+102 | pub struct ProblemConstraint {
+    |            ----------------- field in this struct
+...
+108 |     pub description: Option<String>,
+    |         ^^^^^^^^^^^
+    |
+    = note: `ProblemConstraint` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+
+running 1 test
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c hello bare=2ms isolate=7ms
+   🔒 Running in isolate sandbox
+c hello bare=1ms isolate=7ms
+   🔒 Running in isolate sandbox
+c hello bare=2ms isolate=6ms
+   🔒 Running in isolate sandbox
+c hello bare=1ms isolate=6ms
+   🔒 Running in isolate sandbox
+c hello bare=1ms isolate=7ms
+   🔒 Running in isolate sandbox
+c hello bare=1ms isolate=7ms
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c cpu bare=45ms isolate=51ms
+   🔒 Running in isolate sandbox
+c cpu bare=46ms isolate=54ms
+   🔒 Running in isolate sandbox
+c cpu bare=48ms isolate=51ms
+   🔒 Running in isolate sandbox
+c cpu bare=46ms isolate=51ms
+   🔒 Running in isolate sandbox
+c cpu bare=46ms isolate=55ms
+   🔒 Running in isolate sandbox
+c cpu bare=48ms isolate=51ms
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp hello bare=2ms isolate=8ms
+   🔒 Running in isolate sandbox
+cpp hello bare=2ms isolate=7ms
+   🔒 Running in isolate sandbox
+cpp hello bare=2ms isolate=8ms
+   🔒 Running in isolate sandbox
+cpp hello bare=2ms isolate=7ms
+   🔒 Running in isolate sandbox
+cpp hello bare=2ms isolate=8ms
+   🔒 Running in isolate sandbox
+cpp hello bare=2ms isolate=8ms
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp cpu bare=49ms isolate=53ms
+   🔒 Running in isolate sandbox
+cpp cpu bare=49ms isolate=56ms
+   🔒 Running in isolate sandbox
+cpp cpu bare=49ms isolate=53ms
+   🔒 Running in isolate sandbox
+cpp cpu bare=47ms isolate=55ms
+   🔒 Running in isolate sandbox
+cpp cpu bare=47ms isolate=54ms
+   🔒 Running in isolate sandbox
+cpp cpu bare=50ms isolate=54ms
+Picked up JAVA_TOOL_OPTIONS: -Xmx64m -XX:CompressedClassSpaceSize=32m -XX:ReservedCodeCacheSize=32m -XX:MaxMetaspaceSize=64m -XX:ParallelGCThreads=1 -XX:CICompilerCount=1 -Xss256k -XX:-TieredCompilation
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java hello bare=28ms isolate=36ms
+   🔒 Running in isolate sandbox
+java hello bare=29ms isolate=34ms
+   🔒 Running in isolate sandbox
+java hello bare=26ms isolate=31ms
+   🔒 Running in isolate sandbox
+java hello bare=26ms isolate=32ms
+   🔒 Running in isolate sandbox
+java hello bare=28ms isolate=34ms
+   🔒 Running in isolate sandbox
+java hello bare=27ms isolate=34ms
+Picked up JAVA_TOOL_OPTIONS: -Xmx64m -XX:CompressedClassSpaceSize=32m -XX:ReservedCodeCacheSize=32m -XX:MaxMetaspaceSize=64m -XX:ParallelGCThreads=1 -XX:CICompilerCount=1 -Xss256k -XX:-TieredCompilation
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java cpu bare=108ms isolate=113ms
+   🔒 Running in isolate sandbox
+java cpu bare=111ms isolate=115ms
+   🔒 Running in isolate sandbox
+java cpu bare=108ms isolate=113ms
+   🔒 Running in isolate sandbox
+java cpu bare=110ms isolate=115ms
+   🔒 Running in isolate sandbox
+java cpu bare=107ms isolate=118ms
+   🔒 Running in isolate sandbox
+java cpu bare=110ms isolate=109ms
+   🔒 Running in isolate sandbox
+python hello bare=11ms isolate=17ms
+   🔒 Running in isolate sandbox
+python hello bare=11ms isolate=16ms
+   🔒 Running in isolate sandbox
+python hello bare=11ms isolate=16ms
+   🔒 Running in isolate sandbox
+python hello bare=11ms isolate=18ms
+   🔒 Running in isolate sandbox
+python hello bare=10ms isolate=16ms
+   🔒 Running in isolate sandbox
+python hello bare=10ms isolate=18ms
+   🔒 Running in isolate sandbox
+python cpu bare=876ms isolate=883ms
+   🔒 Running in isolate sandbox
+python cpu bare=877ms isolate=918ms
+   🔒 Running in isolate sandbox
+python cpu bare=927ms isolate=898ms
+   🔒 Running in isolate sandbox
+python cpu bare=881ms isolate=909ms
+   🔒 Running in isolate sandbox
+python cpu bare=872ms isolate=933ms
+   🔒 Running in isolate sandbox
+python cpu bare=890ms isolate=878ms
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust hello bare=2ms isolate=16ms
+   🔒 Running in isolate sandbox
+rust hello bare=2ms isolate=16ms
+   🔒 Running in isolate sandbox
+rust hello bare=2ms isolate=16ms
+   🔒 Running in isolate sandbox
+rust hello bare=2ms isolate=15ms
+   🔒 Running in isolate sandbox
+rust hello bare=2ms isolate=15ms
+   🔒 Running in isolate sandbox
+rust hello bare=2ms isolate=15ms
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust cpu bare=145ms isolate=159ms
+   🔒 Running in isolate sandbox
+rust cpu bare=149ms isolate=162ms
+   🔒 Running in isolate sandbox
+rust cpu bare=148ms isolate=159ms
+   🔒 Running in isolate sandbox
+rust cpu bare=148ms isolate=162ms
+   🔒 Running in isolate sandbox
+rust cpu bare=154ms isolate=162ms
+   🔒 Running in isolate sandbox
+rust cpu bare=152ms isolate=161ms
+   🔒 Running in isolate sandbox
+portugol hello bare=1248ms isolate=1247ms
+   🔒 Running in isolate sandbox
+portugol hello bare=1250ms isolate=1246ms
+   🔒 Running in isolate sandbox
+portugol hello bare=1268ms isolate=1226ms
+   🔒 Running in isolate sandbox
+portugol hello bare=1236ms isolate=1271ms
+   🔒 Running in isolate sandbox
+portugol hello bare=1264ms isolate=1239ms
+   🔒 Running in isolate sandbox
+portugol hello bare=1286ms isolate=1271ms
+   🔒 Running in isolate sandbox
+portugol cpu bare=1562ms isolate=1441ms
+   🔒 Running in isolate sandbox
+portugol cpu bare=1444ms isolate=1444ms
+   🔒 Running in isolate sandbox
+portugol cpu bare=1482ms isolate=1428ms
+   🔒 Running in isolate sandbox
+portugol cpu bare=1445ms isolate=1441ms
+   🔒 Running in isolate sandbox
+portugol cpu bare=1451ms isolate=1471ms
+   🔒 Running in isolate sandbox
+portugol cpu bare=1484ms isolate=1448ms
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 56 filtered out; finished in 53.51s
+

@@ -1,0 +1,353 @@
+warning: variant `CONSTRAINT_VIOLATION` should have an upper camel case name
+  --> src/models.rs:16:5
+   |
+16 |     CONSTRAINT_VIOLATION,
+   |     ^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `ConstraintViolation`
+   |
+   = note: `#[warn(non_camel_case_types)]` (part of `#[warn(nonstandard_style)]`) on by default
+
+warning: variant `PENDING_CONSTRAINT_CLASSIFICATION` should have an upper camel case name
+  --> src/models.rs:17:5
+   |
+17 |     PENDING_CONSTRAINT_CLASSIFICATION,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `PendingConstraintClassification`
+
+warning: variant `WRONG_ANSWER` should have an upper camel case name
+  --> src/models.rs:18:5
+   |
+18 |     WRONG_ANSWER,
+   |     ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `WrongAnswer`
+
+warning: variant `TIME_LIMIT_EXCEEDED` should have an upper camel case name
+  --> src/models.rs:19:5
+   |
+19 |     TIME_LIMIT_EXCEEDED,
+   |     ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `TimeLimitExceeded`
+
+warning: variant `MEMORY_LIMIT_EXCEEDED` should have an upper camel case name
+  --> src/models.rs:20:5
+   |
+20 |     MEMORY_LIMIT_EXCEEDED,
+   |     ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `MemoryLimitExceeded`
+
+warning: variant `COMPILATION_ERROR` should have an upper camel case name
+  --> src/models.rs:21:5
+   |
+21 |     COMPILATION_ERROR,
+   |     ^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CompilationError`
+
+warning: variant `RUNTIME_ERROR` should have an upper camel case name
+  --> src/models.rs:22:5
+   |
+22 |     RUNTIME_ERROR,
+   |     ^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `RuntimeError`
+
+warning: field `description` is never read
+   --> src/models.rs:108:9
+    |
+102 | pub struct ProblemConstraint {
+    |            ----------------- field in this struct
+...
+108 |     pub description: Option<String>,
+    |         ^^^^^^^^^^^
+    |
+    = note: `ProblemConstraint` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+
+running 1 test
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c PASSED/plain -> PASSED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c PASSED/extra-spaces -> PASSED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+c WRONG_ANSWER/off-by-one -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+c WRONG_ANSWER/no-output -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ TIME_LIMIT_EXCEEDED on Test 1
+c TIME_LIMIT_EXCEEDED/infinite-loop -> TIME_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ TIME_LIMIT_EXCEEDED on Test 1
+c TIME_LIMIT_EXCEEDED/sleep -> TIME_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ RUNTIME_ERROR on Test 1
+c MEMORY_LIMIT_EXCEEDED/malloc-fill -> RUNTIME_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ MEMORY_LIMIT_EXCEEDED on Test 1
+c MEMORY_LIMIT_EXCEEDED/grow -> MEMORY_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+	🛠️ Compile Error
+c COMPILATION_ERROR/syntax -> COMPILATION_ERROR
+   🔒 Running in isolate sandbox
+	🛠️ Compile Error
+c COMPILATION_ERROR/undeclared -> COMPILATION_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ RUNTIME_ERROR on Test 1
+c RUNTIME_ERROR/div-zero -> RUNTIME_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ RUNTIME_ERROR on Test 1
+c RUNTIME_ERROR/null-deref -> RUNTIME_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp PASSED/plain -> PASSED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp PASSED/extra-spaces -> PASSED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+cpp WRONG_ANSWER/off-by-one -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+cpp WRONG_ANSWER/no-output -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ TIME_LIMIT_EXCEEDED on Test 1
+cpp TIME_LIMIT_EXCEEDED/infinite-loop -> TIME_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ TIME_LIMIT_EXCEEDED on Test 1
+cpp TIME_LIMIT_EXCEEDED/sleep -> TIME_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ MEMORY_LIMIT_EXCEEDED on Test 1
+cpp MEMORY_LIMIT_EXCEEDED/vector-grow -> MEMORY_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ MEMORY_LIMIT_EXCEEDED on Test 1
+cpp MEMORY_LIMIT_EXCEEDED/big-new -> MEMORY_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+	🛠️ Compile Error
+cpp COMPILATION_ERROR/syntax -> COMPILATION_ERROR
+   🔒 Running in isolate sandbox
+	🛠️ Compile Error
+cpp COMPILATION_ERROR/type -> COMPILATION_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ RUNTIME_ERROR on Test 1
+cpp RUNTIME_ERROR/div-zero -> RUNTIME_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ RUNTIME_ERROR on Test 1
+cpp RUNTIME_ERROR/throw -> RUNTIME_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java PASSED/plain -> PASSED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java PASSED/extra-spaces -> PASSED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+java WRONG_ANSWER/off-by-one -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+java WRONG_ANSWER/no-output -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ TIME_LIMIT_EXCEEDED on Test 1
+java TIME_LIMIT_EXCEEDED/infinite-loop -> TIME_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ TIME_LIMIT_EXCEEDED on Test 1
+java TIME_LIMIT_EXCEEDED/sleep -> TIME_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ MEMORY_LIMIT_EXCEEDED on Test 1
+java MEMORY_LIMIT_EXCEEDED/big-array -> MEMORY_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ MEMORY_LIMIT_EXCEEDED on Test 1
+java MEMORY_LIMIT_EXCEEDED/list-grow -> MEMORY_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+	🛠️ Compile Error
+java COMPILATION_ERROR/syntax -> COMPILATION_ERROR
+   🔒 Running in isolate sandbox
+	🛠️ Compile Error
+java COMPILATION_ERROR/type -> COMPILATION_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ RUNTIME_ERROR on Test 1
+java RUNTIME_ERROR/div-zero -> RUNTIME_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ RUNTIME_ERROR on Test 1
+java RUNTIME_ERROR/index -> RUNTIME_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+python PASSED/plain -> PASSED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+python PASSED/extra-spaces -> PASSED
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+python WRONG_ANSWER/off-by-one -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+python WRONG_ANSWER/no-output -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+	❌ TIME_LIMIT_EXCEEDED on Test 1
+python TIME_LIMIT_EXCEEDED/infinite-loop -> TIME_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+	❌ TIME_LIMIT_EXCEEDED on Test 1
+python TIME_LIMIT_EXCEEDED/sleep -> TIME_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+	❌ MEMORY_LIMIT_EXCEEDED on Test 1
+python MEMORY_LIMIT_EXCEEDED/big-list -> MEMORY_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+	❌ MEMORY_LIMIT_EXCEEDED on Test 1
+python MEMORY_LIMIT_EXCEEDED/list-grow -> MEMORY_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+	❌ RUNTIME_ERROR on Test 1
+python COMPILATION_ERROR/syntax -> RUNTIME_ERROR
+   🔒 Running in isolate sandbox
+	❌ RUNTIME_ERROR on Test 1
+python COMPILATION_ERROR/indent -> RUNTIME_ERROR
+   🔒 Running in isolate sandbox
+	❌ RUNTIME_ERROR on Test 1
+python RUNTIME_ERROR/div-zero -> RUNTIME_ERROR
+   🔒 Running in isolate sandbox
+	❌ RUNTIME_ERROR on Test 1
+python RUNTIME_ERROR/name -> RUNTIME_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust PASSED/plain -> PASSED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust PASSED/extra-spaces -> PASSED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+rust WRONG_ANSWER/off-by-one -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+rust WRONG_ANSWER/no-output -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ TIME_LIMIT_EXCEEDED on Test 1
+rust TIME_LIMIT_EXCEEDED/infinite-loop -> TIME_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ TIME_LIMIT_EXCEEDED on Test 1
+rust TIME_LIMIT_EXCEEDED/sleep -> TIME_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ MEMORY_LIMIT_EXCEEDED on Test 1
+rust MEMORY_LIMIT_EXCEEDED/big-vec -> MEMORY_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ MEMORY_LIMIT_EXCEEDED on Test 1
+rust MEMORY_LIMIT_EXCEEDED/vec-grow -> MEMORY_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+	🛠️ Compile Error
+rust COMPILATION_ERROR/syntax -> COMPILATION_ERROR
+   🔒 Running in isolate sandbox
+	🛠️ Compile Error
+rust COMPILATION_ERROR/type -> COMPILATION_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ RUNTIME_ERROR on Test 1
+rust RUNTIME_ERROR/div-zero -> RUNTIME_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+	❌ RUNTIME_ERROR on Test 1
+rust RUNTIME_ERROR/panic -> RUNTIME_ERROR
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+portugol PASSED/plain -> PASSED
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+portugol PASSED/extra-spaces -> PASSED
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+portugol WRONG_ANSWER/off-by-one -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+portugol WRONG_ANSWER/no-output -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+	❌ TIME_LIMIT_EXCEEDED on Test 1
+portugol TIME_LIMIT_EXCEEDED/infinite-loop -> TIME_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+	❌ TIME_LIMIT_EXCEEDED on Test 1
+portugol TIME_LIMIT_EXCEEDED/nested-loop -> TIME_LIMIT_EXCEEDED
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+portugol MEMORY_LIMIT_EXCEEDED/big-array -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+portugol MEMORY_LIMIT_EXCEEDED/big-matrix -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+portugol COMPILATION_ERROR/syntax -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+portugol COMPILATION_ERROR/undeclared -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+portugol RUNTIME_ERROR/div-zero -> WRONG_ANSWER
+   🔒 Running in isolate sandbox
+	❌ WRONG_ANSWER on Test 1
+portugol RUNTIME_ERROR/index -> WRONG_ANSWER
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 56 filtered out; finished in 104.77s
+

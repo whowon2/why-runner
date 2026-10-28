@@ -1,0 +1,1276 @@
+[
+ {
+  "id": "local:52d7a9bd",
+  "source": "local",
+  "actual": "25",
+  "expected": "15",
+  "correct": false
+ },
+ {
+  "id": "local:069d8312",
+  "source": "local",
+  "actual": "10",
+  "expected": "15",
+  "correct": false
+ },
+ {
+  "id": "local:29af6ea6",
+  "source": "local",
+  "actual": "3",
+  "expected": "9",
+  "correct": false
+ },
+ {
+  "id": "local:a7bb2710",
+  "source": "local",
+  "actual": "SIM",
+  "expected": "NAO",
+  "correct": false
+ },
+ {
+  "id": "local:3a399d6c",
+  "source": "local",
+  "actual": "1 2",
+  "expected": "1 2 3",
+  "correct": false
+ },
+ {
+  "id": "local:72342b32",
+  "source": "local",
+  "actual": "10",
+  "expected": "15",
+  "correct": false
+ },
+ {
+  "id": "local:550583c9",
+  "source": "local",
+  "actual": "10",
+  "expected": "15",
+  "correct": false
+ },
+ {
+  "id": "local:f8a8130e",
+  "source": "local",
+  "actual": "10",
+  "expected": "15",
+  "correct": false
+ },
+ {
+  "id": "local:1f314101",
+  "source": "local",
+  "actual": "6",
+  "expected": "8",
+  "correct": false
+ },
+ {
+  "id": "local:bc2c1d69",
+  "source": "local",
+  "actual": "10",
+  "expected": "15",
+  "correct": false
+ },
+ {
+  "id": "local:d9a3961f",
+  "source": "local",
+  "actual": "4",
+  "expected": "6",
+  "correct": false
+ },
+ {
+  "id": "local:46a8800f",
+  "source": "local",
+  "actual": "4",
+  "expected": "6",
+  "correct": false
+ },
+ {
+  "id": "local:0f4fe648",
+  "source": "local",
+  "actual": "10",
+  "expected": "30",
+  "correct": false
+ },
+ {
+  "id": "local:4c088e72",
+  "source": "local",
+  "actual": "10",
+  "expected": "30",
+  "correct": false
+ },
+ {
+  "id": "production:329a5968",
+  "source": "production",
+  "actual": "sim",
+  "expected": "Hello, World!",
+  "correct": false
+ },
+ {
+  "id": "production:b3c73847",
+  "source": "production",
+  "actual": "sim",
+  "expected": "Hello, World!",
+  "correct": false
+ },
+ {
+  "id": "p0o0:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "Hello, World! ",
+  "expected": "Hello, World!",
+  "correct": true
+ },
+ {
+  "id": "p0o0:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "Hello, World!\n\n\n",
+  "expected": "Hello, World!",
+  "correct": true
+ },
+ {
+  "id": "p0o0:crlf",
+  "source": "synthetic:crlf",
+  "actual": "Hello, World!\r\n",
+  "expected": "Hello, World!",
+  "correct": true
+ },
+ {
+  "id": "p0o0:newline-vs-space",
+  "source": "synthetic:newline-vs-space",
+  "actual": "Hello,\nWorld!",
+  "expected": "Hello, World!",
+  "correct": true
+ },
+ {
+  "id": "p0o0:double-spaces",
+  "source": "synthetic:double-spaces",
+  "actual": "Hello,  World!",
+  "expected": "Hello, World!",
+  "correct": true
+ },
+ {
+  "id": "p0o0:case-changed",
+  "source": "synthetic:case-changed",
+  "actual": "HELLO, WORLD!",
+  "expected": "Hello, World!",
+  "correct": false
+ },
+ {
+  "id": "p0o0:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "Hello,",
+  "expected": "Hello, World!",
+  "correct": false
+ },
+ {
+  "id": "p1o0:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "8 ",
+  "expected": "8",
+  "correct": true
+ },
+ {
+  "id": "p1o0:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "8\n\n\n",
+  "expected": "8",
+  "correct": true
+ },
+ {
+  "id": "p1o0:crlf",
+  "source": "synthetic:crlf",
+  "actual": "8\r\n",
+  "expected": "8",
+  "correct": true
+ },
+ {
+  "id": "p1o0:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "8",
+  "correct": false
+ },
+ {
+  "id": "p1o1:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "300 ",
+  "expected": "300",
+  "correct": true
+ },
+ {
+  "id": "p1o1:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "300\n\n\n",
+  "expected": "300",
+  "correct": true
+ },
+ {
+  "id": "p1o1:crlf",
+  "source": "synthetic:crlf",
+  "actual": "300\r\n",
+  "expected": "300",
+  "correct": true
+ },
+ {
+  "id": "p1o1:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "300",
+  "correct": false
+ },
+ {
+  "id": "p1o2:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "-4 ",
+  "expected": "-4",
+  "correct": true
+ },
+ {
+  "id": "p1o2:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "-4\n\n\n",
+  "expected": "-4",
+  "correct": true
+ },
+ {
+  "id": "p1o2:crlf",
+  "source": "synthetic:crlf",
+  "actual": "-4\r\n",
+  "expected": "-4",
+  "correct": true
+ },
+ {
+  "id": "p1o2:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "-4",
+  "correct": false
+ },
+ {
+  "id": "p1o3:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "0 ",
+  "expected": "0",
+  "correct": true
+ },
+ {
+  "id": "p1o3:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "0\n\n\n",
+  "expected": "0",
+  "correct": true
+ },
+ {
+  "id": "p1o3:crlf",
+  "source": "synthetic:crlf",
+  "actual": "0\r\n",
+  "expected": "0",
+  "correct": true
+ },
+ {
+  "id": "p1o3:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "0",
+  "correct": false
+ },
+ {
+  "id": "p1o4:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "2000000000 ",
+  "expected": "2000000000",
+  "correct": true
+ },
+ {
+  "id": "p1o4:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "2000000000\n\n\n",
+  "expected": "2000000000",
+  "correct": true
+ },
+ {
+  "id": "p1o4:crlf",
+  "source": "synthetic:crlf",
+  "actual": "2000000000\r\n",
+  "expected": "2000000000",
+  "correct": true
+ },
+ {
+  "id": "p1o4:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "2000000000",
+  "correct": false
+ },
+ {
+  "id": "p2o0:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "Even ",
+  "expected": "Even",
+  "correct": true
+ },
+ {
+  "id": "p2o0:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "Even\n\n\n",
+  "expected": "Even",
+  "correct": true
+ },
+ {
+  "id": "p2o0:crlf",
+  "source": "synthetic:crlf",
+  "actual": "Even\r\n",
+  "expected": "Even",
+  "correct": true
+ },
+ {
+  "id": "p2o0:case-changed",
+  "source": "synthetic:case-changed",
+  "actual": "EVEN",
+  "expected": "Even",
+  "correct": false
+ },
+ {
+  "id": "p2o0:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "Even",
+  "correct": false
+ },
+ {
+  "id": "p2o1:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "Odd ",
+  "expected": "Odd",
+  "correct": true
+ },
+ {
+  "id": "p2o1:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "Odd\n\n\n",
+  "expected": "Odd",
+  "correct": true
+ },
+ {
+  "id": "p2o1:crlf",
+  "source": "synthetic:crlf",
+  "actual": "Odd\r\n",
+  "expected": "Odd",
+  "correct": true
+ },
+ {
+  "id": "p2o1:case-changed",
+  "source": "synthetic:case-changed",
+  "actual": "ODD",
+  "expected": "Odd",
+  "correct": false
+ },
+ {
+  "id": "p2o1:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "Odd",
+  "correct": false
+ },
+ {
+  "id": "p3o0:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "1 ",
+  "expected": "1",
+  "correct": true
+ },
+ {
+  "id": "p3o0:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "1\n\n\n",
+  "expected": "1",
+  "correct": true
+ },
+ {
+  "id": "p3o0:crlf",
+  "source": "synthetic:crlf",
+  "actual": "1\r\n",
+  "expected": "1",
+  "correct": true
+ },
+ {
+  "id": "p3o0:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "1",
+  "correct": false
+ },
+ {
+  "id": "p3o1:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "120 ",
+  "expected": "120",
+  "correct": true
+ },
+ {
+  "id": "p3o1:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "120\n\n\n",
+  "expected": "120",
+  "correct": true
+ },
+ {
+  "id": "p3o1:crlf",
+  "source": "synthetic:crlf",
+  "actual": "120\r\n",
+  "expected": "120",
+  "correct": true
+ },
+ {
+  "id": "p3o1:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "120",
+  "correct": false
+ },
+ {
+  "id": "p3o2:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "3628800 ",
+  "expected": "3628800",
+  "correct": true
+ },
+ {
+  "id": "p3o2:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "3628800\n\n\n",
+  "expected": "3628800",
+  "correct": true
+ },
+ {
+  "id": "p3o2:crlf",
+  "source": "synthetic:crlf",
+  "actual": "3628800\r\n",
+  "expected": "3628800",
+  "correct": true
+ },
+ {
+  "id": "p3o2:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "3628800",
+  "correct": false
+ },
+ {
+  "id": "p3o3:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "479001600 ",
+  "expected": "479001600",
+  "correct": true
+ },
+ {
+  "id": "p3o3:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "479001600\n\n\n",
+  "expected": "479001600",
+  "correct": true
+ },
+ {
+  "id": "p3o3:crlf",
+  "source": "synthetic:crlf",
+  "actual": "479001600\r\n",
+  "expected": "479001600",
+  "correct": true
+ },
+ {
+  "id": "p3o3:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "479001600",
+  "correct": false
+ },
+ {
+  "id": "p4o0:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "1 ",
+  "expected": "1",
+  "correct": true
+ },
+ {
+  "id": "p4o0:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "1\n\n\n",
+  "expected": "1",
+  "correct": true
+ },
+ {
+  "id": "p4o0:crlf",
+  "source": "synthetic:crlf",
+  "actual": "1\r\n",
+  "expected": "1",
+  "correct": true
+ },
+ {
+  "id": "p4o0:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "1",
+  "correct": false
+ },
+ {
+  "id": "p4o1:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "13 ",
+  "expected": "13",
+  "correct": true
+ },
+ {
+  "id": "p4o1:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "13\n\n\n",
+  "expected": "13",
+  "correct": true
+ },
+ {
+  "id": "p4o1:crlf",
+  "source": "synthetic:crlf",
+  "actual": "13\r\n",
+  "expected": "13",
+  "correct": true
+ },
+ {
+  "id": "p4o1:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "13",
+  "correct": false
+ },
+ {
+  "id": "p4o2:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "55 ",
+  "expected": "55",
+  "correct": true
+ },
+ {
+  "id": "p4o2:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "55\n\n\n",
+  "expected": "55",
+  "correct": true
+ },
+ {
+  "id": "p4o2:crlf",
+  "source": "synthetic:crlf",
+  "actual": "55\r\n",
+  "expected": "55",
+  "correct": true
+ },
+ {
+  "id": "p4o2:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "55",
+  "correct": false
+ },
+ {
+  "id": "p4o3:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "6765 ",
+  "expected": "6765",
+  "correct": true
+ },
+ {
+  "id": "p4o3:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "6765\n\n\n",
+  "expected": "6765",
+  "correct": true
+ },
+ {
+  "id": "p4o3:crlf",
+  "source": "synthetic:crlf",
+  "actual": "6765\r\n",
+  "expected": "6765",
+  "correct": true
+ },
+ {
+  "id": "p4o3:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "6765",
+  "correct": false
+ },
+ {
+  "id": "p5o0:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "Yes ",
+  "expected": "Yes",
+  "correct": true
+ },
+ {
+  "id": "p5o0:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "Yes\n\n\n",
+  "expected": "Yes",
+  "correct": true
+ },
+ {
+  "id": "p5o0:crlf",
+  "source": "synthetic:crlf",
+  "actual": "Yes\r\n",
+  "expected": "Yes",
+  "correct": true
+ },
+ {
+  "id": "p5o0:case-changed",
+  "source": "synthetic:case-changed",
+  "actual": "YES",
+  "expected": "Yes",
+  "correct": false
+ },
+ {
+  "id": "p5o0:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "Yes",
+  "correct": false
+ },
+ {
+  "id": "p5o1:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "No ",
+  "expected": "No",
+  "correct": true
+ },
+ {
+  "id": "p5o1:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "No\n\n\n",
+  "expected": "No",
+  "correct": true
+ },
+ {
+  "id": "p5o1:crlf",
+  "source": "synthetic:crlf",
+  "actual": "No\r\n",
+  "expected": "No",
+  "correct": true
+ },
+ {
+  "id": "p5o1:case-changed",
+  "source": "synthetic:case-changed",
+  "actual": "NO",
+  "expected": "No",
+  "correct": false
+ },
+ {
+  "id": "p5o1:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "No",
+  "correct": false
+ },
+ {
+  "id": "p6o0:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "2 ",
+  "expected": "2",
+  "correct": true
+ },
+ {
+  "id": "p6o0:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "2\n\n\n",
+  "expected": "2",
+  "correct": true
+ },
+ {
+  "id": "p6o0:crlf",
+  "source": "synthetic:crlf",
+  "actual": "2\r\n",
+  "expected": "2",
+  "correct": true
+ },
+ {
+  "id": "p6o0:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "2",
+  "correct": false
+ },
+ {
+  "id": "p6o1:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "5 ",
+  "expected": "5",
+  "correct": true
+ },
+ {
+  "id": "p6o1:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "5\n\n\n",
+  "expected": "5",
+  "correct": true
+ },
+ {
+  "id": "p6o1:crlf",
+  "source": "synthetic:crlf",
+  "actual": "5\r\n",
+  "expected": "5",
+  "correct": true
+ },
+ {
+  "id": "p6o1:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "5",
+  "correct": false
+ },
+ {
+  "id": "p6o2:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "0 ",
+  "expected": "0",
+  "correct": true
+ },
+ {
+  "id": "p6o2:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "0\n\n\n",
+  "expected": "0",
+  "correct": true
+ },
+ {
+  "id": "p6o2:crlf",
+  "source": "synthetic:crlf",
+  "actual": "0\r\n",
+  "expected": "0",
+  "correct": true
+ },
+ {
+  "id": "p6o2:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "0",
+  "correct": false
+ },
+ {
+  "id": "p6o3:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "3 ",
+  "expected": "3",
+  "correct": true
+ },
+ {
+  "id": "p6o3:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "3\n\n\n",
+  "expected": "3",
+  "correct": true
+ },
+ {
+  "id": "p6o3:crlf",
+  "source": "synthetic:crlf",
+  "actual": "3\r\n",
+  "expected": "3",
+  "correct": true
+ },
+ {
+  "id": "p6o3:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "3",
+  "correct": false
+ },
+ {
+  "id": "p7o0:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "olleh ",
+  "expected": "olleh",
+  "correct": true
+ },
+ {
+  "id": "p7o0:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "olleh\n\n\n",
+  "expected": "olleh",
+  "correct": true
+ },
+ {
+  "id": "p7o0:crlf",
+  "source": "synthetic:crlf",
+  "actual": "olleh\r\n",
+  "expected": "olleh",
+  "correct": true
+ },
+ {
+  "id": "p7o0:case-changed",
+  "source": "synthetic:case-changed",
+  "actual": "OLLEH",
+  "expected": "olleh",
+  "correct": false
+ },
+ {
+  "id": "p7o0:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "olleh",
+  "correct": false
+ },
+ {
+  "id": "p7o1:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "edcba ",
+  "expected": "edcba",
+  "correct": true
+ },
+ {
+  "id": "p7o1:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "edcba\n\n\n",
+  "expected": "edcba",
+  "correct": true
+ },
+ {
+  "id": "p7o1:crlf",
+  "source": "synthetic:crlf",
+  "actual": "edcba\r\n",
+  "expected": "edcba",
+  "correct": true
+ },
+ {
+  "id": "p7o1:case-changed",
+  "source": "synthetic:case-changed",
+  "actual": "EDCBA",
+  "expected": "edcba",
+  "correct": false
+ },
+ {
+  "id": "p7o1:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "edcba",
+  "correct": false
+ },
+ {
+  "id": "p7o2:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "racecar ",
+  "expected": "racecar",
+  "correct": true
+ },
+ {
+  "id": "p7o2:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "racecar\n\n\n",
+  "expected": "racecar",
+  "correct": true
+ },
+ {
+  "id": "p7o2:crlf",
+  "source": "synthetic:crlf",
+  "actual": "racecar\r\n",
+  "expected": "racecar",
+  "correct": true
+ },
+ {
+  "id": "p7o2:case-changed",
+  "source": "synthetic:case-changed",
+  "actual": "RACECAR",
+  "expected": "racecar",
+  "correct": false
+ },
+ {
+  "id": "p7o2:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "racecar",
+  "correct": false
+ },
+ {
+  "id": "p7o3:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "54321 ",
+  "expected": "54321",
+  "correct": true
+ },
+ {
+  "id": "p7o3:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "54321\n\n\n",
+  "expected": "54321",
+  "correct": true
+ },
+ {
+  "id": "p7o3:crlf",
+  "source": "synthetic:crlf",
+  "actual": "54321\r\n",
+  "expected": "54321",
+  "correct": true
+ },
+ {
+  "id": "p7o3:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "54321",
+  "correct": false
+ },
+ {
+  "id": "p7o4:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "IAnepO ",
+  "expected": "IAnepO",
+  "correct": true
+ },
+ {
+  "id": "p7o4:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "IAnepO\n\n\n",
+  "expected": "IAnepO",
+  "correct": true
+ },
+ {
+  "id": "p7o4:crlf",
+  "source": "synthetic:crlf",
+  "actual": "IAnepO\r\n",
+  "expected": "IAnepO",
+  "correct": true
+ },
+ {
+  "id": "p7o4:case-changed",
+  "source": "synthetic:case-changed",
+  "actual": "IANEPO",
+  "expected": "IAnepO",
+  "correct": false
+ },
+ {
+  "id": "p7o4:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "IAnepO",
+  "correct": false
+ },
+ {
+  "id": "p8o0:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "1 \n2 \nFizz \n4 \nBuzz \nFizz \n7 \n8 \nFizz \nBuzz \n11 \nFizz \n13 \n14 \nFizzBuzz ",
+  "expected": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz",
+  "correct": true
+ },
+ {
+  "id": "p8o0:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz\n\n\n",
+  "expected": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz",
+  "correct": true
+ },
+ {
+  "id": "p8o0:crlf",
+  "source": "synthetic:crlf",
+  "actual": "1\r\n2\r\nFizz\r\n4\r\nBuzz\r\nFizz\r\n7\r\n8\r\nFizz\r\nBuzz\r\n11\r\nFizz\r\n13\r\n14\r\nFizzBuzz\r\n",
+  "expected": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz",
+  "correct": true
+ },
+ {
+  "id": "p8o0:case-changed",
+  "source": "synthetic:case-changed",
+  "actual": "1\n2\nFIZZ\n4\nBUZZ\nFIZZ\n7\n8\nFIZZ\nBUZZ\n11\nFIZZ\n13\n14\nFIZZBUZZ",
+  "expected": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz",
+  "correct": false
+ },
+ {
+  "id": "p8o0:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "1 2 Fizz 4 Buzz Fizz 7 8 Fizz Buzz 11 Fizz 13 14",
+  "expected": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz",
+  "correct": false
+ },
+ {
+  "id": "p8o1:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "1 \n2 \nFizz \n4 \nBuzz ",
+  "expected": "1\n2\nFizz\n4\nBuzz",
+  "correct": true
+ },
+ {
+  "id": "p8o1:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "1\n2\nFizz\n4\nBuzz\n\n\n",
+  "expected": "1\n2\nFizz\n4\nBuzz",
+  "correct": true
+ },
+ {
+  "id": "p8o1:crlf",
+  "source": "synthetic:crlf",
+  "actual": "1\r\n2\r\nFizz\r\n4\r\nBuzz\r\n",
+  "expected": "1\n2\nFizz\n4\nBuzz",
+  "correct": true
+ },
+ {
+  "id": "p8o1:case-changed",
+  "source": "synthetic:case-changed",
+  "actual": "1\n2\nFIZZ\n4\nBUZZ",
+  "expected": "1\n2\nFizz\n4\nBuzz",
+  "correct": false
+ },
+ {
+  "id": "p8o1:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "1 2 Fizz 4",
+  "expected": "1\n2\nFizz\n4\nBuzz",
+  "correct": false
+ },
+ {
+  "id": "p8o2:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "1 \n2 \nFizz ",
+  "expected": "1\n2\nFizz",
+  "correct": true
+ },
+ {
+  "id": "p8o2:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "1\n2\nFizz\n\n\n",
+  "expected": "1\n2\nFizz",
+  "correct": true
+ },
+ {
+  "id": "p8o2:crlf",
+  "source": "synthetic:crlf",
+  "actual": "1\r\n2\r\nFizz\r\n",
+  "expected": "1\n2\nFizz",
+  "correct": true
+ },
+ {
+  "id": "p8o2:case-changed",
+  "source": "synthetic:case-changed",
+  "actual": "1\n2\nFIZZ",
+  "expected": "1\n2\nFizz",
+  "correct": false
+ },
+ {
+  "id": "p8o2:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "1 2",
+  "expected": "1\n2\nFizz",
+  "correct": false
+ },
+ {
+  "id": "p9o0:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "5 ",
+  "expected": "5",
+  "correct": true
+ },
+ {
+  "id": "p9o0:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "5\n\n\n",
+  "expected": "5",
+  "correct": true
+ },
+ {
+  "id": "p9o0:crlf",
+  "source": "synthetic:crlf",
+  "actual": "5\r\n",
+  "expected": "5",
+  "correct": true
+ },
+ {
+  "id": "p9o0:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "5",
+  "correct": false
+ },
+ {
+  "id": "p9o1:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "-3 ",
+  "expected": "-3",
+  "correct": true
+ },
+ {
+  "id": "p9o1:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "-3\n\n\n",
+  "expected": "-3",
+  "correct": true
+ },
+ {
+  "id": "p9o1:crlf",
+  "source": "synthetic:crlf",
+  "actual": "-3\r\n",
+  "expected": "-3",
+  "correct": true
+ },
+ {
+  "id": "p9o1:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "-3",
+  "correct": false
+ },
+ {
+  "id": "p9o2:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "42 ",
+  "expected": "42",
+  "correct": true
+ },
+ {
+  "id": "p9o2:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "42\n\n\n",
+  "expected": "42",
+  "correct": true
+ },
+ {
+  "id": "p9o2:crlf",
+  "source": "synthetic:crlf",
+  "actual": "42\r\n",
+  "expected": "42",
+  "correct": true
+ },
+ {
+  "id": "p9o2:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "42",
+  "correct": false
+ },
+ {
+  "id": "p9o3:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "0 ",
+  "expected": "0",
+  "correct": true
+ },
+ {
+  "id": "p9o3:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "0\n\n\n",
+  "expected": "0",
+  "correct": true
+ },
+ {
+  "id": "p9o3:crlf",
+  "source": "synthetic:crlf",
+  "actual": "0\r\n",
+  "expected": "0",
+  "correct": true
+ },
+ {
+  "id": "p9o3:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "0",
+  "correct": false
+ },
+ {
+  "id": "p9o4:trailing-space",
+  "source": "synthetic:trailing-space",
+  "actual": "300 ",
+  "expected": "300",
+  "correct": true
+ },
+ {
+  "id": "p9o4:extra-blank-lines",
+  "source": "synthetic:extra-blank-lines",
+  "actual": "300\n\n\n",
+  "expected": "300",
+  "correct": true
+ },
+ {
+  "id": "p9o4:crlf",
+  "source": "synthetic:crlf",
+  "actual": "300\r\n",
+  "expected": "300",
+  "correct": true
+ },
+ {
+  "id": "p9o4:missing-last-token",
+  "source": "synthetic:missing-last-token",
+  "actual": "",
+  "expected": "300",
+  "correct": false
+ },
+ {
+  "id": "f0v0",
+  "source": "synthetic:float-format",
+  "actual": "3.141593",
+  "expected": "3.14159265",
+  "correct": true
+ },
+ {
+  "id": "f0v1",
+  "source": "synthetic:float-format",
+  "actual": "3.1416",
+  "expected": "3.14159265",
+  "correct": true
+ },
+ {
+  "id": "f0v2",
+  "source": "synthetic:float-format",
+  "actual": "3.14",
+  "expected": "3.14159265",
+  "correct": true
+ },
+ {
+  "id": "f1v0",
+  "source": "synthetic:float-format",
+  "actual": "0.333333",
+  "expected": "0.333333333",
+  "correct": true
+ },
+ {
+  "id": "f1v1",
+  "source": "synthetic:float-format",
+  "actual": "0.3333",
+  "expected": "0.333333333",
+  "correct": true
+ },
+ {
+  "id": "f1v2",
+  "source": "synthetic:float-format",
+  "actual": "0.33",
+  "expected": "0.333333333",
+  "correct": true
+ },
+ {
+  "id": "f2v0",
+  "source": "synthetic:float-format",
+  "actual": "2.50000",
+  "expected": "2.5",
+  "correct": true
+ },
+ {
+  "id": "f2v1",
+  "source": "synthetic:float-format",
+  "actual": "2.500001",
+  "expected": "2.5",
+  "correct": true
+ },
+ {
+  "id": "f2v2",
+  "source": "synthetic:float-format",
+  "actual": "2.6",
+  "expected": "2.5",
+  "correct": true
+ },
+ {
+  "id": "f3v0",
+  "source": "synthetic:float-format",
+  "actual": "1e6",
+  "expected": "1000000.0",
+  "correct": true
+ },
+ {
+  "id": "f3v1",
+  "source": "synthetic:float-format",
+  "actual": "1000000.4",
+  "expected": "1000000.0",
+  "correct": true
+ },
+ {
+  "id": "f3v2",
+  "source": "synthetic:float-format",
+  "actual": "999999.9999",
+  "expected": "1000000.0",
+  "correct": true
+ }
+]

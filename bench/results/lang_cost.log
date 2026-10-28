@@ -1,0 +1,253 @@
+warning: variant `CONSTRAINT_VIOLATION` should have an upper camel case name
+  --> src/models.rs:16:5
+   |
+16 |     CONSTRAINT_VIOLATION,
+   |     ^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `ConstraintViolation`
+   |
+   = note: `#[warn(non_camel_case_types)]` (part of `#[warn(nonstandard_style)]`) on by default
+
+warning: variant `PENDING_CONSTRAINT_CLASSIFICATION` should have an upper camel case name
+  --> src/models.rs:17:5
+   |
+17 |     PENDING_CONSTRAINT_CLASSIFICATION,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `PendingConstraintClassification`
+
+warning: variant `WRONG_ANSWER` should have an upper camel case name
+  --> src/models.rs:18:5
+   |
+18 |     WRONG_ANSWER,
+   |     ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `WrongAnswer`
+
+warning: variant `TIME_LIMIT_EXCEEDED` should have an upper camel case name
+  --> src/models.rs:19:5
+   |
+19 |     TIME_LIMIT_EXCEEDED,
+   |     ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `TimeLimitExceeded`
+
+warning: variant `MEMORY_LIMIT_EXCEEDED` should have an upper camel case name
+  --> src/models.rs:20:5
+   |
+20 |     MEMORY_LIMIT_EXCEEDED,
+   |     ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `MemoryLimitExceeded`
+
+warning: variant `COMPILATION_ERROR` should have an upper camel case name
+  --> src/models.rs:21:5
+   |
+21 |     COMPILATION_ERROR,
+   |     ^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CompilationError`
+
+warning: variant `RUNTIME_ERROR` should have an upper camel case name
+  --> src/models.rs:22:5
+   |
+22 |     RUNTIME_ERROR,
+   |     ^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `RuntimeError`
+
+warning: field `description` is never read
+   --> src/models.rs:108:9
+    |
+102 | pub struct ProblemConstraint {
+    |            ----------------- field in this struct
+...
+108 |     pub description: Option<String>,
+    |         ^^^^^^^^^^^
+    |
+    = note: `ProblemConstraint` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+
+running 1 test
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c hello rep0 prepare=40ms run=7ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c hello rep1 prepare=38ms run=6ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c hello rep2 prepare=38ms run=6ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c hello rep3 prepare=40ms run=7ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c hello rep4 prepare=39ms run=7ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c hello rep5 prepare=40ms run=7ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c cpu rep0 prepare=46ms run=51ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c cpu rep1 prepare=41ms run=51ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c cpu rep2 prepare=41ms run=52ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c cpu rep3 prepare=41ms run=52ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c cpu rep4 prepare=39ms run=54ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+c cpu rep5 prepare=42ms run=52ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp hello rep0 prepare=318ms run=7ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp hello rep1 prepare=307ms run=7ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp hello rep2 prepare=302ms run=7ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp hello rep3 prepare=309ms run=7ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp hello rep4 prepare=312ms run=8ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp hello rep5 prepare=308ms run=9ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp cpu rep0 prepare=313ms run=53ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp cpu rep1 prepare=303ms run=55ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp cpu rep2 prepare=303ms run=53ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp cpu rep3 prepare=301ms run=53ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp cpu rep4 prepare=311ms run=54ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+cpp cpu rep5 prepare=307ms run=54ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java hello rep0 prepare=600ms run=35ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java hello rep1 prepare=611ms run=33ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java hello rep2 prepare=636ms run=35ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java hello rep3 prepare=618ms run=35ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java hello rep4 prepare=621ms run=34ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java hello rep5 prepare=656ms run=34ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java cpu rep0 prepare=700ms run=118ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java cpu rep1 prepare=705ms run=114ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java cpu rep2 prepare=711ms run=119ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java cpu rep3 prepare=724ms run=122ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java cpu rep4 prepare=687ms run=115ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+java cpu rep5 prepare=701ms run=116ms ok=true
+   🔒 Running in isolate sandbox
+python hello rep0 prepare=0ms run=17ms ok=true
+   🔒 Running in isolate sandbox
+python hello rep1 prepare=0ms run=16ms ok=true
+   🔒 Running in isolate sandbox
+python hello rep2 prepare=0ms run=17ms ok=true
+   🔒 Running in isolate sandbox
+python hello rep3 prepare=0ms run=17ms ok=true
+   🔒 Running in isolate sandbox
+python hello rep4 prepare=0ms run=18ms ok=true
+   🔒 Running in isolate sandbox
+python hello rep5 prepare=0ms run=18ms ok=true
+   🔒 Running in isolate sandbox
+python cpu rep0 prepare=0ms run=903ms ok=true
+   🔒 Running in isolate sandbox
+python cpu rep1 prepare=0ms run=911ms ok=true
+   🔒 Running in isolate sandbox
+python cpu rep2 prepare=0ms run=894ms ok=true
+   🔒 Running in isolate sandbox
+python cpu rep3 prepare=0ms run=894ms ok=true
+   🔒 Running in isolate sandbox
+python cpu rep4 prepare=0ms run=964ms ok=true
+   🔒 Running in isolate sandbox
+python cpu rep5 prepare=0ms run=916ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust hello rep0 prepare=235ms run=17ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust hello rep1 prepare=238ms run=20ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust hello rep2 prepare=240ms run=18ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust hello rep3 prepare=243ms run=15ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust hello rep4 prepare=234ms run=20ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust hello rep5 prepare=233ms run=14ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust cpu rep0 prepare=297ms run=168ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust cpu rep1 prepare=294ms run=162ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust cpu rep2 prepare=285ms run=165ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust cpu rep3 prepare=292ms run=161ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust cpu rep4 prepare=345ms run=182ms ok=true
+   🔒 Running in isolate sandbox
+   🔒 Running in isolate sandbox
+rust cpu rep5 prepare=345ms run=184ms ok=true
+   🔒 Running in isolate sandbox
+portugol hello rep0 prepare=0ms run=1306ms ok=true
+   🔒 Running in isolate sandbox
+portugol hello rep1 prepare=0ms run=1260ms ok=true
+   🔒 Running in isolate sandbox
+portugol hello rep2 prepare=0ms run=1269ms ok=true
+   🔒 Running in isolate sandbox
+portugol hello rep3 prepare=0ms run=1267ms ok=true
+   🔒 Running in isolate sandbox
+portugol hello rep4 prepare=0ms run=1260ms ok=true
+   🔒 Running in isolate sandbox
+portugol hello rep5 prepare=0ms run=1261ms ok=true
+   🔒 Running in isolate sandbox
+portugol cpu rep0 prepare=0ms run=1445ms ok=true
+   🔒 Running in isolate sandbox
+portugol cpu rep1 prepare=0ms run=1449ms ok=true
+   🔒 Running in isolate sandbox
+portugol cpu rep2 prepare=0ms run=1450ms ok=true
+   🔒 Running in isolate sandbox
+portugol cpu rep3 prepare=0ms run=1444ms ok=true
+   🔒 Running in isolate sandbox
+portugol cpu rep4 prepare=0ms run=1428ms ok=true
+   🔒 Running in isolate sandbox
+portugol cpu rep5 prepare=0ms run=1441ms ok=true
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 56 filtered out; finished in 40.10s
+
