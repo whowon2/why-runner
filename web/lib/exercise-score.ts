@@ -6,21 +6,32 @@
 export function computeExerciseScore(
   submissionOutput: string | null | undefined,
 ): number {
-  if (!submissionOutput) return 0;
+  const counts = parseTestCounts(submissionOutput);
+  return counts ? counts.passed / counts.total : 0;
+}
+
+/**
+ * `passed_count` / `total_tests` from a judge report; null when there's no
+ * output, it can't be parsed, or it has no tests.
+ */
+export function parseTestCounts(
+  submissionOutput: string | null | undefined,
+): { passed: number; total: number } | null {
+  if (!submissionOutput) return null;
 
   try {
     const report = JSON.parse(submissionOutput);
-    const totalTests = report.total_tests;
-    const passedCount = report.passed_count;
+    const totalTests = report?.total_tests;
+    const passedCount = report?.passed_count;
     if (
       typeof totalTests !== "number" ||
       typeof passedCount !== "number" ||
       totalTests <= 0
     ) {
-      return 0;
+      return null;
     }
-    return passedCount / totalTests;
+    return { passed: passedCount, total: totalTests };
   } catch {
-    return 0;
+    return null;
   }
 }
