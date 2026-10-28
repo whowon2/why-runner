@@ -1,0 +1,106 @@
+  1  (v3)  |  (v3 slide 1)
+  2  01 · INTRODUÇÃO  |  Juízes online corrigem código; ensinar é outra coisa
+  3  01 · INTRODUÇÃO  |  Feedback e atividades curadas tornam o juiz útil para ensinar?
+  4  01 · INTRODUÇÃO  |  O objetivo é um juiz online feito para a sala de aula
+  5  01 · INTRODUÇÃO · TRABALHOS RELACIONADOS  |  (v3 slide 4)
+  6  01 · INTRODUÇÃO  |  Três coisas que nenhum dos sistemas analisados tem
+  7  02 · METODOLOGIA · ETAPAS  |  (v3 slide 5)
+  8  02 · METODOLOGIA  |  Dois serviços que só conversam pelo banco
+  9  02 · METODOLOGIA  |  A IA passa por uma cadeia de três modelos
+ 10  03 · O JUDGE  |  O judge executa e corrige; o site só pede
+ 11  03 · O JUDGE  |  Todo código roda numa caixa sem rede
+ 12  03 · O JUDGE  |  Seis linguagens, do C ao Portugol
+ 13  03 · O JUDGE  |  Cada falha agora tem nome: seis veredictos
+ 14  03 · O JUDGE  |  Aceito: passou em todos os casos de teste
+ 15  03 · O JUDGE  |  Resposta errada: a saída não bate com a esperada
+ 16  03 · O JUDGE  |  Tempo excedido: o programa não terminou a tempo
+ 17  03 · O JUDGE  |  Memória excedida: o programa pediu memória demais
+ 18  03 · O JUDGE  |  Erro de compilação: o código nem chegou a rodar
+ 19  03 · O JUDGE  |  Erro de execução: o programa quebrou no meio
+ 20  03 · O JUDGE  |  O aluno vê o veredito de cada tentativa
+ 21  03 · O JUDGE  |  Erro de compilação não penaliza no placar
+ 22  03 · O JUDGE  |  Memória excedida é deduzida, não detectada
+ 23  03 · O JUDGE  |  A saída pode ser comparada de quatro jeitos
+ 24  03 · O JUDGE  |  Quando há várias respostas certas, um corretor decide
+ 25  03 · O JUDGE  |  O corretor recebe três arquivos e responde pelo código de saída
+ 26  03 · O JUDGE  |  Ignorar espaços aceita respostas certas que a comparação exata recusava
+ 27  04 · DESEMPENHO  |  Medimos o judge com benchmarks reproduzíveis
+ 28  04 · DESEMPENHO  |  O judge agora julga vários envios ao mesmo tempo
+ 29  04 · DESEMPENHO  |  4 workers julgam 2,8× mais rápido; 8 workers, 3,8×
+ 30  04 · DESEMPENHO  |  Com 8 workers, metade da turma espera menos de 18 s, não 66 s
+ 31  04 · DESEMPENHO  |  Em 1 CPU, mais workers não ajudam, e a produção roda assim
+ 32  04 · DESEMPENHO  |  Sem fila, o veredito sai em menos de 0,4 s, exceto Java e Portugol
+ 33  04 · DESEMPENHO  |  Compilar custa mais que rodar, exceto no Portugol
+ 34  04 · DESEMPENHO  |  Java e Portugol usam dezenas de vezes mais memória
+ 35  04 · DESEMPENHO  |  O isolate custa cerca de 5 ms por execução
+ 36  04 · DESEMPENHO  |  O judge acertou 63 de 72 vereditos; os erros têm causa conhecida
+ 37  04 · DESEMPENHO  |  51 testes no judge, 112 no site
+ 38  04 · DESEMPENHO  |  Cada push roda três jobs no GitHub Actions
+ 39  04 · DESEMPENHO  |  O CI leva cerca de 31 s por push
+ 40  04 · DESEMPENHO  |  Um script garante que Rust e TypeScript concordam nos enums
+ 41  05 · O PROFESSOR  |  O professor cria problemas, torneios e aulas
+ 42  05 · O PROFESSOR  |  Nenhum problema é publicado sem uma solução que passa
+ 43  05 · O PROFESSOR  |  A IA escreveu soluções que passaram em 18 de 20 problemas
+ 44  05 · O PROFESSOR  |  A IA sugere a narrativa e as tags do problema
+ 45  05 · O PROFESSOR  |  A IA aponta casos de borda que faltam nos testes
+ 46  05 · O PROFESSOR  |  O professor vê o problema como o aluno vai ver
+ 47  05 · O PROFESSOR  |  Cada ajuda da IA leva de 13 a 20 s
+ 48  05 · O PROFESSOR  |  A cadeia de modelos salvou mais da metade das chamadas
+ 49  05 · O PROFESSOR  |  O banco de problemas filtra por código, tema e dificuldade
+ 50  05 · O PROFESSOR  |  Vários problemas entram de uma vez por JSON
+ 51  05 · O PROFESSOR  |  O torneio se configura em uma tela
+ 52  05 · O PROFESSOR  |  Problemas entram no torneio pelo código
+ 53  05 · O PROFESSOR  |  No torneio privado, o professor aprova quem entra
+ 54  05 · O PROFESSOR  |  O professor decide quanto a IA ajuda no torneio
+ 55  05 · O PROFESSOR  |  Placar no estilo das maratonas de programação
+ 56  05 · O PROFESSOR  |  Cada célula conta tentativas, minuto e quem resolveu primeiro
+ 57  05 · O PROFESSOR  |  Placar de 1000 alunos em 0,12 s; boletim em 0,27 s
+ 58  06 · O ALUNO  |  O aluno resolve, envia e entende o erro
+ 59  06 · O ALUNO  |  A tela inicial mostra o que falta fazer
+ 60  06 · O ALUNO  |  O editor salva sozinho no navegador
+ 61  06 · O ALUNO  |  Cada envio guarda o código e pode pedir explicação
+ 62  06 · O ALUNO  |  O caso que falhou mostra entrada, saída e esperado
+ 63  06 · O ALUNO  |  Ctrl K abre uma busca que leva a qualquer lugar
+ 64  06 · O ALUNO  |  O atalho aparece no próprio menu
+ 65  06 · O ALUNO  |  Notificações avisam o veredito e as aprovações
+ 66  06 · O ALUNO  |  O perfil mostra os torneios e problemas de cada um
+ 67  06 · O ALUNO  |  Seis temas, ou um tema próprio
+ 68  06 · O ALUNO  |  Até a página de erro fala a língua do programador
+ 69  07 · AULAS E TURMA  |  A turma tem aulas com prazo e revisão
+ 70  07 · AULAS E TURMA  |  O aluno entra na turma com um código de seis letras
+ 71  07 · AULAS E TURMA  |  As aulas da turma têm prazo
+ 72  07 · AULAS E TURMA  |  Blocos para quem nunca programou
+ 73  07 · AULAS E TURMA  |  Parsons: ordenar as linhas certas
+ 74  07 · AULAS E TURMA  |  O professor exige como resolver, não só o resultado
+ 75  07 · AULAS E TURMA  |  Restrições acertam código real e erram texto em strings e comentários
+ 76  07 · AULAS E TURMA  |  O professor revisa e comenta cada exercício
+ 77  07 · AULAS E TURMA  |  Notas da turma inteira numa tabela
+ 78  07 · AULAS E TURMA  |  O CSV abre certo no Excel e não executa fórmulas
+ 79  08 · PLÁGIO  |  O professor agora vê quem copiou de quem
+ 80  08 · PLÁGIO  |  O código vira impressões digitais antes da comparação
+ 81  08 · PLÁGIO  |  Renomear variáveis não engana a comparação
+ 82  08 · PLÁGIO  |  O relatório lista os pares mais parecidos
+ 83  08 · PLÁGIO  |  Lado a lado, os trechos iguais aparecem destacados
+ 84  08 · PLÁGIO  |  A comparação também funciona dentro das aulas
+ 85  08 · PLÁGIO  |  Cópias ofuscadas ficam acima de 0,52; soluções independentes, abaixo
+ 86  08 · PLÁGIO  |  Com o limiar de 0,52, 98% de precisão e 99,5% de revocação
+ 87  08 · PLÁGIO  |  200 alunos comparados em menos de meio segundo
+ 88  08 · PLÁGIO  |  Plágio entre linguagens e código de IA passam despercebidos
+ 89  09 · AVALIAÇÃO  |  Um teste informal já mudou o sistema
+ 90  09 · AVALIAÇÃO  |  O que incomodou virou mudança
+ 91  09 · AVALIAÇÃO  |  Gostaram do visual e do nome
+ 92  09 · AVALIAÇÃO  |  A pesquisa aparece dentro do sistema, no fim da atividade
+ 93  09 · AVALIAÇÃO  |  Quatro questionários, com termo de consentimento
+ 94  09 · AVALIAÇÃO  |  A usabilidade é medida pelo SUS
+ 95  09 · AVALIAÇÃO  |  Os resultados saem prontos, anônimos e em CSV
+ 96  09 · AVALIAÇÃO  |  O primeiro teste em sala é em 29/10/2026
+ 97  10 · DISCUSSÃO  |  O que o sistema faz bem
+ 98  10 · DISCUSSÃO  |  Limitação: ainda sem avaliação com alunos
+ 99  10 · DISCUSSÃO  |  Limitação: em produção, o judge tem uma CPU só
+100  10 · DISCUSSÃO  |  Limitação: erros do Portugol viram resposta errada
+101  10 · DISCUSSÃO  |  Limitação: memória excedida é heurística
+102  10 · DISCUSSÃO  |  Limitação: restrições leem texto, não a árvore do código
+103  10 · DISCUSSÃO  |  Próximos passos depois do teste em sala
+104  10 · CRONOGRAMA  |  Próximas etapas, em ordem
+105  (v3)  |  (v3 slide 13)
+106  WHYRUNNER  |  Obrigado!
