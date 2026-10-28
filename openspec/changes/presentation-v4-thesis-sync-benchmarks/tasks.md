@@ -21,7 +21,7 @@
 - [x] 3.3 AI latency per feature, reference-solution pass rate, fallback rate (≤20 calls/measure, counted)
 - [x] 3.4 Standings + gradebook computation time on large synthetic data; submit insert+NOTIFY latency
 - [x] 3.5 CI job durations from `gh run list/view`
-- [ ] 3.6 `bench/charts.py` → `docs/presentation/charts/`; `bench/results/summary.json`
+- [x] 3.6 `bench/charts.py` → `docs/presentation/charts/`; `bench/results/summary.json`
 
 ## 4. Corrections
 
