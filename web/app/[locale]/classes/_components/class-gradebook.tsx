@@ -1,10 +1,18 @@
 "use client";
 
-import { ArrowLeft, Download, Sheet } from "lucide-react";
+import { ArrowLeft, ChevronDown, Download, Loader, Sheet } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -16,6 +24,8 @@ import {
 } from "@/components/ui/table";
 import { useClassGradebook } from "@/hooks/use-class-gradebook";
 import { Link } from "@/i18n/navigation";
+import { unwrap } from "@/lib/action-result";
+import { exportClassResults } from "@/lib/actions/classes/export-class-results";
 import { gradebookToCsv } from "@/lib/gradebook";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +58,7 @@ function ScoreCell({
 export function ClassGradebook({ classroomId }: { classroomId: string }) {
   const t = useTranslations("ClassesPage");
   const { data, isPending, error } = useClassGradebook(classroomId);
+  const [isExporting, setIsExporting] = useState(false);
 
   if (isPending)
     return (
@@ -65,16 +76,35 @@ export function ClassGradebook({ classroomId }: { classroomId: string }) {
   const { classroom, lessons, rows, maxTotal } = data;
   const now = new Date();
 
-  function handleExport() {
-    const blob = new Blob([gradebookToCsv({ lessons, rows, maxTotal })], {
-      type: "text/csv;charset=utf-8",
-    });
+  function download(csv: string, filename: string) {
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${classroom.slug}-gradebook-${now.toISOString().slice(0, 10)}.csv`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  function handleExportScores() {
+    download(
+      gradebookToCsv({ lessons, rows, maxTotal }),
+      `${classroom.slug}-gradebook-${now.toISOString().slice(0, 10)}.csv`,
+    );
+  }
+
+  async function handleExportResults() {
+    setIsExporting(true);
+    try {
+      const { csv, filename } = unwrap(await exportClassResults(classroom.id));
+      download(csv, filename);
+    } catch (e) {
+      toast.error(t("gradebookExportFailed"), {
+        description: e instanceof Error ? e.message : undefined,
+      });
+    } finally {
+      setIsExporting(false);
+    }
   }
 
   // Start of each lesson's slice in the flat `cells` array.
@@ -96,13 +126,43 @@ export function ClassGradebook({ classroomId }: { classroomId: string }) {
                 {t("backToClass")}
               </Link>
             </Button>
-            <Button
-              disabled={rows.length === 0 || lessons.length === 0}
-              onClick={handleExport}
-            >
-              <Download className="size-4" />
-              {t("gradebookExport")}
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  disabled={
+                    rows.length === 0 || lessons.length === 0 || isExporting
+                  }
+                >
+                  {isExporting ? (
+                    <Loader className="size-4 animate-spin" />
+                  ) : (
+                    <Download className="size-4" />
+                  )}
+                  {t("gradebookExport")}
+                  <ChevronDown className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="max-w-72">
+                <DropdownMenuItem
+                  className="flex-col items-start gap-0.5"
+                  onSelect={handleExportScores}
+                >
+                  <span>{t("gradebookExportScores")}</span>
+                  <span className="text-muted-foreground text-xs">
+                    {t("gradebookExportScoresHint")}
+                  </span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="flex-col items-start gap-0.5"
+                  onSelect={handleExportResults}
+                >
+                  <span>{t("gradebookExportResults")}</span>
+                  <span className="text-muted-foreground text-xs">
+                    {t("gradebookExportResultsHint")}
+                  </span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </>
         }
         icon={Sheet}
