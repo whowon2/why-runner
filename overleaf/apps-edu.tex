@@ -30,15 +30,18 @@
 
 \begin{abstract}
 WhyRunner is an educational online judge system designed to support programming
-teaching in formal academic environments. The platform integrates secure
-containerized code execution, real-time contest management, a professor-curated
-Class/Lesson/Exercise assignment model, AI-assisted problem authoring, and
-AI-powered pedagogical feedback using Google Gemini. Unlike traditional judges
+teaching in formal academic environments. The platform integrates sandboxed code execution with distinct verdicts and
+configurable output comparison, a concurrent judge worker pool, real-time
+contest management, a professor-curated Class/Lesson/Exercise assignment model
+with a class gradebook, AI-assisted problem authoring, AI-powered pedagogical
+feedback, and MOSS-style code similarity detection. Unlike traditional judges
 that return only binary verdicts, WhyRunner provides contextual, student-initiated
 hints that guide learning without revealing solutions, and lets professors assemble
 gradable lessons from existing problems outside of timed contests. The system is
-fully implemented and self-tested by the author; classroom evaluation with real
-students and instructors has not yet been conducted and is planned as next step.
+fully implemented and technically evaluated with reproducible benchmarks;
+classroom evaluation with real students and instructors has not been conducted
+yet: the in-app survey instrument is integrated and the first classroom test is
+scheduled for 29 October 2026.
 The software is open-source (MIT) and targets secondary, technical, and higher
 education contexts.
 \end{abstract}
@@ -130,9 +133,16 @@ Scoreboard em tempo real   & Sim & Sim & Não & \textbf{Sim} \\
 Aulas curadas pelo docente & Não & Não & Não & \textbf{Sim} \\
 Restrição de solução (algoritmo exigido) & Não & Não & Não & \textbf{Sim} \\
 Resposta por blocos e Parsons & Não & Não & Não & \textbf{Sim} \\
+Detecção de plágio         & n/r & n/r & n/r & \textbf{Sim} \\
+Vereditos distintos        & n/r & n/r & n/r & \textbf{Sim} \\
+Corretor personalizado     & n/r & n/r & n/r & \textbf{Sim} \\
+Boletim da turma (CSV)     & n/r & n/r & n/r & \textbf{Sim} \\
 \bottomrule
 \end{tabular}
 \end{center}
+
+{\small n/r: não relatado nas fontes analisadas; as quatro últimas linhas não
+foram avaliadas para os outros sistemas.}
 
 \vspace{0.5em}
 O principal diferencial é o \textbf{feedback pedagógico via IA}: ao solicitar
@@ -161,6 +171,14 @@ aluno só precisa ordená-las e indentá-las). Nos dois casos o programa é gera
 no servidor e corrigido pelo mesmo juiz, e as dicas da IA falam em blocos ou
 em ordem das linhas, não em sintaxe de código.
 
+Por fim, o juiz passou a se comportar como os sistemas de maratona: cada falha
+recebe um \textbf{veredito distinto} (resposta errada, tempo excedido, memória
+excedida, erro de compilação, erro de execução), a saída pode ser comparada de
+forma exata, por tokens, com tolerância numérica ou por um \textbf{corretor}
+escrito pelo docente, e o docente conta com um \textbf{boletim da turma}
+exportável em CSV e com a \textbf{detecção de similaridade de código} no estilo
+MOSS, que ignora renomeação de variáveis, formatação e comentários.
+
 \section*{5. Repercussões Educacionais Esperadas}
 
 O WhyRunner ainda não foi implantado em sala de aula com estudantes e
@@ -188,20 +206,36 @@ como próximo passo (Seção~8).
   \item \textbf{Banco de dados}: PostgreSQL + Drizzle ORM; comunicação
         inter-serviço via \texttt{LISTEN/NOTIFY} nativo (sem fila externa);
   \item \textbf{Autenticação}: Better Auth (e-mail/senha, GitHub, Google OAuth);
-  \item \textbf{Execução de código}: Docker, contêineres efêmeros com
-        \texttt{--cpus 0.5 --memory 128m}, sem acesso à rede;
-  \item \textbf{IA}: Google Gemini 2.0 Flash (API REST via Server Action):
-        dica de feedback, rascunho/revisão de problema, narrativa temática e
-        classificação de restrição de algoritmo;
+  \item \textbf{Execução de código}: sandbox \texttt{isolate} (o da IOI), uma
+        caixa nova por caso de teste, sem rede, com limites de tempo, memória
+        e processos; \emph{pool} de workers concorrentes
+        (\texttt{JUDGE\_CONCURRENCY}) com \texttt{FOR UPDATE SKIP LOCKED};
+  \item \textbf{Vereditos e comparação}: AC, WA, TLE, MLE (heurístico), CE e
+        RE; comparação exata, por tokens, com tolerância $\varepsilon$ ou por
+        corretor do docente (\texttt{input.txt output.txt answer.txt});
+  \item \textbf{IA}: cadeia Gemini 3.5 Flash $\rightarrow$ Gemini 3.5
+        Flash-Lite $\rightarrow$ Claude Haiku 5.5 (30\,s por tentativa):
+        dica de feedback, solução de referência, revisão de problema,
+        narrativa temática, sugestão de tags e classificação de restrição de
+        algoritmo;
+  \item \textbf{Similaridade de código}: tokens normalizados, k-gramas,
+        \emph{winnowing} e \emph{greedy string tiling}, sob demanda, só para o
+        dono do torneio ou da turma;
+  \item \textbf{Boletim}: notas por aluno e exercício, exportação CSV (RFC
+        4180, BOM, proteção contra injeção de fórmulas);
+  \item \textbf{Pesquisa}: quatro questionários in-app com TCLE e SUS
+        calculado automaticamente, elegibilidade verificada no servidor e
+        página de resultados com CSV;
+  \item \textbf{Integração contínua}: GitHub Actions (web, judge e
+        sincronia dos enums entre Rust e Drizzle);
   \item \textbf{Validação pré-publicação}: solução de referência do docente
         executada no sandbox do juiz antes de publicar; edição de I/O
         invalida uma validação aprovada;
   \item \textbf{Restrições de solução}: limites estruturais (análise
         estática) e algoritmo exigido (classificação por IA), aplicados após
         a submissão passar em todos os casos de teste;
-  \item \textbf{Linguagens suportadas}: Python, Rust, C++, Portugol (em
-        produção); C e Java arquiteturalmente suportados, pendentes de
-        implementação no runner;
+  \item \textbf{Linguagens suportadas}: C, C++, Java, Python, Rust e
+        Portugol;
   \item \textbf{Runtime}: Bun (gerenciador de pacotes e runtime Node.js);
   \item \textbf{Notificações}: caixa de entrada in-app (submissão avaliada,
         pedido/aprovação de entrada em competição, aula desbloqueada), com
@@ -218,17 +252,18 @@ como próximo passo (Seção~8).
         competição ou em um exercício de aula;
   \item Server Action valida, salva \texttt{PENDING} no PostgreSQL e emite
         \texttt{NOTIFY};
-  \item Judge worker (Rust) recebe notificação, executa código em Docker,
-        compara saídas com gabarito; para exercícios de aula, todos os
+  \item Judge worker (Rust) recebe notificação, um dos workers do
+        \emph{pool} reivindica a submissão, executa o código no
+        \texttt{isolate} e compara as saídas conforme o modo do problema; para exercícios de aula, todos os
         casos de teste são executados (não apenas até a primeira falha),
         para computar a nota do exercício como fração de casos aprovados;
   \item Se o problema tiver restrições de solução, o worker roda análise
         estática e/ou classificação por IA antes de finalizar o resultado;
-  \item Resultado (\texttt{PASSED / FAILED / TLE / ERROR} ou violação de
-        restrição) é gravado no banco;
+  \item Resultado (\texttt{PASSED}, um veredito --- WA, TLE, MLE, CE, RE ---,
+        erro do juiz ou violação de restrição) é gravado no banco;
   \item Frontend atualiza em tempo real via TanStack Query e gera uma
         notificação in-app para o usuário;
-  \item Em falha, estudante pode solicitar dica da IA (Gemini).
+  \item Em falha, estudante pode solicitar dica da IA.
 \end{enumerate}
 
 \subsection*{Modelo Turma/Aula/Exercício}
@@ -244,7 +279,9 @@ como próximo passo (Seção~8).
   \item Aluno entra na turma pelo código, responde cada exercício e submete
         a aula inteira de uma vez (\texttt{lessonSubmission});
   \item Após o prazo, docente revisa: nota por exercício calculada
-        automaticamente pelo juiz e feedback em texto livre por exercício.
+        automaticamente pelo juiz e feedback em texto livre por exercício;
+  \item Docente acompanha a turma inteira no boletim e pode verificar a
+        similaridade das respostas de cada exercício.
 \end{enumerate}
 
 \section*{7. Apresentação do Software}
@@ -269,16 +306,18 @@ docente, autoria de problemas assistida por IA (rascunho, revisão e
 narrativa), restrições de solução e feedback pedagógico por IA em uma única
 plataforma gratuita e de código aberto. O sistema está funcionalmente
 completo e pronto para implantação por docentes, sem necessidade de
-infraestrutura proprietária, mas ainda não foi avaliado com estudantes e
-docentes reais; essa avaliação é o próximo passo. A arquitetura é extensível
-para suportar novos idiomas de programação, detecção de plágio e avaliação
-quantitativa de usabilidade.
+infraestrutura proprietária, e foi avaliado tecnicamente com benchmarks
+reproduzíveis, mas ainda não foi avaliado com estudantes e docentes reais: o
+instrumento de pesquisa está integrado e o primeiro teste em sala está marcado
+para 29/10/2026. A arquitetura é extensível para suportar novas linguagens de
+programação e a detecção de código gerado por IA.
 
 \subsection*{Nível TRL}
 
 \textbf{TRL 4--5: Validação/demonstração de tecnologia em ambiente relevante}:
-O WhyRunner está implementado e foi testado pelo próprio autor, mas ainda não
-foi implantado ou operado com um público real de estudantes e docentes. Uma
+O WhyRunner está implementado e foi testado pelo próprio autor e por benchmarks
+reproduzíveis, mas ainda não foi operado com um público real de estudantes e
+docentes (primeiro teste em sala marcado para 29/10/2026). Uma
 implantação em ambiente operacional (sala de aula real) é necessária para
 avançar a TRL 6--7.
 

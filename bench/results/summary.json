@@ -1,0 +1,771 @@
+{
+  "concurrency": {
+    "burst40-n1": {
+      "wall_s": 54.27,
+      "throughput_per_s": 0.737,
+      "latency_p50_s": 26.87,
+      "latency_p95_s": 53.17,
+      "speedup_vs_n1": 1.0,
+      "not_passed": 0
+    },
+    "burst40-n2": {
+      "wall_s": 28.92,
+      "throughput_per_s": 1.383,
+      "latency_p50_s": 12.75,
+      "latency_p95_s": 28.28,
+      "speedup_vs_n1": 1.88,
+      "not_passed": 0
+    },
+    "burst40-n4": {
+      "wall_s": 19.13,
+      "throughput_per_s": 2.091,
+      "latency_p50_s": 7.08,
+      "latency_p95_s": 14.61,
+      "speedup_vs_n1": 2.84,
+      "not_passed": 0
+    },
+    "burst40-n8": {
+      "wall_s": 14.21,
+      "throughput_per_s": 2.814,
+      "latency_p50_s": 2.7,
+      "latency_p95_s": 12.87,
+      "speedup_vs_n1": 3.82,
+      "not_passed": 0
+    },
+    "burst100-n1": {
+      "wall_s": 142.99,
+      "throughput_per_s": 0.699,
+      "latency_p50_s": 66.22,
+      "latency_p95_s": 134.17,
+      "speedup_vs_n1": 1.0,
+      "not_passed": 0
+    },
+    "burst100-n2": {
+      "wall_s": 84.0,
+      "throughput_per_s": 1.19,
+      "latency_p50_s": 41.88,
+      "latency_p95_s": 81.2,
+      "speedup_vs_n1": 1.7,
+      "not_passed": 0
+    },
+    "burst100-n4": {
+      "wall_s": 51.04,
+      "throughput_per_s": 1.959,
+      "latency_p50_s": 21.42,
+      "latency_p95_s": 42.6,
+      "speedup_vs_n1": 2.8,
+      "not_passed": 0
+    },
+    "burst100-n8": {
+      "wall_s": 37.92,
+      "throughput_per_s": 2.637,
+      "latency_p50_s": 17.64,
+      "latency_p95_s": 32.68,
+      "speedup_vs_n1": 3.77,
+      "not_passed": 0
+    },
+    "burst40-n1-1cpu": {
+      "wall_s": 80.41,
+      "throughput_per_s": 0.497,
+      "latency_p50_s": 41.32,
+      "latency_p95_s": 79.12,
+      "speedup_vs_n1": 1.0,
+      "not_passed": 0
+    },
+    "burst40-n4-1cpu": {
+      "wall_s": 81.75,
+      "throughput_per_s": 0.489,
+      "latency_p50_s": 33.15,
+      "latency_p95_s": 67.37,
+      "speedup_vs_n1": 0.98,
+      "not_passed": 0
+    }
+  },
+  "lang_cost_median": {
+    "c": {
+      "compile_ms": 40,
+      "run_hello_ms": 7,
+      "run_cpu_ms": 52,
+      "peak_mb_cpu": 1.6
+    },
+    "cpp": {
+      "compile_ms": 309,
+      "run_hello_ms": 7,
+      "run_cpu_ms": 54,
+      "peak_mb_cpu": 3.1
+    },
+    "java": {
+      "compile_ms": 619,
+      "run_hello_ms": 34,
+      "run_cpu_ms": 117,
+      "peak_mb_cpu": 44.3
+    },
+    "python": {
+      "compile_ms": 0,
+      "run_hello_ms": 17,
+      "run_cpu_ms": 907,
+      "peak_mb_cpu": 7.9
+    },
+    "rust": {
+      "compile_ms": 236,
+      "run_hello_ms": 18,
+      "run_cpu_ms": 166,
+      "peak_mb_cpu": 1.7
+    },
+    "portugol": {
+      "compile_ms": 0,
+      "run_hello_ms": 1264,
+      "run_cpu_ms": 1444,
+      "peak_mb_cpu": 86.6
+    }
+  },
+  "lang_cost_cold_vs_warm_ms": {
+    "c": {
+      "cold_run_hello": 7.0,
+      "warm_median_run_hello": 7.0
+    },
+    "cpp": {
+      "cold_run_hello": 7.0,
+      "warm_median_run_hello": 7.0
+    },
+    "java": {
+      "cold_run_hello": 35.0,
+      "warm_median_run_hello": 34.5
+    },
+    "python": {
+      "cold_run_hello": 17.0,
+      "warm_median_run_hello": 17.0
+    },
+    "rust": {
+      "cold_run_hello": 17.0,
+      "warm_median_run_hello": 17.5
+    },
+    "portugol": {
+      "cold_run_hello": 1306.0,
+      "warm_median_run_hello": 1264.0
+    }
+  },
+  "e2e_ms_median": {
+    "c": {
+      "queue_ms": 1,
+      "judging_ms": 74,
+      "compile_ms": 40,
+      "run_5_tests_ms": 35,
+      "other_ms": 0,
+      "total_ms": 76,
+      "all_passed": true
+    },
+    "cpp": {
+      "queue_ms": 1,
+      "judging_ms": 353,
+      "compile_ms": 309,
+      "run_5_tests_ms": 35,
+      "other_ms": 9,
+      "total_ms": 354,
+      "all_passed": true
+    },
+    "java": {
+      "queue_ms": 1,
+      "judging_ms": 1092,
+      "compile_ms": 619,
+      "run_5_tests_ms": 170,
+      "other_ms": 303,
+      "total_ms": 1093,
+      "all_passed": true
+    },
+    "python": {
+      "queue_ms": 1,
+      "judging_ms": 86,
+      "compile_ms": 0,
+      "run_5_tests_ms": 85,
+      "other_ms": 1,
+      "total_ms": 87,
+      "all_passed": true
+    },
+    "rust": {
+      "queue_ms": 1,
+      "judging_ms": 374,
+      "compile_ms": 236,
+      "run_5_tests_ms": 90,
+      "other_ms": 48,
+      "total_ms": 376,
+      "all_passed": true
+    },
+    "portugol": {
+      "queue_ms": 1,
+      "judging_ms": 7172,
+      "compile_ms": 0,
+      "run_5_tests_ms": 6320,
+      "other_ms": 852,
+      "total_ms": 7173,
+      "all_passed": true
+    }
+  },
+  "sandbox": {
+    "box_lifecycle_ms_median": 2.6,
+    "c_hello": {
+      "bare_ms": 1.5,
+      "isolate_ms": 6.6,
+      "overhead_ms": 5.2
+    },
+    "c_cpu": {
+      "bare_ms": 45.7,
+      "isolate_ms": 51.4,
+      "overhead_ms": 5.7
+    },
+    "cpp_hello": {
+      "bare_ms": 2.3,
+      "isolate_ms": 7.9,
+      "overhead_ms": 5.6
+    },
+    "cpp_cpu": {
+      "bare_ms": 48.9,
+      "isolate_ms": 54.0,
+      "overhead_ms": 5.1
+    },
+    "java_hello": {
+      "bare_ms": 27.5,
+      "isolate_ms": 33.7,
+      "overhead_ms": 6.2
+    },
+    "java_cpu": {
+      "bare_ms": 109.1,
+      "isolate_ms": 113.8,
+      "overhead_ms": 4.7
+    },
+    "python_hello": {
+      "bare_ms": 10.8,
+      "isolate_ms": 16.6,
+      "overhead_ms": 5.8
+    },
+    "python_cpu": {
+      "bare_ms": 878.9,
+      "isolate_ms": 903.4,
+      "overhead_ms": 24.5
+    },
+    "rust_hello": {
+      "bare_ms": 2.0,
+      "isolate_ms": 15.6,
+      "overhead_ms": 13.6
+    },
+    "rust_cpu": {
+      "bare_ms": 148.5,
+      "isolate_ms": 161.5,
+      "overhead_ms": 13.0
+    },
+    "portugol_hello": {
+      "bare_ms": 1256.9,
+      "isolate_ms": 1246.7,
+      "overhead_ms": -10.3
+    },
+    "portugol_cpu": {
+      "bare_ms": 1466.7,
+      "isolate_ms": 1442.9,
+      "overhead_ms": -23.8
+    }
+  },
+  "verdicts": {
+    "programs": 72,
+    "correct": 63,
+    "accuracy": 0.875,
+    "per_verdict_recall": {
+      "AC": 1.0,
+      "WA": 1.0,
+      "TLE": 1.0,
+      "MLE": 0.75,
+      "CE": 0.667,
+      "RE": 0.833
+    },
+    "matrix_rows_expected_cols_got": {
+      "cols": [
+        "AC",
+        "WA",
+        "TLE",
+        "MLE",
+        "CE",
+        "RE",
+        "ERROR"
+      ],
+      "rows": [
+        [
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          12,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          9,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          0,
+          8,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          0,
+          0,
+          10,
+          0
+        ]
+      ]
+    },
+    "misclassified": [
+      {
+        "lang": "c",
+        "expected": "MEMORY_LIMIT_EXCEEDED",
+        "variant": "malloc-fill",
+        "got": "RUNTIME_ERROR",
+        "error": "Exited with error status 139"
+      },
+      {
+        "lang": "python",
+        "expected": "COMPILATION_ERROR",
+        "variant": "syntax",
+        "got": "RUNTIME_ERROR",
+        "error": "Exited with error status 1"
+      },
+      {
+        "lang": "python",
+        "expected": "COMPILATION_ERROR",
+        "variant": "indent",
+        "got": "RUNTIME_ERROR",
+        "error": "Exited with error status 1"
+      },
+      {
+        "lang": "portugol",
+        "expected": "MEMORY_LIMIT_EXCEEDED",
+        "variant": "big-array",
+        "got": "WRONG_ANSWER",
+        "error": ""
+      },
+      {
+        "lang": "portugol",
+        "expected": "MEMORY_LIMIT_EXCEEDED",
+        "variant": "big-matrix",
+        "got": "WRONG_ANSWER",
+        "error": ""
+      },
+      {
+        "lang": "portugol",
+        "expected": "COMPILATION_ERROR",
+        "variant": "syntax",
+        "got": "WRONG_ANSWER",
+        "error": ""
+      },
+      {
+        "lang": "portugol",
+        "expected": "COMPILATION_ERROR",
+        "variant": "undeclared",
+        "got": "WRONG_ANSWER",
+        "error": ""
+      },
+      {
+        "lang": "portugol",
+        "expected": "RUNTIME_ERROR",
+        "variant": "div-zero",
+        "got": "WRONG_ANSWER",
+        "error": ""
+      },
+      {
+        "lang": "portugol",
+        "expected": "RUNTIME_ERROR",
+        "variant": "index",
+        "got": "WRONG_ANSWER",
+        "error": ""
+      }
+    ]
+  },
+  "regrade": {
+    "sources": {
+      "local": {
+        "submissions_total": 38,
+        "wa_or_failed": 15,
+        "output_mismatch": 14
+      },
+      "production": {
+        "submissions_total": 9,
+        "wa_or_failed": 5,
+        "output_mismatch": 2
+      }
+    },
+    "historical_mismatches": 16,
+    "historical_accepted": {
+      "exact": 0,
+      "tokens": 0,
+      "float": 0
+    },
+    "synthetic": {
+      "synthetic:trailing-space": {
+        "n": 35,
+        "exact": 32,
+        "tokens": 35,
+        "float_1e-6": 35,
+        "float_1e-3": 35
+      },
+      "synthetic:extra-blank-lines": {
+        "n": 35,
+        "exact": 35,
+        "tokens": 35,
+        "float_1e-6": 35,
+        "float_1e-3": 35
+      },
+      "synthetic:crlf": {
+        "n": 35,
+        "exact": 32,
+        "tokens": 35,
+        "float_1e-6": 35,
+        "float_1e-3": 35
+      },
+      "synthetic:newline-vs-space": {
+        "n": 1,
+        "exact": 0,
+        "tokens": 1,
+        "float_1e-6": 1,
+        "float_1e-3": 1
+      },
+      "synthetic:double-spaces": {
+        "n": 1,
+        "exact": 0,
+        "tokens": 1,
+        "float_1e-6": 1,
+        "float_1e-3": 1
+      },
+      "synthetic:case-changed": {
+        "n": 12,
+        "exact": 0,
+        "tokens": 0,
+        "float_1e-6": 0,
+        "float_1e-3": 0
+      },
+      "synthetic:missing-last-token": {
+        "n": 35,
+        "exact": 0,
+        "tokens": 0,
+        "float_1e-6": 0,
+        "float_1e-3": 0
+      },
+      "synthetic:float-format": {
+        "n": 12,
+        "exact": 0,
+        "tokens": 0,
+        "float_1e-6": 7,
+        "float_1e-3": 10
+      }
+    }
+  },
+  "plagiarism_quality": {
+    "copies": 216,
+    "negatives_same_problem": 36,
+    "negatives_other_problem": 162,
+    "median_by_level_pair": {
+      "rename": 1.0,
+      "reformat": 1.0,
+      "comments": 1.0,
+      "reorder": 1.0,
+      "deadcode": 0.927,
+      "combined": 0.838,
+      "independent": 0.339,
+      "unrelated": 0.252
+    },
+    "min_by_level_pair": {
+      "rename": 1.0,
+      "reformat": 1.0,
+      "comments": 1.0,
+      "reorder": 0.52,
+      "deadcode": 0.619,
+      "combined": 0.366,
+      "independent": 0.09,
+      "unrelated": 0.043
+    },
+    "median_by_level_class": {
+      "rename": 1.0,
+      "reformat": 1.0,
+      "comments": 1.0,
+      "reorder": 1.0,
+      "deadcode": 0.919,
+      "combined": 0.811,
+      "independent": 0.0
+    },
+    "max_independent_class": 0.159,
+    "auc_pair_all_negatives": 0.998,
+    "auc_pair_same_problem": 0.996,
+    "auc_class_mode": 1.0,
+    "best_f1_pair": {
+      "threshold": 0.518,
+      "precision": 0.982,
+      "recall": 0.995,
+      "f1": 0.989,
+      "fpr": 0.02
+    },
+    "best_f1_class": {
+      "threshold": 0.366,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0
+    },
+    "at_0.5_pair": {
+      "threshold": 0.5,
+      "precision": 0.973,
+      "recall": 0.995,
+      "fpr": 0.03
+    },
+    "at_0.5_class": {
+      "threshold": 0.5,
+      "precision": 1.0,
+      "recall": 0.977,
+      "fpr": 0.0
+    }
+  },
+  "plagiarism_perf_ms_median": {
+    "python": {
+      "10": 4.2,
+      "30": 15.8,
+      "50": 26.6,
+      "100": 98.8,
+      "200": 363.5,
+      "300": 705.5
+    },
+    "c": {
+      "10": 3.2,
+      "30": 12.8,
+      "50": 31.8,
+      "100": 116.5,
+      "200": 419.8,
+      "300": 891.7
+    },
+    "java": {
+      "10": 3.1,
+      "30": 13.1,
+      "50": 23.3,
+      "100": 78.5,
+      "200": 269.9,
+      "300": 697.8
+    }
+  },
+  "constraints": {
+    "samples": 30,
+    "correct": 20,
+    "by_category": {
+      "real": {
+        "correct": 10,
+        "total": 10
+      },
+      "clean": {
+        "correct": 6,
+        "total": 6
+      },
+      "identifier": {
+        "correct": 3,
+        "total": 3
+      },
+      "string": {
+        "correct": 0,
+        "total": 5
+      },
+      "comment": {
+        "correct": 1,
+        "total": 6
+      }
+    },
+    "false_positive_rate": 0.471,
+    "false_positive_rate_no_traps": 0.0,
+    "trap_errors": 10,
+    "traps": 11
+  },
+  "ai": {
+    "calls_logical": 60,
+    "attempts_total": 104,
+    "answered_by_model": {
+      "gemini-3.5-flash": 23,
+      "gemini-3.5-flash-lite": 30,
+      "claude-haiku-5-5": 7
+    },
+    "calls_with_fallback": 37,
+    "failed_calls": 0,
+    "latency_s": {
+      "tags": {
+        "n": 10,
+        "median": 13.7,
+        "p95": 28.4,
+        "max": 32.8
+      },
+      "narrative": {
+        "n": 10,
+        "median": 15.3,
+        "p95": 44.6,
+        "max": 65.3
+      },
+      "explain-hint": {
+        "n": 10,
+        "median": 20.4,
+        "p95": 31.5,
+        "max": 32.0
+      },
+      "review": {
+        "n": 10,
+        "median": 16.9,
+        "p95": 32.3,
+        "max": 36.6
+      },
+      "reference-solution": {
+        "n": 20,
+        "median": 13.1,
+        "p95": 25.8,
+        "max": 42.1
+      }
+    }
+  },
+  "ai_reference": {
+    "python": {
+      "passed": 10,
+      "total": 10
+    },
+    "c": {
+      "passed": 8,
+      "total": 10
+    },
+    "failures": [
+      {
+        "problem": "1",
+        "title": "Sum of Two Numbers",
+        "language": "c",
+        "status": "COMPILATION_ERROR",
+        "passed_count": "0",
+        "total_tests": "5",
+        "model": "claude-haiku-5-5"
+      },
+      {
+        "problem": "6",
+        "title": "Count Vowels",
+        "language": "c",
+        "status": "COMPILATION_ERROR",
+        "passed_count": "0",
+        "total_tests": "5",
+        "model": "claude-haiku-5-5"
+      }
+    ],
+    "answered_by_model": {
+      "gemini-3.5-flash": 10,
+      "claude-haiku-5-5": 2,
+      "gemini-3.5-flash-lite": 8
+    }
+  },
+  "web_compute_ms_median": {
+    "gradebook+csv@30": {
+      "ms": 1.45,
+      "items": 50,
+      "records": 1245
+    },
+    "gradebook+csv@100": {
+      "ms": 8.25,
+      "items": 100,
+      "records": 8060
+    },
+    "gradebook+csv@300": {
+      "ms": 47.7,
+      "items": 180,
+      "records": 43254
+    },
+    "gradebook+csv@1000": {
+      "ms": 267.03,
+      "items": 240,
+      "records": 192228
+    },
+    "standings@30": {
+      "ms": 1.07,
+      "items": 6,
+      "records": 460
+    },
+    "standings@100": {
+      "ms": 3.69,
+      "items": 8,
+      "records": 2778
+    },
+    "standings@300": {
+      "ms": 20.07,
+      "items": 10,
+      "records": 13085
+    },
+    "standings@1000": {
+      "ms": 115.98,
+      "items": 12,
+      "records": 52252
+    }
+  },
+  "ci": {
+    "runs": 13,
+    "run_wall_median_s": 31.0,
+    "jobs": {
+      "enum-sync": {
+        "n": 12,
+        "median_s": 7.0,
+        "max_s": 11.0
+      },
+      "web": {
+        "n": 12,
+        "median_s": 24.5,
+        "max_s": 29.0
+      },
+      "judge": {
+        "n": 12,
+        "median_s": 24.5,
+        "max_s": 89.0
+      }
+    },
+    "all_successful": true
+  },
+  "tests": {
+    "judge": {
+      "tests": 51,
+      "ignored_benchmarks": 6,
+      "by_module": {
+        "grade_tests": 20,
+        "constraints::tests": 12,
+        "isolate::tests": 6,
+        "compare::tests": 6,
+        "pool_tests": 4,
+        "runner::tests": 3
+      }
+    },
+    "web": {
+      "tests": 112,
+      "files": 13,
+      "expect_calls": 249
+    }
+  }
+}

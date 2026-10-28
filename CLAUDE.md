@@ -35,5 +35,7 @@ Follow-ups, fixes and small tweaks to the current branch's own task stay here. I
 - Sandboxed execution / grading logic → read `judge/CLAUDE.md` first, then work inside `judge/`.
 - `openspec/` — spec-driven change workflow config (currently no active changes or specs checked in).
 - `overleaf/` — LaTeX source for the accompanying thesis paper (SBC template).
+- `bench/` — reproducible benchmarks behind every performance number in the thesis and deck v4 (`bench/README.md`: hardware, safety rules, re-run commands; raw data in `bench/results/`, charts via `bench/charts.py`).
+- `docs/presentation/` — deck build scripts (`build_v3.py`, `build_v4.py`), screenshot seed/shooter (`seed_v4.py`, `shoot_v4.py`), screenshots and charts.
 - `AUDITORIA_PRE_DEFESA.md` — Portuguese-language pre-defense audit/punch-list notes for the thesis, not application docs.
 - `problems.json`, `Why-runner.pdf`, `cbie.txt` — supporting TCC artifacts (sample problem set, thesis PDF, conference info), not consumed by either app at runtime.

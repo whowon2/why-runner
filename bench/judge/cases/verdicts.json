@@ -1,0 +1,1442 @@
+[
+ {
+  "lang": "c",
+  "expected": "PASSED",
+  "variant": "plain",
+  "code": "#include <stdio.h>\nint main(){int x;scanf(\"%d\",&x);printf(\"%d\\n\",2*x);return 0;}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "c",
+  "expected": "PASSED",
+  "variant": "extra-spaces",
+  "code": "#include <stdio.h>\nint main(){int x;scanf(\"%d\",&x);printf(\"  %d  \\n\\n\",2*x);return 0;}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "c",
+  "expected": "WRONG_ANSWER",
+  "variant": "off-by-one",
+  "code": "#include <stdio.h>\nint main(){int x;scanf(\"%d\",&x);printf(\"%d\\n\",2*x+1);return 0;}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "c",
+  "expected": "WRONG_ANSWER",
+  "variant": "no-output",
+  "code": "int main(){return 0;}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "c",
+  "expected": "TIME_LIMIT_EXCEEDED",
+  "variant": "infinite-loop",
+  "code": "int main(){volatile int x=0;while(1)x++;}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "c",
+  "expected": "TIME_LIMIT_EXCEEDED",
+  "variant": "sleep",
+  "code": "#include <unistd.h>\nint main(){sleep(10);return 0;}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "c",
+  "expected": "MEMORY_LIMIT_EXCEEDED",
+  "variant": "malloc-fill",
+  "code": "#include <stdlib.h>\n#include <string.h>\nint main(){char*p=malloc(400u<<20);memset(p,1,400u<<20);return p[7];}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "c",
+  "expected": "MEMORY_LIMIT_EXCEEDED",
+  "variant": "grow",
+  "code": "#include <stdlib.h>\nint main(){for(;;){char*p=malloc(1<<20);for(int i=0;i<(1<<20);i+=4096)p[i]=1;}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "c",
+  "expected": "COMPILATION_ERROR",
+  "variant": "syntax",
+  "code": "int main( { return 0; }",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "c",
+  "expected": "COMPILATION_ERROR",
+  "variant": "undeclared",
+  "code": "int main(){ return y; }",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "c",
+  "expected": "RUNTIME_ERROR",
+  "variant": "div-zero",
+  "code": "#include <stdio.h>\nint main(){int x;scanf(\"%d\",&x);printf(\"%d\\n\",x/(x-x));return 0;}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "c",
+  "expected": "RUNTIME_ERROR",
+  "variant": "null-deref",
+  "code": "int main(){int*p=0;*p=1;return 0;}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "cpp",
+  "expected": "PASSED",
+  "variant": "plain",
+  "code": "#include <iostream>\nint main(){int x;std::cin>>x;std::cout<<2*x<<std::endl;}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "cpp",
+  "expected": "PASSED",
+  "variant": "extra-spaces",
+  "code": "#include <iostream>\nint main(){int x;std::cin>>x;std::cout<<\"  \"<<2*x<<\" \\n\\n\";}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "cpp",
+  "expected": "WRONG_ANSWER",
+  "variant": "off-by-one",
+  "code": "#include <iostream>\nint main(){int x;std::cin>>x;std::cout<<2*x+1;}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "cpp",
+  "expected": "WRONG_ANSWER",
+  "variant": "no-output",
+  "code": "int main(){}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "cpp",
+  "expected": "TIME_LIMIT_EXCEEDED",
+  "variant": "infinite-loop",
+  "code": "int main(){volatile int x=0;while(true)x++;}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "cpp",
+  "expected": "TIME_LIMIT_EXCEEDED",
+  "variant": "sleep",
+  "code": "#include <thread>\n#include <chrono>\nint main(){std::this_thread::sleep_for(std::chrono::seconds(10));}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "cpp",
+  "expected": "MEMORY_LIMIT_EXCEEDED",
+  "variant": "vector-grow",
+  "code": "#include <vector>\nint main(){std::vector<int> v;for(;;)v.push_back(1);}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "cpp",
+  "expected": "MEMORY_LIMIT_EXCEEDED",
+  "variant": "big-new",
+  "code": "#include <cstring>\nint main(){char*p=new char[400u<<20];std::memset(p,1,400u<<20);return p[3];}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "cpp",
+  "expected": "COMPILATION_ERROR",
+  "variant": "syntax",
+  "code": "int main( {}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "cpp",
+  "expected": "COMPILATION_ERROR",
+  "variant": "type",
+  "code": "#include <string>\nint main(){int x = std::string(\"a\");}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "cpp",
+  "expected": "RUNTIME_ERROR",
+  "variant": "div-zero",
+  "code": "#include <iostream>\nint main(){int x;std::cin>>x;std::cout<<x/(x-x);}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "cpp",
+  "expected": "RUNTIME_ERROR",
+  "variant": "throw",
+  "code": "#include <stdexcept>\nint main(){throw std::runtime_error(\"boom\");}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "java",
+  "expected": "PASSED",
+  "variant": "plain",
+  "code": "public class Main{public static void main(String[] a){System.out.println(2*new java.util.Scanner(System.in).nextInt());}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "java",
+  "expected": "PASSED",
+  "variant": "extra-spaces",
+  "code": "public class Main{public static void main(String[] a){System.out.print(\"  \"+2*new java.util.Scanner(System.in).nextInt()+\" \\n\\n\");}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "java",
+  "expected": "WRONG_ANSWER",
+  "variant": "off-by-one",
+  "code": "public class Main{public static void main(String[] a){System.out.println(2*new java.util.Scanner(System.in).nextInt()+1);}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "java",
+  "expected": "WRONG_ANSWER",
+  "variant": "no-output",
+  "code": "public class Main{public static void main(String[] a){}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "java",
+  "expected": "TIME_LIMIT_EXCEEDED",
+  "variant": "infinite-loop",
+  "code": "public class Main{static volatile int x;public static void main(String[] a){while(true)x++;}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "java",
+  "expected": "TIME_LIMIT_EXCEEDED",
+  "variant": "sleep",
+  "code": "public class Main{public static void main(String[] a)throws Exception{Thread.sleep(10000);}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "java",
+  "expected": "MEMORY_LIMIT_EXCEEDED",
+  "variant": "big-array",
+  "code": "public class Main{public static void main(String[] a){int[] v=new int[200_000_000];System.out.println(v.length);}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "java",
+  "expected": "MEMORY_LIMIT_EXCEEDED",
+  "variant": "list-grow",
+  "code": "public class Main{public static void main(String[] a){java.util.List<long[]> l=new java.util.ArrayList<>();for(;;)l.add(new long[1<<16]);}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "java",
+  "expected": "COMPILATION_ERROR",
+  "variant": "syntax",
+  "code": "public class Main{public static void main(String[] a){}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "java",
+  "expected": "COMPILATION_ERROR",
+  "variant": "type",
+  "code": "public class Main{public static void main(String[] a){int x=\"a\";}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "java",
+  "expected": "RUNTIME_ERROR",
+  "variant": "div-zero",
+  "code": "public class Main{public static void main(String[] a){int x=new java.util.Scanner(System.in).nextInt();System.out.println(x/(x-x));}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "java",
+  "expected": "RUNTIME_ERROR",
+  "variant": "index",
+  "code": "public class Main{public static void main(String[] a){int[] v=new int[1];System.out.println(v[5]);}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "python",
+  "expected": "PASSED",
+  "variant": "plain",
+  "code": "print(2*int(input()))",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "python",
+  "expected": "PASSED",
+  "variant": "extra-spaces",
+  "code": "x=int(input())\nprint('  ', 2*x, '  \\n')",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "python",
+  "expected": "WRONG_ANSWER",
+  "variant": "off-by-one",
+  "code": "print(2*int(input())+1)",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "python",
+  "expected": "WRONG_ANSWER",
+  "variant": "no-output",
+  "code": "pass",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "python",
+  "expected": "TIME_LIMIT_EXCEEDED",
+  "variant": "infinite-loop",
+  "code": "while True:\n    pass",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "python",
+  "expected": "TIME_LIMIT_EXCEEDED",
+  "variant": "sleep",
+  "code": "import time\ntime.sleep(10)",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "python",
+  "expected": "MEMORY_LIMIT_EXCEEDED",
+  "variant": "big-list",
+  "code": "a = [0] * (10**9)\nprint(len(a))",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "python",
+  "expected": "MEMORY_LIMIT_EXCEEDED",
+  "variant": "list-grow",
+  "code": "a = []\nwhile True:\n    a.append(' ' * 10**6)",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "python",
+  "expected": "COMPILATION_ERROR",
+  "variant": "syntax",
+  "code": "print(2*int(input())",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "python",
+  "expected": "COMPILATION_ERROR",
+  "variant": "indent",
+  "code": "if True:\nprint(1)",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "python",
+  "expected": "RUNTIME_ERROR",
+  "variant": "div-zero",
+  "code": "x=int(input())\nprint(x//(x-x))",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "python",
+  "expected": "RUNTIME_ERROR",
+  "variant": "name",
+  "code": "print(undefined_name)",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "rust",
+  "expected": "PASSED",
+  "variant": "plain",
+  "code": "use std::io::*;\nfn main(){let mut s=String::new();stdin().read_line(&mut s).unwrap();let x:i64=s.trim().parse().unwrap();println!(\"{}\",2*x);}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "rust",
+  "expected": "PASSED",
+  "variant": "extra-spaces",
+  "code": "use std::io::*;\nfn main(){let mut s=String::new();stdin().read_line(&mut s).unwrap();let x:i64=s.trim().parse().unwrap();print!(\"  {}  \\n\\n\",2*x);}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "rust",
+  "expected": "WRONG_ANSWER",
+  "variant": "off-by-one",
+  "code": "use std::io::*;\nfn main(){let mut s=String::new();stdin().read_line(&mut s).unwrap();let x:i64=s.trim().parse().unwrap();println!(\"{}\",2*x+1);}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "rust",
+  "expected": "WRONG_ANSWER",
+  "variant": "no-output",
+  "code": "fn main(){}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "rust",
+  "expected": "TIME_LIMIT_EXCEEDED",
+  "variant": "infinite-loop",
+  "code": "fn main(){let mut x:u64=1;loop{x=x.wrapping_mul(3).wrapping_add(1);if x==0{println!(\"{}\",x);}}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "rust",
+  "expected": "TIME_LIMIT_EXCEEDED",
+  "variant": "sleep",
+  "code": "fn main(){std::thread::sleep(std::time::Duration::from_secs(10));}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "rust",
+  "expected": "MEMORY_LIMIT_EXCEEDED",
+  "variant": "big-vec",
+  "code": "fn main(){let v=vec![1u8; 2_000_000_000];println!(\"{}\",v[7]);}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "rust",
+  "expected": "MEMORY_LIMIT_EXCEEDED",
+  "variant": "vec-grow",
+  "code": "fn main(){let mut v:Vec<Vec<u8>>=Vec::new();loop{v.push(vec![1u8;1<<20]);}}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "rust",
+  "expected": "COMPILATION_ERROR",
+  "variant": "syntax",
+  "code": "fn main( {}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "rust",
+  "expected": "COMPILATION_ERROR",
+  "variant": "type",
+  "code": "fn main(){let x: i32 = \"a\";}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "rust",
+  "expected": "RUNTIME_ERROR",
+  "variant": "div-zero",
+  "code": "use std::io::*;\nfn main(){let mut s=String::new();stdin().read_line(&mut s).unwrap();let x:i64=s.trim().parse().unwrap();println!(\"{}\",x/(x-x));}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "rust",
+  "expected": "RUNTIME_ERROR",
+  "variant": "panic",
+  "code": "fn main(){let v:Vec<i32>=vec![];println!(\"{}\",v[3]);}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "portugol",
+  "expected": "PASSED",
+  "variant": "plain",
+  "code": "programa {\n  funcao inicio() {\n    inteiro x\n    leia(x)\n    escreva(x * 2)\n  }\n}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "portugol",
+  "expected": "PASSED",
+  "variant": "extra-spaces",
+  "code": "programa {\n  funcao inicio() {\n    inteiro x\n    leia(x)\n    escreva(\"  \", x * 2, \"  \\n\")\n  }\n}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "portugol",
+  "expected": "WRONG_ANSWER",
+  "variant": "off-by-one",
+  "code": "programa {\n  funcao inicio() {\n    inteiro x\n    leia(x)\n    escreva(x * 2 + 1)\n  }\n}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "portugol",
+  "expected": "WRONG_ANSWER",
+  "variant": "no-output",
+  "code": "programa {\n  funcao inicio() {\n  }\n}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "portugol",
+  "expected": "TIME_LIMIT_EXCEEDED",
+  "variant": "infinite-loop",
+  "code": "programa {\n  funcao inicio() {\n    inteiro x = 0\n    enquanto (verdadeiro) {\n      x = x + 1\n    }\n  }\n}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "portugol",
+  "expected": "TIME_LIMIT_EXCEEDED",
+  "variant": "nested-loop",
+  "code": "programa {\n  funcao inicio() {\n    inteiro i, j, x = 0\n    para (i = 0; i < 100000; i++) {\n      para (j = 0; j < 100000; j++) {\n        x = (x + j) % 7\n      }\n    }\n    escreva(x)\n  }\n}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "portugol",
+  "expected": "MEMORY_LIMIT_EXCEEDED",
+  "variant": "big-array",
+  "code": "programa {\n  funcao inicio() {\n    inteiro v[200000000]\n    escreva(v[0])\n  }\n}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "portugol",
+  "expected": "MEMORY_LIMIT_EXCEEDED",
+  "variant": "big-matrix",
+  "code": "programa {\n  funcao inicio() {\n    inteiro m[20000][20000]\n    escreva(m[0][0])\n  }\n}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "portugol",
+  "expected": "COMPILATION_ERROR",
+  "variant": "syntax",
+  "code": "programa {\n  funcao inicio( {\n  }\n}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "portugol",
+  "expected": "COMPILATION_ERROR",
+  "variant": "undeclared",
+  "code": "programa {\n  funcao inicio() {\n    escreva(y)\n  }\n}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "portugol",
+  "expected": "RUNTIME_ERROR",
+  "variant": "div-zero",
+  "code": "programa {\n  funcao inicio() {\n    inteiro x\n    leia(x)\n    escreva(x / (x - x))\n  }\n}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ },
+ {
+  "lang": "portugol",
+  "expected": "RUNTIME_ERROR",
+  "variant": "index",
+  "code": "programa {\n  funcao inicio() {\n    inteiro v[2]\n    escreva(v[5])\n  }\n}",
+  "inputs": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "outputs": [
+   "2",
+   "4",
+   "6",
+   "8",
+   "10"
+  ]
+ }
+]

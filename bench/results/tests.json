@@ -1,0 +1,1 @@
+{"judge":{"tests":51,"ignored_benchmarks":6,"by_module":{"grade_tests":20,"constraints::tests":12,"isolate::tests":6,"compare::tests":6,"pool_tests":4,"runner::tests":3}},"web":{"tests":112,"files":13,"expect_calls":249}}

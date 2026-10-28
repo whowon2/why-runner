@@ -1,0 +1,86 @@
+[
+ {
+  "lang": "c",
+  "kind": "hello",
+  "code": "#include <stdio.h>\nint main(){printf(\"hello\\n\");return 0;}",
+  "input": "",
+  "expected": "hello"
+ },
+ {
+  "lang": "c",
+  "kind": "cpu",
+  "code": "#include <stdio.h>\nint main(){int n,x=0;scanf(\"%d\",&n);for(int i=0;i<n;i++)x=(x*31+i)%1000003;printf(\"%d\\n\",x);return 0;}",
+  "input": "10000000",
+  "expected": "907196"
+ },
+ {
+  "lang": "cpp",
+  "kind": "hello",
+  "code": "#include <iostream>\nint main(){std::cout<<\"hello\"<<std::endl;}",
+  "input": "",
+  "expected": "hello"
+ },
+ {
+  "lang": "cpp",
+  "kind": "cpu",
+  "code": "#include <iostream>\nint main(){int n,x=0;std::cin>>n;for(int i=0;i<n;i++)x=(x*31+i)%1000003;std::cout<<x<<std::endl;}",
+  "input": "10000000",
+  "expected": "907196"
+ },
+ {
+  "lang": "java",
+  "kind": "hello",
+  "code": "public class Main{public static void main(String[] a){System.out.println(\"hello\");}}",
+  "input": "",
+  "expected": "hello"
+ },
+ {
+  "lang": "java",
+  "kind": "cpu",
+  "code": "public class Main{public static void main(String[] a){int n=new java.util.Scanner(System.in).nextInt(),x=0;for(int i=0;i<n;i++)x=(x*31+i)%1000003;System.out.println(x);}}",
+  "input": "10000000",
+  "expected": "907196"
+ },
+ {
+  "lang": "python",
+  "kind": "hello",
+  "code": "print(\"hello\")",
+  "input": "",
+  "expected": "hello"
+ },
+ {
+  "lang": "python",
+  "kind": "cpu",
+  "code": "n=int(input())\nx=0\nfor i in range(n):\n    x=(x*31+i)%1000003\nprint(x)",
+  "input": "10000000",
+  "expected": "907196"
+ },
+ {
+  "lang": "rust",
+  "kind": "hello",
+  "code": "fn main(){println!(\"hello\");}",
+  "input": "",
+  "expected": "hello"
+ },
+ {
+  "lang": "rust",
+  "kind": "cpu",
+  "code": "use std::io::*;\nfn main(){let mut s=String::new();stdin().read_line(&mut s).unwrap();let n:i64=s.trim().parse().unwrap();let mut x:i64=0;for i in 0..n{x=(x*31+i)%1000003;}println!(\"{}\",x);}",
+  "input": "10000000",
+  "expected": "907196"
+ },
+ {
+  "lang": "portugol",
+  "kind": "hello",
+  "code": "programa {\n  funcao inicio() {\n    escreva(\"hello\")\n  }\n}",
+  "input": "",
+  "expected": "hello"
+ },
+ {
+  "lang": "portugol",
+  "kind": "cpu",
+  "code": "programa {\n  funcao inicio() {\n    inteiro n, i, x = 0\n    leia(n)\n    para (i = 0; i < n; i++) {\n      x = (x * 31 + i) % 1000003\n    }\n    escreva(x)\n  }\n}",
+  "input": "10000000",
+  "expected": "907196"
+ }
+]

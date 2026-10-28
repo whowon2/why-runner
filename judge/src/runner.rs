@@ -30,7 +30,7 @@ const JVM_MEM_KB: u64 = 2_097_152;
 /// "Picked up JAVA_TOOL_OPTIONS: ..." notice to stderr on every run because
 /// of this — harmless (grading only checks stdout/exit code), but expected
 /// in stderr for Java/Portugol runs.
-const JVM_TOOL_OPTIONS: &str = "-Xmx64m -XX:CompressedClassSpaceSize=32m -XX:ReservedCodeCacheSize=32m -XX:MaxMetaspaceSize=64m -XX:ParallelGCThreads=1 -XX:CICompilerCount=1 -Xss256k -XX:-TieredCompilation";
+pub(crate) const JVM_TOOL_OPTIONS: &str = "-Xmx64m -XX:CompressedClassSpaceSize=32m -XX:ReservedCodeCacheSize=32m -XX:MaxMetaspaceSize=64m -XX:ParallelGCThreads=1 -XX:CICompilerCount=1 -Xss256k -XX:-TieredCompilation";
 
 /// Box memory cap for Rust. Same `RLIMIT_AS`-vs-cgroup story as the JVM
 /// languages above, smaller scale: `rustc` (Debian's package) dynamically

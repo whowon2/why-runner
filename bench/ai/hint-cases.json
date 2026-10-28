@@ -1,0 +1,228 @@
+[
+ {
+  "problem": {
+   "title": "Sum of Two Numbers",
+   "description": "Read two integers on a single line separated by a space. Print their sum.\n\n**Input:** Two integers A and B (−10⁹ ≤ A, B ≤ 10⁹).\n\n**Output:** A single integer: A + B.",
+   "difficulty": "easy",
+   "inputs": [
+    "3 5",
+    "100 200",
+    "-7 3",
+    "0 0",
+    "1000000000 1000000000"
+   ],
+   "outputs": [
+    "8",
+    "300",
+    "-4",
+    "0",
+    "2000000000"
+   ]
+  },
+  "code": "use std::io::{self, Read};\n\nfn main() {\n    let mut input = String::new();\n    io::stdin().read_to_string(&mut input).unwrap();\n    let mut it = input.split_whitespace().map(|x| x.parse::<i64>().unwrap());\n    \n    let a = it.next().unwrap();\n    let b = it.next().unwrap();\n\n    println!(\"{}\", a + 3);\n}",
+  "language": "rust",
+  "output": "{\"passed\":false,\"total_tests\":5,\"passed_count\":0,\"failure_details\":{\"input\":\"3 5\",\"expected\":\"8\",\"actual\":\"6\",\"error\":null,\"index\":1},\"constraint_violation\":null}"
+ },
+ {
+  "problem": {
+   "title": "Soma de 1 até N",
+   "description": "Leia um inteiro **N** (0 ≤ N ≤ 10⁶) e imprima a soma 1 + 2 + … + N.\n\n**Entrada:** um inteiro N.\n**Saída:** a soma.",
+   "difficulty": "easy",
+   "inputs": [
+    "5",
+    "1",
+    "100",
+    "0"
+   ],
+   "outputs": [
+    "15",
+    "1",
+    "5050",
+    "0"
+   ]
+  },
+  "code": "n = int(input())\nprint(sum(range(n)))\n",
+  "language": "python",
+  "output": "{\"passed\":false,\"total_tests\":4,\"passed_count\":0,\"failure_details\":{\"input\":\"5\",\"expected\":\"15\",\"actual\":\"10\",\"error\":null,\"index\":1},\"constraint_violation\":null}"
+ },
+ {
+  "problem": {
+   "title": "Soma de 1 até N",
+   "description": "Leia um inteiro **N** (0 ≤ N ≤ 10⁶) e imprima a soma 1 + 2 + … + N.\n\n**Entrada:** um inteiro N.\n**Saída:** a soma.",
+   "difficulty": "easy",
+   "inputs": [
+    "5",
+    "1",
+    "100",
+    "0"
+   ],
+   "outputs": [
+    "15",
+    "1",
+    "5050",
+    "0"
+   ]
+  },
+  "code": "n = int(input())\nprint(sum(range(n)))\n",
+  "language": "python",
+  "output": "{\"passed\":false,\"total_tests\":4,\"passed_count\":0,\"failure_details\":{\"input\":\"5\",\"expected\":\"15\",\"actual\":\"10\",\"error\":null,\"index\":1},\"constraint_violation\":null}"
+ },
+ {
+  "problem": {
+   "title": "Soma de 1 até N",
+   "description": "Leia um inteiro **N** (0 ≤ N ≤ 10⁶) e imprima a soma 1 + 2 + … + N.\n\n**Entrada:** um inteiro N.\n**Saída:** a soma.",
+   "difficulty": "easy",
+   "inputs": [
+    "5",
+    "1",
+    "100",
+    "0"
+   ],
+   "outputs": [
+    "15",
+    "1",
+    "5050",
+    "0"
+   ]
+  },
+  "code": "n = int(input())\nprint(sum(range(n)))\n",
+  "language": "python",
+  "output": "{\"passed\":false,\"total_tests\":4,\"passed_count\":0,\"failure_details\":{\"input\":\"5\",\"expected\":\"15\",\"actual\":\"10\",\"error\":null,\"index\":1},\"constraint_violation\":null}"
+ },
+ {
+  "problem": {
+   "title": "Maior de três",
+   "description": "Leia três inteiros e imprima o maior deles.\n\n**Entrada:** três inteiros separados por espaço.\n**Saída:** o maior valor.",
+   "difficulty": "easy",
+   "inputs": [
+    "3 9 4",
+    "7 7 2",
+    "-1 -5 -3",
+    "10 2 30"
+   ],
+   "outputs": [
+    "9",
+    "7",
+    "-1",
+    "30"
+   ]
+  },
+  "code": "a, b, c = map(int, input().split())\nprint(a if a > b else b)\n",
+  "language": "python",
+  "output": "{\"passed\":false,\"total_tests\":4,\"passed_count\":3,\"failure_details\":{\"input\":\"10 2 30\",\"expected\":\"30\",\"actual\":\"10\",\"error\":null,\"index\":4},\"constraint_violation\":null}"
+ },
+ {
+  "problem": {
+   "title": "Contagem de vogais",
+   "description": "Leia uma linha de texto e imprima quantas vogais (a, e, i, o, u, maiúsculas ou minúsculas) ela contém.",
+   "difficulty": "easy",
+   "inputs": [
+    "programacao",
+    "IFMG Ouro Branco",
+    "xyz",
+    "AEIOU aeiou"
+   ],
+   "outputs": [
+    "5",
+    "6",
+    "0",
+    "10"
+   ]
+  },
+  "code": "s = input()\nprint(sum(1 for ch in s if ch in 'aeiou'))\n",
+  "language": "python",
+  "output": "{\"passed\":false,\"total_tests\":4,\"passed_count\":1,\"failure_details\":{\"input\":\"IFMG Ouro Branco\",\"expected\":\"6\",\"actual\":\"4\",\"error\":null,\"index\":2},\"constraint_violation\":null}"
+ },
+ {
+  "problem": {
+   "title": "Contagem de vogais",
+   "description": "Leia uma linha de texto e imprima quantas vogais (a, e, i, o, u, maiúsculas ou minúsculas) ela contém.",
+   "difficulty": "easy",
+   "inputs": [
+    "programacao",
+    "IFMG Ouro Branco",
+    "xyz",
+    "AEIOU aeiou"
+   ],
+   "outputs": [
+    "5",
+    "6",
+    "0",
+    "10"
+   ]
+  },
+  "code": "s = input()\nprint(sum(1 for ch in s if ch in 'aeiou'))\n",
+  "language": "python",
+  "output": "{\"passed\":false,\"total_tests\":4,\"passed_count\":1,\"failure_details\":{\"input\":\"IFMG Ouro Branco\",\"expected\":\"6\",\"actual\":\"4\",\"error\":null,\"index\":2},\"constraint_violation\":null}"
+ },
+ {
+  "problem": {
+   "title": "Maior de três",
+   "description": "Leia três inteiros e imprima o maior deles.\n\n**Entrada:** três inteiros separados por espaço.\n**Saída:** o maior valor.",
+   "difficulty": "easy",
+   "inputs": [
+    "3 9 4",
+    "7 7 2",
+    "-1 -5 -3",
+    "10 2 30"
+   ],
+   "outputs": [
+    "9",
+    "7",
+    "-1",
+    "30"
+   ]
+  },
+  "code": "a, b, c = map(int, input().split())\nprint(a if a > b else b)\n",
+  "language": "python",
+  "output": "{\"passed\":false,\"total_tests\":4,\"passed_count\":3,\"failure_details\":{\"input\":\"10 2 30\",\"expected\":\"30\",\"actual\":\"10\",\"error\":null,\"index\":4},\"constraint_violation\":null}"
+ },
+ {
+  "problem": {
+   "title": "Número primo",
+   "description": "Leia um inteiro N (1 ≤ N ≤ 10⁹) e imprima `SIM` se N for primo ou `NAO` caso contrário.",
+   "difficulty": "medium",
+   "inputs": [
+    "7",
+    "1",
+    "97",
+    "1000000007",
+    "100"
+   ],
+   "outputs": [
+    "SIM",
+    "NAO",
+    "SIM",
+    "SIM",
+    "NAO"
+   ]
+  },
+  "code": "n = int(input())\nd = 0\nfor i in range(1, n + 1):\n    if n % i == 0:\n        d += 1\nprint('SIM' if d == 2 else 'NAO')\n",
+  "language": "python",
+  "output": "{\"passed\":false,\"total_tests\":5,\"passed_count\":3,\"failure_details\":{\"input\":\"1000000007\",\"expected\":\"SIM\",\"actual\":\"Execution timed out\",\"error\":\"Time Limit Exceeded (20s)\",\"index\":4},\"constraint_violation\":null}"
+ },
+ {
+  "problem": {
+   "title": "Número primo",
+   "description": "Leia um inteiro N (1 ≤ N ≤ 10⁹) e imprima `SIM` se N for primo ou `NAO` caso contrário.",
+   "difficulty": "medium",
+   "inputs": [
+    "7",
+    "1",
+    "97",
+    "1000000007",
+    "100"
+   ],
+   "outputs": [
+    "SIM",
+    "NAO",
+    "SIM",
+    "SIM",
+    "NAO"
+   ]
+  },
+  "code": "n = int(input())\nprint(\"SIM\" if all(n % d for d in range(2, n)) else \"NAO\")\n",
+  "language": "python",
+  "output": "{\"passed\":false,\"total_tests\":5,\"passed_count\":1,\"failure_details\":{\"input\":\"1\",\"expected\":\"NAO\",\"actual\":\"SIM\",\"error\":null,\"index\":2},\"constraint_violation\":null}"
+ }
+]

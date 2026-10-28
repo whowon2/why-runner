@@ -1,0 +1,12 @@
+{
+  "local": {
+    "submissions_total": 38,
+    "wa_or_failed": 15,
+    "output_mismatch": 14
+  },
+  "production": {
+    "submissions_total": 9,
+    "wa_or_failed": 5,
+    "output_mismatch": 2
+  }
+}

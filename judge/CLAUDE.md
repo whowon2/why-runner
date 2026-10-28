@@ -13,7 +13,7 @@ Judge: Rust worker for the Runner platform. Polls Postgres for pending code subm
 - Build release: `cargo build --release`
 - Local stack (Postgres + judge-worker): `docker compose up` (compose.yml at repo root)
 
-51 tests (+1 ignored benchmark) exist in this crate: 6 `isolate::tests` unit tests (meta parser + box-id allocation), 12 `constraints::tests` (pure static-analysis tests over source strings), 4 `pool_tests` (`JUDGE_CONCURRENCY` parsing), 6 `compare::tests` (output comparison modes) and 3 `runner::tests` (memory-limit heuristic) all run fine on a bare host — none touches `isolate` or spawns a process. The 20 `grade_tests` in `main.rs` shell out to the real sandbox end-to-end and need real `isolate` + elevated capabilities to run — they'll hang/fail confusingly on a bare host without them. Run the full suite via:
+51 tests (+6 ignored benchmarks: `throughput_bench` in `main.rs` and the five in `src/bench.rs`) exist in this crate: 6 `isolate::tests` unit tests (meta parser + box-id allocation), 12 `constraints::tests` (pure static-analysis tests over source strings), 4 `pool_tests` (`JUDGE_CONCURRENCY` parsing), 6 `compare::tests` (output comparison modes) and 3 `runner::tests` (memory-limit heuristic) all run fine on a bare host — none touches `isolate` or spawns a process. The 20 `grade_tests` in `main.rs` shell out to the real sandbox end-to-end and need real `isolate` + elevated capabilities to run — they'll hang/fail confusingly on a bare host without them. Run the full suite via:
 
 ```sh
 docker build -t judge:test -f judge/Dockerfile judge
@@ -24,6 +24,8 @@ docker run --rm --cap-add=SYS_ADMIN --cap-add=NET_ADMIN -e CARGO_TARGET_DIR=/tmp
 (Build the full final-stage image, not `--target builder` — the builder stage alone has no `isolate` binary, since that's only copied into the final stage; `grade_tests` would fail with "isolate: command not found" against a builder-only image. Installing Rust inside a container of the final image is the working pattern — the shipped image itself doesn't need a Rust toolchain at runtime, only for this test invocation.)
 
 `isolate::tests`, `constraints::tests`, `pool_tests`, `compare` and `runner::tests` (one filter per `cargo test` call) run directly on a bare host without isolate/Docker; `cargo test grade_tests` needs the sandboxed invocation above.
+
+`src/bench.rs` holds the thesis benchmarks (per-language cost, sandbox overhead, verdict accuracy, constraint checker, compare-mode re-grade), all `#[ignore]`d; they read cases from `BENCH_CASES` and write CSV to `BENCH_OUT`, driven by `bench/judge/run-rust-bench.sh` (see `bench/README.md`).
 
 Throughput benchmark (thesis numbers, results in `openspec/changes/archive/2026-10-27-judge-concurrency/design.md`): same sandboxed invocation, with `-e BENCH_CONCURRENCY=4 -e BENCH_JOBS=48` and `cargo test --release throughput_bench -- --ignored --nocapture`. It grades a mixed batch with 1 slot, then with N slots, and prints jobs/s.
 
