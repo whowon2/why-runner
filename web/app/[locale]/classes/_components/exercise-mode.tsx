@@ -176,10 +176,10 @@ function ParsonsSolutionEditor({
         onValueChange={(v) => setLanguage(v as Language)}
         value={language ?? undefined}
       >
-        <SelectTrigger className="w-48">
+        <SelectTrigger className="notranslate w-48" translate="no">
           <SelectValue placeholder={t("parsons.languagePlaceholder")} />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="notranslate" translate="no">
           {LANGUAGES.map((lang) => (
             <SelectItem key={lang} value={lang}>
               {lang}

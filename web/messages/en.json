@@ -73,6 +73,19 @@
     "resetDone": "Code reset to the starter template",
     "undo": "Undo"
   },
+  "CodeEditor": {
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen (Esc)",
+    "fontSmaller": "Smaller font",
+    "fontLarger": "Larger font",
+    "fontSize": "Font size: {size}px"
+  },
+  "ProblemPicker": {
+    "searchPlaceholder": "Search by name or code…",
+    "searching": "Searching…",
+    "empty": "No problems found",
+    "by": "by"
+  },
   "Dock": {
     "home": "Home",
     "problems": "Problems",
@@ -903,7 +916,6 @@
     "publish": "Publish",
     "unpublish": "Unpublish",
     "addLesson": "Add exercise",
-    "noProblemsToAdd": "No exercises found — create a problem first.",
     "showOutputs": "Show expected outputs to students",
     "showOutputsHint": "Lets students see edge-case outputs, so you can check submitted code for hardcoded answers during review.",
     "Lesson": {
@@ -1227,9 +1239,6 @@
         },
         "Problems": {
           "placeholder": "Problem",
-          "searchPlaceholder": "Search by name or code…",
-          "searching": "Searching…",
-          "empty": "No problems found",
           "by": "by",
           "create": "Create",
           "saveOrder": "Save Order",

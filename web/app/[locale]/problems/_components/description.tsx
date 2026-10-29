@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
+import { markdownComponents } from "@/components/markdown-components";
 import { Card, CardContent } from "@/components/ui/card";
 import { useProblem } from "@/hooks/use-problem";
 import { ProblemExamples } from "./examples";
@@ -34,13 +35,16 @@ export function ProblemDescription({ problemId }: { problemId: string }) {
                 {tProblems("Workspace.Task.narrativeLabel")}
               </span>
               <div className="prose dark:prose-invert prose-sm max-w-none mt-1">
-                <ReactMarkdown>{problem.narrative}</ReactMarkdown>
+                <ReactMarkdown components={markdownComponents}>
+                  {problem.narrative}
+                </ReactMarkdown>
               </div>
             </div>
           )}
 
           <div className="prose dark:prose-invert max-w-none text-foreground prose-p:leading-relaxed prose-pre:bg-muted/50">
             <ReactMarkdown
+              components={markdownComponents}
               remarkPlugins={[remarkMath]}
               rehypePlugins={[rehypeKatex]}
             >

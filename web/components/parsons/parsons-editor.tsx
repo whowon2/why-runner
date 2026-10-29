@@ -79,7 +79,8 @@ export function ParsonsEditor({
           >
             <GripVertical className="size-4 shrink-0 cursor-grab text-muted-foreground" />
             <code
-              className="flex-1 overflow-x-auto whitespace-pre py-1.5 font-mono text-xs"
+              translate="no"
+              className="notranslate flex-1 overflow-x-auto whitespace-pre py-1.5 font-mono text-xs"
               style={{ paddingLeft: `${item.indent * 1.5}rem` }}
             >
               {item.text}
@@ -151,7 +152,8 @@ export function ParsonsViewer({ lines }: { lines: ParsonsLine[] }) {
       {lines.map((line, i) => (
         <li key={`${i}-${line.text}`}>
           <code
-            className="whitespace-pre font-mono text-xs text-foreground"
+            translate="no"
+            className="notranslate whitespace-pre font-mono text-xs text-foreground"
             style={{ paddingLeft: `${line.indent * 1.5}rem` }}
           >
             {line.text}

@@ -1,12 +1,12 @@
 "use client";
 
-import Editor, { type OnMount } from "@monaco-editor/react";
+import type { OnMount } from "@monaco-editor/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Check, FilePlus2, Save, Upload } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { CodeEditor } from "@/components/code-editor";
 import {
   ResetCodeButton,
   useStarterComments,
@@ -54,7 +54,6 @@ export function UploadCode({
   codeRef.current = code;
   const format = useFormatter();
   const { mutate, isPending } = useCreateSubmission();
-  const { theme, systemTheme } = useTheme();
   const t = useTranslations();
   const tUpload = useTranslations(
     "ContestsPage.Tabs.Problem.Submissions.Upload",
@@ -284,122 +283,111 @@ export function UploadCode({
   return (
     <Card className="h-full w-full gap-0 bg-transparent border-none py-0 shadow-none">
       <CardContent className="flex h-full min-h-0 w-full flex-col gap-4 px-0">
-        <div className="grid w-full items-center gap-1.5">
-          <div className="flex justify-between gap-2">
-            <Select onValueChange={handleLanguageChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder={tUpload("languagePlaceholder")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="rust">rust</SelectItem>
-                <SelectItem value="cpp">cpp</SelectItem>
-                <SelectItem value="c">c</SelectItem>
-                <SelectItem value="java">java</SelectItem>
-                <SelectItem value="python">python</SelectItem>
-                <SelectItem value="portugol">portugol</SelectItem>
-              </SelectContent>
-            </Select>
+        <CodeEditor
+          className="min-h-0 flex-1"
+          language={language || ""}
+          onChange={(c) => setCode(c ?? "")}
+          onMount={handleEditorMount}
+          toolbar={
+            <div className="grid w-full items-center gap-1.5">
+              <div className="flex justify-between gap-2">
+                <Select onValueChange={handleLanguageChange}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={tUpload("languagePlaceholder")} />
+                  </SelectTrigger>
+                  <SelectContent className="notranslate" translate="no">
+                    <SelectItem value="rust">rust</SelectItem>
+                    <SelectItem value="cpp">cpp</SelectItem>
+                    <SelectItem value="c">c</SelectItem>
+                    <SelectItem value="java">java</SelectItem>
+                    <SelectItem value="python">python</SelectItem>
+                    <SelectItem value="portugol">portugol</SelectItem>
+                  </SelectContent>
+                </Select>
 
-            <Input
-              className="hidden w-full"
-              onChange={handleFileChange}
-              ref={fileRef}
-              type="file"
-            />
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    disabled={!language}
-                    onClick={() => {
-                      fileRef.current?.click();
-                    }}
-                    variant={"outline"}
-                  >
-                    <FilePlus2 />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{t("ToolTips.open-file")}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+                <Input
+                  className="hidden w-full"
+                  onChange={handleFileChange}
+                  ref={fileRef}
+                  type="file"
+                />
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        disabled={!language}
+                        onClick={() => {
+                          fileRef.current?.click();
+                        }}
+                        variant={"outline"}
+                      >
+                        <FilePlus2 />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t("ToolTips.open-file")}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
 
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    className={cn(
-                      "transition-colors",
-                      justSaved &&
-                        "border-green-500 text-green-600 dark:text-green-500",
-                    )}
-                    onClick={handleSaveCode}
-                    variant={"outline"}
-                  >
-                    {justSaved ? (
-                      <Check className="animate-in zoom-in-50 fade-in duration-300" />
-                    ) : (
-                      <Save />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{t("ToolTips.save")}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        className={cn(
+                          "transition-colors",
+                          justSaved &&
+                            "border-green-500 text-green-600 dark:text-green-500",
+                        )}
+                        onClick={handleSaveCode}
+                        variant={"outline"}
+                      >
+                        {justSaved ? (
+                          <Check className="animate-in zoom-in-50 fade-in duration-300" />
+                        ) : (
+                          <Save />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t("ToolTips.save")}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
 
-            <ResetCodeButton
-              code={code}
-              language={language}
-              onReset={handleReset}
-              onUndo={handleUndoReset}
-            />
+                <ResetCodeButton
+                  code={code}
+                  language={language}
+                  onReset={handleReset}
+                  onUndo={handleUndoReset}
+                />
 
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button disabled={isPending} onClick={handleUpload}>
-                    <Upload />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{t("ToolTips.upload")}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          <p
-            aria-live="polite"
-            className={cn(
-              "h-4 text-muted-foreground text-xs transition-opacity",
-              savedAt ? "opacity-100" : "opacity-0",
-            )}
-          >
-            {savedAt &&
-              tUpload("savedLocallyAt", {
-                time: format.dateTime(savedAt, {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }),
-              })}
-          </p>
-        </div>
-        <div className="min-h-0 flex-1">
-          <Editor
-            className="rounded-none"
-            height={"100%"}
-            language={language || ""}
-            onMount={handleEditorMount}
-            onChange={(c) => setCode(c ?? "")}
-            theme={
-              theme === "system"
-                ? systemTheme === "dark"
-                  ? "vs-dark"
-                  : "light"
-                : theme === "dark"
-                  ? "vs-dark"
-                  : "light"
-            }
-            value={code}
-            width={"100%"}
-          />
-        </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button disabled={isPending} onClick={handleUpload}>
+                        <Upload />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t("ToolTips.upload")}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <p
+                aria-live="polite"
+                className={cn(
+                  "h-4 text-muted-foreground text-xs transition-opacity",
+                  savedAt ? "opacity-100" : "opacity-0",
+                )}
+              >
+                {savedAt &&
+                  tUpload("savedLocallyAt", {
+                    time: format.dateTime(savedAt, {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }),
+                  })}
+              </p>
+            </div>
+          }
+          value={code}
+        />
       </CardContent>
     </Card>
   );

@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Brain, Delete, Sparkles } from "lucide-react";
+import { markdownComponents } from "@/components/markdown-components";
 import { CopyButton } from "@/components/copy-button";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
@@ -553,13 +554,13 @@ export function NewProblem({
                   {t("narrativeLabel")}
                 </span>
                 <div className="prose dark:prose-invert prose-sm max-w-none mt-1">
-                  <ReactMarkdown>{formValues.narrative}</ReactMarkdown>
+                  <ReactMarkdown components={markdownComponents}>{formValues.narrative}</ReactMarkdown>
                 </div>
               </div>
             )}
 
             <div className="prose dark:prose-invert max-w-none text-foreground prose-p:leading-relaxed prose-pre:bg-muted/50">
-              <ReactMarkdown
+              <ReactMarkdown components={markdownComponents}
                 remarkPlugins={[remarkMath]}
                 rehypePlugins={[rehypeKatex]}
               >
@@ -584,7 +585,7 @@ export function NewProblem({
                         </h4>
                         <CopyButton value={input} />
                       </div>
-                      <pre className="p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">
+                      <pre translate="no" className="notranslate p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">
                         {input || " "}
                       </pre>
                     </div>
@@ -595,7 +596,7 @@ export function NewProblem({
                         </h4>
                         <CopyButton value={formValues.outputs?.[idx] ?? ""} />
                       </div>
-                      <pre className="p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">
+                      <pre translate="no" className="notranslate p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">
                         {formValues.outputs?.[idx] || " "}
                       </pre>
                     </div>

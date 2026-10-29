@@ -80,7 +80,7 @@ Better Auth with email/password + GitHub + Google OAuth. Session access:
 
 ### AI Help
 
-Every AI feature calls `generateText`/`generateJson` in `lib/ai.ts` (never the provider SDKs directly). It tries `gemini-3.5-flash` → `gemini-3.5-flash-lite` → `claude-haiku-5-5` (only if `ANTHROPIC_API_KEY` is set; ids in `lib/ai-models.ts`), 30s per attempt, falling through only on timeout/network/404/429/5xx/invalid output. `generateJson` takes a zod schema used for both providers and re-validates the result. `lib/ai.ts` is intentionally not a `"use server"` module.
+Every AI feature calls `generateText`/`generateJson` in `lib/ai.ts` (never the provider SDKs directly). It tries `claude-haiku-5-5` (only if `ANTHROPIC_API_KEY` is set) → `gemini-3.5-flash` → `gemini-3.5-flash-lite` (ids in `lib/ai-models.ts`), 30s per attempt, falling through only on timeout/network/404/429/5xx/invalid output. `generateJson` takes a zod schema used for both providers and re-validates the result. `lib/ai.ts` is intentionally not a `"use server"` module.
 
 `getAIHelp()` server action uses it to explain submission failures. Contest submissions are capped by `contest.aiAssistance` (`off`/`concept`/`hint`/`pinpoint`), enforced server-side; the dialog reveals levels one at a time. Parses JSON output from Judge to identify which test cases failed.
 
@@ -122,7 +122,7 @@ GITHUB_SECRET=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GEMINI_KEY=
-ANTHROPIC_API_KEY=   # optional, enables Claude as last AI fallback
+ANTHROPIC_API_KEY=   # optional, makes Claude Haiku the first AI provider (Gemini becomes the fallback)
 FLY_API_TOKEN=       # optional, wakes the idle-stopped Fly judge (lib/judge.ts)
 SURVEY_ADMIN_EMAILS= # optional, comma-separated emails that can open /surveys/results
 SURVEY_PREVIEW_EMAILS= # optional, comma-separated emails that can open read-only /surveys/preview/[form]

@@ -42,7 +42,10 @@ export function HiddenTestNotice({ report }: { report: JudgeReport }) {
         </span>
       </div>
       {f.error && (
-        <pre className="max-h-40 overflow-auto rounded-md border border-red-200 bg-red-50 p-2 font-mono text-xs whitespace-pre-wrap text-red-600 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400">
+        <pre
+          translate="no"
+          className="notranslate max-h-40 overflow-auto rounded-md border border-red-200 bg-red-50 p-2 font-mono text-xs whitespace-pre-wrap text-red-600 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400"
+        >
           {f.error}
         </pre>
       )}

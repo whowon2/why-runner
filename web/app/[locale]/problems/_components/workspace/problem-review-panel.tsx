@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { markdownComponents } from "@/components/markdown-components";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ProblemReview } from "@/lib/actions/problems/review-problem";
@@ -66,7 +67,9 @@ export function ProblemReviewPanel({
         <div className="flex flex-col gap-6">
           {result.descriptionFeedback && (
             <div className="prose dark:prose-invert max-w-none text-sm prose-p:leading-relaxed">
-              <ReactMarkdown>{result.descriptionFeedback}</ReactMarkdown>
+              <ReactMarkdown components={markdownComponents}>
+                {result.descriptionFeedback}
+              </ReactMarkdown>
             </div>
           )}
 
@@ -90,7 +93,10 @@ export function ProblemReviewPanel({
                         <span className="text-muted-foreground text-xs font-semibold">
                           {t("input")}
                         </span>
-                        <pre className="mt-1 max-h-32 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
+                        <pre
+                          translate="no"
+                          className="notranslate mt-1 max-h-32 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap"
+                        >
                           {edgeCase.input}
                         </pre>
                       </div>
@@ -98,7 +104,10 @@ export function ProblemReviewPanel({
                         <span className="text-muted-foreground text-xs font-semibold">
                           {t("output")}
                         </span>
-                        <pre className="mt-1 max-h-32 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
+                        <pre
+                          translate="no"
+                          className="notranslate mt-1 max-h-32 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap"
+                        >
                           {edgeCase.output}
                         </pre>
                       </div>

@@ -4,6 +4,7 @@ import { Brain } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { markdownComponents } from "@/components/markdown-components";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -141,7 +142,7 @@ export function AIDialog({
                   {tLevels(`${level}.name`)}
                 </p>
               )}
-              <ReactMarkdown>
+              <ReactMarkdown components={markdownComponents}>
                 {hints[cacheKey(submission.id, level)]}
               </ReactMarkdown>
             </div>

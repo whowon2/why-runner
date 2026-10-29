@@ -143,10 +143,13 @@ export function ProblemValidationPanel({ problemId }: { problemId: string }) {
           onValueChange={(v) => setLanguage(v as Language)}
           value={language ?? undefined}
         >
-          <SelectTrigger className="w-full max-w-[200px]">
+          <SelectTrigger
+            className="notranslate w-full max-w-[200px]"
+            translate="no"
+          >
             <SelectValue placeholder={t("selectLanguage")} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="notranslate" translate="no">
             <SelectItem value="rust">rust</SelectItem>
             <SelectItem value="cpp">cpp</SelectItem>
             <SelectItem value="c">c</SelectItem>
@@ -195,7 +198,10 @@ export function ProblemValidationPanel({ problemId }: { problemId: string }) {
             <span className="text-muted-foreground text-xs font-semibold">
               {t("expected")}
             </span>
-            <pre className="mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
+            <pre
+              translate="no"
+              className="notranslate mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap"
+            >
               {report.failure_details.expected}
             </pre>
           </div>
@@ -203,7 +209,10 @@ export function ProblemValidationPanel({ problemId }: { problemId: string }) {
             <span className="text-muted-foreground text-xs font-semibold">
               {t("actual")}
             </span>
-            <pre className="mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
+            <pre
+              translate="no"
+              className="notranslate mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap"
+            >
               {report.failure_details.actual || t("noOutput")}
             </pre>
           </div>
@@ -212,7 +221,10 @@ export function ProblemValidationPanel({ problemId }: { problemId: string }) {
               <span className="text-muted-foreground text-xs font-semibold">
                 {t("error")}
               </span>
-              <pre className="mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
+              <pre
+                translate="no"
+                className="notranslate mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap"
+              >
                 {report.failure_details.error}
               </pre>
             </div>

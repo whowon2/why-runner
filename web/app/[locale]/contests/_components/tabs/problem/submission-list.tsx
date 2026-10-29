@@ -144,7 +144,10 @@ export function SubmissionDetails({
   // 2. Fallback: If it's not JSON (e.g. old logs or raw crash), show text
   if (!report) {
     return (
-      <div className="bg-muted p-2 rounded-md text-xs font-mono whitespace-pre-wrap max-h-60 overflow-auto w-full">
+      <div
+        translate="no"
+        className="notranslate bg-muted p-2 rounded-md text-xs font-mono whitespace-pre-wrap max-h-60 overflow-auto w-full"
+      >
         {output || t("noOutput")}
       </div>
     );
@@ -223,7 +226,10 @@ export function SubmissionDetails({
           <span className="text-xs font-semibold text-red-500 mb-1 block">
             {t("errorLog")}
           </span>
-          <div className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 p-2 rounded-md font-mono text-xs whitespace-pre-wrap">
+          <div
+            translate="no"
+            className="notranslate bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 p-2 rounded-md font-mono text-xs whitespace-pre-wrap"
+          >
             {fail.error}
           </div>
         </div>
@@ -245,7 +251,10 @@ function SubmittedCode({ code }: { code: string }) {
         </span>
         <CopyButton value={code} />
       </div>
-      <pre className="bg-muted/50 border rounded-md p-2 font-mono text-xs whitespace-pre max-h-80 overflow-auto">
+      <pre
+        translate="no"
+        className="notranslate bg-muted/50 border rounded-md p-2 font-mono text-xs whitespace-pre max-h-80 overflow-auto"
+      >
         {code}
       </pre>
     </div>
@@ -258,7 +267,10 @@ function CodeBlock({ label, content }: { label: string; content: string }) {
   return (
     <div className="flex flex-col gap-1 w-full min-w-0">
       <span className="text-xs font-semibold text-gray-500">{label}</span>
-      <div className="bg-muted/50 border rounded-md p-2 font-mono text-xs whitespace-pre-wrap break-all h-full max-h-40 overflow-auto">
+      <div
+        translate="no"
+        className="notranslate bg-muted/50 border rounded-md p-2 font-mono text-xs whitespace-pre-wrap break-all h-full max-h-40 overflow-auto"
+      >
         {content || <span className="text-gray-400 italic">{t("empty")}</span>}
       </div>
     </div>

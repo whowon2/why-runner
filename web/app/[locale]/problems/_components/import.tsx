@@ -234,7 +234,12 @@ export function ImportProblems() {
                       {field.default !== undefined && (
                         <p className="text-muted-foreground">
                           {t("fields.default")}:{" "}
-                          <code className="font-mono">{field.default}</code>
+                          <code
+                            translate="no"
+                            className="notranslate font-mono"
+                          >
+                            {field.default}
+                          </code>
                         </p>
                       )}
                       {field.values && (
@@ -271,7 +276,10 @@ export function ImportProblems() {
                 </Button>
               </div>
             </div>
-            <pre className="max-h-64 overflow-auto rounded-md bg-muted p-3 text-xs">
+            <pre
+              translate="no"
+              className="notranslate max-h-64 overflow-auto rounded-md bg-muted p-3 text-xs"
+            >
               {TEMPLATE_JSON}
             </pre>
           </TabsContent>

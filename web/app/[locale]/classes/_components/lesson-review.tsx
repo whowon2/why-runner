@@ -152,7 +152,7 @@ export function LessonReview({ lessonId }: { lessonId: string }) {
                         >
                           <Copy className="size-3.5" />
                         </Button>
-                        <pre className="min-h-11 max-h-60 w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 pt-10 pr-10 font-mono text-xs text-foreground">
+                        <pre translate="no" className="notranslate min-h-11 max-h-60 w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 pt-10 pr-10 font-mono text-xs text-foreground">
                           {answer.submission.code}
                         </pre>
                       </div>

@@ -119,11 +119,11 @@ export function CompareSettingsFields({
                 <FormLabel>{t("checkerLanguageLabel")}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="notranslate" translate="no">
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent className="notranslate" translate="no">
                     {CHECKER_LANGUAGES.map((language) => (
                       <SelectItem key={language} value={language}>
                         {language}

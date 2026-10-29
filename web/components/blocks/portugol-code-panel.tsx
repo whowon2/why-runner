@@ -30,7 +30,10 @@ export function PortugolCodePanel({
       <span className="text-muted-foreground text-xs font-semibold">
         {t("generatedCode")}
       </span>
-      <pre className="max-h-72 w-full overflow-auto whitespace-pre rounded-md border bg-muted/50 p-2 font-mono text-xs text-foreground">
+      <pre
+        translate="no"
+        className="notranslate max-h-72 w-full overflow-auto whitespace-pre rounded-md border bg-muted/50 p-2 font-mono text-xs text-foreground"
+      >
         {code}
       </pre>
     </div>
