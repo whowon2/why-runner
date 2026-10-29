@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
+import { requireUser } from "@/lib/auth/require-user";
 import Profile from "./_components/profile";
 import { ProfileTabs } from "./_components/tabs";
 
 export default async function ProfilePage() {
-  const user = await requireOnboardedUser({ redirectTo: "/auth/signin" });
+  const user = await requireUser({ redirectTo: "/auth/signin" });
 
   return (
     <div className="w-full min-h-screen bg-background relative">

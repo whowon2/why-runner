@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/drizzle/db";
-import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
+import { requireUser } from "@/lib/auth/require-user";
 import { LessonReview } from "../../../../_components/lesson-review";
 
 export default async function LessonReviewPage({
@@ -8,7 +8,7 @@ export default async function LessonReviewPage({
 }: {
   params: Promise<{ classSlug: string; lessonSlug: string }>;
 }) {
-  await requireOnboardedUser({ redirectTo: "/auth/signin" });
+  await requireUser({ redirectTo: "/auth/signin" });
   const { lessonSlug } = await params;
 
   const lesson = await db.query.lesson.findFirst({

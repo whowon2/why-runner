@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getUserByUsername } from "@/lib/actions/get-user-by-username";
-import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
+import { requireUser } from "@/lib/auth/require-user";
 import Profile from "../_components/profile";
 import { ProfileTabs } from "../_components/tabs";
 
@@ -10,7 +10,7 @@ export default async function UserProfilePage({
   params: Promise<{ username: string }>;
 }) {
   const { username } = await params;
-  const currentUser = await requireOnboardedUser({
+  const currentUser = await requireUser({
     redirectTo: "/auth/signin",
   });
 

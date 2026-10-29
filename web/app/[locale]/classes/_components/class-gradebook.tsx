@@ -251,6 +251,11 @@ export function ClassGradebook({ classroomId }: { classroomId: string }) {
                       >
                         {r.student.name}
                       </Link>
+                      {r.student.ra && (
+                        <div className="font-mono text-muted-foreground text-xs">
+                          {r.student.ra}
+                        </div>
+                      )}
                     </TableCell>
                     {lessons.flatMap((l, li) => [
                       ...l.exercises.map((e, i) => (

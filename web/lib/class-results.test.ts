@@ -42,8 +42,8 @@ function input(overrides: Partial<ClassResultsInput> = {}): ClassResultsInput {
       },
     ],
     students: [
-      { id: "u2", name: "Zoe", username: "zoe" },
-      { id: "u1", name: "Ana", username: "ana" },
+      { id: "u2", name: "Zoe", username: "zoe", ra: null },
+      { id: "u1", name: "Ana", username: "ana", ra: "0064019" },
     ],
     lessonSubmissions: [
       {
@@ -221,7 +221,9 @@ describe("classResultsToCsv", () => {
   test("formats dates, booleans, scores and quotes feedback", () => {
     const csv = classResultsToCsv(buildClassResults(input()));
     const first = csv.split("\r\n")[1];
-    expect(first).toStartWith('"Ana","ana","Loops","2026-10-20","1","P1"');
+    expect(first).toStartWith(
+      '"Ana","ana","0064019","Loops","2026-10-20","1","P1"',
+    );
     expect(first).toContain(
       '"late","2026-10-21T00:00:00.000Z","2026-10-22T00:00:00.000Z","WRONG_ANSWER","3","4","0.75","python"',
     );
@@ -232,10 +234,22 @@ describe("classResultsToCsv", () => {
     const csv = classResultsToCsv(
       buildClassResults(
         input({
-          students: [{ id: "u1", name: "=HYPERLINK()", username: "x" }],
+          students: [
+            { id: "u1", name: "=HYPERLINK()", username: "x", ra: null },
+          ],
         }),
       ),
     );
     expect(csv).toContain(`"'=HYPERLINK()"`);
+  });
+
+  test("ra column follows username, empty when absent", () => {
+    expect(CLASS_RESULTS_HEADER.indexOf("ra")).toBe(
+      CLASS_RESULTS_HEADER.indexOf("username") + 1,
+    );
+    const zoe = classResultsToCsv(buildClassResults(input()))
+      .split("\r\n")
+      .find((l) => l.startsWith('"Zoe"'));
+    expect(zoe).toStartWith('"Zoe","zoe","","Loops",');
   });
 });

@@ -4,14 +4,14 @@
 TBD - created by archiving change add-user-home-page. Update Purpose after archive.
 ## Requirements
 ### Requirement: Authenticated home route
-The system SHALL serve a personal home page at `/home` (locale-prefixed like every page) only to signed-in users who finished onboarding. Anonymous visitors SHALL be redirected to sign-in with `redirectTo=/home`; signed-in users who have not finished onboarding SHALL be redirected to onboarding.
+The system SHALL serve a personal home page at `/home` (locale-prefixed like every page) to any signed-in user. Anonymous visitors SHALL be redirected to sign-in with `redirectTo=/home`.
 
 #### Scenario: Anonymous visitor opens /home
 - **WHEN** a visitor without a session requests `/home`
 - **THEN** they are redirected to `/auth/signin?redirectTo=%2Fhome`
 
-#### Scenario: Onboarded user opens /home
-- **WHEN** a signed-in, onboarded user requests `/home`
+#### Scenario: Signed-in user opens /home
+- **WHEN** a signed-in user requests `/home`
 - **THEN** the home page renders with their widgets
 
 ### Requirement: Pending class exercises widget
@@ -96,7 +96,7 @@ The server action(s) backing the home page SHALL derive the user from the sessio
 - **THEN** the action ignores it and returns only the session user's data
 
 ### Requirement: Home is the signed-in navigation target
-The dock "Home" item and the command palette "Go home" command SHALL navigate to `/home` when a session exists and to `/` otherwise. When sign-in or onboarding completes without an explicit `redirectTo`, the user SHALL land on `/home`.
+The dock "Home" item and the command palette "Go home" command SHALL navigate to `/home` when a session exists and to `/` otherwise. When sign-in or sign-up completes without an explicit `redirectTo`, the user SHALL land on `/home`.
 
 #### Scenario: Signed-in user clicks dock Home
 - **WHEN** a signed-in user clicks the dock Home icon
@@ -104,5 +104,9 @@ The dock "Home" item and the command palette "Go home" command SHALL navigate to
 
 #### Scenario: Sign-in without redirectTo
 - **WHEN** a user signs in from `/auth/signin` with no `redirectTo` parameter
+- **THEN** they land on `/home`
+
+#### Scenario: Sign-up without redirectTo
+- **WHEN** a visitor signs up (email or social) from `/auth/signin` with no `redirectTo` parameter
 - **THEN** they land on `/home`
 

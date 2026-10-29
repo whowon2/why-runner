@@ -1,8 +1,8 @@
-import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
+import { requireUser } from "@/lib/auth/require-user";
 import { SettingsContent } from "./_components/settings-content";
 
 export default async function SettingsPage() {
-  await requireOnboardedUser({ redirectTo: "/auth/signin" });
+  await requireUser({ redirectTo: "/auth/signin" });
 
   return (
     <div className="w-full min-h-screen bg-background">

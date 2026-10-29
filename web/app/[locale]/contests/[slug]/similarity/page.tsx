@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { db } from "@/drizzle/db";
 import { getContestBySlug } from "@/lib/actions/contest/get-contest-by-id";
-import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
+import { requireUser } from "@/lib/auth/require-user";
 import { letters } from "@/lib/letters";
 import { ContestSimilarity } from "../../_components/similarity";
 
@@ -10,7 +10,7 @@ export default async function ContestSimilarityPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const user = await requireOnboardedUser({ redirectTo: "/auth/signin" });
+  const user = await requireUser({ redirectTo: "/auth/signin" });
   const { slug } = await params;
 
   const contest = await getContestBySlug(slug);

@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 import {
   boolean,
@@ -8,30 +8,37 @@ import {
   primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 import { contest } from "./contests";
 import { type ProblemPreview, problem } from "./problems";
 
-export const user = pgTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  username: text("username").notNull().unique(),
-  email: text("email").notNull().unique(),
-  emailVerified: boolean("email_verified").default(false).notNull(),
-  image: text("image"),
-  coverImage: text("cover_image"),
-  coverDim: integer("cover_dim").default(60).notNull(),
-  bio: text("bio"),
-  location: text("location"),
-  website: text("website"),
-  finishedOnboarding: boolean("finished_onboarding").default(false).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
+export const user = pgTable(
+  "user",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    // Stored as typed; uniqueness is case-insensitive (index below).
+    username: text("username").notNull(),
+    email: text("email").notNull().unique(),
+    emailVerified: boolean("email_verified").default(false).notNull(),
+    image: text("image"),
+    coverImage: text("cover_image"),
+    coverDim: integer("cover_dim").default(60).notNull(),
+    bio: text("bio"),
+    location: text("location"),
+    website: text("website"),
+    // IFMG student ID (Registro do Aluno): 7 digits, leading zeros, so text.
+    ra: text("ra").unique(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (t) => [uniqueIndex("user_username_lower_idx").on(sql`lower(${t.username})`)],
+);
 
 export const session = pgTable(
   "session",

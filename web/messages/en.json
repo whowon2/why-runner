@@ -1348,7 +1348,12 @@
     "password": "Password",
     "forgotPasswordLink": "Forgot password?",
     "failedSignIn": "Failed to sign in",
-    "failedSignUp": "Failed to sign up"
+    "failedSignUp": "Failed to sign up",
+    "username": "Username",
+    "usernameDescription": "Letters, numbers, dots and hyphens. Shown on your public profile.",
+    "ra": "RA (optional)",
+    "raDescription": "Your 7-digit IFMG student ID, e.g. 0064019. Only your teachers see it.",
+    "raHint": "This looks like an RA. Put it in the RA field below and choose a username here."
   },
   "PasswordInput": {
     "showPassword": "Show password",
@@ -1365,7 +1370,7 @@
     "title": "Profile",
     "username": "Username",
     "usernamePlaceholder": "username",
-    "usernameDescription": "This is your unique public username.",
+    "usernameDescription": "Your unique public username. Letters, numbers, dots and hyphens.",
     "bio": "Bio",
     "bioPlaceholder": "Tell people a bit about yourself",
     "bioDescription": "Shown on your public profile. Max 280 characters.",
@@ -1375,17 +1380,10 @@
     "websitePlaceholder": "https://example.com",
     "saveProfile": "Save Profile",
     "failedUpdate": "Failed to update profile",
-    "updated": "Profile updated"
-  },
-  "OnboardingPage": {
-    "title": "Welcome",
-    "subtitle": "Choose a username to finish setting up your account.",
-    "usernameLabel": "Username",
-    "usernamePlaceholder": "username",
-    "usernameDescription": "Lowercase letters, numbers, dots, and hyphens only.",
-    "submit": "Continue",
-    "submitting": "Saving...",
-    "failed": "Failed to save username"
+    "updated": "Profile updated",
+    "ra": "RA",
+    "raPlaceholder": "0064019",
+    "raDescription": "Your 7-digit IFMG student ID. Only the teachers of your classes see it."
   },
   "ProfilePage": {
     "avatarAlt": "avatar",
@@ -1646,7 +1644,11 @@
     "unknown": "Something went wrong. Please try again.",
     "SURVEY_NOT_ELIGIBLE": "You can't answer this survey.",
     "SURVEY_ALREADY_ANSWERED": "You already answered this survey.",
-    "SURVEY_INVALID": "Some answers are missing or invalid."
+    "SURVEY_INVALID": "Some answers are missing or invalid.",
+    "USERNAME_INVALID": "Username must be 3–20 letters, numbers, dots or hyphens.",
+    "USERNAME_TAKEN": "This username is already taken.",
+    "RA_INVALID": "RA must be exactly 7 digits.",
+    "RA_TAKEN": "This RA is already registered to another account."
   },
   "JudgeReport": {
     "wrongAnswerOnTest": "Wrong answer on test {index}",

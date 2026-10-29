@@ -14,6 +14,7 @@ export type ClassResultsStudent = {
   id: string;
   name: string;
   username: string;
+  ra: string | null;
 };
 
 export type ClassResultsInput = {
@@ -136,6 +137,7 @@ const iso = (d: Date | null) => (d ? d.toISOString() : "");
 export const CLASS_RESULTS_HEADER = [
   "student_name",
   "username",
+  "ra",
   "lesson",
   "lesson_due_date",
   "exercise_position",
@@ -162,6 +164,7 @@ export function classResultsToCsv(rows: ClassResultRow[]): string {
     ...rows.map((r) => [
       r.student.name,
       r.student.username,
+      r.student.ra ?? "",
       r.lesson.title,
       r.lesson.dueDate ? r.lesson.dueDate.toISOString().slice(0, 10) : "",
       r.position,

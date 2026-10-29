@@ -40,7 +40,13 @@ export async function loadClassResultsData(classroom: {
       where: eq(classroomMembership.classroomId, classroom.id),
       with: {
         user: {
-          columns: { id: true, name: true, username: true, image: true },
+          columns: {
+            id: true,
+            name: true,
+            username: true,
+            ra: true,
+            image: true,
+          },
         },
       },
     }),

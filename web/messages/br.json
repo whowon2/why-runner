@@ -1348,7 +1348,12 @@
     "password": "Senha",
     "forgotPasswordLink": "Esqueceu a senha?",
     "failedSignIn": "Falha ao entrar",
-    "failedSignUp": "Falha ao cadastrar"
+    "failedSignUp": "Falha ao cadastrar",
+    "username": "Nome de usuário",
+    "usernameDescription": "Letras, números, pontos e hífens. Aparece no seu perfil público.",
+    "ra": "RA (opcional)",
+    "raDescription": "Seu registro de aluno do IFMG com 7 dígitos, ex.: 0064019. Só seus professores veem.",
+    "raHint": "Isto parece um RA. Coloque-o no campo RA abaixo e escolha um nome de usuário aqui."
   },
   "PasswordInput": {
     "showPassword": "Mostrar senha",
@@ -1365,7 +1370,7 @@
     "title": "Perfil",
     "username": "Nome de usuário",
     "usernamePlaceholder": "username",
-    "usernameDescription": "Este é seu nome de usuário público e único.",
+    "usernameDescription": "Seu nome de usuário público e único. Letras, números, pontos e hífens.",
     "bio": "Bio",
     "bioPlaceholder": "Conte um pouco sobre você",
     "bioDescription": "Exibido no seu perfil público. Máximo de 280 caracteres.",
@@ -1375,17 +1380,10 @@
     "websitePlaceholder": "https://exemplo.com",
     "saveProfile": "Salvar Perfil",
     "failedUpdate": "Falha ao atualizar perfil",
-    "updated": "Perfil atualizado"
-  },
-  "OnboardingPage": {
-    "title": "Bem-vindo",
-    "subtitle": "Escolha um nome de usuário para finalizar sua conta.",
-    "usernameLabel": "Nome de usuário",
-    "usernamePlaceholder": "username",
-    "usernameDescription": "Apenas letras minúsculas, números, pontos e hífens.",
-    "submit": "Continuar",
-    "submitting": "Salvando...",
-    "failed": "Falha ao salvar nome de usuário"
+    "updated": "Perfil atualizado",
+    "ra": "RA",
+    "raPlaceholder": "0064019",
+    "raDescription": "Seu registro de aluno do IFMG com 7 dígitos. Só os professores das suas turmas veem."
   },
   "ProfilePage": {
     "avatarAlt": "avatar",
@@ -1646,7 +1644,11 @@
     "unknown": "Algo deu errado. Tente novamente.",
     "SURVEY_NOT_ELIGIBLE": "Você não pode responder esta pesquisa.",
     "SURVEY_ALREADY_ANSWERED": "Você já respondeu esta pesquisa.",
-    "SURVEY_INVALID": "Algumas respostas estão faltando ou são inválidas."
+    "SURVEY_INVALID": "Algumas respostas estão faltando ou são inválidas.",
+    "USERNAME_INVALID": "O nome de usuário deve ter de 3 a 20 letras, números, pontos ou hífens.",
+    "USERNAME_TAKEN": "Este nome de usuário já está em uso.",
+    "RA_INVALID": "O RA deve ter exatamente 7 dígitos.",
+    "RA_TAKEN": "Este RA já está cadastrado em outra conta."
   },
   "JudgeReport": {
     "wrongAnswerOnTest": "Resposta errada no teste {index}",
