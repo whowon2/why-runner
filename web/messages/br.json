@@ -73,6 +73,19 @@
     "resetDone": "Código restaurado para o modelo inicial",
     "undo": "Desfazer"
   },
+  "CodeEditor": {
+    "fullscreen": "Tela cheia",
+    "exitFullscreen": "Sair da tela cheia (Esc)",
+    "fontSmaller": "Diminuir fonte",
+    "fontLarger": "Aumentar fonte",
+    "fontSize": "Tamanho da fonte: {size}px"
+  },
+  "ProblemPicker": {
+    "searchPlaceholder": "Buscar por nome ou código…",
+    "searching": "Buscando…",
+    "empty": "Nenhum problema encontrado",
+    "by": "por"
+  },
   "Dock": {
     "home": "Página Inicial",
     "problems": "Problemas",
@@ -903,7 +916,6 @@
     "publish": "Publicar",
     "unpublish": "Despublicar",
     "addLesson": "Adicionar exercício",
-    "noProblemsToAdd": "Nenhum exercício encontrado — crie um problema primeiro.",
     "showOutputs": "Mostrar saídas esperadas para os alunos",
     "showOutputsHint": "Permite que os alunos vejam saídas de casos de borda, para você poder checar respostas com valores fixos (hardcoded) durante a revisão.",
     "Lesson": {
@@ -1227,9 +1239,6 @@
         },
         "Problems": {
           "placeholder": "Problema",
-          "searchPlaceholder": "Buscar por nome ou código…",
-          "searching": "Buscando…",
-          "empty": "Nenhum problema encontrado",
           "by": "por",
           "create": "Criar",
           "saveOrder": "Salvar Ordem",

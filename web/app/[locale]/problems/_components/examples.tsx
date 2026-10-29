@@ -18,7 +18,10 @@ export function ProblemExamples({
               <span className="font-medium">{t("input")}:</span>
               <CopyButton value={input} />
             </div>
-            <pre className="mt-1 overflow-x-auto rounded-none border p-2">
+            <pre
+              translate="no"
+              className="notranslate mt-1 overflow-x-auto rounded-none border p-2"
+            >
               {input}
             </pre>
           </div>
@@ -27,7 +30,10 @@ export function ProblemExamples({
               <span className="font-medium">{t("output")}:</span>
               <CopyButton value={outputs[i]} />
             </div>
-            <pre className="mt-1 overflow-x-auto rounded-none border p-2">
+            <pre
+              translate="no"
+              className="notranslate mt-1 overflow-x-auto rounded-none border p-2"
+            >
               {outputs[i]}
             </pre>
           </div>

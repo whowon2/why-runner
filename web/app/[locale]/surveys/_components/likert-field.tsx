@@ -35,21 +35,22 @@ export function LikertField({
     >
       <legend className="sr-only">{label}</legend>
       <p className="text-sm font-medium">{label}</p>
-      <div className="flex flex-wrap gap-2">
+      {/* One column per point: number on top, its label under it. N/A
+          wraps to its own row on narrow screens. */}
+      <div className="grid grid-cols-5 gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
         {options.map((option) => {
           const checked = value === option;
           return (
             <label
               key={option}
               className={cn(
-                "flex cursor-pointer items-center justify-center border px-3 py-2 text-sm tabular-nums transition-colors",
+                "flex cursor-pointer flex-col items-center gap-1 border px-1 py-2 text-center transition-colors sm:w-24 sm:px-2",
                 "has-[:focus-visible]:ring-ring/50 has-[:focus-visible]:ring-[3px]",
-                option === NOT_APPLICABLE ? "min-w-24" : "min-w-10",
+                option === NOT_APPLICABLE && "col-span-5 sm:col-span-1",
                 checked
                   ? "border-primary bg-primary text-primary-foreground"
                   : "hover:bg-muted",
               )}
-              title={t(String(option))}
             >
               <input
                 type="radio"
@@ -59,14 +60,24 @@ export function LikertField({
                 onChange={() => onChange(option)}
                 aria-label={t(String(option))}
               />
-              {option === NOT_APPLICABLE ? t("na") : option}
+              {option !== NOT_APPLICABLE && (
+                <span className="text-sm font-medium tabular-nums">
+                  {option}
+                </span>
+              )}
+              <span
+                className={cn(
+                  "text-[11px] leading-tight sm:text-xs",
+                  option !== NOT_APPLICABLE &&
+                    !checked &&
+                    "text-muted-foreground",
+                )}
+              >
+                {option === NOT_APPLICABLE ? t("na") : t(String(option))}
+              </span>
             </label>
           );
         })}
-      </div>
-      <div className="flex justify-between gap-4 text-xs text-muted-foreground sm:max-w-64">
-        <span>1 = {t("1")}</span>
-        <span className="text-right">5 = {t("5")}</span>
       </div>
     </fieldset>
   );

@@ -1,32 +1,20 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, ChevronsUpDown, Loader, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Loader, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import type {
   Contest,
   ProblemOnContest,
   ProblemPreview,
 } from "@/drizzle/schema";
 import { CreateProblemButton } from "@/app/[locale]/problems/_components/create-button";
+import { ProblemPicker } from "@/app/[locale]/problems/_components/problem-picker";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useAddProblemToContest } from "@/hooks/use-add-problem";
-import { useProblems } from "@/hooks/use-problems";
 import { useRemoveProblemFromContest } from "@/hooks/use-remove-problem";
 import { Link } from "@/i18n/navigation";
 import { contestLeaderboardKey } from "@/hooks/use-contest-leaderboard";
@@ -44,18 +32,6 @@ export function EditContestProblems({
   };
 }) {
   const t = useTranslations("ContestsPage.Tabs.Settings.Problems");
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  useEffect(() => {
-    const timeout = setTimeout(() => setDebouncedSearch(search), 250);
-    return () => clearTimeout(timeout);
-  }, [search]);
-  const { data: problems, isFetching: isSearching } = useProblems({
-    page: 1,
-    pageSize: 20,
-    search: debouncedSearch || undefined,
-  });
   const { mutate: addProblem, isPending: isAddPending } =
     useAddProblemToContest();
   const errorMessage = useActionErrorMessage();
@@ -117,8 +93,6 @@ export function EditContestProblems({
     localOrder.join() !== sorted.map((p) => p.problemId).join();
 
   function handleProblemSelect(id: string) {
-    setPickerOpen(false);
-    setSearch("");
     addProblem(
       { contestId: contest.id, problemId: id },
       {
@@ -135,61 +109,12 @@ export function EditContestProblems({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex w-full gap-2">
-        <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              role="combobox"
-              aria-expanded={pickerOpen}
-              disabled={isAddPending}
-              className="flex-1 justify-between font-normal text-muted-foreground"
-            >
-              {t("placeholder")}
-              <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            className="w-(--radix-popover-trigger-width) p-0"
-            align="start"
-          >
-            {/* Search runs server-side on title and code, so cmdk's own filter is off. */}
-            <Command shouldFilter={false}>
-              <CommandInput
-                placeholder={t("searchPlaceholder")}
-                value={search}
-                onValueChange={setSearch}
-              />
-              <CommandList>
-                <CommandEmpty>
-                  {isSearching ? t("searching") : t("empty")}
-                </CommandEmpty>
-                {problems?.data
-                  ?.filter(
-                    (p) =>
-                      !contest.problems.find((poc) => poc.problemId === p.id),
-                  )
-                  .map((p) => (
-                    <CommandItem
-                      key={p.id}
-                      value={String(p.id)}
-                      onSelect={() => handleProblemSelect(String(p.id))}
-                    >
-                      <span className="font-mono text-xs text-muted-foreground">
-                        [{p.code}]
-                      </span>
-                      <span className="truncate">{p.title}</span>
-                      {p.creatorName && (
-                        <span className="text-xs text-muted-foreground">
-                          {t("by")} {p.creatorName}
-                        </span>
-                      )}
-                    </CommandItem>
-                  ))}
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+        <ProblemPicker
+          disabled={isAddPending}
+          excludeIds={contest.problems.map((p) => p.problemId)}
+          onSelect={handleProblemSelect}
+          placeholder={t("placeholder")}
+        />
         <CreateProblemButton />
       </div>
 

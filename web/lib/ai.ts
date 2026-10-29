@@ -13,9 +13,9 @@ import { ApiError, GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 import { env } from "@/env";
 import {
-  CLAUDE_FALLBACK_MODEL,
+  CLAUDE_MODEL,
   GEMINI_FALLBACK_MODEL,
-  GEMINI_MODEL,
+  GEMINI_LITE_FALLBACK_MODEL,
 } from "@/lib/ai-models";
 
 const ATTEMPT_TIMEOUT_MS = 30_000;
@@ -33,13 +33,14 @@ type GenerateInput = {
 class RetryableAiError extends Error {}
 
 function chain(): Attempt[] {
-  const attempts: Attempt[] = [
-    { provider: "gemini", model: GEMINI_MODEL },
-    { provider: "gemini", model: GEMINI_FALLBACK_MODEL },
-  ];
+  const attempts: Attempt[] = [];
   if (env.ANTHROPIC_API_KEY) {
-    attempts.push({ provider: "claude", model: CLAUDE_FALLBACK_MODEL });
+    attempts.push({ provider: "claude", model: CLAUDE_MODEL });
   }
+  attempts.push(
+    { provider: "gemini", model: GEMINI_FALLBACK_MODEL },
+    { provider: "gemini", model: GEMINI_LITE_FALLBACK_MODEL },
+  );
   return attempts;
 }
 

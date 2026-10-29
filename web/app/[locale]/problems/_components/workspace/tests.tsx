@@ -48,7 +48,10 @@ export function ProblemTestsTab({ problemId }: { problemId: string }) {
                   <span className="font-medium">{t("input")}:</span>
                   <CopyButton value={testCase.input} />
                 </div>
-                <pre className="mt-1 overflow-x-auto rounded-none border p-2">
+                <pre
+                  translate="no"
+                  className="notranslate mt-1 overflow-x-auto rounded-none border p-2"
+                >
                   {testCase.input}
                 </pre>
               </div>
@@ -57,7 +60,10 @@ export function ProblemTestsTab({ problemId }: { problemId: string }) {
                   <span className="font-medium">{t("output")}:</span>
                   <CopyButton value={testCase.output} />
                 </div>
-                <pre className="mt-1 overflow-x-auto rounded-none border p-2">
+                <pre
+                  translate="no"
+                  className="notranslate mt-1 overflow-x-auto rounded-none border p-2"
+                >
                   {testCase.output}
                 </pre>
               </div>

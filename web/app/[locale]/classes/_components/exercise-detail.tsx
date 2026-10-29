@@ -1,21 +1,21 @@
 "use client";
 
-import Editor from "@monaco-editor/react";
 import { CheckCircle2, Code2, Copy, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
 import { useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import { toast } from "sonner";
 import "katex/dist/katex.min.css";
+import { markdownComponents } from "@/components/markdown-components";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { CodeEditor } from "@/components/code-editor";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -101,6 +101,7 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
           <CardContent className="flex flex-col gap-4">
             <div className="prose dark:prose-invert max-w-none text-foreground prose-p:leading-relaxed prose-pre:bg-muted/50">
               <ReactMarkdown
+                components={markdownComponents}
                 rehypePlugins={[rehypeKatex]}
                 remarkPlugins={[remarkMath]}
               >
@@ -256,7 +257,6 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
   const errorMessage = useActionErrorMessage();
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState<Language | null>(null);
-  const { theme, systemTheme } = useTheme();
   const { mutate, isPending } = useCreateExerciseSubmission();
   const starterComments = useStarterComments();
 
@@ -294,45 +294,36 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
   return (
     <Card className="bg-transparent shadow-none">
       <CardContent className="flex flex-col gap-4">
-        <div className="flex justify-between gap-2">
-          <Select onValueChange={handleLanguageChange}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={tUpload("languagePlaceholder")} />
-            </SelectTrigger>
-            <SelectContent>
-              {LANGUAGES.map((lang) => (
-                <SelectItem key={lang} value={lang}>
-                  {lang}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <ResetCodeButton
-            code={code}
-            language={language}
-            onReset={setCode}
-            onUndo={setCode}
-          />
-          <Button disabled={isPending} onClick={handleSubmit}>
-            <Upload />
-          </Button>
-        </div>
-        <Editor
-          className="rounded-none"
+        <CodeEditor
           height="min(600px, 60vh)"
           language={language || ""}
           onChange={(c) => c !== undefined && setCode(c)}
-          theme={
-            theme === "system"
-              ? systemTheme === "dark"
-                ? "vs-dark"
-                : "light"
-              : theme === "dark"
-                ? "vs-dark"
-                : "light"
+          toolbar={
+            <div className="flex justify-between gap-2">
+              <Select onValueChange={handleLanguageChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={tUpload("languagePlaceholder")} />
+                </SelectTrigger>
+                <SelectContent className="notranslate" translate="no">
+                  {LANGUAGES.map((lang) => (
+                    <SelectItem key={lang} value={lang}>
+                      {lang}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <ResetCodeButton
+                code={code}
+                language={language}
+                onReset={setCode}
+                onUndo={setCode}
+              />
+              <Button disabled={isPending} onClick={handleSubmit}>
+                <Upload />
+              </Button>
+            </div>
           }
           value={code}
-          width="100%"
         />
       </CardContent>
     </Card>
@@ -365,7 +356,10 @@ function ExerciseTestCases({
             <p className="text-muted-foreground text-xs">
               {t("testCaseInput", { index: i + 1 })}
             </p>
-            <pre className="w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 font-mono text-xs text-foreground">
+            <pre
+              translate="no"
+              className="notranslate w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 font-mono text-xs text-foreground"
+            >
               {input}
             </pre>
             {outputs[i] !== undefined && (
@@ -373,7 +367,10 @@ function ExerciseTestCases({
                 <p className="text-muted-foreground text-xs">
                   {t("testCaseOutput", { index: i + 1 })}
                 </p>
-                <pre className="w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 font-mono text-xs text-foreground">
+                <pre
+                  translate="no"
+                  className="notranslate w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 font-mono text-xs text-foreground"
+                >
                   {outputs[i]}
                 </pre>
               </>
@@ -500,7 +497,10 @@ function ExerciseSubmissions({ exerciseId }: { exerciseId: string }) {
                     >
                       <Copy className="size-3.5" />
                     </Button>
-                    <pre className="min-h-11 max-h-60 w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 pr-10 font-mono text-xs text-foreground">
+                    <pre
+                      translate="no"
+                      className="notranslate min-h-11 max-h-60 w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 pr-10 font-mono text-xs text-foreground"
+                    >
                       {s.code}
                     </pre>
                   </div>

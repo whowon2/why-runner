@@ -27,9 +27,17 @@ export async function createExercise(
 
   const linkedProblem = await db.query.problem.findFirst({
     where: eq(problem.id, input.problemId),
-    columns: { title: true },
+    columns: { title: true, status: true, createdBy: true },
   });
-  if (!linkedProblem) throw new Error("Problem not found");
+  // Same visibility as the picker (`getProblems`): published problems plus
+  // the teacher's own drafts — never someone else's draft.
+  if (
+    !linkedProblem ||
+    (linkedProblem.status !== "published" &&
+      linkedProblem.createdBy !== currentUser.id)
+  ) {
+    throw new Error("Problem not found");
+  }
 
   const existing = await db.query.exercise.findFirst({
     where: and(

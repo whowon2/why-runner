@@ -75,7 +75,10 @@ export function SideBySide({
             {t("coverage", { percent: Math.round(data.coverage * 100) })}
           </Badge>
         </div>
-        <pre className="max-h-[70vh] overflow-auto border bg-muted/30 p-3 font-mono text-xs leading-relaxed">
+        <pre
+          translate="no"
+          className="notranslate max-h-[70vh] overflow-auto border bg-muted/30 p-3 font-mono text-xs leading-relaxed"
+        >
           {segments(
             data.code,
             regions.map((r) => r[side]),

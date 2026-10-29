@@ -1,7 +1,8 @@
 import { type NextRequest } from "next/server";
 import createMiddleware from "next-intl/middleware";
-import { PATHNAME_HEADER } from "./lib/auth/redirect-path";
+import { normalizeAcceptLanguage } from "./i18n/accept-language";
 import { routing } from "./i18n/routing";
+import { PATHNAME_HEADER } from "./lib/auth/redirect-path";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -12,6 +13,13 @@ export default function proxy(request: NextRequest) {
     PATHNAME_HEADER,
     request.nextUrl.pathname + request.nextUrl.search,
   );
+  const acceptLanguage = request.headers.get("accept-language");
+  if (acceptLanguage) {
+    request.headers.set(
+      "accept-language",
+      normalizeAcceptLanguage(acceptLanguage),
+    );
+  }
   return intlMiddleware(request);
 }
 

@@ -144,7 +144,7 @@ function SubmissionDetailsDialog({
             <span className="text-xs font-semibold text-muted-foreground">
               {t("code")}
             </span>
-            <pre className="mt-1 max-h-60 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
+            <pre translate="no" className="notranslate mt-1 max-h-60 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
               {code}
             </pre>
           </div>
@@ -154,7 +154,7 @@ function SubmissionDetailsDialog({
               <span className="text-xs font-semibold text-purple-500">
                 {t("constraintViolation")}
               </span>
-              <pre className="mt-1 max-h-40 overflow-auto rounded-md border border-purple-200 bg-purple-50 p-2 font-mono text-xs whitespace-pre-wrap dark:border-purple-900 dark:bg-purple-950/30">
+              <pre translate="no" className="notranslate mt-1 max-h-40 overflow-auto rounded-md border border-purple-200 bg-purple-50 p-2 font-mono text-xs whitespace-pre-wrap dark:border-purple-900 dark:bg-purple-950/30">
                 {constraintViolationDetail}
               </pre>
             </div>
@@ -176,7 +176,7 @@ function SubmissionDetailsDialog({
                 <span className="text-xs font-semibold text-muted-foreground">
                   {t("inputOutput")}
                 </span>
-                <pre className="mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
+                <pre translate="no" className="notranslate mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
                   {report.failure_details.input}
                 </pre>
               </div>
@@ -184,7 +184,7 @@ function SubmissionDetailsDialog({
                 <span className="text-xs font-semibold text-muted-foreground">
                   {t("inputOutput")}
                 </span>
-                <pre className="mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
+                <pre translate="no" className="notranslate mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
                   {report.failure_details.expected}
                 </pre>
               </div>
@@ -206,7 +206,7 @@ function SubmissionDetailsDialog({
                       <span className="text-xs text-muted-foreground">
                         {tTests("input")}
                       </span>
-                      <pre className="mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
+                      <pre translate="no" className="notranslate mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
                         {testCase.input}
                       </pre>
                     </div>
@@ -214,7 +214,7 @@ function SubmissionDetailsDialog({
                       <span className="text-xs text-muted-foreground">
                         {tTests("output")}
                       </span>
-                      <pre className="mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
+                      <pre translate="no" className="notranslate mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
                         {testCase.output}
                       </pre>
                     </div>
@@ -225,7 +225,7 @@ function SubmissionDetailsDialog({
           )}
 
           {!report && output && (
-            <pre className="max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
+            <pre translate="no" className="notranslate max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
               {output}
             </pre>
           )}

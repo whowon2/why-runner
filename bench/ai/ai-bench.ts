@@ -9,7 +9,7 @@ import { join } from "node:path";
 import { z } from "zod";
 import { PROBLEM_TAGS } from "@/drizzle/schema";
 import { generateJson, generateText } from "@/lib/ai";
-import { CLAUDE_FALLBACK_MODEL, GEMINI_FALLBACK_MODEL, GEMINI_MODEL } from "@/lib/ai-models";
+import { CLAUDE_MODEL, GEMINI_FALLBACK_MODEL, GEMINI_LITE_FALLBACK_MODEL } from "@/lib/ai-models";
 import {
   getNarrativePrompt,
   getProblemReviewPrompt,
@@ -24,7 +24,12 @@ import {
 } from "@/lib/prompt";
 
 const root = join(import.meta.dir, "..", "..");
-const CHAIN = [GEMINI_MODEL, GEMINI_FALLBACK_MODEL, CLAUDE_FALLBACK_MODEL];
+// Same order as lib/ai.ts chain(): Claude only runs when its key is set.
+const CHAIN = [
+  ...(process.env.ANTHROPIC_API_KEY ? [CLAUDE_MODEL] : []),
+  GEMINI_FALLBACK_MODEL,
+  GEMINI_LITE_FALLBACK_MODEL,
+];
 type P = { title: string; description: string; difficulty: string; inputs: string[]; outputs: string[] };
 const problems: P[] = JSON.parse(readFileSync(join(root, "problems.json"), "utf8"));
 const failures: { problem: P; code: string; language: string; output: string }[] = JSON.parse(
