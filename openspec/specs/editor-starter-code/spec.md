@@ -1,7 +1,7 @@
 # editor-starter-code Specification
 
 ## Purpose
-TBD - created by archiving change add-language-starter-code. Update Purpose after archive.
+Defines the per-language starter templates shown in code editors (problem workspace, contest upload panel, class exercise), when they load on language selection, how they interact with contest localStorage slots, and the reset-to-starter action with undo.
 ## Requirements
 ### Requirement: Every supported language has a starter template
 The system SHALL define one starter template for each value of the `language` enum (`c`, `cpp`, `java`, `python`, `rust`, `portugol`). Each template SHALL be a complete program that, submitted unchanged, compiles and runs in the judge, reads two whitespace-separated integers from standard input, and writes their sum followed by a newline to standard output. Each template SHALL contain a comment marking the input-reading line(s) and a comment marking the output-writing line(s), with the comment text in the user's current UI locale. The Java template SHALL declare `public class Main`.
