@@ -8,6 +8,10 @@ import { useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  ResetCodeButton,
+  useStarterComments,
+} from "@/components/reset-code-button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -25,6 +29,7 @@ import {
 import type { Language } from "@/drizzle/schema";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useCreateProblemSubmission } from "@/hooks/use-create-problem-submission";
+import { nextCodeOnLanguageChange } from "@/lib/starter-code";
 
 const EXTENSIONS: Record<Language, string[]> = {
   c: ["c"],
@@ -54,6 +59,13 @@ export function ProblemSubmitTab({
   const t = useTranslations("ProblemsPage.Workspace.Submit");
   const tCommon = useTranslations("ToolTips");
   const errorMessage = useActionErrorMessage();
+  const starterComments = useStarterComments();
+
+  function handleLanguageChange(value: string) {
+    const next = value as Language;
+    setCode(nextCodeOnLanguageChange(code, language, next, starterComments));
+    setLanguage(next);
+  }
 
   function handleSubmit() {
     if (!language) {
@@ -107,7 +119,7 @@ export function ProblemSubmitTab({
       <CardContent className="flex h-full w-full flex-col gap-4">
         <div className="flex justify-between gap-2">
           <Select
-            onValueChange={(v) => setLanguage(v as Language)}
+            onValueChange={handleLanguageChange}
             value={language ?? undefined}
           >
             <SelectTrigger className="w-full">
@@ -143,6 +155,13 @@ export function ProblemSubmitTab({
               <TooltipContent>{tCommon("open-file")}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
+
+          <ResetCodeButton
+            code={code}
+            language={language}
+            onReset={setCode}
+            onUndo={setCode}
+          />
 
           <Button disabled={isPending} onClick={handleSubmit}>
             <Upload />

@@ -7,6 +7,10 @@ import { useFormatter, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import {
+  ResetCodeButton,
+  useStarterComments,
+} from "@/components/reset-code-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -26,6 +30,7 @@ import {
 import type { Contest, Language, ProblemPreview } from "@/drizzle/schema";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useCreateSubmission } from "@/hooks/use-create-submission";
+import { getStarterCode } from "@/lib/starter-code";
 import { cn } from "@/lib/utils";
 
 export function UploadCode({
@@ -57,6 +62,9 @@ export function UploadCode({
   const tAI = useTranslations("ContestsPage.Tabs.Problem.Submissions.AI");
   const queryClient = useQueryClient();
   const errorMessage = useActionErrorMessage();
+  const starterComments = useStarterComments();
+  const starterCommentsRef = useRef(starterComments);
+  starterCommentsRef.current = starterComments;
 
   const extensions = {
     c: ["c"],
@@ -145,11 +153,19 @@ export function UploadCode({
   const slotKey = language ? `code-${problem.id}-${language}` : null;
   const slotKeyRef = useRef(slotKey);
   slotKeyRef.current = slotKey;
+  const resetSlotKeyRef = useRef<string | null>(null);
 
-  // Returns whether anything was written: empty code never overwrites a
-  // saved version, and unchanged code is not rewritten.
+  // The slot's language is the last segment of its key.
+  function slotStarter(key: string): string {
+    const slotLanguage = key.slice(key.lastIndexOf("-") + 1) as Language;
+    return getStarterCode(slotLanguage, starterCommentsRef.current);
+  }
+
+  // Returns whether anything was written: empty code or the untouched
+  // starter never overwrites a saved version, and unchanged code is not
+  // rewritten.
   function writeSlot(key: string, value: string): boolean {
-    if (!value) return false;
+    if (!value || value === slotStarter(key)) return false;
     try {
       if (localStorage.getItem(key) === value) return false;
       localStorage.setItem(key, value);
@@ -174,6 +190,24 @@ export function UploadCode({
     justSavedTimer.current = setTimeout(() => setJustSaved(false), 2000);
   }
 
+  // Resetting also drops the saved version, so a reload shows the starter.
+  // Undo only applies while the same slot is still open.
+  function handleReset(starter: string) {
+    const key = slotKey;
+    if (key) {
+      try {
+        localStorage.removeItem(key);
+      } catch {}
+    }
+    resetSlotKeyRef.current = key;
+    setSavedAt(null);
+    setCode(starter);
+  }
+
+  function handleUndoReset(previous: string) {
+    if (slotKeyRef.current === resetSlotKeyRef.current) setCode(previous);
+  }
+
   function handleSaveCode() {
     if (!code) {
       toast.warning(tUpload("noCodeToSave"));
@@ -196,7 +230,7 @@ export function UploadCode({
   };
 
   // Switching problem or language: save the editor into the slot being left,
-  // then show the saved version of the slot being entered (or an empty editor).
+  // then show the saved version of the slot being entered (or the starter).
   // The component is not remounted per problem, so without this the previous
   // slot's code would stay in the editor and be saved over the new slot.
   const prevSlotKeyRef = useRef(slotKey);
@@ -231,7 +265,7 @@ export function UploadCode({
       return;
     }
 
-    setCode(stored ?? "");
+    setCode(stored ?? slotStarter(slotKey));
   }, [slotKey, tAI, tUpload]);
 
   // Closing or reloading the tab doesn't blur the editor; save then too.
@@ -311,6 +345,13 @@ export function UploadCode({
                 <TooltipContent>{t("ToolTips.save")}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
+
+            <ResetCodeButton
+              code={code}
+              language={language}
+              onReset={handleReset}
+              onUndo={handleUndoReset}
+            />
 
             <TooltipProvider>
               <Tooltip>

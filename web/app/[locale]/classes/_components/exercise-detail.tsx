@@ -33,6 +33,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { BlockWorkspace } from "@/components/blocks";
 import { PortugolCodePanel } from "@/components/blocks/portugol-code-panel";
+import {
+  ResetCodeButton,
+  useStarterComments,
+} from "@/components/reset-code-button";
 import { ParsonsEditor } from "@/components/parsons/parsons-editor";
 import { VisualAnswer } from "@/components/submissions/visual-answer";
 import type { Language } from "@/drizzle/schema";
@@ -46,6 +50,7 @@ import {
   type SerializedWorkspace,
 } from "@/lib/blocks/portugol-generator";
 import type { ParsonsLine } from "@/lib/parsons";
+import { nextCodeOnLanguageChange } from "@/lib/starter-code";
 import { cn } from "@/lib/utils";
 import { AIDialog } from "../../contests/_components/ai-dialog";
 import { StatusBadge } from "@/components/submissions/status-badge";
@@ -253,6 +258,13 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
   const [language, setLanguage] = useState<Language | null>(null);
   const { theme, systemTheme } = useTheme();
   const { mutate, isPending } = useCreateExerciseSubmission();
+  const starterComments = useStarterComments();
+
+  function handleLanguageChange(value: string) {
+    const next = value as Language;
+    setCode(nextCodeOnLanguageChange(code, language, next, starterComments));
+    setLanguage(next);
+  }
 
   function handleSubmit() {
     if (!language) {
@@ -283,7 +295,7 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
     <Card className="bg-transparent shadow-none">
       <CardContent className="flex flex-col gap-4">
         <div className="flex justify-between gap-2">
-          <Select onValueChange={(v) => setLanguage(v as Language)}>
+          <Select onValueChange={handleLanguageChange}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder={tUpload("languagePlaceholder")} />
             </SelectTrigger>
@@ -295,6 +307,12 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
               ))}
             </SelectContent>
           </Select>
+          <ResetCodeButton
+            code={code}
+            language={language}
+            onReset={setCode}
+            onUndo={setCode}
+          />
           <Button disabled={isPending} onClick={handleSubmit}>
             <Upload />
           </Button>
