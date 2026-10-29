@@ -5,11 +5,11 @@ alone (no database, no API).
     bench/.venv/bin/python bench/charts.py
 
 Writes two variants of each chart:
-  docs/presentation/charts/<name>.png        dark, Portuguese (deck v4)
+  docs/presentation/charts/<name>.png        light, Portuguese (deck v5)
   docs/presentation/charts/light/<name>.png  light, English   (thesis; copied to overleaf/figures/)
 Palette: the dataviz reference categorical slots (validated for both
 surfaces with its validate_palette.js); single-series charts use the deck's
-green accent.
+green accent. Deck v4 was dark; v5 switched the deck to a light theme.
 """
 
 import csv
@@ -29,14 +29,14 @@ RES = ROOT / "bench/results"
 OUT = ROOT / "docs/presentation/charts"
 
 THEMES = {
-    "dark": dict(surface="#0b0f14", text="#e6edf3", muted="#8b96a3", grid="#2a323d", accent="#22c55e",
-                 series=["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#9085e9"],
+    "deck": dict(surface="#ffffff", text="#1f2328", muted="#59636e", grid="#e2e1dc", accent="#1a7f37",
+                 series=["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#6250d6"],
                  seq="Blues", lang="pt", dir=OUT),
     "light": dict(surface="#ffffff", text="#0b0b0b", muted="#52514e", grid="#e2e1dc", accent="#0ca30c",
                   series=["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#6250d6"],
                   seq="Blues", lang="en", dir=OUT / "light"),
 }
-T = THEMES["dark"]
+T = THEMES["deck"]
 SUMMARY = {}
 
 LANG_NAME = {"c": "C", "cpp": "C++", "java": "Java", "python": "Python", "rust": "Rust", "portugol": "Portugol"}
@@ -220,7 +220,7 @@ def sandbox():
     ax.axhline(st.median(life), color=T["muted"], linestyle="--", linewidth=1)
     ax.annotate(L(f"só criar + destruir a caixa: {st.median(life):.1f} ms", f"box init + cleanup only: {st.median(life):.1f} ms"),
                 (-0.4, st.median(life)), xytext=(0, 5), textcoords="offset points", ha="left", fontsize=12,
-                color=T["muted"])
+                color=T["muted"], zorder=5, bbox=dict(facecolor=T["surface"], edgecolor="none", pad=2))
     ax.set_xticks(x, [LANG_NAME[lang] for lang in LANGS])
     axis_labels(ax, None, L("custo extra do isolate por execução (ms)", "extra cost of isolate per run (ms)"))
     save(f, "sandbox_overhead")
@@ -251,7 +251,7 @@ def verdicts():
     f, ax = fig(11.5, 5.6)
     ax.yaxis.grid(False)
     from matplotlib.colors import LinearSegmentedColormap
-    low = "#151b23" if T["lang"] == "pt" else "#f4f4f2"
+    low = "#f4f4f2"
     cmap = LinearSegmentedColormap.from_list("v", [low, T["series"][0]])
     ax.imshow(m, cmap=cmap, vmin=0, vmax=m.max(), aspect="auto")
     for i in range(m.shape[0]):
@@ -617,7 +617,7 @@ def e2e():
 
 def main():
     global T
-    for name in ("dark", "light"):
+    for name in ("deck", "light"):
         T = THEMES[name]
         for step in (concurrency, lang_cost, e2e, sandbox, verdicts, regrade, plagiarism, constraints, ai,
                      web_compute, ci):

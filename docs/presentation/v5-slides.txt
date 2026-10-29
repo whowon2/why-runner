@@ -1,0 +1,95 @@
+  1  —  |  (sem título)
+  2  ROTEIRO  |  Roteiro da apresentação
+  3  PARTE 01 DE 10  |  (sem título)
+  4  01 · INTRODUÇÃO  |  Juízes online corrigem código; ensinar é outra coisa
+  5  01 · INTRODUÇÃO  |  A pergunta que guia o trabalho
+  6  01 · INTRODUÇÃO  |  O objetivo é um juiz online feito para a sala de aula
+  7  01 · INTRODUÇÃO  |  Como os sistemas analisados funcionam
+  8  01 · INTRODUÇÃO  |  O que nenhum dos quatro oferece
+  9  PARTE 02 DE 10  |  (sem título)
+ 10  02 · METODOLOGIA  |  Ciclos iterativos: cada versão corrigiu a anterior
+ 11  02 · METODOLOGIA  |  Um teste informal com colegas orientou as mudanças
+ 12  02 · METODOLOGIA  |  O que incomodou virou mudança
+ 13  02 · METODOLOGIA  |  Do lado bom, gostaram do visual e do nome
+ 14  PARTE 03 DE 10  |  (sem título)
+ 15  03 · O PROFESSOR  |  Tudo começa no banco de problemas, com busca por código, tema e dificuldade
+ 16  03 · O PROFESSOR  |  Problemas prontos entram em lote, por um arquivo JSON
+ 17  03 · O PROFESSOR  |  Ao criar um problema, ele só é publicado com uma solução que passa
+ 18  03 · O PROFESSOR  |  A IA escreve essa solução: passou em 18 de 20 problemas
+ 19  03 · O PROFESSOR  |  A IA também sugere a narrativa e as tags do problema
+ 20  03 · O PROFESSOR  |  E aponta casos de borda que faltam nos testes
+ 21  03 · O PROFESSOR  |  Antes de publicar, o professor vê o problema como o aluno vai ver
+ 22  03 · O PROFESSOR  |  Com os problemas prontos, o professor monta o torneio
+ 23  03 · O PROFESSOR  |  Os problemas entram no torneio pelo código
+ 24  03 · O PROFESSOR  |  No torneio privado, o professor aprova quem entra
+ 25  03 · O PROFESSOR  |  O professor também decide quanto a IA ajuda no torneio
+ 26  03 · O PROFESSOR  |  Durante o torneio, o placar segue o estilo das maratonas
+ 27  03 · O PROFESSOR  |  Cada célula conta tentativas, minuto e quem resolveu primeiro
+ 28  PARTE 04 DE 10  |  (sem título)
+ 29  04 · O ALUNO  |  Do outro lado, o aluno entra e vê o que falta fazer
+ 30  04 · O ALUNO  |  Ele escreve a solução num editor que salva sozinho no navegador
+ 31  04 · O ALUNO  |  Cada tentativa recebe um veredito com nome e cor
+ 32  04 · O ALUNO  |  Ao errar, ele vê o caso que falhou e pode pedir uma explicação
+ 33  04 · O ALUNO  |  Notificações avisam o veredito e as aprovações
+ 34  04 · O ALUNO  |  Ctrl K abre uma busca que leva a qualquer lugar
+ 35  PARTE 05 DE 10  |  (sem título)
+ 36  05 · AULAS E TURMA  |  Fora dos torneios, o aluno entra na turma com um código
+ 37  05 · AULAS E TURMA  |  Cada aula da turma é uma lista de exercícios com prazo
+ 38  05 · AULAS E TURMA  |  Para quem nunca programou, a resposta pode ser em blocos
+ 39  05 · AULAS E TURMA  |  Ou em Parsons: ordenar e indentar as linhas certas
+ 40  05 · AULAS E TURMA  |  O professor pode exigir como resolver, não só o resultado
+ 41  05 · AULAS E TURMA  |  Testado: restrições acertam código real e erram texto em strings e comentários
+ 42  05 · AULAS E TURMA  |  Depois do prazo, o professor revisa e comenta cada exercício
+ 43  05 · AULAS E TURMA  |  As notas da turma inteira ficam numa tabela
+ 44  05 · AULAS E TURMA  |  O boletim vai para CSV sem quebrar acentos nem executar fórmulas
+ 45  PARTE 06 DE 10  |  (sem título)
+ 46  06 · PLÁGIO  |  Com os envios da turma, o professor vê os pares mais parecidos
+ 47  06 · PLÁGIO  |  Lado a lado, os trechos iguais aparecem destacados
+ 48  06 · PLÁGIO  |  A mesma comparação funciona em cada exercício das aulas
+ 49  06 · PLÁGIO  |  Por trás, o código vira impressões digitais antes da comparação
+ 50  06 · PLÁGIO  |  Renomear variáveis não engana a comparação
+ 51  06 · PLÁGIO  |  Testado: cópias ofuscadas ficam acima de 0,52; soluções independentes, abaixo
+ 52  06 · PLÁGIO  |  Com o limiar de 0,52: 98% de precisão e 99,5% de revocação
+ 53  06 · PLÁGIO  |  200 alunos comparados em menos de meio segundo
+ 54  PARTE 07 DE 10  |  (sem título)
+ 55  07 · POR DENTRO  |  Por trás de tudo isso, dois serviços que só conversam pelo banco
+ 56  07 · POR DENTRO  |  Um script garante que Rust e TypeScript concordam no banco
+ 57  07 · POR DENTRO  |  Todo código do aluno roda numa caixa sem rede
+ 58  07 · POR DENTRO  |  Seis linguagens, do C ao Portugol
+ 59  07 · POR DENTRO  |  Cada falha tem nome: os seis vereditos
+ 60  07 · POR DENTRO  |  Erro de compilação não penaliza no placar
+ 61  07 · POR DENTRO  |  Memória excedida é deduzida, não detectada
+ 62  07 · POR DENTRO  |  A saída pode ser comparada de quatro jeitos
+ 63  07 · POR DENTRO  |  Quando há várias respostas certas, um corretor decide
+ 64  07 · POR DENTRO  |  O corretor recebe três arquivos e responde pelo código de saída
+ 65  07 · POR DENTRO  |  Testado: ignorar espaços aceita respostas certas que a comparação exata recusava
+ 66  PARTE 08 DE 10  |  (sem título)
+ 67  08 · DESEMPENHO  |  Todos os números vêm de benchmarks reproduzíveis
+ 68  08 · DESEMPENHO  |  Primeiro, o judge passou a julgar vários envios ao mesmo tempo
+ 69  08 · DESEMPENHO  |  4 workers julgam 2,8× mais rápido; 8 workers, 3,8×
+ 70  08 · DESEMPENHO  |  Com 8 workers, metade da turma espera menos de 18 s, não 66 s
+ 71  08 · DESEMPENHO  |  Em 1 CPU, mais workers não ajudam, e a produção roda assim
+ 72  08 · DESEMPENHO  |  Sem fila, o veredito sai em menos de 0,4 s, exceto Java e Portugol
+ 73  08 · DESEMPENHO  |  Compilar custa mais que rodar, exceto no Portugol
+ 74  08 · DESEMPENHO  |  Java e Portugol usam dezenas de vezes mais memória
+ 75  08 · DESEMPENHO  |  O isolate custa cerca de 5 ms por execução
+ 76  08 · DESEMPENHO  |  O judge acertou 63 de 72 vereditos; os erros têm causa conhecida
+ 77  08 · DESEMPENHO  |  Cada ajuda da IA leva de 13 a 20 s
+ 78  08 · DESEMPENHO  |  A IA passa por três modelos; o fallback salvou mais da metade das chamadas
+ 79  08 · DESEMPENHO  |  Placar de 1000 alunos em 0,12 s; boletim em 0,27 s
+ 80  08 · DESEMPENHO  |  51 testes no judge, 112 no site
+ 81  08 · DESEMPENHO  |  Cada push roda três jobs no GitHub Actions
+ 82  PARTE 09 DE 10  |  (sem título)
+ 83  09 · AVALIAÇÃO  |  A avaliação acontece dentro do sistema, no fim da atividade
+ 84  09 · AVALIAÇÃO  |  Quatro questionários, todos com termo de consentimento
+ 85  09 · AVALIAÇÃO  |  A usabilidade é medida pelo SUS
+ 86  09 · AVALIAÇÃO  |  Os resultados saem prontos, anônimos e em CSV
+ 87  09 · AVALIAÇÃO  |  O primeiro teste em sala é em 29/10/2026
+ 88  PARTE 10 DE 10  |  (sem título)
+ 89  10 · DISCUSSÃO  |  O que o sistema faz bem
+ 90  10 · DISCUSSÃO  |  A maior limitação: ainda sem avaliação com alunos
+ 91  10 · DISCUSSÃO  |  Limitações técnicas que os benchmarks mostraram
+ 92  10 · DISCUSSÃO  |  Próximos passos depois do teste em sala
+ 93  10 · DISCUSSÃO  |  Próximas etapas, em ordem
+ 94  REFERÊNCIAS  |  (v3 slide 13)
+ 95  —  |  (sem título)

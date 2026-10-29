@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
 """Screenshots for deck v4, from the local dev server seeded by seed_v4.py.
 Headless Chromium (system /usr/bin/chromium), 1600x900 viewport, 2x scale,
-dark color scheme, Portuguese locale, default theme. Logs in with the local
+light mode (deck v5 is light; v4 shot dark), Portuguese locale, default theme. Logs in with the local
 test accounts listed in web/CLAUDE.md.
 
     bench/.venv/bin/python docs/presentation/shoot_v4.py            # all shots
     bench/.venv/bin/python docs/presentation/shoot_v4.py home gradebook
     bench/.venv/bin/python docs/presentation/shoot_v4.py --explore teacher /br/home
+
+The shots under "deck v3's screenshots" use v3's demo data (prof@demo.local's
+class and problems, rafa@demo.local as an unsubmitted student), whose password
+is not recorded: copy the teacher's password hash onto those two accounts,
+run with DEMO_PASSWORD=teacherteacher, then put the old hash back. `parsons`
+needs aula-5-lacos-demo's due_date in the future (the editor locks after it)
+and `review` needs it in the past (review opens after it); `ai_review` makes a
+real AI call. `survey_results` needs teacher@email.com in SURVEY_ADMIN_EMAILS
+(web/.env.local) while it runs.
 """
 
 import os
@@ -20,8 +29,14 @@ ROOT = Path(__file__).resolve().parents[2]
 SHOTS = Path(__file__).parent / "screenshots"
 PORT = re.search(r"DEV_PORT=(\d+)", (ROOT / "web/.env.local").read_text()).group(1)
 BASE = f"http://localhost:{PORT}"
-ACCOUNTS = {"teacher": ("teacher@email.com", "teacherteacher"), "student": ("user@email.com", "useruser")}
+ACCOUNTS = {"teacher": ("teacher@email.com", "teacherteacher"), "student": ("user@email.com", "useruser"),
+            # v3's demo data (blocks/Parsons lesson, Marina Costa's problems) belongs to these demo
+            # accounts; their password is not recorded, so give them a known one first (see main docstring).
+            "prof": ("prof@demo.local", os.environ.get("DEMO_PASSWORD", "")),
+            "rafa": ("rafa@demo.local", os.environ.get("DEMO_PASSWORD", ""))}
 SCRATCH = Path(os.environ.get("SHOT_SCRATCH", "/tmp"))
+# The app defaults to dark (next-themes, defaultTheme="dark"); its stored choice wins.
+LIGHT = "localStorage.setItem('theme', 'light')"
 
 
 def login(ctx, role):
@@ -94,6 +109,13 @@ def nodock(p):
     p.evaluate(HIDE_DOCK)
 
 
+def save_el(page, name, el, pad=0):
+    """Just the element (a dialog or popover), without the dimmed page around it."""
+    b = el.bounding_box()
+    save(page, name, clip={"x": b["x"] - pad, "y": b["y"] - pad, "width": b["width"] + 2 * pad,
+                           "height": b["height"] + 2 * pad})
+
+
 @shot("student")
 def home(p):
     go(p, "/br/home")
@@ -108,7 +130,7 @@ def palette(p):
     p.wait_for_timeout(700)
     p.keyboard.type("soma")
     p.wait_for_timeout(1200)
-    save(p, "v4-command-palette", clip={"x": 530, "y": 280, "width": 540, "height": 360})
+    save_el(p, "v4-command-palette", p.get_by_role("dialog").first)
 
 
 @shot("student")
@@ -124,7 +146,7 @@ def notifications(p):
     go(p, "/br/home")
     p.locator("button:has(svg.lucide-bell), button[aria-label*='otifica']").first.click()
     p.wait_for_timeout(1200)
-    save(p, "v4-notifications", clip={"x": 560, "y": 300, "width": 520, "height": 440})
+    save_el(p, "v4-notifications", p.locator("[data-radix-popper-content-wrapper] > *").first)
 
 
 @shot("student")
@@ -251,7 +273,7 @@ def problem_import(p):
     go(p, "/br/problems")
     p.get_by_role("button", name=re.compile("Importar")).first.click()
     p.wait_for_timeout(1200)
-    save(p, "v4-problem-import")
+    save_el(p, "v4-problem-import", p.get_by_role("dialog").first)
 
 
 @shot("teacher")
@@ -274,12 +296,179 @@ def survey_results(p):
     save(p, "v4-survey-results", clip={"x": 270, "y": 30, "width": 1060, "height": 480})
 
 
+# ---- deck v3's screenshots, re-shot for the light deck (v5) on v3's demo data --
+
+
+@shot("prof")
+def bank(p):
+    go(p, "/br/problems")
+    nodock(p)
+    p.get_by_placeholder(re.compile("Buscar|Pesquisar")).first.fill("DEMO")
+    p.wait_for_timeout(1200)
+    p.locator("button", has_text="Tags").first.click()
+    p.wait_for_timeout(800)
+    save(p, "lista-problemas-filtros", clip={"x": 270, "y": 30, "width": 1060, "height": 520})
+
+
+@shot("teacher")
+def class_code(p):
+    go(p, "/br/classes/algoritmos-demo-v4")
+    nodock(p)
+    save_box(p, "turma-codigo", p.get_by_text("Algoritmos I — Turma demo").first,
+             p.get_by_text(re.compile("Código da turma")).first, pad=24, x=270, width=1120)
+
+
+def edit_problem(p, slug):
+    go(p, f"/br/problems/{slug}")
+    p.locator("button", has_text="Editar").first.click()
+    p.wait_for_timeout(1500)
+    nodock(p)
+
+
+@shot("prof")
+def narrative_tags(p):
+    edit_problem(p, "numero-primo-demo")
+    top = p.get_by_text("Narrativa", exact=True).first
+    top.scroll_into_view_if_needed()
+    save_box(p, "ia-narrativa-tags", top, p.get_by_text(re.compile("Sugerir tags")).first, pad=70, x=200,
+             width=1200)
+
+
+@shot("prof")
+def ai_review(p):
+    edit_problem(p, "numero-primo-demo")
+    head = p.get_by_text("Revisar com IA").first
+    head.scroll_into_view_if_needed()
+    p.locator("button", has_text="Revisar com IA").first.click()
+    p.get_by_text(re.compile("Adicionar caso de teste")).first.wait_for(timeout=90000)
+    p.wait_for_timeout(800)
+    save_box(p, "ia-revisao-casos-borda", head, p.get_by_text(re.compile("Adicionar caso de teste")).nth(1),
+             pad=24, x=200, width=1200)
+
+
+@shot("prof")
+def validate(p):
+    edit_problem(p, "soma-1-ate-n-demo")
+    head = p.get_by_text("Validar antes de publicar").first
+    head.scroll_into_view_if_needed()
+    box = head.locator("xpath=ancestor::*[.//button[normalize-space()='Validar']][1]")
+    box.locator("button[role=combobox]").first.click()
+    p.get_by_role("option", name="python", exact=True).first.click()
+    editor = box.locator(".monaco-editor, textarea").first
+    editor.click()
+    p.keyboard.press("Control+a")
+    p.keyboard.insert_text("n = int(input())\nprint(n * (n + 1) // 2)\n")
+    box.get_by_role("button", name="Validar").first.click()
+    p.get_by_text(re.compile("Validação aprovada")).first.wait_for(timeout=60000)
+    p.wait_for_timeout(500)
+    save_box(p, "validacao-aprovada", head, p.get_by_text(re.compile("Validação aprovada")).first, pad=24,
+             x=200, width=1200)
+
+
+@shot("prof")
+def preview(p):
+    edit_problem(p, "numero-primo-demo")
+    p.get_by_role("tab", name=re.compile("Pré-visualiza|Visualiza")).first.click()
+    p.wait_for_timeout(1500)
+    nodock(p)
+    title = p.get_by_text("Número primo", exact=True).last
+    title.scroll_into_view_if_needed()
+    p.wait_for_timeout(500)
+    b = title.bounding_box()
+    sy = p.evaluate("window.scrollY")
+    p.screenshot(path=SHOTS / "previsualizacao.png", full_page=True,
+                 clip={"x": 230, "y": b["y"] + sy - 40, "width": 1140, "height": 560})
+    print("saved previsualizacao")
+
+
+@shot("prof")
+def contest_problems(p):
+    go(p, "/br/contests/torneio-relampago-demo")
+    p.locator("button", has_text="Configura").first.click()
+    p.wait_for_timeout(1500)
+    nodock(p)
+    head = p.get_by_text("Problemas", exact=True).last
+    head.scroll_into_view_if_needed()
+    p.get_by_role("combobox").filter(has_text="Problema").first.click()
+    p.keyboard.type("DEMO-10")
+    p.wait_for_timeout(1500)
+    save_box(p, "torneio-busca-codigo", head, p.get_by_text(re.compile("Número primo")).last, pad=24, x=200,
+             width=1200)
+
+
+@shot("prof")
+def editor(p):
+    go(p, "/br/problems/soma-1-ate-n-demo")
+    p.locator("button", has_text="Enviar").first.click()
+    p.wait_for_timeout(2000)
+    nodock(p)
+    p.get_by_role("combobox").filter(has_text=re.compile("linguagem")).first.click()
+    p.get_by_role("option", name="python", exact=True).first.click()
+    p.wait_for_timeout(800)
+    p.locator(".monaco-editor").first.click()
+    p.keyboard.press("Control+a")
+    p.keyboard.insert_text("n = int(input())\ntotal = 0\nfor i in range(1, n + 1):\n    total += i\nprint(total)\n")
+    p.wait_for_timeout(2500)
+    save_box(p, "editor-autosave", p.get_by_role("combobox").first, p.locator(".monaco-editor").first, pad=24)
+
+
+@shot("student")
+def contest_failed_case(p):
+    go(p, "/br/contests/maratona-demo-v4")
+    p.locator("button", has_text=re.compile(r"^\s*A\s*$")).first.click()
+    p.wait_for_timeout(2500)
+    nodock(p)
+    p.get_by_text("Resposta errada").first.click()
+    p.wait_for_timeout(1500)
+    head = p.get_by_text(re.compile(r"^Submissões \(")).first
+    save_box(p, "submissoes-explicar", head, p.get_by_role("button", name=re.compile("Explicar")).first, pad=16)
+
+
+@shot("rafa")
+def parsons(p):
+    go(p, "/br/classes/algoritmos-1-demo/lessons/aula-5-lacos-demo")
+    p.get_by_text("Contagem de vogais").first.click()
+    p.wait_for_timeout(3000)
+    nodock(p)
+    save_box(p, "formato-parsons", p.get_by_text("Contagem de vogais").first,
+             p.get_by_text("s = input()").first, pad=40, x=150, width=1300)
+
+
+@shot("prof")
+def constraints(p):
+    go(p, "/br/classes/algoritmos-1-demo/lessons/aula-5-lacos-demo")
+    p.locator("button", has_text="Restrições").first.click()
+    p.wait_for_timeout(1500)
+    d = p.get_by_role("dialog").first
+    b = d.bounding_box()
+    save(p, "solution-constraints", clip={"x": b["x"] - 8, "y": b["y"] - 8, "width": b["width"] + 16,
+                                          "height": b["height"] + 16})
+
+
+@shot("prof")
+def review(p):
+    go(p, "/br/classes/algoritmos-1-demo/lessons/aula-5-lacos-demo")
+    p.locator("button, a", has_text="Revisar respostas").first.click()
+    p.wait_for_timeout(2500)
+    p.get_by_text("Lucas Andrade").first.click()
+    p.wait_for_timeout(2500)
+    nodock(p)
+    save_box(p, "revisao-professor", p.get_by_text("Lucas Andrade").first, p.get_by_text("Salvar feedback").first,
+             pad=20, x=270, width=1060)
+    # blocks answer: Lucas's exercise 2, blocks plus the Portugol they generate
+    second = p.get_by_text(re.compile("^2\\. Multiplica")).first
+    second.scroll_into_view_if_needed()
+    p.wait_for_timeout(4000)
+    save_box(p, "formato-blocos", second, p.get_by_text("Salvar feedback").nth(1), pad=20, x=270, width=1060)
+
+
 def explore(role, *paths):
     """Screenshots each path at 1x into $SHOT_SCRATCH and lists its buttons and links."""
     with sync_playwright() as pw:
         b = pw.chromium.launch(executable_path="/usr/bin/chromium")
-        ctx = b.new_context(viewport={"width": 1600, "height": 900}, device_scale_factor=1, color_scheme="dark",
+        ctx = b.new_context(viewport={"width": 1600, "height": 900}, device_scale_factor=1, color_scheme="light",
                             locale="pt-BR")
+        ctx.add_init_script(LIGHT)
         p = login(ctx, role)
         for n, path in enumerate(paths):
             go(p, path)
@@ -307,7 +496,8 @@ def main(names):
             role, f = SHOTS_DEF[name]
             if role not in pages:
                 ctx = b.new_context(viewport={"width": 1600, "height": 900}, device_scale_factor=2,
-                                    color_scheme="dark", locale="pt-BR")
+                                    color_scheme="light", locale="pt-BR")
+                ctx.add_init_script(LIGHT)
                 pages[role] = login(ctx, role)
             try:
                 f(pages[role])

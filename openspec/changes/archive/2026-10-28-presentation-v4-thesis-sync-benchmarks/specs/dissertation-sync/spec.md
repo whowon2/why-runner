@@ -7,6 +7,10 @@
 - **WHEN** a reader reads Current Validation Status, Evaluation Status and Limitations in `main.tex`
 - **THEN** they SHALL learn that the instrument is ready, the test is scheduled for 29/10/2026, and no results exist yet
 
+#### Scenario: Reader checks whether roadmap features were validated
+- **WHEN** a reader reads Limitations in `main.tex`
+- **THEN** it explicitly notes the roadmap/authoring/grading capabilities are implemented but pending classroom validation
+
 #### Scenario: Audit file corrected
 - **WHEN** `AUDITORIA_PRE_DEFESA.md` is searched for "23 alunos"
 - **THEN** it SHALL only appear in a note marking that claim as false
