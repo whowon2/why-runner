@@ -1,22 +1,22 @@
 # ai-provider-fallback Specification
 
 ## Purpose
-Defines the shared LLM provider chain used by every AI feature: time-bounded attempts, which failures fall through to the next model/provider (Gemini primary, Gemini fallback, Claude when configured), and logging of failed attempts.
+Defines the shared LLM provider chain used by every AI feature: time-bounded attempts, which failures fall through to the next model/provider (Claude Haiku first when configured, then Gemini, then Gemini lite), and logging of failed attempts.
 ## Requirements
 ### Requirement: AI calls go through a shared provider chain
-Every server-side LLM call SHALL go through a shared module that tries an ordered chain of providers/models: the primary Gemini model, then a fallback Gemini model, then Claude Haiku 5.5 when an Anthropic API key is configured. The first successful result SHALL be returned. The module SHALL NOT be exposed as a server action.
+Every server-side LLM call SHALL go through a shared module that tries an ordered chain of providers/models: Claude Haiku 5.5 first when an Anthropic API key is configured, then the primary Gemini model, then the lighter Gemini fallback model. The first successful result SHALL be returned. The module SHALL NOT be exposed as a server action. Model id constants SHALL be named after their provider and role in the chain, not after a "fallback" role they no longer have.
 
 #### Scenario: Primary succeeds
-- **WHEN** the primary Gemini model returns a valid response
-- **THEN** that response SHALL be returned and no other provider SHALL be called
+- **WHEN** `ANTHROPIC_API_KEY` is set and Claude returns a valid response
+- **THEN** that response SHALL be returned and no Gemini model SHALL be called
 
 #### Scenario: Primary overloaded
-- **WHEN** the primary Gemini model returns 503
-- **THEN** the system SHALL try the fallback Gemini model, and on its failure Claude (if configured), returning the first valid response
+- **WHEN** `ANTHROPIC_API_KEY` is set and Claude returns 529 or 5xx
+- **THEN** the system SHALL try the primary Gemini model, and on its failure the lighter Gemini model, returning the first valid response
 
 #### Scenario: Claude not configured
-- **WHEN** `ANTHROPIC_API_KEY` is not set and both Gemini models fail with retryable errors
-- **THEN** the call SHALL fail with an error, without attempting Claude
+- **WHEN** `ANTHROPIC_API_KEY` is not set
+- **THEN** the chain SHALL start at the primary Gemini model, and the call SHALL fail with an error if both Gemini models fail with retryable errors
 
 ### Requirement: Attempts are time-bounded
 Each provider attempt SHALL be aborted after 30 seconds and treated as a retryable failure, so a hung provider cannot block a request for minutes.
