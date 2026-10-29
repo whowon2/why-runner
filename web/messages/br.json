@@ -66,6 +66,13 @@
     "save": "Salvar no navegador",
     "upload": "Enviar Submissão"
   },
+  "StarterCode": {
+    "read": "Lê a entrada (stdin)",
+    "write": "Escreve a saída (stdout)",
+    "reset": "Restaurar código inicial",
+    "resetDone": "Código restaurado para o modelo inicial",
+    "undo": "Desfazer"
+  },
   "Dock": {
     "home": "Página Inicial",
     "problems": "Problemas",

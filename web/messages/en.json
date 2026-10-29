@@ -66,6 +66,13 @@
     "save": "Save on browser",
     "upload": "Submit"
   },
+  "StarterCode": {
+    "read": "Read input (stdin)",
+    "write": "Write output (stdout)",
+    "reset": "Reset to starter code",
+    "resetDone": "Code reset to the starter template",
+    "undo": "Undo"
+  },
   "Dock": {
     "home": "Home",
     "problems": "Problems",
