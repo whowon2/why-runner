@@ -13,6 +13,7 @@ export type GradebookStudent = {
   id: string;
   name: string;
   username: string;
+  ra: string | null;
   image: string | null;
 };
 
@@ -103,13 +104,14 @@ export function formatScore(score: number | null) {
 }
 
 /**
- * One row per student: name, username, every exercise, every lesson
+ * One row per student: name, username, RA, every exercise, every lesson
  * subtotal, total and max. Same layout as the gradebook page.
  */
 export function gradebookToCsv(gradebook: Gradebook): string {
   const header = [
     "name",
     "username",
+    "ra",
     ...gradebook.lessons.flatMap((l) =>
       l.exercises.map((e) => `${l.title} / ${e.problemTitle}`),
     ),
@@ -121,6 +123,7 @@ export function gradebookToCsv(gradebook: Gradebook): string {
   const rows = gradebook.rows.map((r) => [
     r.student.name,
     r.student.username,
+    r.student.ra ?? "",
     ...r.cells.map(formatScore),
     ...r.lessonTotals.map(formatScore),
     formatScore(r.total),

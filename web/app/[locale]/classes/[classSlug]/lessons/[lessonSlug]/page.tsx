@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { SurveyCta } from "@/components/survey-cta";
 import { db } from "@/drizzle/db";
-import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
+import { requireUser } from "@/lib/auth/require-user";
 import { LessonRoadmap } from "../../../_components/lesson-roadmap";
 
 export default async function LessonPage({
@@ -9,7 +9,7 @@ export default async function LessonPage({
 }: {
   params: Promise<{ classSlug: string; lessonSlug: string }>;
 }) {
-  await requireOnboardedUser({ redirectTo: "/auth/signin" });
+  await requireUser({ redirectTo: "/auth/signin" });
   const { lessonSlug } = await params;
 
   const lesson = await db.query.lesson.findFirst({

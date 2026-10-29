@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { SurveyCta } from "@/components/survey-cta";
 import { getContestBySlug } from "@/lib/actions/contest/get-contest-by-id";
-import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
+import { requireUser } from "@/lib/auth/require-user";
 import { ContestDescription } from "../_components/description";
 import { ContestTabs } from "../_components/tabs";
 
@@ -12,7 +12,7 @@ export default async function Page({
 }) {
   const { slug } = await params;
 
-  const user = await requireOnboardedUser({ redirectTo: "/auth/signin" });
+  const user = await requireUser({ redirectTo: "/auth/signin" });
 
   const contest = await getContestBySlug(slug);
 

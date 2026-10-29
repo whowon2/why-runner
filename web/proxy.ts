@@ -8,7 +8,7 @@ const intlMiddleware = createMiddleware(routing);
 
 export default function proxy(request: NextRequest) {
   // Expose the requested path to server components so auth guards can send
-  // the user back here after sign-in / onboarding.
+  // the user back here after sign-in.
   request.headers.set(
     PATHNAME_HEADER,
     request.nextUrl.pathname + request.nextUrl.search,

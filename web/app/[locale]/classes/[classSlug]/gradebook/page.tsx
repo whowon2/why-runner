@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/drizzle/db";
-import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
+import { requireUser } from "@/lib/auth/require-user";
 import { ClassGradebook } from "../../_components/class-gradebook";
 
 export default async function ClassGradebookPage({
@@ -8,7 +8,7 @@ export default async function ClassGradebookPage({
 }: {
   params: Promise<{ classSlug: string }>;
 }) {
-  const user = await requireOnboardedUser({ redirectTo: "/auth/signin" });
+  const user = await requireUser({ redirectTo: "/auth/signin" });
   const { classSlug } = await params;
 
   const classroom = await db.query.classroom.findFirst({

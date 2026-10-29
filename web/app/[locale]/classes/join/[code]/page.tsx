@@ -1,4 +1,4 @@
-import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
+import { requireUser } from "@/lib/auth/require-user";
 import { JoinClassClient } from "../_components/join-class-client";
 
 export default async function JoinClassPage({
@@ -6,7 +6,7 @@ export default async function JoinClassPage({
 }: {
   params: Promise<{ code: string }>;
 }) {
-  await requireOnboardedUser({ redirectTo: "/auth/signin" });
+  await requireUser({ redirectTo: "/auth/signin" });
   const { code } = await params;
 
   return <JoinClassClient code={code} />;

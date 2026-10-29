@@ -9,10 +9,11 @@ import {
 const report = (passed: number, total: number) =>
   JSON.stringify({ passed_count: passed, total_tests: total });
 
-const student = (id: string, name: string) => ({
+const student = (id: string, name: string, ra: string | null = null) => ({
   id,
   name,
   username: id,
+  ra,
   image: null,
 });
 
@@ -37,7 +38,7 @@ function input(overrides: Partial<GradebookInput> = {}): GradebookInput {
         exercises: [{ id: "b1", problemTitle: "Reverse" }],
       },
     ],
-    students: [student("u2", "Zoe"), student("u1", "Ana")],
+    students: [student("u2", "Zoe"), student("u1", "Ana", "0064019")],
     lessonSubmissions: [{ userId: "u1", lessonId: "A" }],
     completions: [
       { userId: "u1", exerciseId: "a1", output: report(5, 10) },
@@ -104,10 +105,12 @@ describe("gradebookToCsv", () => {
       .replace(/^﻿/, "")
       .split("\r\n");
     expect(lines[0]).toBe(
-      '"name","username","Loops / Sum","Loops / Max","Strings / Reverse","Loops (total)","Strings (total)","total","max"',
+      '"name","username","ra","Loops / Sum","Loops / Max","Strings / Reverse","Loops (total)","Strings (total)","total","max"',
     );
-    expect(lines[1]).toBe('"Ana","u1","0.5","1","","1.5","","1.5","3"');
-    expect(lines[2]).toBe('"Zoe","u2","","","","","","0","3"');
+    expect(lines[1]).toBe(
+      '"Ana","u1","0064019","0.5","1","","1.5","","1.5","3"',
+    );
+    expect(lines[2]).toBe('"Zoe","u2","","","","","","","0","3"');
     expect(lines[3]).toBe("");
   });
 

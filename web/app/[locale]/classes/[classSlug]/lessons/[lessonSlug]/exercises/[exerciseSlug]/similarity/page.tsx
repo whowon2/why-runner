@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/drizzle/db";
-import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
+import { requireUser } from "@/lib/auth/require-user";
 import { ExerciseSimilarity } from "../../../../../../_components/exercise-similarity";
 
 export default async function ExerciseSimilarityPage({
@@ -12,7 +12,7 @@ export default async function ExerciseSimilarityPage({
     exerciseSlug: string;
   }>;
 }) {
-  const user = await requireOnboardedUser({ redirectTo: "/auth/signin" });
+  const user = await requireUser({ redirectTo: "/auth/signin" });
   const { classSlug, lessonSlug, exerciseSlug } = await params;
 
   const exercise = await db.query.exercise.findFirst({

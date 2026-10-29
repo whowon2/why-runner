@@ -87,12 +87,19 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
                     className="flex items-center justify-between gap-2"
                     key={m.id}
                   >
-                    <Link
-                      className="text-sm hover:underline"
-                      href={`/user/${m.username}`}
-                    >
-                      {m.name}
-                    </Link>
+                    <div className="flex items-baseline gap-2">
+                      <Link
+                        className="text-sm hover:underline"
+                        href={`/user/${m.username}`}
+                      >
+                        {m.name}
+                      </Link>
+                      {m.ra && (
+                        <span className="font-mono text-muted-foreground text-xs">
+                          {m.ra}
+                        </span>
+                      )}
+                    </div>
                     <RemoveMemberButton
                       classroomId={classroomId}
                       userId={m.id}

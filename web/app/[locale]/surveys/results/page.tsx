@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
-import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
+import { requireUser } from "@/lib/auth/require-user";
 import { isSurveyAdmin } from "@/lib/surveys/admin";
 import { SurveyResults } from "../_components/survey-results";
 
 export default async function SurveyResultsPage() {
-  const user = await requireOnboardedUser({ redirectTo: "/auth/signin" });
+  const user = await requireUser({ redirectTo: "/auth/signin" });
   if (!isSurveyAdmin(user)) notFound();
 
   return (

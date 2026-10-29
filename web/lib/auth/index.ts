@@ -1,21 +1,64 @@
 import { betterAuth } from "better-auth";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { db } from "@/drizzle/db";
 import { env } from "@/env";
-import { generateUsername } from "@/lib/username";
+import {
+  type IdentityErrorCode,
+  isRaTaken,
+  isUsernameTaken,
+} from "@/lib/identity";
+import {
+  generateUsername,
+  optionalRaSchema,
+  usernameSchema,
+} from "@/lib/username";
+
+// The client maps these codes to translated field errors (sign-up tab).
+const identityError = (code: IdentityErrorCode) =>
+  new APIError("BAD_REQUEST", { message: code });
+
+async function resolveUsername(input: unknown, email: string) {
+  // Social logins send no username: generate one, editable in the profile.
+  if (input === undefined || input === null || input === "") {
+    return generateUsername(email.split("@")[0]);
+  }
+  const parsed = usernameSchema.safeParse(input);
+  if (!parsed.success) throw identityError("USERNAME_INVALID");
+  if (await isUsernameTaken(parsed.data)) throw identityError("USERNAME_TAKEN");
+  return parsed.data;
+}
+
+async function resolveRa(input: unknown) {
+  if (input === undefined || input === null) return null;
+  const parsed = optionalRaSchema.safeParse(input);
+  if (!parsed.success) throw identityError("RA_INVALID");
+  if (parsed.data && (await isRaTaken(parsed.data))) {
+    throw identityError("RA_TAKEN");
+  }
+  return parsed.data;
+}
 
 export const auth = betterAuth({
   user: {
     additionalFields: {
-      username: { type: "string", required: false, input: false },
-      finishedOnboarding: {
-        type: "boolean",
-        required: false,
-        defaultValue: false,
-        input: false,
-      },
+      // Signup inputs. Later edits go through `updateProfile` only (see the
+      // /update-user guard below).
+      username: { type: "string", required: false, input: true },
+      ra: { type: "string", required: false, input: true },
     },
+  },
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path !== "/update-user") return;
+      const body = (ctx.body ?? {}) as Record<string, unknown>;
+      if ("username" in body || "ra" in body) {
+        throw new APIError("BAD_REQUEST", {
+          message: "Use the profile form to change username or RA",
+        });
+      }
+    }),
   },
   databaseHooks: {
     user: {
@@ -24,7 +67,8 @@ export const auth = betterAuth({
           return {
             data: {
               ...user,
-              username: generateUsername(user.email.split("@")[0]),
+              username: await resolveUsername(user.username, user.email),
+              ra: await resolveRa(user.ra),
             },
           };
         },

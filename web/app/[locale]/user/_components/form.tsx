@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import type { User } from "better-auth";
 import { Save } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -27,11 +26,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useUpdateProfile } from "@/hooks/user-update-profile";
-import { usernameSchema } from "@/lib/username";
+import { ActionError } from "@/lib/action-result";
+import { raFieldSchema, usernameSchema } from "@/lib/username";
 
 const updateProfileSchema = z.object({
   username: usernameSchema,
+  ra: raFieldSchema,
   bio: z.string().max(280).optional(),
   location: z.string().max(120).optional(),
   website: z.union([z.url(), z.literal("")]).optional(),
@@ -39,6 +41,7 @@ const updateProfileSchema = z.object({
 
 type ProfileFormUser = Pick<User, "id"> & {
   username?: string;
+  ra?: string | null;
   bio?: string | null;
   location?: string | null;
   website?: string | null;
@@ -55,6 +58,7 @@ export function UpdateForm({
   const form = useForm<z.infer<typeof updateProfileSchema>>({
     defaultValues: {
       username: user.username ?? "",
+      ra: user.ra ?? "",
       bio: user.bio ?? "",
       location: user.location ?? "",
       website: user.website ?? "",
@@ -63,16 +67,20 @@ export function UpdateForm({
   });
 
   const { mutate: updateUser } = useUpdateProfile();
-  const queryClient = useQueryClient();
+  const errorMessage = useActionErrorMessage();
 
   async function onSubmit(values: z.infer<typeof updateProfileSchema>) {
     updateUser(values, {
-      onError() {
+      onError(error) {
+        if (error instanceof ActionError) {
+          const field = error.code.startsWith("RA_") ? "ra" : "username";
+          form.setError(field, { message: errorMessage(error) });
+          return;
+        }
         toast(t("failedUpdate"));
       },
-      async onSuccess() {
+      onSuccess() {
         toast(t("updated"));
-        queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
         onSavedAction?.();
       },
     });
@@ -92,15 +100,29 @@ export function UpdateForm({
                 <FormItem>
                   <FormLabel>{t("username")}</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t("usernamePlaceholder")}
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(e.target.value.toLowerCase())
-                      }
-                    />
+                    <Input placeholder={t("usernamePlaceholder")} {...field} />
                   </FormControl>
                   <FormDescription>{t("usernameDescription")}</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="ra"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("ra")}</FormLabel>
+                  <FormControl>
+                    {/* Text, not number: RAs keep their leading zeros. */}
+                    <Input
+                      inputMode="numeric"
+                      maxLength={7}
+                      placeholder={t("raPlaceholder")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>{t("raDescription")}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

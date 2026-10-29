@@ -47,7 +47,7 @@ def login(ctx, role):
     page.locator('input[type="email"]').first.fill(email)
     page.locator('input[type="password"]').first.fill(password)
     page.locator('input[type="password"]').first.press("Enter")
-    page.wait_for_url(re.compile(r"/(home|problems|onboarding)"), timeout=30000)
+    page.wait_for_url(re.compile(r"/(home|problems)"), timeout=30000)
     return page
 
 

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/drizzle/db";
-import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
+import { requireUser } from "@/lib/auth/require-user";
 import { ExerciseDetail } from "../../../../../_components/exercise-detail";
 import { ExerciseHeader } from "../../../../../_components/exercise-header";
 
@@ -9,7 +9,7 @@ export default async function ExercisePage({
 }: {
   params: Promise<{ classSlug: string; lessonSlug: string; exerciseSlug: string }>;
 }) {
-  await requireOnboardedUser({ redirectTo: "/auth/signin" });
+  await requireUser({ redirectTo: "/auth/signin" });
   const { exerciseSlug } = await params;
 
   const exercise = await db.query.exercise.findFirst({

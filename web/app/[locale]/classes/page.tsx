@@ -1,8 +1,8 @@
-import { requireOnboardedUser } from "@/lib/auth/require-onboarded-user";
+import { requireUser } from "@/lib/auth/require-user";
 import { ClassList } from "./_components/class-list";
 
 export default async function ClassesPage() {
-  await requireOnboardedUser({ redirectTo: "/auth/signin" });
+  await requireUser({ redirectTo: "/auth/signin" });
 
   return (
     <div className="flex w-full flex-1 flex-col items-center gap-4 p-4">

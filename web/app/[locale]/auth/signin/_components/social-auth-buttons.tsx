@@ -2,7 +2,6 @@
 
 import { BetterAuthActionButton } from "@/components/auth/auth-action-button";
 import { authClient } from "@/lib/auth/client";
-import { withRedirectTo } from "@/lib/auth/redirect-path";
 import {
   SUPPORTED_OAUTH_PROVIDER_DETAILS,
   SUPPORTED_OAUTH_PROVIDERS,
@@ -20,7 +19,6 @@ export function SocialAuthButtons({ redirectTo }: { redirectTo: string }) {
           return authClient.signIn.social({
             provider,
             callbackURL: redirectTo,
-            newUserCallbackURL: withRedirectTo("/onboarding", redirectTo),
           });
         }}
       >

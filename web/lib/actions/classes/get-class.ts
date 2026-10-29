@@ -14,7 +14,8 @@ export async function getClass(classroomId: string) {
 
   const memberships = await db.query.classroomMembership.findMany({
     where: eq(classroomMembership.classroomId, classroomId),
-    with: { user: { columns: publicUserColumns } },
+    // RA is private, but only the owner ever receives `members` below.
+    with: { user: { columns: { ...publicUserColumns, ra: true } } },
     orderBy: (m, { asc }) => [asc(m.joinedAt)],
   });
   // The owner isn't a "student" even if they hold a membership row (e.g. self-joined via the code).

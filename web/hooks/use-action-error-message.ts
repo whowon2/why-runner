@@ -9,6 +9,10 @@ const KNOWN_CODES = [
   "SURVEY_NOT_ELIGIBLE",
   "SURVEY_ALREADY_ANSWERED",
   "SURVEY_INVALID",
+  "USERNAME_INVALID",
+  "USERNAME_TAKEN",
+  "RA_INVALID",
+  "RA_TAKEN",
 ] as const;
 
 type KnownCode = (typeof KNOWN_CODES)[number];
