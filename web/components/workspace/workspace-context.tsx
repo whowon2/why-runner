@@ -81,6 +81,8 @@ type WorkspaceState = {
   setMaximized: (maximized: boolean) => void;
   canLoad: boolean;
   load: (language: Language, code: string) => void;
+  /** Shows the console's custom-input tab (stdin box + Run). */
+  openCustomInput: () => void;
   runCustom: () => void;
   playExamples: (indices: number[]) => void;
   submit: () => void;
@@ -141,6 +143,7 @@ export function WorkspaceProvider({
       setMaximized,
       canLoad,
       load: (language, code) => answerSource.current?.load?.(language, code),
+      openCustomInput: () => setEvent({ type: "run" }),
       runCustom: () => {
         const current = answer();
         if (!current) return;

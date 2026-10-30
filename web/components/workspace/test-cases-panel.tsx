@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleDashed, Loader, Lock, Play } from "lucide-react";
+import { CircleDashed, Loader, Lock, Play, Terminal } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ export function TestCasesPanel({ onSelect }: { onSelect?: () => void }) {
     <div className="flex min-h-0 flex-1 flex-col">
       <PanelTitle>{t("title")}</PanelTitle>
       <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-2">
+        {source.runsEnabled && <CustomInputRow onSelect={onSelect} />}
         {source.tests.length === 0 && (
           <p className="flex items-center gap-2 p-2 text-muted-foreground text-sm">
             <Lock className="size-4" />
@@ -39,6 +40,77 @@ export function TestCasesPanel({ onSelect }: { onSelect?: () => void }) {
           </p>
         )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * Run with the viewer's own stdin. The row opens the console's input box;
+ * Play runs it, or just opens the box while it's still empty.
+ */
+function CustomInputRow({ onSelect }: { onSelect?: () => void }) {
+  const t = useTranslations("Workspace.Tests");
+  const tStatus = useTranslations("CodeRunStatus");
+  const { runner, event, openCustomInput, runCustom } = useWorkspace();
+  const run = runner.result.data;
+  const selected = event?.type === "run";
+
+  let result: ReactNode = (
+    <span className="text-muted-foreground text-xs">{t("customHint")}</span>
+  );
+  if (runner.running) {
+    result = <Loader className="size-4 animate-spin text-muted-foreground" />;
+  } else if (runner.runId && run) {
+    result = (
+      <span
+        className={cn(
+          "font-medium text-xs",
+          run.status === "OK"
+            ? "text-green-600 dark:text-green-400"
+            : "text-destructive",
+        )}
+      >
+        {tStatus(run.status)}
+      </span>
+    );
+  }
+
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-2 border border-dashed px-2 py-1.5 text-sm",
+        selected && "border-primary bg-primary/5",
+      )}
+    >
+      <button
+        className="flex min-w-0 flex-1 items-center gap-3 text-left"
+        onClick={() => {
+          openCustomInput();
+          onSelect?.();
+        }}
+        type="button"
+      >
+        <span className="flex w-8 shrink-0 justify-center bg-muted py-0.5">
+          <Terminal className="size-3.5" />
+        </span>
+        <span className="truncate">{t("custom")}</span>
+        <span className="ml-auto text-sm">{result}</span>
+      </button>
+      <Button
+        aria-label={t("playCustom")}
+        disabled={runner.running}
+        onClick={() => {
+          if (runner.stdin.trim()) runCustom();
+          else openCustomInput();
+          onSelect?.();
+        }}
+        size="sm"
+        title={t("playCustom")}
+        variant="outline"
+      >
+        <Play />
+        <span className="hidden xl:inline">{t("playShort")}</span>
+      </Button>
     </div>
   );
 }

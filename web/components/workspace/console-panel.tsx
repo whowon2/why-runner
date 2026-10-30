@@ -2,8 +2,8 @@
 
 import { Loader } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { RunPanel } from "@/components/code-run/code-run";
+import { useEffect, useState } from "react";
+import { RunButton, RunPanel } from "@/components/code-run/code-run";
 import { StatusBadge } from "@/components/submissions/status-badge";
 import { SubmissionDetails } from "@/components/submissions/submission-details";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -22,7 +22,8 @@ import { useWorkspace } from "./workspace-context";
  */
 export function ConsoleBody({ className }: { className?: string }) {
   const t = useTranslations("Workspace.Console");
-  const { event, source, runner, attention, language } = useWorkspace();
+  const { event, source, runner, attention, language, runCustom } =
+    useWorkspace();
   const [tab, setTab] = useState(event?.type === "run" ? "input" : "output");
 
   // Follow the newest event: a custom run lives on the input tab.
@@ -31,6 +32,14 @@ export function ConsoleBody({ className }: { className?: string }) {
     setSeen(attention);
     setTab(event?.type === "run" ? "input" : "output");
   }
+
+  // Opening the custom input puts the cursor in it.
+  useEffect(() => {
+    if (attention === 0 || event?.type !== "run") return;
+    requestAnimationFrame(() =>
+      document.getElementById("code-run-stdin")?.focus(),
+    );
+  }, [attention, event]);
 
   return (
     <Tabs
@@ -53,7 +62,12 @@ export function ConsoleBody({ className }: { className?: string }) {
       </TabsContent>
       {source.runsEnabled && (
         <TabsContent className="min-h-0 overflow-y-auto" value="input">
-          <RunPanel language={language} runner={runner} />
+          <div className="flex flex-col gap-3">
+            <div className="flex justify-end">
+              <RunButton onRun={runCustom} runner={runner} />
+            </div>
+            <RunPanel language={language} runner={runner} />
+          </div>
         </TabsContent>
       )}
     </Tabs>

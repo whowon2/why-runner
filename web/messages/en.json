@@ -2107,13 +2107,14 @@
       "notRun": "Not run",
       "example": "Example {index}",
       "play": "Run example {index}",
-      "playShort": "Play"
+      "playShort": "Play",
+      "custom": "Custom input",
+      "customHint": "Your own stdin",
+      "playCustom": "Run with your input"
     },
     "Actions": {
       "title": "Actions",
       "runAll": "Run all examples",
-      "runCustom": "Custom run",
-      "runCustomHint": "Run once with the input from the Custom input tab. Not graded.",
       "submit": "Submit",
       "latest": "Last submission",
       "showDetails": "Show details in the console",

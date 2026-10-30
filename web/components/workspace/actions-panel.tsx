@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Loader, PlayCircle, Terminal } from "lucide-react";
+import { Check, Loader, PlayCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { StatusBadge } from "@/components/submissions/status-badge";
@@ -12,18 +12,10 @@ import { AiHelpButton } from "./ai-help-button";
 import { PanelTitle } from "./test-cases-panel";
 import { useWorkspace } from "./workspace-context";
 
-/** Run / Run all / Submit, plus the newest submission's live verdict. */
+/** Run all / Submit, plus the newest submission's live verdict. */
 export function ActionsPanel({ onAction }: { onAction?: () => void }) {
   const t = useTranslations("Workspace.Actions");
-  const {
-    source,
-    examples,
-    runner,
-    runCustom,
-    playExamples,
-    submit,
-    setEvent,
-  } = useWorkspace();
+  const { source, examples, playExamples, submit, setEvent } = useWorkspace();
   const latest = source.submissions?.[0];
   const report = useMemo(
     () => (latest ? parseReport(latest.output) : null),
@@ -41,7 +33,7 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
       <PanelTitle>{t("title")}</PanelTitle>
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2">
         {source.runsEnabled && (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid gap-2">
             <Button
               disabled={examples.busy || source.tests.length === 0}
               onClick={() =>
@@ -55,19 +47,6 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
                 <PlayCircle />
               )}
               {t("runAll")}
-            </Button>
-            <Button
-              disabled={runner.running}
-              onClick={() => act(runCustom)}
-              title={t("runCustomHint")}
-              variant="outline"
-            >
-              {runner.running ? (
-                <Loader className="animate-spin" />
-              ) : (
-                <Terminal />
-              )}
-              {t("runCustom")}
             </Button>
           </div>
         )}
