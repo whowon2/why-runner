@@ -16,6 +16,9 @@ const KNOWN_CODES = [
   "USER_NOT_FOUND",
   "IS_OWNER",
   "CANNOT_DEMOTE_SELF",
+  "RUNS_DISABLED",
+  "RUN_IN_PROGRESS",
+  "INPUT_TOO_LARGE",
 ] as const;
 
 type KnownCode = (typeof KNOWN_CODES)[number];

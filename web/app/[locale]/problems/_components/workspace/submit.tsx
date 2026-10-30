@@ -6,6 +6,12 @@ import { useRef } from "react";
 import { toast } from "sonner";
 import { CodeEditor } from "@/components/code-editor";
 import { LatestVerdict } from "@/components/submissions/latest-verdict";
+import {
+  type CodeRunner,
+  RunButton,
+  RunPanel,
+  type RunProgram,
+} from "@/components/code-run/code-run";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -29,6 +35,7 @@ import {
 import type { Language, Submission } from "@/drizzle/schema";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useCreateProblemSubmission } from "@/hooks/use-create-problem-submission";
+import { useRunsEnabled } from "@/hooks/use-runs-enabled";
 import { nextCodeOnLanguageChange } from "@/lib/starter-code";
 
 const EXTENSIONS: Record<Language, string[]> = {
@@ -49,8 +56,10 @@ export function ProblemSubmitTab({
   latest,
   draftFor,
   clearDraft,
+  runner,
 }: {
   problemId: string;
+  runner: CodeRunner;
   code: string;
   setCode: (code: string) => void;
   language: Language | null;
@@ -65,6 +74,7 @@ export function ProblemSubmitTab({
   const tCommon = useTranslations("ToolTips");
   const errorMessage = useActionErrorMessage();
   const starterComments = useStarterComments();
+  const runsEnabled = useRunsEnabled();
 
   function handleLanguageChange(value: string) {
     const next = value as Language;
@@ -80,19 +90,31 @@ export function ProblemSubmitTab({
     setLanguage(next);
   }
 
-  function handleSubmit() {
+  /** The chosen language, or null after warning about what's missing. */
+  function checkProgram(): Language | null {
     if (!language) {
       toast.warning(t("selectLanguage"));
-      return;
+      return null;
     }
-
     if (!code.length) {
       toast.warning(t("emptyCode"));
-      return;
+      return null;
     }
+    return language;
+  }
+
+  function program(): RunProgram | null {
+    const lang = checkProgram();
+    if (!lang) return null;
+    return { context: "problem", problemId, code, language: lang };
+  }
+
+  function handleSubmit() {
+    const lang = checkProgram();
+    if (!lang) return;
 
     mutate(
-      { code, language, problemId },
+      { code, language: lang, problemId },
       {
         onError: (error) => {
           toast.error(t("failedSubmit"), {
@@ -187,6 +209,12 @@ export function ProblemSubmitTab({
               />
 
               <LatestVerdict submission={latest} />
+              {runsEnabled && (
+                <RunButton
+                  onRun={() => runner.run(program())}
+                  runner={runner}
+                />
+              )}
 
               <Button disabled={isPending} onClick={handleSubmit}>
                 <Upload />
@@ -196,6 +224,7 @@ export function ProblemSubmitTab({
           }
           value={code}
         />
+        {runsEnabled && <RunPanel language={language} runner={runner} />}
       </CardContent>
     </Card>
   );

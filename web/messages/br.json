@@ -1258,7 +1258,9 @@
           "nameMinError": "O nome deve ter pelo menos 2 caracteres",
           "endDateAfterStartError": "A data de término deve ser depois da data de início",
           "aiAssistanceLabel": "Assistência de IA",
-          "aiAssistanceDescription": "Ajuda máxima que os participantes podem receber da IA em submissões com falha. As dicas são reveladas um nível por vez."
+          "aiAssistanceDescription": "Ajuda máxima que os participantes podem receber da IA em submissões com falha. As dicas são reveladas um nível por vez.",
+          "allowRunsLabel": "Permitir execuções livres",
+          "allowRunsDescription": "Os participantes podem executar o código com a própria entrada antes de submeter. Execuções nunca valem nota e nunca usam os testes."
         },
         "Problems": {
           "placeholder": "Problema",
@@ -1692,7 +1694,10 @@
     "RA_TAKEN": "Este RA já está cadastrado em outra conta.",
     "USER_NOT_FOUND": "Nenhum usuário com esse nome de usuário ou email.",
     "IS_OWNER": "Esse é o dono da turma, que já gerencia a turma.",
-    "CANNOT_DEMOTE_SELF": "Você não pode remover seu próprio papel de admin."
+    "CANNOT_DEMOTE_SELF": "Você não pode remover seu próprio papel de admin.",
+    "RUNS_DISABLED": "Executar código não está disponível aqui.",
+    "RUN_IN_PROGRESS": "Aguarde a execução atual terminar.",
+    "INPUT_TOO_LARGE": "Sua entrada é grande demais (máx. {max} caracteres)."
   },
   "JudgeReport": {
     "wrongAnswerOnTest": "Resposta errada no teste {index}",
@@ -2022,5 +2027,34 @@
       "demote": "Remover admin",
       "roleUpdated": "Papel atualizado."
     }
+  },
+  "CodeRun": {
+    "run": "Executar",
+    "runHint": "Execute seu código uma vez com a sua própria entrada. Não vale nota.",
+    "input": "Entrada (stdin)",
+    "inputPlaceholder": "Digite a entrada que seu programa lê…",
+    "notGraded": "A execução só mostra a saída do seu programa. Não é avaliada e não conta como submissão.",
+    "portugolInput": "O Portugol lê um valor por linha ou espaço.",
+    "waiting": "Executando… (o juiz pode levar alguns segundos para acordar)",
+    "failed": "Não foi possível executar seu código",
+    "exitCode": "Código de saída {code}",
+    "time": "{ms} ms",
+    "memory": "{kb} KB",
+    "stdout": "Saída (stdout)",
+    "stderr": "Erros (stderr)",
+    "compilerOutput": "Saída do compilador",
+    "empty": "(vazia)",
+    "copy": "Copiar",
+    "truncated": "Saída muito longa: só os primeiros 64 KB são mostrados."
+  },
+  "CodeRunStatus": {
+    "PENDING": "Na fila",
+    "RUNNING": "Executando",
+    "OK": "Concluído",
+    "RUNTIME_ERROR": "Erro de execução",
+    "TIME_LIMIT_EXCEEDED": "Tempo limite excedido",
+    "MEMORY_LIMIT_EXCEEDED": "Limite de memória excedido",
+    "COMPILATION_ERROR": "Erro de compilação",
+    "ERROR": "Erro do juiz"
   }
 }

@@ -33,6 +33,8 @@ export const contest = pgTable("contest", {
   endDate: timestamp("end_date"),
   isPrivate: boolean("is_private").default(false).notNull(),
   aiAssistance: ContestAiAssistance("ai_assistance").default("off").notNull(),
+  // Whether participants may "Run with custom input" (ungraded, code_run).
+  allowRuns: boolean("allow_runs").default(true).notNull(),
   createdBy: text("created_by").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

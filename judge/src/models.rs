@@ -61,6 +61,36 @@ pub struct Submission {
     pub exercise_id: Option<Uuid>,
 }
 
+/// Outcome of an ungraded "run with custom input" (`code_run` table). Never
+/// `PASSED`/`WRONG_ANSWER`: a run has no expected output.
+#[derive(Debug, Type, PartialEq, Clone, Copy)]
+#[sqlx(type_name = "code_run_status", rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum CodeRunStatus {
+    Pending,
+    Running,
+    /// Exited with code 0.
+    Ok,
+    RuntimeError,
+    TimeLimitExceeded,
+    MemoryLimitExceeded,
+    CompilationError,
+    /// Judge-side fault (sandbox failure, judge restarted mid-run).
+    Error,
+}
+
+/// A claimed `code_run` row: the student's program and their own stdin.
+/// Deliberately carries nothing from the problem but its id, which is only
+/// used to look up the time limit (`DbClient::get_problem_time_limit`), so a
+/// run can never see test data.
+#[derive(Debug, FromRow)]
+pub struct CodeRun {
+    pub id: Uuid,
+    pub code: String,
+    pub language: Language,
+    pub problem_id: Uuid,
+    pub stdin: String,
+}
+
 #[derive(Debug, FromRow)]
 pub struct Problem {
     pub inputs: Vec<String>,

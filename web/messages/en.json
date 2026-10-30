@@ -1258,7 +1258,9 @@
           "nameMinError": "Name must be at least 2 characters",
           "endDateAfterStartError": "End date must be after the start date",
           "aiAssistanceLabel": "AI assistance",
-          "aiAssistanceDescription": "Maximum help participants can get from the AI on failed submissions. Hints are revealed one level at a time."
+          "aiAssistanceDescription": "Maximum help participants can get from the AI on failed submissions. Hints are revealed one level at a time.",
+          "allowRunsLabel": "Allow custom runs",
+          "allowRunsDescription": "Participants can run their code with their own input before submitting. Runs are never graded and never use the tests."
         },
         "Problems": {
           "placeholder": "Problem",
@@ -1692,7 +1694,10 @@
     "RA_TAKEN": "This RA is already registered to another account.",
     "USER_NOT_FOUND": "No user with that username or email.",
     "IS_OWNER": "That's the class owner, who already manages the class.",
-    "CANNOT_DEMOTE_SELF": "You can't remove your own admin role."
+    "CANNOT_DEMOTE_SELF": "You can't remove your own admin role.",
+    "RUNS_DISABLED": "Running code is not available here.",
+    "RUN_IN_PROGRESS": "Wait for your current run to finish.",
+    "INPUT_TOO_LARGE": "Your input is too large (max {max} characters)."
   },
   "JudgeReport": {
     "wrongAnswerOnTest": "Wrong answer on test {index}",
@@ -2022,5 +2027,34 @@
       "demote": "Remove admin",
       "roleUpdated": "Role updated."
     }
+  },
+  "CodeRun": {
+    "run": "Run",
+    "runHint": "Run your code once with your own input. Not graded.",
+    "input": "Input (stdin)",
+    "inputPlaceholder": "Type the input your program reads…",
+    "notGraded": "Runs only show your program's output. They aren't graded and don't count as submissions.",
+    "portugolInput": "Portugol reads one value per line or space.",
+    "waiting": "Running… (the judge may take a few seconds to wake up)",
+    "failed": "Could not run your code",
+    "exitCode": "Exit code {code}",
+    "time": "{ms} ms",
+    "memory": "{kb} KB",
+    "stdout": "Output (stdout)",
+    "stderr": "Errors (stderr)",
+    "compilerOutput": "Compiler output",
+    "empty": "(empty)",
+    "copy": "Copy",
+    "truncated": "Output too long: only the first 64 KB is shown."
+  },
+  "CodeRunStatus": {
+    "PENDING": "Pending",
+    "RUNNING": "Running",
+    "OK": "Finished",
+    "RUNTIME_ERROR": "Runtime error",
+    "TIME_LIMIT_EXCEEDED": "Time limit exceeded",
+    "MEMORY_LIMIT_EXCEEDED": "Memory limit exceeded",
+    "COMPILATION_ERROR": "Compilation error",
+    "ERROR": "Judge error"
   }
 }
