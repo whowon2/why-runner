@@ -20,7 +20,6 @@ import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useCreateProblemSubmission } from "@/hooks/use-create-problem-submission";
 import { useProblemPracticeSubmissions } from "@/hooks/use-problem-practice-submissions";
 import { useProblemTests } from "@/hooks/use-problem-tests";
-import { useRunsEnabled } from "@/hooks/use-runs-enabled";
 import { authClient } from "@/lib/auth/client";
 import { ProblemStatisticsTab } from "./statistics";
 import { ProblemTestsTab } from "./tests";
@@ -35,7 +34,6 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
   // edit page re-checks it on the server.
   const isOwner =
     session?.user?.id === problem.createdBy || session?.user?.role === "admin";
-  const runsEnabled = useRunsEnabled();
   const { data: tests } = useProblemTests(problem.id);
   const { data: submissions, isPending: submissionsPending } =
     useProblemPracticeSubmissions(problem.id);
@@ -46,7 +44,7 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
       tests: tests?.samples ?? [],
       hiddenCount: tests?.hiddenCount ?? 0,
       compare: { mode: problem.compareMode, epsilon: problem.floatEpsilon },
-      runsEnabled,
+      runsEnabled: true,
       lockedReason: null,
       submissions: submissions as Submission[] | undefined,
       submissionsPending,
@@ -81,7 +79,6 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
     [
       tests,
       problem,
-      runsEnabled,
       submissions,
       submissionsPending,
       submitting,

@@ -33,7 +33,6 @@ import { useExercise } from "@/hooks/use-exercise";
 import { useExerciseSubmissions } from "@/hooks/use-exercise-submissions";
 import { useNextExercise } from "@/hooks/use-next-exercise";
 import { usePreviousExercise } from "@/hooks/use-previous-exercise";
-import { useRunsEnabled } from "@/hooks/use-runs-enabled";
 import {
   generatePortugol,
   type SerializedWorkspace,
@@ -67,7 +66,6 @@ function Workspace({ exercise }: { exercise: Exercise }) {
     "ContestsPage.Tabs.Problem.Submissions.Upload",
   );
   const errorMessage = useActionErrorMessage();
-  const runsGate = useRunsEnabled();
   const { data: submissions, isPending: submissionsPending } =
     useExerciseSubmissions(exercise.id);
   const { mutate, isPending: submitting } = useCreateExerciseSubmission();
@@ -83,7 +81,7 @@ function Workspace({ exercise }: { exercise: Exercise }) {
         mode: exercise.problem.compareMode,
         epsilon: exercise.problem.floatEpsilon,
       },
-      runsEnabled: runsGate && exercise.mode !== "parsons",
+      runsEnabled: exercise.mode !== "parsons",
       lockedReason: exercise.submissionsLocked ? t("Locked.dueDate") : null,
       submissions: submissions as Submission[] | undefined,
       submissionsPending,
@@ -136,7 +134,6 @@ function Workspace({ exercise }: { exercise: Exercise }) {
     }),
     [
       exercise,
-      runsGate,
       submissions,
       submissionsPending,
       submitting,

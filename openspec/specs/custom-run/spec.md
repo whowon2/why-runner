@@ -114,12 +114,16 @@ The judge SHALL mark a run `ERROR` when it has been `RUNNING` for more than 2 mi
 - **WHEN** the idle timeout has elapsed but a run is `PENDING`
 - **THEN** the judge does not exit and executes the run
 
-### Requirement: Rollout gate
-The Run UI and the run action SHALL be enabled only when the web's `CUSTOM_RUN_ENABLED` environment variable is `true`. When disabled, no Run button is rendered and the action fails with `RUNS_DISABLED`, so a judge version without run support never receives runs.
+### Requirement: Run availability
+Run SHALL always be available on public problems, with no deploy-level flag. In a contest it SHALL be available only when `contest.allowRuns` is set and the viewer is a participant; otherwise no Run button is rendered and the action fails with `RUNS_DISABLED`. In an exercise it SHALL be available for `code` and `blocks` modes and never for `parsons`.
 
-#### Scenario: Gate off
-- **WHEN** `CUSTOM_RUN_ENABLED` is unset
-- **THEN** no editor shows a Run button and no `code_run` row can be created
+#### Scenario: Contest disallows runs
+- **WHEN** a contest has `allowRuns` off
+- **THEN** its problem editors show no Run button and a contest run request fails with `RUNS_DISABLED`
+
+#### Scenario: Parsons exercise
+- **WHEN** a student opens a `parsons` exercise
+- **THEN** no Run button is shown
 
 ### Requirement: Play visible examples
 Wherever Run is available, each test listed in the workspace's Test cases panel (only tests the viewer may already see) SHALL have a Play button that creates an ordinary run whose stdin is that test's input as already shown on the page, and "Run all test cases" SHALL run every listed test one after another (waiting for each run to finish, since only one run may be in flight). When a run finishes, the browser SHALL compare its stdout with that test's expected output using the problem's compare mode: `exact` (trimmed equality), `tokens` (whitespace-separated tokens equal), `float` (tokens, numbers within `float_epsilon` absolute or relative), matching the judge's rules. For `checker` problems no match verdict SHALL be shown, only the output. A non-`OK` run status SHALL be shown as that status. The comparison result is advisory, is never stored and never affects grading; the run request SHALL contain only the stdin, never the expected output or the test index.
@@ -141,6 +145,6 @@ Wherever Run is available, each test listed in the workspace's Test cases panel 
 - **THEN** the row shows the run finished and the Console shows the output, with no match / mismatch verdict
 
 #### Scenario: Runs disabled
-- **WHEN** `CUSTOM_RUN_ENABLED` is off or the contest disallows runs
+- **WHEN** the contest disallows runs or the exercise is in `parsons` mode
 - **THEN** the Test cases panel lists examples without Play buttons and Actions has no Run all
 

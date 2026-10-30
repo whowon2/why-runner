@@ -15,7 +15,7 @@ import { type ActionResult, fail, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { assertClassMember, isAdmin } from "@/lib/auth/permissions";
 import { blocksProgram } from "@/lib/blocks/program";
-import { customRunsEnabled, notifyJudge } from "@/lib/judge";
+import { notifyJudge } from "@/lib/judge";
 import {
   languageSchema,
   MAX_CODE_LENGTH,
@@ -87,8 +87,6 @@ export type CreateRunError =
 export async function createRun(
   rawInput: CreateRunInput,
 ): Promise<ActionResult<{ id: string }, CreateRunError>> {
-  if (!customRunsEnabled()) return fail("RUNS_DISABLED");
-
   const currentUser = await getCurrentUser({});
   const input = inputSchema.parse(rawInput);
 
