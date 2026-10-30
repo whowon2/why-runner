@@ -39,6 +39,10 @@ The workspace's Submissions drawer SHALL show the current user's own submissions
 - **WHEN** a user expands a submission in the drawer
 - **THEN** the system SHALL show the submission's status/result detail and the submitted code. The input/output for the failing test case SHALL be shown only as allowed by the submission-feedback-visibility capability: full detail for sample tests or when the viewer created the problem, and only the verdict and test number for hidden tests.
 
+#### Scenario: Visible failure shows the student's output
+- **WHEN** a user expands a wrong-answer submission that failed a visible test
+- **THEN** the system SHALL show, each with its own label, the input, the user's output, the expected output and any stderr
+
 #### Scenario: Hidden test failure details view
 - **WHEN** a user who did not create the problem opens the details of a submission that failed a hidden test
 - **THEN** the system SHALL show a localized message naming the verdict and test number, and SHALL NOT show that test's input, expected output, actual output, or stderr
