@@ -23,6 +23,7 @@ const REQUIRED = [
   "language",
   "problem_constraint_kind",
   "structural_constraint_rule_type",
+  "code_run_status",
 ];
 
 // --- sqlx rename rules (sqlx-macros-core `RenameAll`, which uses `heck`) ---

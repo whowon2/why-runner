@@ -8,6 +8,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { CodeEditor } from "@/components/code-editor";
 import {
+  RunButton,
+  RunPanel,
+  type RunProgram,
+  useCodeRunner,
+} from "@/components/code-run/code-run";
+import {
   ResetCodeButton,
   useStarterComments,
 } from "@/components/reset-code-button";
@@ -33,6 +39,7 @@ import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useCreateSubmission } from "@/hooks/use-create-submission";
 import { useProblemSubmissions } from "@/hooks/use-problem-submissions";
 import { draftKey, lastLanguageKey } from "@/lib/code-draft";
+import { useRunsEnabled } from "@/hooks/use-runs-enabled";
 import { getStarterCode } from "@/lib/starter-code";
 import { cn } from "@/lib/utils";
 
@@ -73,6 +80,8 @@ export function UploadCode({
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState<Language | null>(null);
+  const runner = useCodeRunner();
+  const runsEnabled = useRunsEnabled() && contest.allowRuns;
   // When the code was last written to localStorage (manual or on blur), and
   // whether to flash the save button's "saved" state.
   const [savedAt, setSavedAt] = useState<Date | null>(null);
@@ -120,22 +129,40 @@ export function UploadCode({
     portugol: ["por"],
   };
 
-  function handleUpload() {
+  /** The chosen language, or null after warning about what's missing. */
+  function checkProgram(): Language | null {
     if (!language) {
       toast.warning(tUpload("selectLanguage"));
-      return;
+      return null;
     }
-
     if (!code.length) {
       toast.warning(tUpload("emptyCode"));
-      return;
+      return null;
     }
+    return language;
+  }
+
+  function program(): RunProgram | null {
+    const lang = checkProgram();
+    if (!lang) return null;
+    return {
+      context: "contest",
+      contestId: contest.id,
+      problemId: problem.id,
+      code,
+      language: lang,
+    };
+  }
+
+  function handleUpload() {
+    const lang = checkProgram();
+    if (!lang) return;
 
     mutate(
       {
         code,
         contestId: contest.id,
-        language,
+        language: lang,
         problemId: problem.id,
       },
       {
@@ -432,6 +459,13 @@ export function UploadCode({
                 />
 
                 <LatestVerdict submission={latest} />
+                {runsEnabled && (
+                  <RunButton
+                    compact
+                    onRun={() => runner.run(program())}
+                    runner={runner}
+                  />
+                )}
 
                 <TooltipProvider>
                   <Tooltip>
@@ -463,6 +497,7 @@ export function UploadCode({
           }
           value={code}
         />
+        {runsEnabled && <RunPanel language={language} runner={runner} />}
       </CardContent>
     </Card>
   );

@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod bench;
+mod code_run;
 mod compare;
 mod constraints;
 mod db;
@@ -17,7 +18,7 @@ use tokio::time::{Duration, Instant, timeout};
 use crate::{
     db::DbClient,
     models::{
-        CompareMode, ConstraintKind, JudgeReport, Language, Problem, ProblemConstraint,
+        CodeRun, CompareMode, ConstraintKind, JudgeReport, Language, Problem, ProblemConstraint,
         ProblemValidation, Submission, SubmissionStatus, TestCaseResult,
     },
 };
@@ -119,7 +120,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         connect_with_retry("PgListener", || PgListener::connect(&database_url)).await;
     listener.listen("new_submission").await?;
     listener.listen("new_validation").await?;
-    println!("Listening for 'new_submission' and 'new_validation' notifications...");
+    listener.listen("new_run").await?;
+    println!("Listening for 'new_submission', 'new_validation' and 'new_run' notifications...");
 
     // Optional idle auto-stop for on-demand hosts (e.g. a Fly Machine): exit
     // cleanly after this many seconds with no jobs, so the platform leaves the
@@ -147,6 +149,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Reap before the workers' first drain, so exhausted rows are
     // dead-lettered rather than left for the claim query to skip.
     reap_exhausted(&db).await;
+    sweep_runs(&db).await;
 
     println!("Starting {} judge worker(s)", concurrency);
     let workers: Vec<_> = (0..concurrency as u32)
@@ -176,6 +179,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         // Dead-letter submissions abandoned by a crashed/killed worker that
         // already exhausted their retry budget, so they aren't reclaimed.
         reap_exhausted(&db).await;
+        sweep_runs(&db).await;
 
         if let Some(after) = idle_exit_after {
             // Workers drain only after the wake below, so a job that arrived
@@ -211,6 +215,20 @@ async fn reap_exhausted(db: &DbClient) {
         Ok(n) if n > 0 => println!("Dead-lettered {} exhausted submission(s)", n),
         Ok(_) => {}
         Err(e) => eprintln!("Failed to reap exhausted submissions: {}", e),
+    }
+}
+
+/// Fails runs abandoned mid-run and deletes expired ones.
+async fn sweep_runs(db: &DbClient) {
+    match db.reap_stale_runs().await {
+        Ok(n) if n > 0 => println!("Failed {} stale run(s)", n),
+        Ok(_) => {}
+        Err(e) => eprintln!("Failed to reap stale runs: {}", e),
+    }
+    match db.prune_old_runs().await {
+        Ok(n) if n > 0 => println!("Deleted {} old run(s)", n),
+        Ok(_) => {}
+        Err(e) => eprintln!("Failed to prune old runs: {}", e),
     }
 }
 
@@ -252,7 +270,8 @@ async fn claim_and_process(slot: u32, db: &DbClient, state: &PoolState) -> bool 
 }
 
 /// Pending (or crashed-worker-abandoned) submissions first, then pending
-/// problem validation runs.
+/// custom runs (a student is waiting on screen), then pending problem
+/// validation runs.
 async fn run_next_job(slot: u32, db: &DbClient) -> bool {
     match db.get_next_submission().await {
         Ok(Some(sub)) => {
@@ -272,6 +291,16 @@ async fn run_next_job(slot: u32, db: &DbClient) -> bool {
         }
         Ok(None) => {}
         Err(e) => eprintln!("[w{}] Failed to fetch next submission: {}", slot, e),
+    }
+
+    match db.get_next_run().await {
+        Ok(Some(run)) => {
+            println!("[w{}] Processing run: {}", slot, run.id);
+            process_run_job(db, run).await;
+            return true;
+        }
+        Ok(None) => {}
+        Err(e) => eprintln!("[w{}] Failed to fetch next run: {}", slot, e),
     }
 
     match db.get_next_validation().await {
@@ -380,6 +409,24 @@ async fn process_validation_job(db: &DbClient, validation: ProblemValidation) {
         eprintln!("❌ Failed to update DB: {}", e);
     } else {
         println!("\t💾 Validation result saved.");
+    }
+}
+
+/// Ungraded "run with custom input": one execution, no tests, no verdict.
+async fn process_run_job(db: &DbClient, run: CodeRun) {
+    let outcome = match db.get_problem_time_limit(run.problem_id).await {
+        Ok(time_limit_ms) => {
+            code_run::execute(&run.code, run.language, &run.stdin, time_limit_ms).await
+        }
+        Err(err) => {
+            eprintln!("Failed to fetch problem time limit: {}", err);
+            code_run::RunOutcome::error("The judge could not load this problem.".to_string())
+        }
+    };
+    println!("\t▶️ Run finished: {:?}", outcome.status);
+
+    if let Err(e) = db.update_run_result(run.id, &outcome).await {
+        eprintln!("❌ Failed to update DB: {}", e);
     }
 }
 
@@ -999,6 +1046,66 @@ mod grade_tests {
         let (report, _, _) = grade(ECHO_CODE, Language::Python, &p, false).await;
         assert_eq!(report.verdict, SubmissionStatus::ERROR);
         assert_eq!(report.passed_count, 0);
+    }
+
+    // Custom runs (`code_run`) go through the same sandbox, so they live here
+    // with the other isolate-backed tests.
+
+    #[tokio::test]
+    async fn run_echoes_custom_stdin() {
+        let out = code_run::execute(
+            "a, b = map(int, input().split())\nprint(a + b)",
+            Language::Python,
+            "3 4\n",
+            1000,
+        )
+        .await;
+        assert_eq!(out.status, models::CodeRunStatus::Ok);
+        assert_eq!(out.exit_code, Some(0));
+        assert_eq!(out.stdout.trim(), "7");
+    }
+
+    #[tokio::test]
+    async fn run_reports_compile_error_and_runtime_error() {
+        let out = code_run::execute("int main( {", Language::C, "", 1000).await;
+        assert_eq!(out.status, models::CodeRunStatus::CompilationError);
+        assert!(!out.stderr.is_empty());
+        assert_eq!(out.exit_code, None);
+
+        let out = code_run::execute(
+            "import sys\nprint('partial')\nsys.exit(3)",
+            Language::Python,
+            "",
+            1000,
+        )
+        .await;
+        assert_eq!(out.status, models::CodeRunStatus::RuntimeError);
+        assert_eq!(out.exit_code, Some(3));
+        assert_eq!(out.stdout.trim(), "partial");
+    }
+
+    #[tokio::test]
+    async fn run_uses_problem_time_limit() {
+        let out = code_run::execute(BUSY_2S_C, Language::C, "1", 1000).await;
+        assert_eq!(out.status, models::CodeRunStatus::TimeLimitExceeded);
+        let out = code_run::execute(BUSY_2S_C, Language::C, "1", 4000).await;
+        assert_eq!(out.status, models::CodeRunStatus::Ok);
+    }
+
+    #[tokio::test]
+    async fn run_caps_large_output() {
+        let out = code_run::execute("print('x' * 1_000_000)", Language::Python, "", 1000).await;
+        assert_eq!(out.status, models::CodeRunStatus::Ok);
+        assert!(out.stdout_truncated);
+        assert_eq!(out.stdout.len(), code_run::MAX_RUN_OUTPUT_BYTES);
+    }
+
+    #[tokio::test]
+    async fn run_normalizes_portugol_input() {
+        let code = "programa {\n funcao inicio() {\n inteiro a, b\n leia(a)\n leia(b)\n escreva(a + b)\n }\n}";
+        let out = code_run::execute(code, Language::Portugol, "3 4", 1000).await;
+        assert_eq!(out.status, models::CodeRunStatus::Ok, "{out:?}");
+        assert!(out.stdout.contains('7'), "got: {}", out.stdout);
     }
 
     const DOUBLE_C: &str =

@@ -19,6 +19,7 @@ const updateContestSchema = z.object({
   endDate: z.date().nullable().optional(),
   isPrivate: z.boolean().optional(),
   aiAssistance: z.enum(AI_ASSISTANCE_LEVELS).optional(),
+  allowRuns: z.boolean().optional(),
 });
 
 export type UpdateContestInput = {

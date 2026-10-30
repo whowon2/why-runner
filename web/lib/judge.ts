@@ -5,7 +5,7 @@ import { env } from "@/env";
 
 const FLY_API = "https://api.machines.dev/v1";
 
-type JudgeChannel = "new_submission" | "new_validation";
+type JudgeChannel = "new_submission" | "new_validation" | "new_run";
 
 /**
  * Tell the judge a job is pending: pg_notify for a running worker, plus a
@@ -44,4 +44,13 @@ async function wakeJudge() {
   } catch (e) {
     console.error("Failed to wake judge:", e);
   }
+}
+
+/**
+ * Whether "Run with custom input" is on (`CUSTOM_RUN_ENABLED`). Off until the
+ * deployed judge listens on `new_run`; an older judge would leave runs
+ * PENDING forever.
+ */
+export function customRunsEnabled() {
+  return env.CUSTOM_RUN_ENABLED === "true";
 }

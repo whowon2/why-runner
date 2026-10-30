@@ -83,6 +83,7 @@ function useSettingsFormSchema() {
       endDate: z.string().optional(),
       isPrivate: z.boolean(),
       aiAssistance: z.enum(AI_ASSISTANCE_LEVELS),
+      allowRuns: z.boolean(),
     })
     .refine(
       (values) =>
@@ -112,6 +113,7 @@ export function EditContestForm({ contest }: { contest: Contest }) {
       endDate: toDateTimeLocal(contest.endDate),
       isPrivate: contest.isPrivate,
       aiAssistance: contest.aiAssistance,
+      allowRuns: contest.allowRuns,
     },
     resolver: zodResolver(formSchema),
   });
@@ -127,6 +129,7 @@ export function EditContestForm({ contest }: { contest: Contest }) {
           endDate: values.endDate ? new Date(values.endDate) : null,
           isPrivate: values.isPrivate,
           aiAssistance: values.aiAssistance,
+          allowRuns: values.allowRuns,
         },
       },
       {
@@ -234,6 +237,29 @@ export function EditContestForm({ contest }: { contest: Contest }) {
                 </FormLabel>
                 <p className="text-xs text-muted-foreground mt-1">
                   {t("privateDescription")}
+                </p>
+              </div>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="allowRuns"
+          render={({ field }) => (
+            <FormItem className="flex items-center gap-3 rounded-none border p-3">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="leading-none">
+                <FormLabel className="cursor-pointer">
+                  {t("allowRunsLabel")}
+                </FormLabel>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {t("allowRunsDescription")}
                 </p>
               </div>
             </FormItem>

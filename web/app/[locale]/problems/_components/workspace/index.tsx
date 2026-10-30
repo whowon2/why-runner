@@ -16,6 +16,7 @@ import { PublishProblem } from "../publish-button";
 import { ProblemEditTab } from "./edit";
 import { ProblemResultsTab } from "./results";
 import { ProblemStatisticsTab } from "./statistics";
+import { useCodeRunner } from "@/components/code-run/code-run";
 import { ProblemSubmitTab } from "./submit";
 import { ProblemTestsTab } from "./tests";
 
@@ -47,6 +48,7 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
     setLanguage,
     latest,
   });
+  const runner = useCodeRunner();
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -137,6 +139,7 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
               language={language}
               latest={latest}
               problemId={problem.id}
+              runner={runner}
               setCode={setCode}
               setLanguage={setLanguage}
             />

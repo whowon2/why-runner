@@ -16,6 +16,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { CodeEditor } from "@/components/code-editor";
+import {
+  RunButton,
+  RunPanel,
+  type RunProgram,
+  useCodeRunner,
+} from "@/components/code-run/code-run";
+import { useRunsEnabled } from "@/hooks/use-runs-enabled";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -148,14 +155,20 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
             </CardContent>
           </Card>
         ) : exercise.mode === "blocks" ? (
-          <BlocksSubmit exerciseId={exercise.id} />
+          <BlocksSubmit
+            defaultStdin={exercise.tests[0]?.input}
+            exerciseId={exercise.id}
+          />
         ) : exercise.mode === "parsons" && exercise.parsonsShuffled ? (
           <ParsonsSubmit
             exerciseId={exercise.id}
             lines={exercise.parsonsShuffled}
           />
         ) : (
-          <ExerciseSubmit exerciseId={exercise.id} />
+          <ExerciseSubmit
+            defaultStdin={exercise.tests[0]?.input}
+            exerciseId={exercise.id}
+          />
         )}
       </ResizablePanel>
       <AiHelpDockPanel order={3} />
@@ -164,7 +177,14 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
   );
 }
 
-function BlocksSubmit({ exerciseId }: { exerciseId: string }) {
+function BlocksSubmit({
+  exerciseId,
+  defaultStdin,
+}: {
+  exerciseId: string;
+  /** First visible example input, already shown on this page. */
+  defaultStdin?: string;
+}) {
   const tBlocks = useTranslations("Blocks");
   const tUpload = useTranslations(
     "ContestsPage.Tabs.Problem.Submissions.Upload",
@@ -174,12 +194,22 @@ function BlocksSubmit({ exerciseId }: { exerciseId: string }) {
   const [showCode, setShowCode] = useState(false);
   const { mutate, isPending } = useCreateExerciseSubmission();
   const { data: submissions } = useExerciseSubmissions(exerciseId);
+  const runner = useCodeRunner(defaultStdin);
+  const runsEnabled = useRunsEnabled();
 
   const generated = useMemo(
     () => (workspace ? generatePortugol(workspace) : null),
     [workspace],
   );
   const hasErrors = !generated || generated.errors.length > 0;
+
+  function runProgram(): RunProgram | null {
+    if (!workspace || hasErrors) {
+      setShowCode(true);
+      return null;
+    }
+    return { context: "exercise", exerciseId, mode: "blocks", workspace };
+  }
 
   function handleSubmit() {
     if (!workspace || hasErrors) {
@@ -212,6 +242,13 @@ function BlocksSubmit({ exerciseId }: { exerciseId: string }) {
           </Button>
           <div className="flex gap-2">
             <LatestVerdict submission={submissions?.[0]} />
+            {runsEnabled && (
+              <RunButton
+                compact
+                onRun={() => runner.run(runProgram())}
+                runner={runner}
+              />
+            )}
             <Button disabled={isPending} onClick={handleSubmit}>
               <Upload />
             </Button>
@@ -224,6 +261,7 @@ function BlocksSubmit({ exerciseId }: { exerciseId: string }) {
         {showCode && generated && (
           <PortugolCodePanel code={generated.code} errors={generated.errors} />
         )}
+        {runsEnabled && <RunPanel language="portugol" runner={runner} />}
       </CardContent>
     </Card>
   );
@@ -274,7 +312,14 @@ function ParsonsSubmit({
   );
 }
 
-function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
+function ExerciseSubmit({
+  exerciseId,
+  defaultStdin,
+}: {
+  exerciseId: string;
+  /** First visible example input, already shown on this page. */
+  defaultStdin?: string;
+}) {
   const tUpload = useTranslations(
     "ContestsPage.Tabs.Problem.Submissions.Upload",
   );
@@ -292,6 +337,8 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
     setLanguage,
     latest: submissions?.[0],
   });
+  const runner = useCodeRunner(defaultStdin);
+  const runsEnabled = useRunsEnabled();
 
   function handleLanguageChange(value: string) {
     const next = value as Language;
@@ -307,18 +354,37 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
     setLanguage(next);
   }
 
-  function handleSubmit() {
+  /** The chosen language, or null after warning about what's missing. */
+  function checkProgram(): Language | null {
     if (!language) {
       toast.warning(tUpload("selectLanguage"));
-      return;
+      return null;
     }
     if (!code.length) {
       toast.warning(tUpload("emptyCode"));
-      return;
+      return null;
     }
+    return language;
+  }
+
+  function runProgram(): RunProgram | null {
+    const lang = checkProgram();
+    if (!lang) return null;
+    return {
+      context: "exercise",
+      exerciseId,
+      mode: "code",
+      code,
+      language: lang,
+    };
+  }
+
+  function handleSubmit() {
+    const lang = checkProgram();
+    if (!lang) return;
 
     mutate(
-      { exerciseId, mode: "code", code, language },
+      { exerciseId, mode: "code", code, language: lang },
       {
         onError: (error) => {
           toast.error(tUpload("failedSubmit"), {
@@ -366,6 +432,13 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
                 onUndo={setCode}
               />
               <LatestVerdict submission={submissions?.[0]} />
+              {runsEnabled && (
+                <RunButton
+                  compact
+                  onRun={() => runner.run(runProgram())}
+                  runner={runner}
+                />
+              )}
               <Button disabled={isPending} onClick={handleSubmit}>
                 <Upload />
               </Button>
@@ -373,6 +446,7 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
           }
           value={code}
         />
+        {runsEnabled && <RunPanel language={language} runner={runner} />}
       </CardContent>
     </Card>
   );

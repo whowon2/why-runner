@@ -1,6 +1,7 @@
 export * from "./schemas/ai-usage";
 export * from "./schemas/checkers";
 export * from "./schemas/classes";
+export * from "./schemas/code-runs";
 export * from "./schemas/constraints";
 export * from "./schemas/contests";
 export * from "./schemas/lessons";

@@ -7,10 +7,8 @@ import { type ActionResult, fail, ok } from "@/lib/action-result";
 import { assertClassMember } from "@/lib/auth/permissions";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { notifyJudge } from "@/lib/judge";
-import {
-  generatePortugol,
-  type SerializedWorkspace,
-} from "@/lib/blocks/portugol-generator";
+import { blocksProgram } from "@/lib/blocks/program";
+import type { SerializedWorkspace } from "@/lib/blocks/portugol-generator";
 import {
   assembleParsons,
   isValidParsonsAnswer,
@@ -21,8 +19,6 @@ import { languageSchema, MAX_CODE_LENGTH } from "@/lib/submission-limits";
 
 const RATE_LIMIT_WINDOW_SECS = 30;
 const RATE_LIMIT_MAX = 5;
-// Upper bound on a stored Blockly workspace, as serialized JSON.
-const MAX_WORKSPACE_BYTES = 200_000;
 
 export type ExerciseSubmissionInput =
   | { exerciseId: string; mode: "code"; code: string; language: Language }
@@ -102,16 +98,7 @@ export async function createExerciseSubmission(
       };
       break;
     case "blocks": {
-      if (typeof input.workspace !== "object" || input.workspace === null) {
-        throw new Error("Invalid block program.");
-      }
-      if (JSON.stringify(input.workspace).length > MAX_WORKSPACE_BYTES) {
-        throw new Error("The block program is too large.");
-      }
-      const { code, errors } = generatePortugol(input.workspace);
-      if (errors.length > 0) {
-        throw new Error("The blocks are incomplete. Check the code panel.");
-      }
+      const code = blocksProgram(input.workspace);
       program = { code, language: "portugol", visualSource: input.workspace };
       break;
     }

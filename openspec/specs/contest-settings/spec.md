@@ -1,9 +1,7 @@
 ## Purpose
 
 Defines the contest Settings tab: a creator-only surface for full contest configuration, the publish action, and the Danger Zone, and the resulting scope reduction of the Manage tab to live-operations content only.
-
 ## Requirements
-
 ### Requirement: Settings tab access
 A "Settings" tab SHALL be shown on a contest's page only to that contest's creator, for both draft and published contests. Non-creators SHALL NOT see or be able to navigate to the Settings tab.
 
@@ -16,15 +14,19 @@ A "Settings" tab SHALL be shown on a contest's page only to that contest's creat
 - **THEN** no "Settings" tab is rendered, and navigating directly to `?tab=settings` does not display settings content
 
 ### Requirement: Full contest configuration form
-The Settings tab SHALL expose an editable form covering name, description, start date, end date, private/public toggle, AI assistance level, and attached problems — replacing the previous Manage-tab edit form that only exposed name. The AI assistance level field SHALL offer `off`, `concept`, `hint`, and `pinpoint`, and each option SHALL show a short example of the kind of help it gives. The problem picker used to attach problems SHALL display each candidate problem's code and creator alongside its title, so problems sharing a title can be told apart. Each attached problem's code and title in the list SHALL link to that problem's page.
+The Settings tab SHALL expose an editable form covering name, description, start date, end date, private/public toggle, AI assistance level, an "Allow custom runs" toggle, and attached problems — replacing the previous Manage-tab edit form that only exposed name. The AI assistance level field SHALL offer `off`, `concept`, `hint`, and `pinpoint`, and each option SHALL show a short example of the kind of help it gives. The "Allow custom runs" toggle SHALL default to on and SHALL control whether participants can run code with custom input on the contest's problems. The problem picker used to attach problems SHALL display each candidate problem's code and creator alongside its title, so problems sharing a title can be told apart. Each attached problem's code and title in the list SHALL link to that problem's page.
 
 #### Scenario: Editing all fields on a draft
-- **WHEN** the creator changes name, description, start/end dates, privacy, AI assistance level, and problem selection on a draft contest and saves
+- **WHEN** the creator changes name, description, start/end dates, privacy, AI assistance level, the custom runs toggle, and problem selection on a draft contest and saves
 - **THEN** all changed fields are persisted
 
 #### Scenario: Choosing an AI assistance level
 - **WHEN** the creator opens the AI assistance level field
 - **THEN** each option is listed with an example of its help (for example `concept` → "For loop badly implemented", `hint` → "You forgot to exit the loop", `pinpoint` → "Missing a break on line 14")
+
+#### Scenario: Disabling custom runs
+- **WHEN** the creator turns off "Allow custom runs" and saves
+- **THEN** participants no longer see the Run action on the contest's problems
 
 #### Scenario: Picking between same-titled problems
 - **WHEN** the creator opens the problem picker and two or more candidate problems share the same title
@@ -63,3 +65,4 @@ The Manage tab SHALL only be shown for `published` contests and SHALL contain on
 #### Scenario: Manage tab on published contest
 - **WHEN** the creator opens a published contest's page
 - **THEN** a Manage tab is shown containing participants, pending joins (if private), submissions, and export — and no editable fields or Danger Zone
+

@@ -1,4 +1,7 @@
-use crate::models::{Problem, ProblemConstraint, ProblemValidation, Submission, SubmissionStatus};
+use crate::code_run::RunOutcome;
+use crate::models::{
+    CodeRun, Problem, ProblemConstraint, ProblemValidation, Submission, SubmissionStatus,
+};
 use sqlx::{PgPool, Result, postgres::PgPoolOptions};
 use uuid::Uuid;
 
@@ -19,6 +22,13 @@ fn claimable_submission() -> String {
         STALE_RUNNING_THRESHOLD
     )
 }
+
+/// A run still RUNNING after this long was lost by a crashed/restarted
+/// worker. Runs get no retries: the student just clicks Run again.
+const STALE_RUN_THRESHOLD: &str = "2 minutes";
+
+/// Runs are scratch work, deleted by the dispatcher sweep after this long.
+const RUN_RETENTION: &str = "24 hours";
 
 pub struct DbClient {
     pool: PgPool,
@@ -181,14 +191,94 @@ impl DbClient {
         .await
     }
 
-    /// Whether `get_next_submission` / `get_next_validation` would claim
+    /// Claims one PENDING `code_run`, same atomic claim-and-lock shape as
+    /// `get_next_validation`. No stale-`RUNNING` reclaim: `reap_stale_runs`
+    /// fails abandoned runs instead.
+    pub async fn get_next_run(&self) -> Result<Option<CodeRun>> {
+        sqlx::query_as::<_, CodeRun>(
+            "UPDATE code_run
+             SET status = 'RUNNING',
+                 updated_at = now()
+             WHERE id = (
+                 SELECT id FROM code_run
+                 WHERE status = 'PENDING'
+                 ORDER BY created_at ASC
+                 FOR UPDATE SKIP LOCKED
+                 LIMIT 1
+             )
+             RETURNING id, code, language, problem_id, stdin",
+        )
+        .fetch_optional(&self.pool)
+        .await
+    }
+
+    /// The only problem data a run may read: never its tests or checker.
+    pub async fn get_problem_time_limit(&self, problem_id: Uuid) -> Result<i32> {
+        sqlx::query_scalar("SELECT time_limit_ms FROM problem WHERE id = $1")
+            .bind(problem_id)
+            .fetch_one(&self.pool)
+            .await
+    }
+
+    pub async fn update_run_result(&self, run_id: Uuid, outcome: &RunOutcome) -> Result<()> {
+        sqlx::query(
+            "UPDATE code_run
+             SET status = $1, stdout = $2, stderr = $3, stdout_truncated = $4,
+                 stderr_truncated = $5, exit_code = $6, runtime_ms = $7, memory_kb = $8
+             WHERE id = $9",
+        )
+        .bind(outcome.status)
+        .bind(&outcome.stdout)
+        .bind(&outcome.stderr)
+        .bind(outcome.stdout_truncated)
+        .bind(outcome.stderr_truncated)
+        .bind(outcome.exit_code)
+        .bind(outcome.runtime_ms as i32)
+        .bind(outcome.memory_kb.map(|kb| kb as i32))
+        .bind(run_id)
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
+    }
+
+    /// Fails runs left RUNNING by a crashed or restarted worker.
+    pub async fn reap_stale_runs(&self) -> Result<u64> {
+        let result = sqlx::query(&format!(
+            "UPDATE code_run
+             SET status = 'ERROR',
+                 stderr = 'The judge restarted during this run. Run it again.'
+             WHERE status = 'RUNNING'
+               AND updated_at < now() - interval '{}'",
+            STALE_RUN_THRESHOLD
+        ))
+        .execute(&self.pool)
+        .await?;
+
+        Ok(result.rows_affected())
+    }
+
+    /// Deletes runs older than `RUN_RETENTION`.
+    pub async fn prune_old_runs(&self) -> Result<u64> {
+        let result = sqlx::query(&format!(
+            "DELETE FROM code_run WHERE created_at < now() - interval '{}'",
+            RUN_RETENTION
+        ))
+        .execute(&self.pool)
+        .await?;
+
+        Ok(result.rows_affected())
+    }
+
+    /// Whether `get_next_submission` / `get_next_run` / `get_next_validation` would claim
     /// something right now. The idle auto-stop checks this before exiting, so
     /// a job whose notification is what woke the dispatcher still gets
     /// drained by the workers instead of being left PENDING.
     pub async fn has_claimable_jobs(&self) -> Result<bool> {
         sqlx::query_scalar(&format!(
             "SELECT EXISTS (SELECT 1 FROM submission WHERE {})
-                 OR EXISTS (SELECT 1 FROM problem_validation WHERE status = 'PENDING')",
+                 OR EXISTS (SELECT 1 FROM problem_validation WHERE status = 'PENDING')
+                 OR EXISTS (SELECT 1 FROM code_run WHERE status = 'PENDING')",
             claimable_submission()
         ))
         .bind(MAX_RETRIES)
