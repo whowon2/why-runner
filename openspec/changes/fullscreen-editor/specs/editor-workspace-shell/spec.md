@@ -88,11 +88,11 @@ The Submissions rail item SHALL open a drawer listing the viewer's own submissio
 - **THEN** the editor's language and code change to that submission's, and reset can still restore the starter
 
 ### Requirement: Drafts persist per problem and language
-In all three contexts the editor content SHALL be saved to `localStorage` per problem + language (lesson exercises per exercise + language) on editor blur, on page hide and on language/problem switch, and restored when that slot is opened again; empty code or the untouched starter SHALL never overwrite a saved draft. Storage failures SHALL be ignored silently.
+In all three contexts the code editor SHALL keep drafts as the `editor-drafts` capability defines (per user, target and language, last language restored), with the contest target being the contest plus the problem.
 
 #### Scenario: Reload keeps code
-- **WHEN** a student types Python code on a practice problem, reloads the page and selects Python again
-- **THEN** the editor shows the code they typed
+- **WHEN** a student types Python code on a contest problem and reloads the page
+- **THEN** the editor selects Python again and shows the code they typed
 
 ### Requirement: Maximize editor
 The editor's maximize control SHALL collapse the statement column and the bottom panels so the editor takes the whole area below the top bar; clicking it again or pressing Esc (when no popup is open) SHALL restore the layout. The editor SHALL stay mounted, keeping code, cursor and undo history.

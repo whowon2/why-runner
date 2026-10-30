@@ -1,5 +1,7 @@
 //! Built-in output comparison modes (`problem.compare_mode`). The `checker`
 //! mode runs the author's program instead and is handled in `main.rs::grade`.
+//! `web/lib/compare-output.ts` ports these rules for the editor's advisory
+//! example markers; keep the two in sync.
 
 use crate::models::CompareMode;
 

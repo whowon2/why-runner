@@ -2056,5 +2056,108 @@
     "MEMORY_LIMIT_EXCEEDED": "Limite de memória excedido",
     "COMPILATION_ERROR": "Erro de compilação",
     "ERROR": "Erro do juiz"
+  },
+  "Workspace": {
+    "Rail": {
+      "back": "Voltar",
+      "submissions": "Histórico",
+      "settings": "Ajustes",
+      "menu": "Menu",
+      "statistics": "Estatísticas",
+      "tests": "Testes",
+      "edit": "Editar",
+      "leaderboard": "Ranking",
+      "previous": "Anterior",
+      "next": "Próximo"
+    },
+    "Views": {
+      "statement": "Enunciado",
+      "code": "Código",
+      "results": "Resultados"
+    },
+    "Editor": {
+      "openFile": "Abrir arquivo"
+    },
+    "Console": {
+      "title": "Saída do console",
+      "output": "Saída",
+      "customInput": "Entrada personalizada",
+      "empty": "Rode um exemplo, rode com entrada personalizada ou envie para ver a saída aqui.",
+      "emptyText": "(vazio)",
+      "example": "Exemplo {index}",
+      "running": "Executando…",
+      "input": "Entrada",
+      "expected": "Saída esperada",
+      "yourOutput": "Sua saída",
+      "compilerOutput": "Saída do compilador",
+      "stderr": "Erros (stderr)",
+      "checkerNoVerdict": "Este problema usa um corretor próprio: compare a saída você mesmo ou envie para receber o veredito.",
+      "sending": "Enviando submissão…",
+      "submission": "Última submissão",
+      "judging": "Corrigindo…",
+      "finished": "Concluído",
+      "match": "Saída correta",
+      "mismatch": "Saída incorreta"
+    },
+    "Tests": {
+      "title": "Casos de teste",
+      "noneVisible": "Nenhum caso de teste deste problema está visível para você.",
+      "hidden": "{count, plural, one {Mais # teste oculto} other {Mais # testes ocultos}}",
+      "notRun": "Não executado",
+      "example": "Exemplo {index}",
+      "play": "Rodar exemplo {index}",
+      "playShort": "Rodar"
+    },
+    "Actions": {
+      "title": "Ações",
+      "runAll": "Rodar todos os exemplos",
+      "runCustom": "Rodar com entrada",
+      "runCustomHint": "Roda uma vez com a entrada da aba Entrada personalizada. Não vale nota.",
+      "submit": "Enviar",
+      "latest": "Última submissão",
+      "showDetails": "Ver detalhes no console",
+      "passedCount": "{passed}/{total} testes"
+    },
+    "History": {
+      "title": "Suas submissões",
+      "empty": "Você ainda não enviou nada.",
+      "chars": "{count} caracteres",
+      "load": "Carregar no editor"
+    },
+    "Settings": {
+      "title": "Ajustes",
+      "fontSize": "Tamanho da fonte do editor",
+      "smaller": "Diminuir",
+      "larger": "Aumentar",
+      "theme": "Tema",
+      "dark": "Escuro",
+      "light": "Claro"
+    },
+    "Status": {
+      "solved": "Resolvido",
+      "attempted": "Tentado",
+      "notAttempted": "Ainda não resolvido",
+      "completed": "Concluído",
+      "timeLeft": "Faltam {time}",
+      "ended": "Competição encerrada",
+      "startsIn": "Começa em {time}",
+      "solvedCount": "{solved}/{total} resolvidos",
+      "limits": "{seconds}s · {mb} MB"
+    },
+    "Locked": {
+      "contestEnded": "A competição terminou: envios encerrados.",
+      "solved": "Você já resolveu este problema.",
+      "notParticipant": "Só participantes podem enviar.",
+      "dueDate": "O prazo passou: envios encerrados."
+    },
+    "Drawers": {
+      "statistics": "Estatísticas",
+      "tests": "Casos de teste",
+      "leaderboard": "Classificação"
+    },
+    "Edit": {
+      "title": "Editar problema",
+      "tryIt": "Abrir no editor"
+    }
   }
 }

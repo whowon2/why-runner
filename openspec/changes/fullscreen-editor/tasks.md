@@ -1,26 +1,26 @@
 ## 1. Example plays on custom runs (web)
 
-- [ ] 1.1 `lib/compare-output.ts` `outputsMatch(mode, epsilon, actual, expected)` mirroring `judge/src/compare.rs` (null for checker) + `compare-output.test.ts` porting the Rust cases; cross-reference comments in both files
-- [ ] 1.2 `getExercise`: include problem `compareMode` and `floatEpsilon` in returned problem columns
-- [ ] 1.3 `hooks/use-example-runs.ts`: per-index play state, `play(index)`, sequential `playAll()` awaiting terminal run status, stop on create error
-- [ ] 1.4 i18n keys (pt, en) for match / mismatch / no-verdict (checker) / play / run all
+- [x] 1.1 `lib/compare-output.ts` `outputsMatch(mode, epsilon, actual, expected)` mirroring `judge/src/compare.rs` (null for checker) + `compare-output.test.ts` porting the Rust cases; cross-reference comments in both files
+- [x] 1.2 `getExercise`: include problem `compareMode` and `floatEpsilon` in returned problem columns
+- [x] 1.3 `hooks/use-example-runs.ts`: per-index play state, `play(index)`, sequential `playAll()` awaiting terminal run status, stop on create error
+- [x] 1.4 i18n keys (pt, en) for match / mismatch / no-verdict (checker) / play / run all
 
 ## 2. Shared workspace shell (web)
 
-- [ ] 2.1 `lib/workspace-routes.ts` `isWorkspacePath` + unit tests; `SiteChrome` client wrapper hiding `UserDock`/`Footer` on workspace paths in `app/[locale]/layout.tsx`
-- [ ] 2.2 `hooks/use-solution-draft.ts` extracted from contest `upload.tsx` (same keys and rules, design §8)
-- [ ] 2.3 `pendingRefetchInterval` in `lib/submission-status.ts`; apply to `useProblemPracticeSubmissions`, `useProblemSubmissions`, `useExerciseSubmissions`
-- [ ] 2.4 `components/workspace/workspace-context.tsx` (`WorkspaceSource`, `WorkspaceAnswer`, last-event state)
-- [ ] 2.5 `workspace-shell.tsx`: top bar, rail, resizable statement/editor and editor/bottom splits, `100dvh` no page scroll
-- [ ] 2.6 `editor-pane.tsx`: `CodeEditor` + language select, open file, reset, maximize; blocks and Parsons variants; locked-reason state
-- [ ] 2.7 `CodeEditor`: controlled `maximized`/`onMaximizedChange` props; shell collapses statement + bottom panels; Esc handling unchanged
-- [ ] 2.8 `test-cases-panel.tsx`: visible tests with Play (only when `runsEnabled`), per-test match/status from `useExampleRuns`, hidden count, row click → console
-- [ ] 2.9 `actions-panel.tsx`: Run (custom stdin), Run all, Submit, live latest-submission verdict + passed/total + AI help (respecting `aiMaxLevel`)
-- [ ] 2.10 `console-panel.tsx`: collapsible (persisted), custom-run stdin box, renders custom-run result / example play (input, expected, output, match) / `SubmissionDetails`, auto-expands on new event
-- [ ] 2.11 `submission-history-drawer.tsx` (Sheet): list, expandable code/report, "Load into editor"
-- [ ] 2.12 Settings drawer: font size + theme toggle
-- [ ] 2.13 Narrow layout: Statement/Code/Results bottom switcher, CSS-hidden views, rail in top-bar menu, auto-switch to Results on run/submit
-- [ ] 2.14 i18n keys (pt, en) for shell labels
+- [x] 2.1 `lib/workspace-routes.ts` `isWorkspacePath` + unit tests; `SiteChrome` client wrapper hiding `UserDock`/`Footer` on workspace paths in `app/[locale]/layout.tsx`
+- [ ] 2.2 Drafts: the shell's code editor uses the existing `useCodeDraft` (editor-drafts spec) for all three contexts, contest target `contest:<contestId>:<problemId>`; drop contest `upload.tsx`'s own copy
+- [x] 2.3 `pendingRefetchInterval` in `lib/submission-status.ts`; apply to `useProblemPracticeSubmissions`, `useProblemSubmissions`, `useExerciseSubmissions`
+- [x] 2.4 `components/workspace/workspace-context.tsx` (`WorkspaceSource`, `WorkspaceAnswer`, last-event state)
+- [x] 2.5 `workspace-shell.tsx`: top bar, rail, resizable statement/editor and editor/bottom splits, `100dvh` no page scroll
+- [x] 2.6 `editor-pane.tsx`: `CodeEditor` + language select, open file, reset, maximize; blocks and Parsons variants; locked-reason state
+- [x] 2.7 `CodeEditor`: controlled `maximized`/`onMaximizedChange` props; shell collapses statement + bottom panels; Esc handling unchanged
+- [x] 2.8 `test-cases-panel.tsx`: visible tests with Play (only when `runsEnabled`), per-test match/status from `useExampleRuns`, hidden count, row click → console
+- [x] 2.9 `actions-panel.tsx`: Run (custom stdin), Run all, Submit, live latest-submission verdict + passed/total + AI help (respecting `aiMaxLevel`)
+- [x] 2.10 `console-panel.tsx`: collapsible (persisted), custom-run stdin box, renders custom-run result / example play (input, expected, output, match) / `SubmissionDetails`, auto-expands on new event
+- [x] 2.11 `submission-history-drawer.tsx` (Sheet): list, expandable code/report, "Load into editor"
+- [x] 2.12 Settings drawer: font size + theme toggle
+- [x] 2.13 Narrow layout: Statement/Code/Results bottom switcher, CSS-hidden views, rail in top-bar menu, auto-switch to Results on run/submit
+- [x] 2.14 i18n keys (pt, en) for shell labels
 
 ## 3. Practice problem page
 

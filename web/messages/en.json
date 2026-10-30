@@ -2056,5 +2056,108 @@
     "MEMORY_LIMIT_EXCEEDED": "Memory limit exceeded",
     "COMPILATION_ERROR": "Compilation error",
     "ERROR": "Judge error"
+  },
+  "Workspace": {
+    "Rail": {
+      "back": "Back",
+      "submissions": "History",
+      "settings": "Settings",
+      "menu": "Menu",
+      "statistics": "Stats",
+      "tests": "Tests",
+      "edit": "Edit",
+      "leaderboard": "Ranking",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "Views": {
+      "statement": "Statement",
+      "code": "Code",
+      "results": "Results"
+    },
+    "Editor": {
+      "openFile": "Open file"
+    },
+    "Console": {
+      "title": "Console output",
+      "output": "Output",
+      "customInput": "Custom input",
+      "empty": "Run an example, run with custom input or submit to see the output here.",
+      "emptyText": "(empty)",
+      "example": "Example {index}",
+      "running": "Running…",
+      "input": "Input",
+      "expected": "Expected output",
+      "yourOutput": "Your output",
+      "compilerOutput": "Compiler output",
+      "stderr": "Errors (stderr)",
+      "checkerNoVerdict": "This problem uses a custom checker: compare the output yourself, or submit to get the verdict.",
+      "sending": "Sending submission…",
+      "submission": "Latest submission",
+      "judging": "Judging…",
+      "finished": "Finished",
+      "match": "Output matches",
+      "mismatch": "Wrong output"
+    },
+    "Tests": {
+      "title": "Test cases",
+      "noneVisible": "No test case of this problem is visible to you.",
+      "hidden": "{count, plural, one {# more test is hidden} other {# more tests are hidden}}",
+      "notRun": "Not run",
+      "example": "Example {index}",
+      "play": "Run example {index}",
+      "playShort": "Play"
+    },
+    "Actions": {
+      "title": "Actions",
+      "runAll": "Run all examples",
+      "runCustom": "Custom run",
+      "runCustomHint": "Run once with the input from the Custom input tab. Not graded.",
+      "submit": "Submit",
+      "latest": "Last submission",
+      "showDetails": "Show details in the console",
+      "passedCount": "{passed}/{total} tests"
+    },
+    "History": {
+      "title": "Your submissions",
+      "empty": "You haven't submitted yet.",
+      "chars": "{count} chars",
+      "load": "Load into editor"
+    },
+    "Settings": {
+      "title": "Settings",
+      "fontSize": "Editor font size",
+      "smaller": "Smaller",
+      "larger": "Larger",
+      "theme": "Theme",
+      "dark": "Dark",
+      "light": "Light"
+    },
+    "Status": {
+      "solved": "Solved",
+      "attempted": "Attempted",
+      "notAttempted": "Not solved yet",
+      "completed": "Completed",
+      "timeLeft": "{time} left",
+      "ended": "Contest ended",
+      "startsIn": "Starts in {time}",
+      "solvedCount": "{solved}/{total} solved",
+      "limits": "{seconds}s · {mb} MB"
+    },
+    "Locked": {
+      "contestEnded": "The contest has ended: submissions are closed.",
+      "solved": "You already solved this problem.",
+      "notParticipant": "Only participants can submit.",
+      "dueDate": "The due date has passed: submissions are closed."
+    },
+    "Drawers": {
+      "statistics": "Statistics",
+      "tests": "Test cases",
+      "leaderboard": "Leaderboard"
+    },
+    "Edit": {
+      "title": "Edit problem",
+      "tryIt": "Open in the editor"
+    }
   }
 }

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -35,24 +35,39 @@ import { cn } from "@/lib/utils";
  *
  * Without `height` the editor fills the remaining height of this component,
  * so give it a height (e.g. `className="min-h-0 flex-1"`) from the parent.
+ *
+ * Pass `maximized`/`onMaximizedChange` to let the parent own the toggle (the
+ * editor workspace shell collapses its other panels instead); the editor then
+ * doesn't cover the viewport itself, only Esc still leaves.
  */
 export function CodeEditor({
   toolbar,
   height,
   className,
   options,
+  maximized,
+  onMaximizedChange,
   ...props
 }: Omit<EditorProps, "height" | "width" | "theme" | "className"> & {
   toolbar?: ReactNode;
   height?: number | string;
   className?: string;
+  maximized?: boolean;
+  onMaximizedChange?: (maximized: boolean) => void;
 }) {
   const t = useTranslations("CodeEditor");
   const { resolvedTheme } = useTheme();
   const { fontSize, setFontSize } = useEditorFontSize();
   const [autoClose, setAutoClose] = useEditorAutoClose();
   const autoCloseMode = autoClose ? "languageDefined" : "never";
-  const [fullscreen, setFullscreen] = useState(false);
+  const [ownFullscreen, setOwnFullscreen] = useState(false);
+  const controlled = maximized !== undefined;
+  const fullscreen = controlled ? maximized : ownFullscreen;
+  const setFullscreenRef = useRef<(on: boolean) => void>(() => {});
+  setFullscreenRef.current = controlled
+    ? (on) => onMaximizedChange?.(on)
+    : setOwnFullscreen;
+  const setFullscreen = (on: boolean) => setFullscreenRef.current(on);
 
   useEffect(() => {
     if (!fullscreen) return;
@@ -64,17 +79,20 @@ export function CodeEditor({
       if (document.querySelector("[data-radix-popper-content-wrapper]")) {
         return;
       }
-      setFullscreen(false);
+      setFullscreenRef.current(false);
     }
 
+    document.addEventListener("keydown", onKeyDown);
+    if (controlled) {
+      return () => document.removeEventListener("keydown", onKeyDown);
+    }
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    document.addEventListener("keydown", onKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [fullscreen]);
+  }, [fullscreen, controlled]);
 
   return (
     // Only classes change when toggling fullscreen, so Monaco stays mounted
@@ -82,7 +100,9 @@ export function CodeEditor({
     <div
       className={cn(
         "notranslate flex flex-col gap-4",
-        fullscreen ? "fixed inset-0 z-50 bg-background p-4" : className,
+        fullscreen && !controlled
+          ? "fixed inset-0 z-50 bg-background p-4"
+          : className,
       )}
       translate="no"
     >
@@ -148,7 +168,7 @@ export function CodeEditor({
                     fullscreen ? t("exitFullscreen") : t("fullscreen")
                   }
                   aria-pressed={fullscreen}
-                  onClick={() => setFullscreen((on) => !on)}
+                  onClick={() => setFullscreen(!fullscreen)}
                   size="icon"
                   variant="ghost"
                 >
@@ -165,9 +185,13 @@ export function CodeEditor({
       <div
         className={cn(
           "min-h-0",
-          (fullscreen || height === undefined) && "flex-1",
+          ((fullscreen && !controlled) || height === undefined) && "flex-1",
         )}
-        style={fullscreen || height === undefined ? undefined : { height }}
+        style={
+          (fullscreen && !controlled) || height === undefined
+            ? undefined
+            : { height }
+        }
       >
         <Editor
           {...props}

@@ -84,8 +84,8 @@ The judge is untouched; no version bump for it.
 - Exercise route keeps its URL; the page renders `ExerciseWorkspace`.
 Drawer state lives in the URL (`?panel=submissions|stats|tests|leaderboard|settings`, via `nuqs`) so drawers are linkable and Back closes them.
 
-### 8. Drafts hook
-Extract `UploadCode`'s storage logic into `hooks/use-solution-draft.ts`: `useSolutionDraft({ scope: draftKey, language })` returns `{ code, setCode, onEditorMount, reset, undoReset, savedAt }` with the same rules (slot key `code-<scope>-<language>`, blur/pagehide/slot-switch saves, starter/empty never overwrite, "load saved?" toast when code was typed before a language was chosen). Contest keeps its existing keys (`code-<problemId>-<lang>`) so in-flight contest drafts survive the deploy; practice uses the same key (same problem id ⇒ practice and contest share a draft, which is desirable); exercises use `code-ex-<exerciseId>-<lang>`. Blocks/parsons drafts are out of scope (not persisted today either).
+### 8. Drafts
+Main already has `useCodeDraft` (`hooks/use-code-draft.tsx`, editor-drafts spec: per user/target/language keys, last language, debounced writes, clear on accepted/reset), used by practice and exercises; contest `upload.tsx` still has an older copy. The shell's editor pane uses `useCodeDraft` for all three (contest target `{ kind: "contest", id: "<contestId>:<problemId>" }`, same key as today), and the contest copy goes away. The pre-per-user legacy `code-<problemId>-<lang>` migration in `upload.tsx` is dropped: it ran on every open since the per-user change, so remaining legacy keys are from abandoned drafts. The `proposal`'s new `use-solution-draft` hook is therefore not needed. Blocks/parsons drafts stay out of scope.
 
 ### 9. Narrow screens
 `useMediaQuery("(min-width: 1024px)")` picks layout. Narrow: one view visible (`statement | code | results`), others `hidden` via CSS so the single Monaco/Blockly instance stays mounted; bottom tab bar; rail items in a `DropdownMenu` from the top bar. Run/Submit switch to `results`. Same approach the contest layout already uses to avoid duplicate editors.

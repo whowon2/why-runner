@@ -10,7 +10,7 @@ Solving a problem today means juggling separate views: on a standalone problem t
 - **BREAKING (UI/URLs)**: contest problems open in the shell at `/contests/[slug]/problems/[problemSlug]`, with an A/B/C… problem switcher and a leaderboard drawer in the rail and the contest timer in the top bar. The contest page's Problems tab becomes a problem list linking there; old `?tab=problems&problem=<slug>` links redirect.
 - Lesson exercise page (`/classes/…/exercises/[exerciseSlug]`) uses the shell, with previous/next exercise in the rail; blocks and Parsons modes render their editors in the editor slot.
 - **Play examples** on top of the existing custom runs (`code_run`): each visible example gets a Play button that runs the code with that example's input; "Run all test cases" plays them one after another. The browser compares stdout with the expected output the student already sees, using the problem's compare mode (exact/tokens/float; checker problems show output only). No new table and no judge change; same gates (`CUSTOM_RUN_ENABLED`, `contest.allowRuns`) and limits as custom runs. The custom-run stdin box moves into the Console.
-- Code drafts are saved per problem + language in `localStorage` in all three contexts (today only contests do), via one shared hook.
+- All three contexts keep drafts through the existing `useCodeDraft` hook (contest's older copy goes away).
 - Narrow screens (< 1024px): single column with a bottom switcher (Statement / Code / Results); one editor instance stays mounted; submitting switches to Results.
 
 ## Capabilities
@@ -26,6 +26,6 @@ Solving a problem today means juggling separate views: on a standalone problem t
 
 ## Impact
 
-- **web**: new `components/workspace/` (shell + panels), `hooks/use-solution-draft.ts`, `hooks/use-example-runs.ts`, `lib/compare-output.ts` (TS port of `judge/src/compare.rs` rules, unit-tested); rewrites of `app/[locale]/problems/_components/workspace/*`, `contests/_components/tabs/problem/*`, `classes/_components/exercise-detail.tsx`/`exercise-header.tsx`; new routes `problems/[slug]/edit`, `contests/[slug]/problems/[problemSlug]`; root layout hides `UserDock`/`Footer` on workspace routes; `getExercise` additionally returns the problem's `compareMode`/`floatEpsilon`; new i18n keys (pt, en). Web minor version bump.
+- **web**: new `components/workspace/` (shell + panels), `hooks/use-example-runs.ts`, `lib/compare-output.ts` (TS port of `judge/src/compare.rs` rules, unit-tested); rewrites of `app/[locale]/problems/_components/workspace/*`, `contests/_components/tabs/problem/*`, `classes/_components/exercise-detail.tsx`/`exercise-header.tsx`; new routes `problems/[slug]/edit`, `contests/[slug]/problems/[problemSlug]`; root layout hides `UserDock`/`Footer` on workspace routes; `getExercise` additionally returns the problem's `compareMode`/`floatEpsilon`; new i18n keys (pt, en). Web minor version bump.
 - **DB / judge**: no changes.
 - Docs: `web/CLAUDE.md` (workspace shell, `isWorkspacePath` rule, example plays).
