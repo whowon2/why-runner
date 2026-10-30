@@ -1180,7 +1180,8 @@
           }
         },
         "noProblems": "Nenhum problema foi adicionado a este torneio ainda.",
-        "addProblemsLink": "Adicione problemas na aba Configurações"
+        "addProblemsLink": "Adicione problemas na aba Configurações",
+        "notFoundInContest": "Este problema não faz parte desta competição."
       },
       "Leaderboard": {
         "rank": "#",

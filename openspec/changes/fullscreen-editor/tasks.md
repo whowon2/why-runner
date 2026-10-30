@@ -8,7 +8,7 @@
 ## 2. Shared workspace shell (web)
 
 - [x] 2.1 `lib/workspace-routes.ts` `isWorkspacePath` + unit tests; `SiteChrome` client wrapper hiding `UserDock`/`Footer` on workspace paths in `app/[locale]/layout.tsx`
-- [ ] 2.2 Drafts: the shell's code editor uses the existing `useCodeDraft` (editor-drafts spec) for all three contexts, contest target `contest:<contestId>:<problemId>`; drop contest `upload.tsx`'s own copy
+- [x] 2.2 Drafts: the shell's code editor uses the existing `useCodeDraft` (editor-drafts spec) for all three contexts, contest target `contest:<contestId>:<problemId>`; drop contest `upload.tsx`'s own copy
 - [x] 2.3 `pendingRefetchInterval` in `lib/submission-status.ts`; apply to `useProblemPracticeSubmissions`, `useProblemSubmissions`, `useExerciseSubmissions`
 - [x] 2.4 `components/workspace/workspace-context.tsx` (`WorkspaceSource`, `WorkspaceAnswer`, last-event state)
 - [x] 2.5 `workspace-shell.tsx`: top bar, rail, resizable statement/editor and editor/bottom splits, `100dvh` no page scroll
@@ -32,11 +32,11 @@
 
 ## 4. Contest problem page
 
-- [ ] 4.1 Route `contests/[slug]/problems/[problemSlug]/page.tsx` (contest + membership of problem, `notFound` otherwise)
-- [ ] 4.2 `ContestProblemGate` moved from `tabs/problem/index.tsx` (not started countdown, pending join, non-participant before end)
-- [ ] 4.3 Contest adapter: rail letters with live solved marks (`useUserContestStatus`), Leaderboard drawer, timer + solved count in top bar, submit via `useCreateSubmission` (keep its invalidations), runs with `context: "contest"` gated by `contest.allowRuns`, AI level from `contest.aiAssistance`, locked when solved/ended/non-participant
-- [ ] 4.4 Replace Problems tab content with a problem list linking to the route; redirect `?tab=problems&problem=` in `ContestTabs`/page; remove `upload.tsx`, `submission-list.tsx`, `select-problem.tsx` once unused
-- [ ] 4.5 Update links into contest problems (home running-contest card, notifications, palette)
+- [x] 4.1 Route `contests/[slug]/problems/[problemSlug]/page.tsx` (contest + membership of problem, `notFound` otherwise)
+- [x] 4.2 `ContestProblemGate` moved from `tabs/problem/index.tsx` (not started countdown, pending join, non-participant before end)
+- [x] 4.3 Contest adapter: rail letters with live solved marks (`useUserContestStatus`), Leaderboard drawer, timer + solved count in top bar, submit via `useCreateSubmission` (keep its invalidations), runs with `context: "contest"` gated by `contest.allowRuns`, AI level from `contest.aiAssistance`, locked when solved/ended/non-participant
+- [x] 4.4 Replace Problems tab content with a problem list linking to the route; redirect `?tab=problems&problem=` in `ContestTabs`/page; remove `upload.tsx`, `submission-list.tsx`, `select-problem.tsx` once unused
+- [x] 4.5 Update links into contest problems (home running-contest card, notifications, palette)
 
 ## 5. Lesson exercise page
 

@@ -1180,7 +1180,8 @@
           }
         },
         "noProblems": "No problems have been added to this contest yet.",
-        "addProblemsLink": "Add problems in the Settings tab"
+        "addProblemsLink": "Add problems in the Settings tab",
+        "notFoundInContest": "This problem isn't part of this contest."
       },
       "Leaderboard": {
         "rank": "#",
