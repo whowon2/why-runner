@@ -1,30 +1,21 @@
 "use client";
 
 import type { User } from "better-auth";
-import { Fragment, useEffect, useState } from "react";
+import { CheckCircle2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { ProblemDescription } from "@/app/[locale]/problems/_components/description";
+import { DifficultyBadge } from "@/app/[locale]/problems/_components/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
 import type {
   Contest,
   ProblemOnContest,
   ProblemPreview,
   UserOnContest,
 } from "@/drizzle/schema";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import { useUserContestStatus } from "@/hooks/use-user-contest-status";
 import { Link, usePathname } from "@/i18n/navigation";
 import { letters } from "@/lib/letters";
-import { AiHelpDockPanel } from "../../ai-dialog";
-import { AiHelpDockProvider } from "../../ai-help-dock";
-import { SelectProblem } from "./select-problem";
-import { SubmissionList } from "./submission-list";
-import { UploadCode } from "./upload";
+import { cn } from "@/lib/utils";
 
 export function ProblemTab({
   user,
@@ -32,16 +23,14 @@ export function ProblemTab({
 }: {
   user: User;
   contest: Contest & {
-    problems: ProblemOnContest[];
+    problems: (ProblemOnContest & { problem: ProblemPreview })[];
     users: UserOnContest[];
     canManage: boolean;
   };
 }) {
   const t = useTranslations("ContestsPage.Tabs.Problem");
   const pathname = usePathname();
-  const isWide = useMediaQuery("(min-width: 1024px)");
   const { data: liveAnswered } = useUserContestStatus(contest.id);
-  const [problem, setProblem] = useState<ProblemPreview | null>(null);
   const isOwner = contest.canManage;
   const [isContestStarted, setIsContestStarted] = useState(
     () => isOwner || (!!contest.startDate && new Date() >= contest.startDate),
@@ -112,79 +101,33 @@ export function ProblemTab({
   }
 
   const answeredLetters = liveAnswered ?? isUserOnContest?.answered ?? [];
-  const currentProblemLetter = problem
-    ? letters[contest.problems.findIndex((p) => p.problemId === problem.id)]
-    : null;
-  const isCurrentProblemSolved =
-    currentProblemLetter && answeredLetters.includes(currentProblemLetter);
-  const showEditor =
-    !!isUserOnContest &&
-    !!contest.endDate &&
-    contest.endDate > new Date() &&
-    !isCurrentProblemSolved;
 
   return (
     <Card className="w-full py-4">
-      <CardContent className="flex flex-col w-full gap-4 px-4">
-        <SelectProblem
-          contest={contest}
-          setProblem={setProblem}
-          user={user}
-          answered={answeredLetters}
-        />
-
-        {problem && (
-          <AiHelpDockProvider>
-          <ResizablePanelGroup
-            className={
-              isWide
-                ? "h-[calc(100dvh-8rem)] min-h-[560px]"
-                : "h-[140dvh] min-h-[900px]"
-            }
-            direction={isWide ? "horizontal" : "vertical"}
-          >
-            <ResizablePanel
-              className={`flex flex-col gap-4 overflow-y-auto! ${isWide ? "pr-3" : "pb-3"}`}
-              defaultSize={showEditor ? 45 : 100}
-              id="statement"
-              minSize={25}
-              order={1}
-            >
-              <h2 className="font-bold text-2xl">
-                {currentProblemLetter && `${currentProblemLetter}. `}
-                {problem.title}
-              </h2>
-              <ProblemDescription problemId={problem.id} />
-              {isUserOnContest && (
-                <SubmissionList
-                  problem={problem}
-                  contest={contest}
-                  user={user}
-                />
+      <CardContent className="flex flex-col gap-2 px-4">
+        {contest.problems.map((p, i) => {
+          const letter = letters[i];
+          const solved = answeredLetters.includes(letter);
+          return (
+            <Link
+              className={cn(
+                "flex items-center gap-4 border px-4 py-3 transition-colors hover:border-primary hover:bg-primary/5",
+                solved && "border-green-600/50 bg-green-500/10",
               )}
-            </ResizablePanel>
-            {showEditor && (
-              <Fragment>
-                <ResizableHandle withHandle />
-                <ResizablePanel
-                  className={`flex min-h-0 flex-col ${isWide ? "pl-3" : "pt-3"}`}
-                  defaultSize={55}
-                  id="editor"
-                  minSize={30}
-                  order={2}
-                >
-                  <UploadCode
-                    contest={contest}
-                    problem={problem}
-                    user={user}
-                  />
-                </ResizablePanel>
-              </Fragment>
-            )}
-            <AiHelpDockPanel order={3} />
-          </ResizablePanelGroup>
-          </AiHelpDockProvider>
-        )}
+              href={`/contests/${contest.slug}/problems/${p.problem.slug}`}
+              key={p.problemId}
+            >
+              <span className="w-8 font-bold text-xl">{letter}</span>
+              <span className="min-w-0 flex-1 truncate font-medium">
+                {p.problem.title}
+              </span>
+              <DifficultyBadge difficulty={p.problem.difficulty} />
+              {solved && (
+                <CheckCircle2 className="size-5 text-green-600 dark:text-green-400" />
+              )}
+            </Link>
+          );
+        })}
       </CardContent>
     </Card>
   );

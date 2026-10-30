@@ -283,7 +283,6 @@ export function AiHelpPanelBody({
   );
 }
 
-
 /**
  * Third resizable panel, right of the editor, shown while some submission's
  * AI help is docked. Render it inside the page's `ResizablePanelGroup`.
@@ -298,7 +297,7 @@ export function AiHelpDockPanel({ order }: { order: number }) {
     <>
       <ResizableHandle withHandle />
       <ResizablePanel
-        className="flex min-h-0 flex-col gap-3 pl-3"
+        className="flex min-h-0 flex-col gap-3 p-3"
         defaultSize={25}
         id="ai-help"
         minSize={20}
@@ -317,7 +316,11 @@ export function AiHelpDockPanel({ order }: { order: number }) {
               maxLevel={maxLevel}
               submission={submission}
               trigger={
-                <Button aria-label={t("openAsDialog")} size="icon" variant="ghost">
+                <Button
+                  aria-label={t("openAsDialog")}
+                  size="icon"
+                  variant="ghost"
+                >
                   <Maximize2 />
                 </Button>
               }

@@ -30,7 +30,7 @@ export default function NewProblemPage() {
         router.push("/problems");
       },
       onSuccess: (data) => {
-        router.replace(`/problems/${data.slug}?tab=edit`);
+        router.replace(`/problems/${data.slug}/edit`);
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

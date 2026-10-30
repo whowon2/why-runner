@@ -185,7 +185,7 @@ export function ProblemsList() {
             className="flex items-center gap-2 font-medium hover:underline"
             href={
               row.original.status === "draft"
-                ? `/problems/${row.original.slug}?tab=edit`
+                ? `/problems/${row.original.slug}/edit`
                 : `/problems/${row.original.slug}`
             }
           >
@@ -378,7 +378,7 @@ export function ProblemsList() {
                     onClick={() =>
                       router.push(
                         row.original.status === "draft"
-                          ? `/problems/${row.original.slug}?tab=edit`
+                          ? `/problems/${row.original.slug}/edit`
                           : `/problems/${row.original.slug}`,
                       )
                     }

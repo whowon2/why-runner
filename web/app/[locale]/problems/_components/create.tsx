@@ -165,7 +165,7 @@ export function NewProblem({
         onSuccess(updated) {
           toast.success(t("createdSuccess"));
           if (updated && updated.slug !== problem.slug) {
-            router.replace(`/problems/${updated.slug}?tab=edit`);
+            router.replace(`/problems/${updated.slug}/edit`);
           } else {
             // `problem` (title/description/difficulty/tests) is fetched
             // server-side once in page.tsx and passed down as a prop —

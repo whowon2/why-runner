@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { CommandPaletteMount } from "@/components/command-palette/command-palette-mount";
 import { Footer } from "@/components/footer";
+import { SiteChrome } from "@/components/site-chrome";
 import { Toaster } from "@/components/ui/sonner";
 import { UserDock } from "@/components/user-dock";
 import { DEFAULT_PRESET_ID, PRESETS } from "@/lib/themes/presets";
@@ -41,8 +42,10 @@ export default function RootLayout({
               <CommandPaletteMount>
                 {children}
                 <Toaster />
-                <UserDock />
-                <Footer />
+                <SiteChrome>
+                  <UserDock />
+                  <Footer />
+                </SiteChrome>
               </CommandPaletteMount>
             </Providers>
           </NuqsAdapter>

@@ -94,7 +94,7 @@ export function MyProblems({
                   onClick={() =>
                     router.push(
                       prob.status === "draft"
-                        ? `/problems/${prob.slug}?tab=edit`
+                        ? `/problems/${prob.slug}/edit`
                         : `/problems/${prob.slug}`,
                     )
                   }

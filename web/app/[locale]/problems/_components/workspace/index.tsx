@@ -1,165 +1,136 @@
 "use client";
 
-import { Pencil } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { BarChart3, FileDown, Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Language, Problem } from "@/drizzle/schema";
-import { useCodeDraft } from "@/hooks/use-code-draft";
+import { useMemo } from "react";
+import { toast } from "sonner";
+import { CodePane } from "@/components/workspace/code-pane";
+import { ProblemStatement } from "@/components/workspace/problem-statement";
+import { SolveStatus } from "@/components/workspace/solve-status";
+import {
+  type WorkspaceSource,
+  WorkspaceProvider,
+} from "@/components/workspace/workspace-context";
+import {
+  type RailItem,
+  WorkspaceShell,
+} from "@/components/workspace/workspace-shell";
+import type { Problem, Submission } from "@/drizzle/schema";
+import { useActionErrorMessage } from "@/hooks/use-action-error-message";
+import { useCreateProblemSubmission } from "@/hooks/use-create-problem-submission";
 import { useProblemPracticeSubmissions } from "@/hooks/use-problem-practice-submissions";
-import { usePathname, useRouter } from "@/i18n/navigation";
+import { useProblemTests } from "@/hooks/use-problem-tests";
+import { useRunsEnabled } from "@/hooks/use-runs-enabled";
 import { authClient } from "@/lib/auth/client";
-import { ProblemDescription } from "../description";
-import { DeleteProblemButton } from "../delete-problem-button";
-import { PublishProblem } from "../publish-button";
-import { ProblemEditTab } from "./edit";
-import { ProblemResultsTab } from "./results";
 import { ProblemStatisticsTab } from "./statistics";
-import { useCodeRunner } from "@/components/code-run/code-run";
-import { ProblemSubmitTab } from "./submit";
 import { ProblemTestsTab } from "./tests";
 
+/** Standalone (practice) problem in the fullscreen editor workspace. */
 export function ProblemWorkspace({ problem }: { problem: Problem }) {
-  const t = useTranslations("ProblemsPage.Workspace");
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const t = useTranslations("Workspace");
+  const tSubmit = useTranslations("ProblemsPage.Workspace.Submit");
+  const errorMessage = useActionErrorMessage();
   const { data: session } = authClient.useSession();
   // Admins manage every problem; the session role is only a UI hint, the
-  // problem actions re-check it on the server.
+  // edit page re-checks it on the server.
   const isOwner =
     session?.user?.id === problem.createdBy || session?.user?.role === "admin";
-  const tab =
-    searchParams.get("tab") ||
-    (isOwner && problem.status === "draft" ? "edit" : "task");
+  const runsEnabled = useRunsEnabled();
+  const { data: tests } = useProblemTests(problem.id);
+  const { data: submissions, isPending: submissionsPending } =
+    useProblemPracticeSubmissions(problem.id);
+  const { mutate, isPending: submitting } = useCreateProblemSubmission();
 
-  // Lifted out of ProblemSubmitTab: Radix unmounts inactive TabsContent, so
-  // state living inside that tab's own component gets wiped on tab switch.
-  const [code, setCode] = useState("");
-  const [language, setLanguage] = useState<Language | null>(null);
-  const { data: submissions } = useProblemPracticeSubmissions(problem.id);
-  const latest = submissions?.[0];
-  const draft = useCodeDraft({
-    target: { kind: "problem", id: problem.id },
-    code,
-    setCode,
-    language,
-    setLanguage,
-    latest,
-  });
-  const runner = useCodeRunner();
-
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-      return params.toString();
-    },
-    [searchParams],
+  const source = useMemo<WorkspaceSource>(
+    () => ({
+      tests: tests?.samples ?? [],
+      hiddenCount: tests?.hiddenCount ?? 0,
+      compare: { mode: problem.compareMode, epsilon: problem.floatEpsilon },
+      runsEnabled,
+      lockedReason: null,
+      submissions: submissions as Submission[] | undefined,
+      submissionsPending,
+      ai: { maxLevel: null },
+      submitting,
+      submit: (answer) => {
+        if (answer.mode !== "code") return;
+        mutate(
+          {
+            code: answer.code,
+            language: answer.language,
+            problemId: problem.id,
+          },
+          {
+            onError: (error) =>
+              toast.error(tSubmit("failedSubmit"), {
+                description: errorMessage(error),
+              }),
+          },
+        );
+      },
+      toRunProgram: (answer) =>
+        answer.mode === "code"
+          ? {
+              context: "problem",
+              problemId: problem.id,
+              code: answer.code,
+              language: answer.language,
+            }
+          : null,
+    }),
+    [
+      tests,
+      problem,
+      runsEnabled,
+      submissions,
+      submissionsPending,
+      submitting,
+      mutate,
+      tSubmit,
+      errorMessage,
+    ],
   );
 
-  const handleTabChange = (value: string) => {
-    router.push(`${pathname}?${createQueryString("tab", value)}`, {
-      scroll: false,
-    });
-  };
+  const rail: RailItem[] = [
+    {
+      key: "statistics",
+      label: t("Rail.statistics"),
+      icon: BarChart3,
+      panel: "statistics",
+    },
+    { key: "tests", label: t("Rail.tests"), icon: FileDown, panel: "tests" },
+    ...(isOwner
+      ? [
+          {
+            key: "edit",
+            label: t("Rail.edit"),
+            icon: Pencil,
+            href: `/problems/${problem.slug}/edit`,
+          },
+        ]
+      : []),
+  ];
 
   return (
-    <div className="flex w-full flex-1 flex-col gap-4">
-      <Tabs
-        className="w-full max-w-6xl mx-auto flex-1"
-        defaultValue={tab}
-        onValueChange={handleTabChange}
-      >
-        <div className="flex w-full flex-col items-center gap-4 pb-4 mb-2">
-          <div className="w-full flex justify-center overflow-x-auto scrollbar-hide">
-            <TabsList className="inline-flex min-w-max h-12 items-center justify-start rounded-none bg-muted/40 p-1 text-muted-foreground border border-muted/50">
-              <TabsTrigger
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
-                value="task"
-              >
-                {t("tabs.task")}
-              </TabsTrigger>
-              <TabsTrigger
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
-                value="submit"
-              >
-                {t("tabs.submit")}
-              </TabsTrigger>
-              <TabsTrigger
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
-                value="results"
-              >
-                {t("tabs.results")}
-              </TabsTrigger>
-              <TabsTrigger
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
-                value="statistics"
-              >
-                {t("tabs.statistics")}
-              </TabsTrigger>
-              <TabsTrigger
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:shadow-sm"
-                value="tests"
-              >
-                {t("tabs.tests")}
-              </TabsTrigger>
-              {isOwner && (
-                <TabsTrigger
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-sm font-semibold transition-all hover:text-foreground data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:shadow-sm gap-2"
-                  value="edit"
-                >
-                  {t("tabs.edit")}
-                  <Pencil className="w-4 h-4" />
-                </TabsTrigger>
-              )}
-            </TabsList>
-          </div>
-
-          {isOwner && problem.status === "draft" && (
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <PublishProblem problem={problem} />
-              <DeleteProblemButton problem={problem} />
-            </div>
-          )}
-        </div>
-
-        {/* No backdrop-blur here: it would make this box the containing
-            block for the code editor's fixed fullscreen layer. */}
-        <div className="mt-4 rounded-none bg-white/40 dark:bg-neutral-900/40 border border-white/20 shadow-2xl shadow-indigo-500/5 p-6">
-          <TabsContent value="task">
-            <ProblemDescription problemId={problem.id} />
-          </TabsContent>
-          <TabsContent value="submit">
-            <ProblemSubmitTab
-              clearDraft={draft.clearDraft}
-              code={code}
-              draftFor={draft.draftFor}
-              language={language}
-              latest={latest}
-              problemId={problem.id}
-              runner={runner}
-              setCode={setCode}
-              setLanguage={setLanguage}
-            />
-          </TabsContent>
-          <TabsContent value="results">
-            <ProblemResultsTab problemId={problem.id} />
-          </TabsContent>
-          <TabsContent value="statistics">
-            <ProblemStatisticsTab problemId={problem.id} />
-          </TabsContent>
-          <TabsContent value="tests">
-            <ProblemTestsTab problemId={problem.id} />
-          </TabsContent>
-          {isOwner && (
-            <TabsContent value="edit">
-              <ProblemEditTab problemId={problem.id} />
-            </TabsContent>
-          )}
-        </div>
-      </Tabs>
-    </div>
+    <WorkspaceProvider source={source}>
+      <WorkspaceShell
+        back={{ href: "/problems", label: t("Rail.back") }}
+        drawers={{
+          statistics: {
+            title: t("Drawers.statistics"),
+            content: <ProblemStatisticsTab problemId={problem.id} />,
+          },
+          tests: {
+            title: t("Drawers.tests"),
+            content: <ProblemTestsTab problemId={problem.id} />,
+          },
+        }}
+        editor={<CodePane draftTarget={{ kind: "problem", id: problem.id }} />}
+        rail={rail}
+        statement={<ProblemStatement problem={problem} />}
+        status={<SolveStatus submissions={submissions} />}
+        title={problem.title}
+      />
+    </WorkspaceProvider>
   );
 }
