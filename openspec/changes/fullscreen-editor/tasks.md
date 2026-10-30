@@ -46,6 +46,6 @@
 
 ## 6. Docs, versions, verification
 
-- [ ] 6.1 Update `web/CLAUDE.md` (workspace shell, `isWorkspacePath` rule, example plays via custom runs); bump `web/package.json` minor
-- [ ] 6.2 `bun lint`, `bun test lib`, `bun build`
+- [x] 6.1 Update `web/CLAUDE.md` (workspace shell, `isWorkspacePath` rule, example plays via custom runs); bump `web/package.json` minor
+- [x] 6.2 `bun lint`, `bun test lib`, `bun build`
 - [ ] 6.3 Browser check with test accounts (student + teacher) on `$DEV_PORT`: practice submit shows verdict inline; custom Run, Play one / Run all with match markers (needs `CUSTOM_RUN_ENABLED=true` + local judge); contest timer, letters, leaderboard drawer, solved lock; lesson code/blocks/parsons submit + run; drafts survive reload; maximize + Esc; 390px and 768px widths; old `?tab=` and `?problem=` URLs redirect
