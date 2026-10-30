@@ -22,7 +22,6 @@ import { useContest } from "@/hooks/use-contest";
 import { useCreateSubmission } from "@/hooks/use-create-submission";
 import { useProblemSubmissions } from "@/hooks/use-problem-submissions";
 import { useProblemTests } from "@/hooks/use-problem-tests";
-import { useRunsEnabled } from "@/hooks/use-runs-enabled";
 import { useUserContestStatus } from "@/hooks/use-user-contest-status";
 import { Link } from "@/i18n/navigation";
 import { letters } from "@/lib/letters";
@@ -126,7 +125,6 @@ function ContestWorkspace({
     liveAnswered ??
     contest.users.find((u) => u.userId === userId)?.answered ??
     [];
-  const runsGate = useRunsEnabled();
   const { data: tests } = useProblemTests(problem.id);
   const { data: rows, isPending: submissionsPending } = useProblemSubmissions({
     problemId: problem.id,
@@ -158,7 +156,7 @@ function ContestWorkspace({
       tests: tests?.samples ?? [],
       hiddenCount: tests?.hiddenCount ?? 0,
       compare: { mode: problem.compareMode, epsilon: problem.floatEpsilon },
-      runsEnabled: runsGate && contest.allowRuns && isMember,
+      runsEnabled: contest.allowRuns && isMember,
       lockedReason,
       submissions,
       submissionsPending,
@@ -198,7 +196,6 @@ function ContestWorkspace({
     [
       tests,
       problem,
-      runsGate,
       contest,
       isMember,
       lockedReason,

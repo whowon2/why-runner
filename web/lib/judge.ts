@@ -45,12 +45,3 @@ async function wakeJudge() {
     console.error("Failed to wake judge:", e);
   }
 }
-
-/**
- * Whether "Run with custom input" is on (`CUSTOM_RUN_ENABLED`). Off until the
- * deployed judge listens on `new_run`; an older judge would leave runs
- * PENDING forever.
- */
-export function customRunsEnabled() {
-  return env.CUSTOM_RUN_ENABLED === "true";
-}

@@ -20,9 +20,6 @@ export const env = createEnv({
     // Optional: comma-separated emails that may open read-only previews of
     // every survey form (/surveys/preview/[form]). Admins always can.
     SURVEY_PREVIEW_EMAILS: z.string().optional(),
-    // "true" enables "Run with custom input" (code_run). Keep it off until
-    // the judge that handles the `new_run` channel (v1.1.0+) is deployed.
-    CUSTOM_RUN_ENABLED: z.enum(["true", "false"]).default("false"),
     // Set by Vercel on every deployment; shown in the footer and /api/version.
     VERCEL_GIT_COMMIT_SHA: z.string().optional(),
   },
@@ -41,7 +38,6 @@ export const env = createEnv({
     FLY_API_TOKEN: process.env.FLY_API_TOKEN,
     FLY_JUDGE_APP: process.env.FLY_JUDGE_APP,
     SURVEY_PREVIEW_EMAILS: process.env.SURVEY_PREVIEW_EMAILS,
-    CUSTOM_RUN_ENABLED: process.env.CUSTOM_RUN_ENABLED,
     VERCEL_GIT_COMMIT_SHA: process.env.VERCEL_GIT_COMMIT_SHA,
   },
 });
