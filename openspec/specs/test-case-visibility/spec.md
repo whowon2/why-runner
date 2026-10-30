@@ -69,10 +69,14 @@ A visible test SHALL expose its input, its expected output and, in a report, the
 - **THEN** a submission failing test 4 SHALL show "Test 4 failed (hidden)" with the pass counts, and SHALL NOT show its input, expected output, actual output or stderr
 
 ### Requirement: Owners and authors always see every test
-For lesson exercises, the problem's author, the lesson's owner and the classroom's owner SHALL see every test's input and expected output on the exercise card, and full reports for any submission, whatever the lesson mode and the `visible` flags. For practice and contests, only the problem's author SHALL have full access.
+For lesson exercises, the problem's author and the class's managers (owner, co-teachers and admins) SHALL see every test's input and expected output on the exercise card, and full reports for any submission, whatever the lesson mode and the `visible` flags. For practice and contests, only the problem's author SHALL have full access.
 
 #### Scenario: Class owner in a hide_all lesson
 - **WHEN** the classroom owner opens an exercise in a `hide_all` lesson
+- **THEN** the card SHALL list every test case with its input and expected output
+
+#### Scenario: Co-teacher in a hide_all lesson
+- **WHEN** a co-teacher of the class opens an exercise in a `hide_all` lesson
 - **THEN** the card SHALL list every test case with its input and expected output
 
 #### Scenario: Problem author who does not own the class

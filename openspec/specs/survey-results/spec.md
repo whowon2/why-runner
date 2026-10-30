@@ -4,11 +4,19 @@
 Defines the researcher-only view of evaluation survey responses: access gate, aggregated SUS and per-item statistics per form, filtering by contest or lesson, and the anonymized CSV export.
 ## Requirements
 ### Requirement: Researcher-only access
-The `/surveys/results` page and every results/export action SHALL be available only to signed-in users whose email appears in the comma-separated `SURVEY_ADMIN_EMAILS` env var (case-insensitive, trimmed). When the variable is unset or empty, nobody SHALL have access.
+The `/surveys/results` page and every results/export action SHALL be available only to signed-in users with `role = 'admin'`. The `SURVEY_ADMIN_EMAILS` env var SHALL NOT grant access at runtime; it is only an input to the admin seed script.
 
 #### Scenario: Regular user opens results
-- **WHEN** a user whose email is not in `SURVEY_ADMIN_EMAILS` opens `/surveys/results` or calls a results action
+- **WHEN** a user whose role is `user` opens `/surveys/results` or calls a results action
 - **THEN** the page is treated as not found and the action returns no data
+
+#### Scenario: Admin opens results
+- **WHEN** an admin opens `/surveys/results`
+- **THEN** the aggregated results are shown
+
+#### Scenario: Email listed but not admin
+- **WHEN** a user whose email is in `SURVEY_ADMIN_EMAILS` but whose role is `user` opens `/surveys/results`
+- **THEN** the page is treated as not found
 
 ### Requirement: Aggregated results per form
 For each of the four forms the results page SHALL show: response count, SUS mean, median, standard deviation, and the adjective band of the mean (Bangor et al.), the distribution of 1–5 answers and mean for every Likert item (excluding "Não usei", with the "Não usei" count shown separately), the respondent profile breakdown, and the list of open-ended answers without respondent names or emails.

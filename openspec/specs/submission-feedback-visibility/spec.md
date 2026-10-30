@@ -58,7 +58,7 @@ The contest export's "Judge Output" column SHALL be redacted with the contest ow
 - **THEN** hidden-test failures in `submissions.csv` SHALL appear as verdict and test number only
 
 ### Requirement: Lesson exercise reports follow the lesson's test visibility
-For lesson exercise submissions, the failing test SHALL be shown in full (input, expected output, actual output, stderr) only when the test-case-visibility rule says that the viewer may see that test under the lesson's `testVisibility`. Otherwise it SHALL be redacted exactly like a hidden practice/contest failure: the verdict, the test number and the pass counts, plus compiler output for compile errors. There SHALL be no partially redacted state where the input is shown without the expected output. The problem's author, the lesson's owner and the classroom's owner SHALL see the full report.
+For lesson exercise submissions, the failing test SHALL be shown in full (input, expected output, actual output, stderr) only when the test-case-visibility rule says that the viewer may see that test under the lesson's `testVisibility`. Otherwise it SHALL be redacted exactly like a hidden practice/contest failure: the verdict, the test number and the pass counts, plus compiler output for compile errors. There SHALL be no partially redacted state where the input is shown without the expected output. The problem's author and the class's managers (owner, co-teachers and admins) SHALL see the full report.
 
 #### Scenario: problem_default, failure on a visible test
 - **WHEN** a student's exercise submission fails test 2, the lesson is `problem_default`, and test 2 is visible
@@ -76,8 +76,8 @@ For lesson exercise submissions, the failing test SHALL be shown in full (input,
 - **WHEN** the lesson is `hide_all`
 - **THEN** a student SHALL see only the verdict, the test number and the pass counts for a failure on any test, plus compiler output on a compile error
 
-#### Scenario: Lesson owner
-- **WHEN** the lesson owner views a student's failing exercise submission in a `hide_all` lesson
+#### Scenario: Class manager
+- **WHEN** the class owner or a co-teacher views a student's failing exercise submission in a `hide_all` lesson
 - **THEN** they SHALL see the full report
 
 ### Requirement: Exercise submissions render the failing-test report

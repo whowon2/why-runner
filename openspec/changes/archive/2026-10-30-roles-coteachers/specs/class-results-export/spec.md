@@ -16,7 +16,7 @@ The system SHALL let only class managers (the owner `classroom.createdBy`, co-te
 - **THEN** the system SHALL reject the request and return no rows
 
 ### Requirement: One row per student per published exercise
-The export SHALL contain one header row and exactly one row for every pair of class student (members with role `student` other than the owner) and exercise of a published lesson in the class, including pairs with no activity. Rows SHALL be ordered by student (name, then username), then lesson (creation order), then exercise (lesson order). Unpublished lessons SHALL NOT appear. Each row SHALL identify the student by name and username only (no email), and the exercise by lesson title, lesson due date, exercise position within the lesson (1-based), problem code and problem title.
+The export SHALL contain one header row and exactly one row for every pair of class student (members with role `student` other than the owner) and exercise of a published lesson in the class, including pairs with no activity. Rows SHALL be ordered by student (name, then username), then lesson (creation order), then exercise (lesson order). Unpublished lessons SHALL NOT appear. Each row SHALL identify the student by name, username and RA only (no email). The RA goes in an `ra` column directly after `username`, empty when the student has none. Each row SHALL identify the exercise by lesson title, lesson due date, exercise position within the lesson (1-based), problem code and problem title.
 
 #### Scenario: Two students, three exercises
 - **WHEN** a class has 2 students and published lessons with 3 exercises in total, plus an unpublished lesson
@@ -25,6 +25,10 @@ The export SHALL contain one header row and exactly one row for every pair of cl
 #### Scenario: Class without students or lessons
 - **WHEN** a class has no students or no published lessons
 - **THEN** the export SHALL contain only the header row
+
+#### Scenario: Student RA in every row
+- **WHEN** a student with RA `0064019` has rows in the export
+- **THEN** each of their rows SHALL have `ra` = `"0064019"`
 
 #### Scenario: Co-teacher excluded
 - **WHEN** a class has 2 students, 1 co-teacher and 3 published exercises
