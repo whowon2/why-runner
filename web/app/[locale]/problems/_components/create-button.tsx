@@ -19,7 +19,7 @@ export function CreateProblemButton() {
         toast.error(t("failedCreateDraft"), { description: error.message });
       },
       onSuccess: (data) => {
-        router.push(`/problems/${data.slug}?tab=edit`);
+        router.push(`/problems/${data.slug}/edit`);
       },
     });
   }

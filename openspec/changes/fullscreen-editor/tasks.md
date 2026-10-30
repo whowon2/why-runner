@@ -24,11 +24,11 @@
 
 ## 3. Practice problem page
 
-- [ ] 3.1 Rewrite `problems/_components/workspace/index.tsx` as the practice adapter (tests from `useProblemTests`, submit via `useCreateProblemSubmission`, runs with `context: "problem"`, top-bar solved status, difficulty/limits)
-- [ ] 3.2 Statistics and Tests (full download) drawers from `statistics.tsx` / `tests.tsx`; delete `submit.tsx`/`results.tsx` once their pieces are moved
-- [ ] 3.3 `problems/[slug]/edit/page.tsx` (owner/admin only, edit form, Publish/Delete, "Try in workspace" link); Edit rail item for owners
-- [ ] 3.4 `problems/[slug]/page.tsx`: draft-owner redirect to `/edit`, legacy `?tab=` redirects/mapping to `?panel=`
-- [ ] 3.5 Update links that point at `?tab=` (command palette, notifications, home cards, problem list) — grep `tab=`
+- [x] 3.1 Rewrite `problems/_components/workspace/index.tsx` as the practice adapter (tests from `useProblemTests`, submit via `useCreateProblemSubmission`, runs with `context: "problem"`, top-bar solved status, difficulty/limits)
+- [x] 3.2 Statistics and Tests (full download) drawers from `statistics.tsx` / `tests.tsx`; delete `submit.tsx`/`results.tsx` once their pieces are moved
+- [x] 3.3 `problems/[slug]/edit/page.tsx` (owner/admin only, edit form, Publish/Delete, "Try in workspace" link); Edit rail item for owners
+- [x] 3.4 `problems/[slug]/page.tsx`: draft-owner redirect to `/edit`, legacy `?tab=` redirects/mapping to `?panel=`
+- [x] 3.5 Update links that point at `?tab=` (command palette, notifications, home cards, problem list) — grep `tab=`
 
 ## 4. Contest problem page
 

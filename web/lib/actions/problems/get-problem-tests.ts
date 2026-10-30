@@ -15,6 +15,8 @@ export interface ProblemTestCase {
 
 export async function getProblemTests(problemId: string): Promise<{
   samples: ProblemTestCase[];
+  /** How many tests aren't samples. */
+  hiddenCount: number;
   all: ProblemTestCase[] | null;
 }> {
   const currentUser = await getCurrentUser({});
@@ -29,10 +31,10 @@ export async function getProblemTests(problemId: string): Promise<{
   });
 
   if (!problemRow) {
-    return { samples: [], all: null };
+    return { samples: [], hiddenCount: 0, all: null };
   }
 
-  const { tests: samples } = visibleTests(
+  const { tests: samples, hiddenCount } = visibleTests(
     problemRow.inputs,
     problemRow.outputs,
     { fullAccess: false, visible: problemRow.visible },
@@ -47,7 +49,7 @@ export async function getProblemTests(problemId: string): Promise<{
   });
 
   if (!solved) {
-    return { samples, all: null };
+    return { samples, hiddenCount, all: null };
   }
 
   const all = problemRow.inputs.map((input, i) => ({
@@ -56,5 +58,5 @@ export async function getProblemTests(problemId: string): Promise<{
     output: problemRow.outputs[i],
   }));
 
-  return { samples, all };
+  return { samples, hiddenCount, all };
 }

@@ -2157,7 +2157,8 @@
     },
     "Edit": {
       "title": "Edit problem",
-      "tryIt": "Open in the editor"
+      "tryIt": "Open in the editor",
+      "subtitle": "Your problem “{title}”: statement, tests and settings."
     }
   }
 }

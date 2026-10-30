@@ -15,7 +15,6 @@ export function ProblemStatisticsTab({ problemId }: { problemId: string }) {
 
   return (
     <div className="max-w-md">
-      <h2 className="mb-2 font-bold text-xl">{t("title")}</h2>
       <div className="rounded-lg border">
         <Table>
           <TableBody>
