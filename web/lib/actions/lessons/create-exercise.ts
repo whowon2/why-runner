@@ -2,13 +2,12 @@
 
 import { and, asc, eq, max } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import {
-  type CreateExerciseInput,
-  exercise,
-  lesson,
-  problem,
-} from "@/drizzle/schema";
+import { type CreateExerciseInput, exercise, problem } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import {
+  assertCanManageExercise,
+  assertCanManageLesson,
+} from "@/lib/auth/permissions";
 import { generateSlug } from "@/lib/slug";
 
 export async function createExercise(
@@ -18,12 +17,7 @@ export async function createExercise(
 ) {
   const currentUser = await getCurrentUser({});
 
-  const linkedLesson = await db.query.lesson.findFirst({
-    where: eq(lesson.id, input.lessonId),
-  });
-  if (!linkedLesson) throw new Error("Lesson not found");
-  if (linkedLesson.createdBy !== currentUser.id)
-    throw new Error("Not the lesson owner");
+  await assertCanManageLesson(input.lessonId, currentUser.id);
 
   const linkedProblem = await db.query.problem.findFirst({
     where: eq(problem.id, input.problemId),
@@ -78,14 +72,10 @@ export async function moveExerciseEntry(input: {
 }) {
   const currentUser = await getCurrentUser({});
 
-  const found = await db.query.exercise.findFirst({
-    where: eq(exercise.id, input.exerciseId),
-    with: { lesson: true },
-  });
-  if (!found) throw new Error("Exercise not found");
-  if (found.lesson.createdBy !== currentUser.id) {
-    throw new Error("Not the lesson owner");
-  }
+  const { exercise: found } = await assertCanManageExercise(
+    input.exerciseId,
+    currentUser.id,
+  );
 
   await db.transaction(async (tx) => {
     const siblings = await tx.query.exercise.findMany({
@@ -116,14 +106,10 @@ export async function moveExerciseEntry(input: {
 export async function deleteExerciseEntry(exerciseId: string) {
   const currentUser = await getCurrentUser({});
 
-  const found = await db.query.exercise.findFirst({
-    where: eq(exercise.id, exerciseId),
-    with: { lesson: true },
-  });
-  if (!found) throw new Error("Exercise not found");
-  if (found.lesson.createdBy !== currentUser.id) {
-    throw new Error("Not the lesson owner");
-  }
+  const { exercise: found } = await assertCanManageExercise(
+    exerciseId,
+    currentUser.id,
+  );
   // Deleting cascades students' exercise_completion rows (answers and
   // feedback), so only drafts may lose exercises — same rule as deleteLesson.
   if (found.lesson.isPublished) {

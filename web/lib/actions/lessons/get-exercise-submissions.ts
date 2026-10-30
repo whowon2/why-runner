@@ -2,6 +2,7 @@
 
 import { db } from "@/drizzle/db";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { canSeeAllExerciseTests } from "@/lib/auth/permissions";
 import { resolvePendingConstraintClassifications } from "@/lib/constraints/classify";
 import { exerciseVisibilityContext, redactReport } from "@/lib/judge-report";
 
@@ -36,16 +37,16 @@ export async function getExerciseSubmissions(exerciseId: string) {
     where: (e, { eq }) => eq(e.id, exerciseId),
     columns: {},
     with: {
-      lesson: {
-        columns: { createdBy: true, testVisibility: true },
-        with: { classroom: { columns: { createdBy: true } } },
-      },
+      lesson: { columns: { classroomId: true, testVisibility: true } },
       problem: { columns: { createdBy: true, visible: true } },
     },
   });
   if (!found) return [];
 
-  const ctx = exerciseVisibilityContext(found, currentUser.id);
+  const ctx = exerciseVisibilityContext(
+    found,
+    await canSeeAllExerciseTests(found, currentUser.id),
+  );
 
   return rows.map((row) => ({
     ...row,

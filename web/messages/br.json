@@ -58,7 +58,8 @@
       "changeLanguage": "Mudar idioma...",
       "copyLink": "Copiar link desta página",
       "signIn": "Entrar",
-      "logout": "Sair"
+      "logout": "Sair",
+      "goAdmin": "Ir para Admin"
     }
   },
   "ToolTips": {
@@ -94,7 +95,8 @@
     "login": "Entrar",
     "settings": "Configurações",
     "notifications": "Notificações",
-    "surveys": "Pesquisas"
+    "surveys": "Pesquisas",
+    "admin": "Admin"
   },
   "Footer": {
     "copyright": "© {year} Why Runner",
@@ -1571,7 +1573,25 @@
     "gradebookNoStudents": "Nenhum aluno entrou ainda.",
     "gradebookNoLessons": "Nenhuma tarefa publicada ainda.",
     "gradebookLegend": "Cada exercício vale a fração de casos de teste aprovados (0–1); — indica tarefa não entregue.",
-    "backToClass": "Voltar para a turma"
+    "backToClass": "Voltar para a turma",
+    "roleOwner": "Dono",
+    "roleCoTeacher": "Coprofessor",
+    "teachers": "Professores",
+    "addCoTeacher": "Adicionar coprofessor",
+    "addCoTeacherTitle": "Adicionar um coprofessor",
+    "addCoTeacherDescription": "Coprofessores gerenciam aulas, notas e alunos como você, mas não podem excluir a turma nem gerenciar outros coprofessores.",
+    "addCoTeacherLabel": "Nome de usuário ou email",
+    "addCoTeacherPlaceholder": "usuario ou nome@exemplo.com",
+    "addCoTeacherSubmit": "Adicionar",
+    "addCoTeacherSuccess": "Coprofessor adicionado.",
+    "memberActions": "Ações do membro",
+    "makeCoTeacher": "Tornar coprofessor",
+    "makeStudent": "Tornar aluno",
+    "roleChanged": "Papel atualizado.",
+    "removeCoTeacher": "Remover coprofessor",
+    "removeCoTeacherTitle": "Remover este coprofessor?",
+    "removeCoTeacherDescription": "Ele perderá acesso a esta turma. Você pode adicioná-lo de novo depois.",
+    "removeCoTeacherSuccess": "Coprofessor removido."
   },
   "Blocks": {
     "start": "quando o programa começar",
@@ -1660,7 +1680,10 @@
     "USERNAME_INVALID": "O nome de usuário deve ter de 3 a 20 letras, números, pontos ou hífens.",
     "USERNAME_TAKEN": "Este nome de usuário já está em uso.",
     "RA_INVALID": "O RA deve ter exatamente 7 dígitos.",
-    "RA_TAKEN": "Este RA já está cadastrado em outra conta."
+    "RA_TAKEN": "Este RA já está cadastrado em outra conta.",
+    "USER_NOT_FOUND": "Nenhum usuário com esse nome de usuário ou email.",
+    "IS_OWNER": "Esse é o dono da turma, que já gerencia a turma.",
+    "CANNOT_DEMOTE_SELF": "Você não pode remover seu próprio papel de admin."
   },
   "JudgeReport": {
     "wrongAnswerOnTest": "Resposta errada no teste {index}",
@@ -1938,5 +1961,57 @@
     "MEMORY_LIMIT_EXCEEDED": "Limite de memória excedido",
     "COMPILATION_ERROR": "Erro de compilação",
     "RUNTIME_ERROR": "Erro de execução"
+  },
+  "AdminPage": {
+    "title": "Admin",
+    "subtitle": "Gerencie todos os torneios, turmas e usuários da plataforma.",
+    "links": {
+      "contests": "Todos os torneios",
+      "contestsHint": "Todos os torneios, inclusive rascunhos.",
+      "classes": "Todas as turmas",
+      "classesHint": "Todas as turmas com seu dono e alunos.",
+      "surveys": "Resultados dos questionários",
+      "surveysHint": "Respostas agregadas dos questionários de avaliação.",
+      "users": "Usuários",
+      "usersHint": "Promova ou rebaixe admins."
+    },
+    "backToAdmin": "Voltar para admin",
+    "showing": "Mostrando {count} de {total}",
+    "page": "Página {page} de {totalPages}",
+    "empty": "Nada encontrado.",
+    "owner": "Dono",
+    "Contests": {
+      "title": "Todos os torneios",
+      "subtitle": "Todos os torneios da plataforma, inclusive rascunhos.",
+      "searchPlaceholder": "Buscar torneios pelo nome...",
+      "name": "Nome",
+      "status": "Status",
+      "dates": "Datas",
+      "draft": "Rascunho",
+      "published": "Publicado",
+      "noDates": "Sem datas"
+    },
+    "Classes": {
+      "title": "Todas as turmas",
+      "subtitle": "Todas as turmas da plataforma, com seu dono.",
+      "searchPlaceholder": "Buscar turmas pelo nome...",
+      "name": "Nome",
+      "students": "Alunos",
+      "lessons": "Aulas"
+    },
+    "Users": {
+      "title": "Usuários",
+      "subtitle": "Busque usuários e promova ou rebaixe admins.",
+      "searchPlaceholder": "Buscar por nome, usuário ou email...",
+      "user": "Usuário",
+      "email": "Email",
+      "role": "Papel",
+      "roleUser": "Usuário",
+      "roleAdmin": "Admin",
+      "you": "você",
+      "promote": "Tornar admin",
+      "demote": "Remover admin",
+      "roleUpdated": "Papel atualizado."
+    }
   }
 }

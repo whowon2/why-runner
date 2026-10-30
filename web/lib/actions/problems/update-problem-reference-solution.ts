@@ -8,6 +8,7 @@ import {
   problemReferenceSolution,
 } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { ownerOrAdminFilter } from "@/lib/auth/permissions";
 
 export async function updateProblemReferenceSolution(input: {
   problemId: string;
@@ -15,12 +16,14 @@ export async function updateProblemReferenceSolution(input: {
   language: Language | null;
 }) {
   const currentUser = await getCurrentUser({});
+  // Creator or admin.
+  const ownerFilter = await ownerOrAdminFilter(
+    problem.createdBy,
+    currentUser.id,
+  );
 
   const owned = await db.query.problem.findFirst({
-    where: and(
-      eq(problem.id, input.problemId),
-      eq(problem.createdBy, currentUser.id),
-    ),
+    where: and(eq(problem.id, input.problemId), ownerFilter),
     columns: { id: true },
   });
 

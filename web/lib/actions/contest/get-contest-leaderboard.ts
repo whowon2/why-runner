@@ -9,6 +9,7 @@ import {
   userOnContest,
 } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { canManageContest } from "@/lib/auth/permissions";
 import { computeStandings, type Standings } from "@/lib/contest/standings";
 
 export async function getContestLeaderboard(
@@ -29,7 +30,7 @@ export async function getContestLeaderboard(
   if (!found) return null;
 
   // Same visibility rules as `getContest`.
-  const isOwner = found.createdBy === currentUser.id;
+  const isOwner = await canManageContest(found, currentUser.id);
   if (found.status === "draft" && !isOwner) return null;
   if (found.isPrivate && !isOwner) {
     const membership = await db.query.userOnContest.findFirst({

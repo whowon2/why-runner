@@ -32,12 +32,12 @@ export function ClassList() {
         </div>
       ) : (
         <>
-          {data && data.owned.length > 0 && (
+          {data && data.taught.length > 0 && (
             <div className="flex flex-col gap-3">
               <h2 className="font-medium text-muted-foreground text-sm">
                 {t("myClasses")}
               </h2>
-              <ClassGrid classes={data.owned} role="professor" />
+              <ClassGrid classes={data.taught} />
             </div>
           )}
           {data && data.joined.length > 0 && (
@@ -45,10 +45,15 @@ export function ClassList() {
               <h2 className="font-medium text-muted-foreground text-sm">
                 {t("joinedClasses")}
               </h2>
-              <ClassGrid classes={data.joined} role="student" />
+              <ClassGrid
+                classes={data.joined.map((c) => ({
+                  ...c,
+                  role: "student" as const,
+                }))}
+              />
             </div>
           )}
-          {data && data.owned.length === 0 && data.joined.length === 0 && (
+          {data && data.taught.length === 0 && data.joined.length === 0 && (
             <p className="text-muted-foreground">{t("empty")}</p>
           )}
         </>
@@ -57,12 +62,22 @@ export function ClassList() {
   );
 }
 
+const ROLE_LABEL = {
+  owner: "roleOwner",
+  teacher: "roleCoTeacher",
+  student: "roleStudent",
+} as const;
+
 function ClassGrid({
   classes,
-  role,
 }: {
-  classes: { id: string; slug: string; name: string; memberCount: number }[];
-  role: "professor" | "student";
+  classes: {
+    id: string;
+    slug: string;
+    name: string;
+    memberCount: number;
+    role: "owner" | "teacher" | "student";
+  }[];
 }) {
   const t = useTranslations("ClassesPage");
 
@@ -78,8 +93,8 @@ function ClassGrid({
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-wrap items-center gap-2">
-              <Badge variant={role === "professor" ? "default" : "outline"}>
-                {role === "professor" ? t("roleProfessor") : t("roleStudent")}
+              <Badge variant={c.role === "student" ? "outline" : "default"}>
+                {t(ROLE_LABEL[c.role])}
               </Badge>
               <span className="flex items-center gap-1 text-muted-foreground text-xs">
                 <Users className="size-3.5" />

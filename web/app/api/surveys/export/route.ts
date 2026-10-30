@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   const session = await auth.api
     .getSession({ headers: await headers() })
     .catch(() => null);
-  if (!session || !isSurveyAdmin(session.user)) {
+  if (!session || !(await isSurveyAdmin(session.user))) {
     return new Response("Not found", { status: 404 });
   }
 

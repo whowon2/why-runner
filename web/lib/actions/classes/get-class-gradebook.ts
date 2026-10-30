@@ -2,19 +2,20 @@
 
 import { z } from "zod";
 import { ok } from "@/lib/action-result";
-import { assertClassOwner } from "@/lib/actions/classes/assert-class-member";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { assertCanManageClass } from "@/lib/auth/permissions";
 import { loadClassResultsData } from "@/lib/classes/load-class-results-data";
 import { buildGradebook } from "@/lib/gradebook";
 
 /**
- * Owner-only: every student × every published lesson exercise, scored like
- * lesson review. Only numbers leave the server, never `submission.output`.
+ * Class managers only (owner, co-teachers, admins): every student × every
+ * published lesson exercise, scored like lesson review. Only numbers leave
+ * the server, never `submission.output`.
  */
 export async function getClassGradebook(classroomId: string) {
   const id = z.uuid().parse(classroomId);
   const currentUser = await getCurrentUser({});
-  const classroom = await assertClassOwner(id, currentUser.id);
+  const { classroom } = await assertCanManageClass(id, currentUser.id);
   const data = await loadClassResultsData(classroom);
 
   return ok({

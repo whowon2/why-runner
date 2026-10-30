@@ -20,9 +20,11 @@ import { useRemoveMember } from "@/hooks/use-remove-member";
 export function RemoveMemberButton({
   classroomId,
   userId,
+  coTeacher = false,
 }: {
   classroomId: string;
   userId: string;
+  coTeacher?: boolean;
 }) {
   const t = useTranslations("ClassesPage");
   const tCommon = useTranslations("Common");
@@ -33,7 +35,10 @@ export function RemoveMemberButton({
       { classroomId, userId },
       {
         onError: (error: Error) => toast.error(error.message),
-        onSuccess: () => toast.success(t("removeStudentSuccess")),
+        onSuccess: () =>
+          toast.success(
+            t(coTeacher ? "removeCoTeacherSuccess" : "removeStudentSuccess"),
+          ),
       },
     );
   }
@@ -42,7 +47,7 @@ export function RemoveMemberButton({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          aria-label={t("removeStudent")}
+          aria-label={t(coTeacher ? "removeCoTeacher" : "removeStudent")}
           disabled={isPending}
           size="icon"
           variant="ghost"
@@ -52,9 +57,15 @@ export function RemoveMemberButton({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("removeStudentTitle")}</AlertDialogTitle>
+          <AlertDialogTitle>
+            {t(coTeacher ? "removeCoTeacherTitle" : "removeStudentTitle")}
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            {t("removeStudentDescription")}
+            {t(
+              coTeacher
+                ? "removeCoTeacherDescription"
+                : "removeStudentDescription",
+            )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

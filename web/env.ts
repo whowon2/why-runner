@@ -17,9 +17,6 @@ export const env = createEnv({
     // Optional: lets submissions wake the idle-stopped Fly judge (lib/judge.ts).
     FLY_API_TOKEN: z.string().min(1).optional(),
     FLY_JUDGE_APP: z.string().min(1).default("why-runner-judge"),
-    // Optional: comma-separated emails allowed to see evaluation survey
-    // results (lib/surveys/admin.ts). Unset = nobody.
-    SURVEY_ADMIN_EMAILS: z.string().optional(),
     // Optional: comma-separated emails that may open read-only previews of
     // every survey form (/surveys/preview/[form]). Admins always can.
     SURVEY_PREVIEW_EMAILS: z.string().optional(),
@@ -38,7 +35,6 @@ export const env = createEnv({
     EMAIL_FROM: process.env.EMAIL_FROM,
     FLY_API_TOKEN: process.env.FLY_API_TOKEN,
     FLY_JUDGE_APP: process.env.FLY_JUDGE_APP,
-    SURVEY_ADMIN_EMAILS: process.env.SURVEY_ADMIN_EMAILS,
     SURVEY_PREVIEW_EMAILS: process.env.SURVEY_PREVIEW_EMAILS,
   },
 });

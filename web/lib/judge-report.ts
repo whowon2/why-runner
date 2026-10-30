@@ -188,26 +188,19 @@ export function redactSubmission<
 }
 
 /**
- * Visibility for a lesson exercise. The problem's author, the lesson's owner
- * and the class owner see everything; everyone else gets the lesson's mode.
+ * Visibility for a lesson exercise. `fullAccess` (the problem's author, class
+ * managers and admins; see `canSeeAllExerciseTests`) sees everything;
+ * everyone else gets the lesson's mode.
  */
 export function exerciseVisibilityContext(
   found: {
-    problem: { createdBy: string; visible: boolean[] };
-    lesson: {
-      createdBy: string;
-      testVisibility: TestVisibility;
-      classroom: { createdBy: string };
-    };
+    problem: { visible: boolean[] };
+    lesson: { testVisibility: TestVisibility };
   },
-  viewerId: string,
+  fullAccess: boolean,
 ): VisibilityContext {
   return {
-    fullAccess: [
-      found.problem.createdBy,
-      found.lesson.createdBy,
-      found.lesson.classroom.createdBy,
-    ].includes(viewerId),
+    fullAccess,
     visible: found.problem.visible,
     mode: found.lesson.testVisibility,
   };

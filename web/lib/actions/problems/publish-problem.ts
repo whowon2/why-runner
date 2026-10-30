@@ -5,6 +5,7 @@ import { db } from "@/drizzle/db";
 import { problem, problemValidation } from "@/drizzle/schema";
 import { fail, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { canManageProblem } from "@/lib/auth/permissions";
 import { computeIoHash } from "@/lib/problem-io-hash";
 import {
   getMissingProblemFields,
@@ -20,7 +21,8 @@ export async function publishProblem(problemId: string) {
   });
 
   if (!found) throw new Error("Problem not found.");
-  if (found.createdBy !== currentUser.id) throw new Error("Forbidden");
+  if (!(await canManageProblem(found, currentUser.id)))
+    throw new Error("Forbidden");
   if (found.status !== "draft")
     throw new Error("Problem is already published.");
 

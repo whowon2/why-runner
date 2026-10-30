@@ -64,7 +64,7 @@ export function ContestTabs({ id, user }: { id: string; user: User }) {
     );
   }
 
-  const isOwner = contest.createdBy === user.id;
+  const isOwner = contest.canManage;
   const isPublished = contest.status === "published";
   const tab =
     tabFromQuery || (isOwner && !isPublished ? "settings" : "problems");

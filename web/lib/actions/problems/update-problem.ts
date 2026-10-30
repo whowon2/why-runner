@@ -12,6 +12,7 @@ import {
   problemChecker,
 } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { ownerOrAdminFilter } from "@/lib/auth/permissions";
 import { generateSlug } from "@/lib/slug";
 
 // The only fields an author may write through this action. Status changes
@@ -48,12 +49,14 @@ export type UpdateProblemInput = {
 
 export async function updateProblem(input: UpdateProblemInput) {
   const currentUser = await getCurrentUser({});
+  // Creator or admin.
+  const ownerFilter = await ownerOrAdminFilter(
+    problem.createdBy,
+    currentUser.id,
+  );
 
   const existing = await db.query.problem.findFirst({
-    where: and(
-      eq(problem.id, input.problemId),
-      eq(problem.createdBy, currentUser.id),
-    ),
+    where: and(eq(problem.id, input.problemId), ownerFilter),
     columns: { title: true, compareMode: true, inputs: true, visible: true },
   });
 
@@ -94,12 +97,7 @@ export async function updateProblem(input: UpdateProblemInput) {
     const [result] = await tx
       .update(problem)
       .set(values)
-      .where(
-        and(
-          eq(problem.id, input.problemId),
-          eq(problem.createdBy, currentUser.id),
-        ),
-      )
+      .where(and(eq(problem.id, input.problemId), ownerFilter))
       .returning();
 
     if (checker === null) {

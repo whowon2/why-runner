@@ -5,6 +5,7 @@ import { db } from "@/drizzle/db";
 import { contest } from "@/drizzle/schema";
 import { fail, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { canManageContest } from "@/lib/auth/permissions";
 import {
   PUBLISH_MISSING_FIELDS,
   type PublishContestFieldError,
@@ -19,7 +20,8 @@ export async function publishContest(contestId: string) {
   });
 
   if (!found) throw new Error("Contest not found.");
-  if (found.createdBy !== currentUser.id) throw new Error("Forbidden");
+  if (!(await canManageContest(found, currentUser.id)))
+    throw new Error("Forbidden");
   if (found.status !== "draft")
     throw new Error("Contest is already published.");
 

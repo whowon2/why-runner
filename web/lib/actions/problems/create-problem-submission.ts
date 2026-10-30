@@ -6,6 +6,7 @@ import { db } from "@/drizzle/db";
 import { problem, submission } from "@/drizzle/schema";
 import { type ActionResult, fail, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { isAdmin } from "@/lib/auth/permissions";
 import { notifyJudge } from "@/lib/judge";
 import { languageSchema, MAX_CODE_LENGTH } from "@/lib/submission-limits";
 
@@ -24,6 +25,8 @@ export async function createProblemSubmission(
   rawInput: CreateProblemSubmissionInput,
 ): Promise<ActionResult<void, "RATE_LIMITED" | "CODE_TOO_LARGE">> {
   const currentUser = await getCurrentUser({});
+  // Admins see every draft too.
+  const admin = await isAdmin(currentUser.id);
   const input = inputSchema.parse(rawInput);
 
   if (input.code.length > MAX_CODE_LENGTH) {
@@ -49,10 +52,12 @@ export async function createProblemSubmission(
   const visible = await db.query.problem.findFirst({
     where: and(
       eq(problem.id, input.problemId),
-      or(
-        eq(problem.status, "published"),
-        eq(problem.createdBy, currentUser.id),
-      ),
+      admin
+        ? undefined
+        : or(
+            eq(problem.status, "published"),
+            eq(problem.createdBy, currentUser.id),
+          ),
     ),
     columns: { id: true },
   });

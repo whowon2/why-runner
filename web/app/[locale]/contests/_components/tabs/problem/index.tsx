@@ -32,6 +32,7 @@ export function ProblemTab({
   contest: Contest & {
     problems: ProblemOnContest[];
     users: UserOnContest[];
+    canManage: boolean;
   };
 }) {
   const t = useTranslations("ContestsPage.Tabs.Problem");
@@ -39,7 +40,7 @@ export function ProblemTab({
   const isWide = useMediaQuery("(min-width: 1024px)");
   const { data: liveAnswered } = useUserContestStatus(contest.id);
   const [problem, setProblem] = useState<ProblemPreview | null>(null);
-  const isOwner = contest.createdBy === user.id;
+  const isOwner = contest.canManage;
   const [isContestStarted, setIsContestStarted] = useState(
     () => isOwner || (!!contest.startDate && new Date() >= contest.startDate),
   );

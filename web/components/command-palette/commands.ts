@@ -15,6 +15,7 @@ import {
   Settings,
   SunMoon,
   Trophy,
+  ShieldCheck,
   User as UserIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -119,6 +120,16 @@ export function useCommands(): Command[] {
           action: () => router.push("/settings"),
         },
       );
+      // UI hint only: /admin itself checks the role on the server.
+      if (session.user.role === "admin") {
+        navigation.push({
+          id: "go-admin",
+          group: "navigation",
+          label: t("commands.goAdmin"),
+          icon: ShieldCheck,
+          action: () => router.push("/admin"),
+        });
+      }
     }
 
     const create: Command[] = session

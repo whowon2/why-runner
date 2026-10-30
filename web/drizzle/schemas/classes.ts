@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  pgEnum,
   pgTable,
   primaryKey,
   text,
@@ -30,6 +31,10 @@ export const classroomRelations = relations(classroom, ({ many }) => ({
   lessons: many(lesson),
 }));
 
+/** A `teacher` member is a co-teacher: manages the class like the owner, minus deleting it and managing co-teachers. */
+export const ClassroomRole = pgEnum("classroom_role", ["student", "teacher"]);
+export type ClassroomRole = (typeof ClassroomRole.enumValues)[number];
+
 export const classroomMembership = pgTable(
   "classroom_membership",
   {
@@ -39,6 +44,7 @@ export const classroomMembership = pgTable(
     classroomId: uuid("classroom_id")
       .notNull()
       .references(() => classroom.id, { onDelete: "cascade" }),
+    role: ClassroomRole("role").default("student").notNull(),
     joinedAt: timestamp("joined_at").defaultNow().notNull(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.classroomId] })],

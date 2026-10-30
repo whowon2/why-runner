@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { exerciseConstraint } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { assertCanManageExercise } from "@/lib/auth/permissions";
 
 // Only one algorithm-requirement constraint is allowed per exercise (see
 // `exercise_constraint_one_algo_requirement` partial unique index). This
@@ -15,14 +16,7 @@ export async function upsertAlgorithmRequirementConstraint(input: {
 }) {
   const currentUser = await getCurrentUser({});
 
-  const owned = await db.query.exercise.findFirst({
-    where: (e, { eq }) => eq(e.id, input.exerciseId),
-    with: { lesson: { columns: { createdBy: true } } },
-  });
-
-  if (!owned || owned.lesson.createdBy !== currentUser.id) {
-    throw new Error("Exercise not found.");
-  }
+  await assertCanManageExercise(input.exerciseId, currentUser.id);
 
   const description = input.description.trim();
   if (!description) {

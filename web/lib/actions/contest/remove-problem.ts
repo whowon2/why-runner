@@ -5,6 +5,7 @@ import { db } from "@/drizzle/db";
 import { contest, problemOnContest } from "@/drizzle/schema";
 import { type ActionResult, fail, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { canManageContest } from "@/lib/auth/permissions";
 import { isContestLocked } from "@/lib/contest/editable";
 
 export async function removeProblemFromContest(input: {
@@ -18,7 +19,7 @@ export async function removeProblemFromContest(input: {
     columns: { createdBy: true, status: true, startDate: true },
   });
 
-  if (!owned || owned.createdBy !== currentUser.id) {
+  if (!owned || !(await canManageContest(owned, currentUser.id))) {
     throw new Error("Forbidden");
   }
   if (isContestLocked(owned)) return fail("CONTEST_STARTED");

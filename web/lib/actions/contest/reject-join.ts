@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { contest, userOnContest } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { canManageContest } from "@/lib/auth/permissions";
 import { notifyContestJoinRejected } from "@/lib/notifications";
 
 export async function rejectJoin(contestId: string, userId: string) {
@@ -14,7 +15,7 @@ export async function rejectJoin(contestId: string, userId: string) {
     columns: { createdBy: true },
   });
 
-  if (!owned || owned.createdBy !== currentUser.id) {
+  if (!owned || !(await canManageContest(owned, currentUser.id))) {
     throw new Error("Forbidden");
   }
 

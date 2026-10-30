@@ -4,7 +4,7 @@ import { and, count, eq, gte } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { type Language, submission } from "@/drizzle/schema";
 import { type ActionResult, fail, ok } from "@/lib/action-result";
-import { assertClassMember } from "@/lib/actions/classes/assert-class-member";
+import { assertClassMember } from "@/lib/auth/permissions";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { notifyJudge } from "@/lib/judge";
 import {
@@ -31,7 +31,10 @@ export type ExerciseSubmissionInput =
 export async function createExerciseSubmission(
   input: ExerciseSubmissionInput,
 ): Promise<
-  ActionResult<typeof submission.$inferSelect, "RATE_LIMITED" | "CODE_TOO_LARGE">
+  ActionResult<
+    typeof submission.$inferSelect,
+    "RATE_LIMITED" | "CODE_TOO_LARGE"
+  >
 > {
   const currentUser = await getCurrentUser({});
 

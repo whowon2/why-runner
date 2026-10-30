@@ -252,22 +252,16 @@ describe("visibleTests", () => {
 
 describe("exerciseVisibilityContext", () => {
   const found = {
-    problem: { createdBy: "author", visible: [true, false] },
-    lesson: {
-      createdBy: "lesson-owner",
-      testVisibility: "hide_all" as const,
-      classroom: { createdBy: "class-owner" },
-    },
+    problem: { visible: [true, false] },
+    lesson: { testVisibility: "hide_all" as const },
   };
 
-  test("author, lesson owner and class owner get full access", () => {
-    for (const viewer of ["author", "lesson-owner", "class-owner"]) {
-      expect(exerciseVisibilityContext(found, viewer).fullAccess).toBe(true);
-    }
+  test("full access passes through", () => {
+    expect(exerciseVisibilityContext(found, true).fullAccess).toBe(true);
   });
 
   test("students get the lesson mode and the problem's flags", () => {
-    expect(exerciseVisibilityContext(found, "student")).toEqual({
+    expect(exerciseVisibilityContext(found, false)).toEqual({
       fullAccess: false,
       visible: [true, false],
       mode: "hide_all",

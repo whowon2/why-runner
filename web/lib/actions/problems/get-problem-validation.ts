@@ -9,6 +9,7 @@ import {
   type ProblemValidation,
 } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { ownerOrAdminFilter } from "@/lib/auth/permissions";
 import { computeIoHash } from "@/lib/problem-io-hash";
 import { getProblemChecker } from "@/lib/problem-checker";
 
@@ -23,12 +24,14 @@ export async function getProblemValidation(
   problemId: string,
 ): Promise<ProblemValidationState> {
   const currentUser = await getCurrentUser({});
+  // Creator or admin.
+  const ownerFilter = await ownerOrAdminFilter(
+    problem.createdBy,
+    currentUser.id,
+  );
 
   const found = await db.query.problem.findFirst({
-    where: and(
-      eq(problem.id, problemId),
-      eq(problem.createdBy, currentUser.id),
-    ),
+    where: and(eq(problem.id, problemId), ownerFilter),
     columns: {
       inputs: true,
       outputs: true,

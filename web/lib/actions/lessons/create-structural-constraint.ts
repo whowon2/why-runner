@@ -7,6 +7,7 @@ import {
   type StructuralConstraintRuleType,
 } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { assertCanManageExercise } from "@/lib/auth/permissions";
 
 export async function createStructuralConstraint(input: {
   exerciseId: string;
@@ -15,14 +16,7 @@ export async function createStructuralConstraint(input: {
 }) {
   const currentUser = await getCurrentUser({});
 
-  const owned = await db.query.exercise.findFirst({
-    where: (e, { eq }) => eq(e.id, input.exerciseId),
-    with: { lesson: { columns: { createdBy: true } } },
-  });
-
-  if (!owned || owned.lesson.createdBy !== currentUser.id) {
-    throw new Error("Exercise not found.");
-  }
+  await assertCanManageExercise(input.exerciseId, currentUser.id);
 
   // At most one row per rule type per exercise (also enforced by the DB's
   // `exercise_constraint_one_per_rule_type` unique index) — edit the

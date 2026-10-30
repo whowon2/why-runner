@@ -9,12 +9,14 @@ import {
   lessonSubmission,
   submission,
 } from "@/drizzle/schema";
+import { isClassStudent } from "@/lib/class-roles";
 
 /**
  * Shared by the gradebook and the detailed results export so both cover the
- * same students (members minus owner) and the same published exercises.
- * No auth — callers must have checked class ownership. Completions carry the
- * raw `submission.output`; never return it to the client as is.
+ * same students (`student` members, never the owner or co-teachers) and the
+ * same published exercises. No auth — callers must have checked that the
+ * user manages the class. Completions carry the raw `submission.output`;
+ * never return it to the client as is.
  */
 export async function loadClassResultsData(classroom: {
   id: string;
@@ -52,9 +54,8 @@ export async function loadClassResultsData(classroom: {
     }),
   ]);
 
-  // The owner isn't a student even with a membership row (see `getClass`).
   const students = members
-    .filter((m) => m.userId !== classroom.createdBy)
+    .filter((m) => isClassStudent(m, classroom.createdBy))
     .map((m) => m.user);
   const lessonIds = lessons.map((l) => l.id);
   const exerciseIds = lessons.flatMap((l) => l.exercises.map((e) => e.id));

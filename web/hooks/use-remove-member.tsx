@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeMember } from "@/lib/actions/classes/remove-member";
+import { invalidateClassRoster } from "./use-class-roster-invalidation";
 
 export type RemoveMemberInput = {
   classroomId: string;
@@ -12,9 +13,6 @@ export const useRemoveMember = () => {
   return useMutation({
     mutationFn: (input: RemoveMemberInput) =>
       removeMember(input.classroomId, input.userId),
-    onSuccess: (_data, { classroomId }) => {
-      queryClient.invalidateQueries({ queryKey: ["classes", classroomId] });
-      queryClient.invalidateQueries({ queryKey: ["classes"], exact: true });
-    },
+    onSuccess: () => invalidateClassRoster(queryClient),
   });
 };

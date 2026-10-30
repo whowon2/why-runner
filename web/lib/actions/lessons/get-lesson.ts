@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/drizzle/db";
-import { assertClassMember } from "@/lib/actions/classes/assert-class-member";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { assertClassMember } from "@/lib/auth/permissions";
 
 export async function getLesson(lessonId: string) {
   const currentUser = await getCurrentUser({});
@@ -12,9 +12,11 @@ export async function getLesson(lessonId: string) {
   });
   if (!lesson) throw new Error("Lesson not found");
 
-  const classroom = await assertClassMember(lesson.classroomId, currentUser.id);
-  const isOwner = classroom.createdBy === currentUser.id;
-  if (!lesson.isPublished && !isOwner) throw new Error("Lesson not found");
+  const { classroom, role, canManage, isOwner } = await assertClassMember(
+    lesson.classroomId,
+    currentUser.id,
+  );
+  if (!lesson.isPublished && !canManage) throw new Error("Lesson not found");
 
   const [exercises, passedSubmissions, lessonSubmission] = await Promise.all([
     db.query.exercise.findMany({
@@ -53,6 +55,8 @@ export async function getLesson(lessonId: string) {
   return {
     lesson,
     classroom,
+    role,
+    canManage,
     isOwner,
     submittedAt: lessonSubmission?.submittedAt ?? null,
     exercises: exercises.map((e) => ({

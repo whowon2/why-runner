@@ -7,6 +7,7 @@ import { PROBLEM_TAGS, type ProblemTag, problem } from "@/drizzle/schema";
 import { generateJson } from "@/lib/ai";
 import { type ActionResult, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { ownerOrAdminFilter } from "@/lib/auth/permissions";
 import {
   getTagSuggestionPrompt,
   SYSTEM_INSTRUCTION_TAG_SUGGESTION,
@@ -36,12 +37,14 @@ export async function suggestProblemTags({
   ActionResult<ProblemTag[], "RATE_LIMITED">
 > {
   const currentUser = await getCurrentUser({});
+  // Creator or admin.
+  const ownerFilter = await ownerOrAdminFilter(
+    problem.createdBy,
+    currentUser.id,
+  );
 
   const found = await db.query.problem.findFirst({
-    where: and(
-      eq(problem.id, problemId),
-      eq(problem.createdBy, currentUser.id),
-    ),
+    where: and(eq(problem.id, problemId), ownerFilter),
     columns: { id: true },
   });
 
