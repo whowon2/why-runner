@@ -2,7 +2,7 @@
 
 ## Purpose
 
-TBD
+How a class owner authors lesson tracks (assignments): creating a track, adding, removing and reordering its lesson entries, editing its title and description, and publishing it so it appears on the class roadmap.
 ## Requirements
 ### Requirement: A user can create a lesson track
 The owner of a class SHALL be able to create a lesson track (assignment) in that class by providing a title and an optional description. The title SHALL be required: after leading and trailing whitespace is trimmed, it SHALL be non-empty and at most 120 characters. The creator becomes the track's owner. The track's slug SHALL be derived from the provided title at creation time.
