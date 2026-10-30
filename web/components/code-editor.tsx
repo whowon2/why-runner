@@ -1,7 +1,13 @@
 "use client";
 
 import Editor, { type EditorProps } from "@monaco-editor/react";
-import { AArrowDown, AArrowUp, Maximize2, Minimize2 } from "lucide-react";
+import {
+  AArrowDown,
+  AArrowUp,
+  Brackets,
+  Maximize2,
+  Minimize2,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { type ReactNode, useEffect, useState } from "react";
@@ -12,6 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useEditorAutoClose } from "@/hooks/use-editor-auto-close";
 import {
   EDITOR_FONT_SIZE_MAX,
   EDITOR_FONT_SIZE_MIN,
@@ -43,6 +50,8 @@ export function CodeEditor({
   const t = useTranslations("CodeEditor");
   const { resolvedTheme } = useTheme();
   const { fontSize, setFontSize } = useEditorFontSize();
+  const [autoClose, setAutoClose] = useEditorAutoClose();
+  const autoCloseMode = autoClose ? "languageDefined" : "never";
   const [fullscreen, setFullscreen] = useState(false);
 
   useEffect(() => {
@@ -81,6 +90,23 @@ export function CodeEditor({
         <div className="min-w-0 flex-1">{toolbar}</div>
         <TooltipProvider>
           <div className="flex shrink-0 items-center">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  aria-label={t("autoClose")}
+                  aria-pressed={autoClose}
+                  className={cn(!autoClose && "text-muted-foreground")}
+                  onClick={() => setAutoClose(!autoClose)}
+                  size="icon"
+                  variant="ghost"
+                >
+                  <Brackets />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {autoClose ? t("autoCloseOn") : t("autoCloseOff")}
+              </TooltipContent>
+            </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -147,7 +173,18 @@ export function CodeEditor({
           {...props}
           className="rounded-none"
           height="100%"
-          options={{ automaticLayout: true, ...options, fontSize }}
+          options={{
+            automaticLayout: true,
+            ...options,
+            fontSize,
+            autoClosingBrackets: autoCloseMode,
+            autoClosingQuotes: autoCloseMode,
+            autoClosingOvertype: autoClose ? "auto" : "never",
+            autoSurround: autoClose ? "languageDefined" : "never",
+            // Pasted text with U+2028/U+2029 would otherwise open a native,
+            // English-only confirm() (Monaco's standalone dialog service).
+            unusualLineTerminators: "auto",
+          }}
           theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
           width="100%"
         />

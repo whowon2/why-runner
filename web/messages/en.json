@@ -79,7 +79,10 @@
     "exitFullscreen": "Exit fullscreen (Esc)",
     "fontSmaller": "Smaller font",
     "fontLarger": "Larger font",
-    "fontSize": "Font size: {size}px"
+    "fontSize": "Font size: {size}px",
+    "autoClose": "Auto-close brackets and quotes",
+    "autoCloseOn": "Auto-close brackets and quotes: on",
+    "autoCloseOff": "Auto-close brackets and quotes: off"
   },
   "ProblemPicker": {
     "searchPlaceholder": "Search by name or code…",
@@ -1143,6 +1146,9 @@
           "codeLabel": "Your code",
           "constraintViolation": "Passed all {count} tests but violated a solution constraint",
           "pendingClassification": "Passed all tests — checking algorithm requirement...",
+          "latestVerdict": "Latest submission: view details",
+          "latestVerdictTitle": "Latest submission",
+          "extraOutputHint": "Your program printed extra text, e.g. a prompt in <code>input()</code>. Print only what the output asks for.",
           "AI": {
             "title": "AI Assistant",
             "description": "Get help from our AI to understand why your solution might be failing. The AI will analyze your code against the problem and your solution and provide suggestions.",
@@ -1153,7 +1159,10 @@
             "error": "An error occurred while trying to get help from the AI. Please try again later.",
             "noResponse": "The AI did not provide a response. Please try again.",
             "next": "Show next hint",
-            "maxReached": "This is the most help allowed in this contest."
+            "maxReached": "This is the most help allowed in this contest.",
+            "dock": "Dock to side",
+            "openAsDialog": "Open as dialog",
+            "closePanel": "Close panel"
           },
           "Upload": {
             "languagePlaceholder": "Language",

@@ -1,16 +1,17 @@
 "use client";
 
 import type { OnMount } from "@monaco-editor/react";
-import { useQueryClient } from "@tanstack/react-query";
+import type { User } from "better-auth";
 import { Check, FilePlus2, Save, Upload } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { CodeEditor } from "@/components/code-editor";
 import {
   ResetCodeButton,
   useStarterComments,
 } from "@/components/reset-code-button";
+import { LatestVerdict } from "@/components/submissions/latest-verdict";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -30,15 +31,44 @@ import {
 import type { Contest, Language, ProblemPreview } from "@/drizzle/schema";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useCreateSubmission } from "@/hooks/use-create-submission";
+import { useProblemSubmissions } from "@/hooks/use-problem-submissions";
+import { draftKey, lastLanguageKey } from "@/lib/code-draft";
 import { getStarterCode } from "@/lib/starter-code";
 import { cn } from "@/lib/utils";
+
+// Code saved before slots were per user lives under
+// `code-<problemId>-<language>`: read it once and move it to the user's slot.
+function readSlot(key: string, legacyKey: string | null): string | null {
+  try {
+    const stored = localStorage.getItem(key);
+    if (stored !== null || !legacyKey) return stored;
+    const legacy = localStorage.getItem(legacyKey);
+    if (legacy === null) return null;
+    localStorage.setItem(key, legacy);
+    localStorage.removeItem(legacyKey);
+    return legacy;
+  } catch {
+    return null;
+  }
+}
+
+const LANGUAGES: readonly string[] = [
+  "c",
+  "cpp",
+  "java",
+  "python",
+  "portugol",
+  "rust",
+];
 
 export function UploadCode({
   problem,
   contest,
+  user,
 }: {
   problem: ProblemPreview;
   contest: Contest;
+  user: User;
 }) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [code, setCode] = useState("");
@@ -59,11 +89,27 @@ export function UploadCode({
     "ContestsPage.Tabs.Problem.Submissions.Upload",
   );
   const tAI = useTranslations("ContestsPage.Tabs.Problem.Submissions.AI");
-  const queryClient = useQueryClient();
   const errorMessage = useActionErrorMessage();
   const starterComments = useStarterComments();
   const starterCommentsRef = useRef(starterComments);
   starterCommentsRef.current = starterComments;
+  const { data: submissions } = useProblemSubmissions({
+    problemId: problem.id,
+    contestId: contest.id,
+    userId: user.id,
+  });
+  // Contest owners get everyone's rows, in no particular order.
+  const latest = useMemo(
+    () =>
+      submissions
+        ?.filter((s) => s.userId === user.id)
+        .reduce<(typeof submissions)[number] | undefined>(
+          (newest, s) =>
+            !newest || s.createdAt > newest.createdAt ? s : newest,
+          undefined,
+        ),
+    [submissions, user.id],
+  );
 
   const extensions = {
     c: ["c"],
@@ -100,12 +146,6 @@ export function UploadCode({
         },
         onSuccess: () => {
           toast.success(tUpload("submitted"));
-          queryClient.invalidateQueries({
-            queryKey: ["submissions", String(problem.id)],
-          });
-          queryClient.invalidateQueries({
-            queryKey: ["submissions", { contestId: contest.id }],
-          });
         },
       },
     );
@@ -143,20 +183,58 @@ export function UploadCode({
     reader.readAsText(file);
   }
 
+  // Every problem + language pair has its own localStorage slot per user
+  // (editor-drafts spec), so each language's version of each problem is kept
+  // separately and students sharing a lab computer don't see each other's.
+  const draftTarget = {
+    kind: "contest" as const,
+    id: `${contest.id}:${problem.id}`,
+  };
+  const languageKey = lastLanguageKey(user.id, draftTarget);
+
   function handleLanguageChange(value: string) {
     setLanguage(value as Language);
+    try {
+      localStorage.setItem(languageKey, value);
+    } catch {}
   }
 
-  // Every problem + language pair has its own localStorage slot, so each
-  // language's version of each problem is kept separately.
-  const slotKey = language ? `code-${problem.id}-${language}` : null;
+  // After a remount (e.g. a locale switch) select the last language again;
+  // the slot effect below then loads its saved code.
+  useEffect(() => {
+    if (language) return;
+    let stored: string | null = null;
+    try {
+      stored = localStorage.getItem(languageKey);
+    } catch {}
+    if (stored && LANGUAGES.includes(stored)) setLanguage(stored as Language);
+  }, [language, languageKey]);
+
+  const slotKey = language ? draftKey(user.id, draftTarget, language) : null;
+
+  // Accepted: drop the saved code when it is exactly what passed.
+  const passedKey =
+    latest?.status === "PASSED" && latest.language
+      ? draftKey(user.id, draftTarget, latest.language)
+      : null;
+  const passedCode = latest?.code;
+  useEffect(() => {
+    if (!passedKey) return;
+    try {
+      if (localStorage.getItem(passedKey) === passedCode) {
+        localStorage.removeItem(passedKey);
+      }
+    } catch {}
+  }, [passedKey, passedCode]);
   const slotKeyRef = useRef(slotKey);
   slotKeyRef.current = slotKey;
+  const legacySlotKeyRef = useRef<string | null>(null);
+  legacySlotKeyRef.current = language ? `code-${problem.id}-${language}` : null;
   const resetSlotKeyRef = useRef<string | null>(null);
 
   // The slot's language is the last segment of its key.
   function slotStarter(key: string): string {
-    const slotLanguage = key.slice(key.lastIndexOf("-") + 1) as Language;
+    const slotLanguage = key.slice(key.lastIndexOf(":") + 1) as Language;
     return getStarterCode(slotLanguage, starterCommentsRef.current);
   }
 
@@ -171,14 +249,6 @@ export function UploadCode({
       return true;
     } catch {
       return false;
-    }
-  }
-
-  function readSlot(key: string): string | null {
-    try {
-      return localStorage.getItem(key);
-    } catch {
-      return null;
     }
   }
 
@@ -243,7 +313,7 @@ export function UploadCode({
     setJustSaved(false);
     if (!slotKey) return;
 
-    const stored = readSlot(slotKey);
+    const stored = readSlot(slotKey, legacySlotKeyRef.current);
 
     // Code typed before any language was chosen belongs to no slot yet: keep
     // it, and only offer the saved version instead of silently replacing it.
@@ -291,7 +361,10 @@ export function UploadCode({
           toolbar={
             <div className="grid w-full items-center gap-1.5">
               <div className="flex justify-between gap-2">
-                <Select onValueChange={handleLanguageChange}>
+                <Select
+                  onValueChange={handleLanguageChange}
+                  value={language ?? undefined}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={tUpload("languagePlaceholder")} />
                   </SelectTrigger>
@@ -357,6 +430,8 @@ export function UploadCode({
                   onReset={handleReset}
                   onUndo={handleUndoReset}
                 />
+
+                <LatestVerdict submission={latest} />
 
                 <TooltipProvider>
                   <Tooltip>

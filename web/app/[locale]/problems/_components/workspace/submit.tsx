@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import { toast } from "sonner";
 import { CodeEditor } from "@/components/code-editor";
+import { LatestVerdict } from "@/components/submissions/latest-verdict";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -25,7 +26,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Language } from "@/drizzle/schema";
+import type { Language, Submission } from "@/drizzle/schema";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useCreateProblemSubmission } from "@/hooks/use-create-problem-submission";
 import { nextCodeOnLanguageChange } from "@/lib/starter-code";
@@ -45,12 +46,18 @@ export function ProblemSubmitTab({
   setCode,
   language,
   setLanguage,
+  latest,
+  draftFor,
+  clearDraft,
 }: {
   problemId: string;
   code: string;
   setCode: (code: string) => void;
   language: Language | null;
   setLanguage: (language: Language) => void;
+  latest: Submission | undefined;
+  draftFor: (language: Language) => string | null;
+  clearDraft: (language: Language | null) => void;
 }) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const { mutate, isPending } = useCreateProblemSubmission();
@@ -61,7 +68,15 @@ export function ProblemSubmitTab({
 
   function handleLanguageChange(value: string) {
     const next = value as Language;
-    setCode(nextCodeOnLanguageChange(code, language, next, starterComments));
+    setCode(
+      nextCodeOnLanguageChange(
+        code,
+        language,
+        next,
+        starterComments,
+        draftFor(next),
+      ),
+    );
     setLanguage(next);
   }
 
@@ -164,9 +179,14 @@ export function ProblemSubmitTab({
               <ResetCodeButton
                 code={code}
                 language={language}
-                onReset={setCode}
+                onReset={(starter) => {
+                  clearDraft(language);
+                  setCode(starter);
+                }}
                 onUndo={setCode}
               />
+
+              <LatestVerdict submission={latest} />
 
               <Button disabled={isPending} onClick={handleSubmit}>
                 <Upload />

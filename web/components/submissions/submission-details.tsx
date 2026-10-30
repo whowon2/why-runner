@@ -1,5 +1,6 @@
 "use client";
 
+import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import {
@@ -7,6 +8,7 @@ import {
   isHiddenFailure,
 } from "@/components/submissions/hidden-test-notice";
 import { parseReport } from "@/lib/judge-report";
+import { detectExtraOutput } from "@/lib/output-hint";
 
 /**
  * A judged submission's report as the server redacted it for this viewer:
@@ -83,6 +85,15 @@ export function SubmissionDetails({
   // Hidden test: the server withheld its data, show the verdict only.
   if (isHiddenFailure(fail)) return <HiddenTestNotice report={report} />;
 
+  // Prompts like input("Digite…") printed to stdout: say so explicitly.
+  // Reports from before distinct verdicts have no failure_kind.
+  const extraOutput =
+    (fail.failure_kind === "wrong_answer" ||
+      (fail.failure_kind === undefined && !fail.error)) &&
+    fail.actual !== undefined &&
+    fail.expected !== undefined &&
+    detectExtraOutput(fail.actual, fail.expected);
+
   return (
     <div className="flex flex-col gap-3 w-full text-sm">
       {/* Summary Header */}
@@ -95,6 +106,21 @@ export function SubmissionDetails({
           })}
         </span>
       </div>
+
+      {extraOutput && (
+        <p className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 p-2 text-amber-800 text-xs dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-300">
+          <Info className="mt-px size-4 shrink-0" />
+          <span>
+            {t.rich("extraOutputHint", {
+              code: (chunks) => (
+                <code className="notranslate font-mono" translate="no">
+                  {chunks}
+                </code>
+              ),
+            })}
+          </span>
+        </p>
+      )}
 
       {/* Grid Layout for Inputs/Outputs */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

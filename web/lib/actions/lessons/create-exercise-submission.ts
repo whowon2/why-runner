@@ -16,6 +16,7 @@ import {
   isValidParsonsAnswer,
   type ParsonsLine,
 } from "@/lib/parsons";
+import { normalizeCode } from "@/lib/normalize-code";
 import { languageSchema, MAX_CODE_LENGTH } from "@/lib/submission-limits";
 
 const RATE_LIMIT_WINDOW_SECS = 30;
@@ -92,8 +93,10 @@ export async function createExerciseSubmission(
       if (!languageSchema.safeParse(input.language).success) {
         throw new Error("Unsupported language.");
       }
+      if (typeof input.code !== "string") throw new Error("Invalid code.");
       program = {
-        code: input.code,
+        // Pasted invisible characters would break the program.
+        code: normalizeCode(input.code, input.language),
         language: input.language,
         visualSource: null,
       };
