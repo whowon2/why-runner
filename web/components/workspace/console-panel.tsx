@@ -2,7 +2,7 @@
 
 import { Loader } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { RunPanel } from "@/components/code-run/code-run";
 import { StatusBadge } from "@/components/submissions/status-badge";
 import { SubmissionDetails } from "@/components/submissions/submission-details";
@@ -26,14 +26,18 @@ export function ConsoleBody({ className }: { className?: string }) {
   const [tab, setTab] = useState(event?.type === "run" ? "input" : "output");
 
   // Follow the newest event: a custom run lives on the input tab.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: only on a new event
-  useEffect(() => {
-    if (!event) return;
-    setTab(event.type === "run" ? "input" : "output");
-  }, [attention]);
+  const [seen, setSeen] = useState(attention);
+  if (seen !== attention) {
+    setSeen(attention);
+    setTab(event?.type === "run" ? "input" : "output");
+  }
 
   return (
-    <Tabs className={cn("min-h-0 gap-2", className)} onValueChange={setTab} value={tab}>
+    <Tabs
+      className={cn("min-h-0 gap-2", className)}
+      onValueChange={setTab}
+      value={tab}
+    >
       <TabsList className="h-8 rounded-none">
         <TabsTrigger className="rounded-none text-xs" value="output">
           {t("output")}
@@ -151,7 +155,8 @@ function SubmissionOutput({ previousId }: { previousId: string | null }) {
       </p>
     );
   }
-  if (!latest) return <p className="text-muted-foreground text-sm">{t("empty")}</p>;
+  if (!latest)
+    return <p className="text-muted-foreground text-sm">{t("empty")}</p>;
 
   const pending = isPendingStatus(latest.status);
   return (
@@ -189,7 +194,9 @@ function Block({ label, text }: { label: string; text: string }) {
         className="notranslate max-h-48 overflow-auto border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap break-all"
         translate="no"
       >
-        {text || <span className="text-muted-foreground">{t("emptyText")}</span>}
+        {text || (
+          <span className="text-muted-foreground">{t("emptyText")}</span>
+        )}
       </pre>
     </div>
   );

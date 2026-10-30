@@ -49,7 +49,11 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
               }
               variant="outline"
             >
-              {examples.busy ? <Loader className="animate-spin" /> : <PlayCircle />}
+              {examples.busy ? (
+                <Loader className="animate-spin" />
+              ) : (
+                <PlayCircle />
+              )}
               {t("runAll")}
             </Button>
             <Button
@@ -58,7 +62,11 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
               title={t("runCustomHint")}
               variant="outline"
             >
-              {runner.running ? <Loader className="animate-spin" /> : <Terminal />}
+              {runner.running ? (
+                <Loader className="animate-spin" />
+              ) : (
+                <Terminal />
+              )}
               {t("runCustom")}
             </Button>
           </div>
@@ -82,9 +90,7 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
               statusTone(latest.status),
             )}
           >
-            <span className="text-muted-foreground text-xs">
-              {t("latest")}
-            </span>
+            <span className="text-muted-foreground text-xs">{t("latest")}</span>
             <button
               className="flex items-center gap-2"
               onClick={() =>
@@ -116,5 +122,3 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
     </div>
   );
 }
-
-

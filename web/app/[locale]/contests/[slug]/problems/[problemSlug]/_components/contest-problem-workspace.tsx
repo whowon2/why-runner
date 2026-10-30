@@ -85,7 +85,9 @@ export function ContestProblemWorkspace({
     return <Notice backHref={back}>{t("Tabs.Problem.viewAfterEnd")}</Notice>;
   }
   if (index === -1) {
-    return <Notice backHref={back}>{t("Tabs.Problem.notFoundInContest")}</Notice>;
+    return (
+      <Notice backHref={back}>{t("Tabs.Problem.notFoundInContest")}</Notice>
+    );
   }
 
   return (

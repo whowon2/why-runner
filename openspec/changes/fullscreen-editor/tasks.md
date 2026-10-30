@@ -40,9 +40,9 @@
 
 ## 5. Lesson exercise page
 
-- [ ] 5.1 `classes/_components/exercise-workspace.tsx` adapter: tests/hiddenCount from `useExercise`, mode-specific editor, submit via `useCreateExerciseSubmission`, runs with `context: "exercise"` (none for parsons), compare settings from `getExercise`, constraints notice + mode hint in statement, completed status, prev/next in rail, Back to roadmap
-- [ ] 5.2 Exercise page renders it; remove `ExerciseDetail`/`ExerciseHeader` (keep `exercise-similarity` route working)
-- [ ] 5.3 Locked state when `submissionsLocked`
+- [x] 5.1 `classes/_components/exercise-workspace.tsx` adapter: tests/hiddenCount from `useExercise`, mode-specific editor, submit via `useCreateExerciseSubmission`, runs with `context: "exercise"` (none for parsons), compare settings from `getExercise`, constraints notice + mode hint in statement, completed status, prev/next in rail, Back to roadmap
+- [x] 5.2 Exercise page renders it; remove `ExerciseDetail`/`ExerciseHeader` (keep `exercise-similarity` route working)
+- [x] 5.3 Locked state when `submissionsLocked`
 
 ## 6. Docs, versions, verification
 

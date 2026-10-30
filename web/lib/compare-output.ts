@@ -45,7 +45,8 @@ function tokensEqual(
   eq: (a: string, e: string) => boolean,
 ): boolean {
   return (
-    actual.length === expected.length && actual.every((a, i) => eq(a, expected[i]))
+    actual.length === expected.length &&
+    actual.every((a, i) => eq(a, expected[i]))
   );
 }
 

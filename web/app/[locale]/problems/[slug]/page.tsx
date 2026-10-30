@@ -29,8 +29,7 @@ export default async function ProblemPage({
 
   const locale = await getLocale();
   const base = `/problems/${problem.slug}`;
-  const canEdit =
-    problem.createdBy === user.id || (await isAdmin(user.id));
+  const canEdit = problem.createdBy === user.id || (await isAdmin(user.id));
   // A draft's author lands on its edit form unless they asked for a tab.
   if (canEdit && (tab === "edit" || (!tab && problem.status === "draft"))) {
     redirect({ href: `${base}/edit`, locale });

@@ -1,13 +1,16 @@
 import { notFound } from "next/navigation";
 import { db } from "@/drizzle/db";
 import { requireUser } from "@/lib/auth/require-user";
-import { ExerciseDetail } from "../../../../../_components/exercise-detail";
-import { ExerciseHeader } from "../../../../../_components/exercise-header";
+import { ExerciseWorkspace } from "../../../../../_components/exercise-workspace";
 
 export default async function ExercisePage({
   params,
 }: {
-  params: Promise<{ classSlug: string; lessonSlug: string; exerciseSlug: string }>;
+  params: Promise<{
+    classSlug: string;
+    lessonSlug: string;
+    exerciseSlug: string;
+  }>;
 }) {
   await requireUser({ redirectTo: "/auth/signin" });
   const { exerciseSlug } = await params;
@@ -18,12 +21,5 @@ export default async function ExercisePage({
   });
   if (!exercise) notFound();
 
-  return (
-    <div className="flex w-full flex-col flex-1 items-center gap-4 p-4">
-      <div className="flex w-full max-w-7xl flex-1 flex-col gap-6 py-8">
-        <ExerciseHeader exerciseId={exercise.id} />
-        <ExerciseDetail exerciseId={exercise.id} />
-      </div>
-    </div>
-  );
+  return <ExerciseWorkspace exerciseId={exercise.id} />;
 }

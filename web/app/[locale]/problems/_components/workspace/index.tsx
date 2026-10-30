@@ -55,7 +55,11 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
       submit: (answer) => {
         if (answer.mode !== "code") return;
         mutate(
-          { code: answer.code, language: answer.language, problemId: problem.id },
+          {
+            code: answer.code,
+            language: answer.language,
+            problemId: problem.id,
+          },
           {
             onError: (error) =>
               toast.error(tSubmit("failedSubmit"), {

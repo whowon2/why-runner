@@ -14,7 +14,14 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { parseAsString, useQueryState } from "nuqs";
-import { type ReactNode, useEffect, useState, useSyncExternalStore } from "react";
+import {
+  type ReactNode,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import { AiHelpDockPanel } from "@/app/[locale]/contests/_components/ai-dialog";
+import { AiHelpDockProvider } from "@/app/[locale]/contests/_components/ai-help-dock";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -128,47 +135,47 @@ export function WorkspaceShell({
   const drawer = panel ? allDrawers[panel] : undefined;
 
   return (
-    <div className="fixed inset-0 z-40 flex h-dvh flex-col bg-background">
-      <header className="flex h-11 shrink-0 items-center gap-3 border-b px-3">
-        {!isWide && <RailMenu items={items} onPanel={setPanel} />}
-        <h1 className="min-w-0 truncate font-semibold text-sm sm:text-base">
-          {title}
-        </h1>
-        <div className="ml-auto flex shrink-0 items-center gap-3 text-sm">
-          {status}
-        </div>
-      </header>
+    // The AI help dialog can dock its hints as a panel right of the editor.
+    <AiHelpDockProvider>
+      <div className="fixed inset-0 z-40 flex h-dvh flex-col bg-background">
+        <header className="flex h-11 shrink-0 items-center gap-3 border-b px-3">
+          {!isWide && <RailMenu items={items} onPanel={setPanel} />}
+          <h1 className="min-w-0 truncate font-semibold text-sm sm:text-base">
+            {title}
+          </h1>
+          <div className="ml-auto flex shrink-0 items-center gap-3 text-sm">
+            {status}
+          </div>
+        </header>
 
-      {!mounted ? (
-        <div className="flex-1" />
-      ) : isWide ? (
-        <div className="flex min-h-0 flex-1">
-          <Rail items={items} onPanel={setPanel} panel={panel} />
-          <WideBody editor={editor} statement={statement} />
-        </div>
-      ) : (
-        <NarrowBody editor={editor} statement={statement} />
-      )}
+        {!mounted ? (
+          <div className="flex-1" />
+        ) : isWide ? (
+          <div className="flex min-h-0 flex-1">
+            <Rail items={items} onPanel={setPanel} panel={panel} />
+            <WideBody editor={editor} statement={statement} />
+          </div>
+        ) : (
+          <NarrowBody editor={editor} statement={statement} />
+        )}
 
-      <Sheet
-        onOpenChange={(open) => !open && setPanel(null)}
-        open={!!drawer}
-      >
-        <SheetContent side="left">
-          {drawer && (
-            <>
-              <SheetHeader>
-                <SheetTitle>{drawer.title}</SheetTitle>
-                {drawer.description && (
-                  <SheetDescription>{drawer.description}</SheetDescription>
-                )}
-              </SheetHeader>
-              {drawer.content}
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
-    </div>
+        <Sheet onOpenChange={(open) => !open && setPanel(null)} open={!!drawer}>
+          <SheetContent side="left">
+            {drawer && (
+              <>
+                <SheetHeader>
+                  <SheetTitle>{drawer.title}</SheetTitle>
+                  {drawer.description && (
+                    <SheetDescription>{drawer.description}</SheetDescription>
+                  )}
+                </SheetHeader>
+                {drawer.content}
+              </>
+            )}
+          </SheetContent>
+        </Sheet>
+      </div>
+    </AiHelpDockProvider>
   );
 }
 
@@ -269,8 +276,11 @@ function useConsoleCollapsed() {
       setCollapsed(localStorage.getItem(CONSOLE_KEY) === "1");
     } catch {}
   }, []);
-  function set(next: boolean) {
+  // `persist: false` for automatic opens, which shouldn't change the
+  // viewer's preference (and may run during render).
+  function set(next: boolean, persist = true) {
     setCollapsed(next);
+    if (!persist) return;
     try {
       localStorage.setItem(CONSOLE_KEY, next ? "1" : "0");
     } catch {}
@@ -290,10 +300,11 @@ function WideBody({
   const [collapsed, setCollapsed] = useConsoleCollapsed();
 
   // A new run / play / submission result pulls the console open.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: only on a new event
-  useEffect(() => {
-    if (attention > 0) setCollapsed(false);
-  }, [attention]);
+  const [seen, setSeen] = useState(attention);
+  if (seen !== attention) {
+    setSeen(attention);
+    if (collapsed) setCollapsed(false, false);
+  }
 
   return (
     <ResizablePanelGroup
@@ -303,7 +314,12 @@ function WideBody({
     >
       {!maximized && (
         <>
-          <ResizablePanel defaultSize={40} id="statement" minSize={25} order={1}>
+          <ResizablePanel
+            defaultSize={40}
+            id="statement"
+            minSize={25}
+            order={1}
+          >
             {collapsed ? (
               <div className="flex h-full flex-col">
                 <div className="min-h-0 flex-1 overflow-y-auto p-4">
@@ -373,7 +389,12 @@ function WideBody({
           {!maximized && (
             <>
               <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={32} id="bottom" minSize={15} order={2}>
+              <ResizablePanel
+                defaultSize={32}
+                id="bottom"
+                minSize={15}
+                order={2}
+              >
                 <div className="grid h-full grid-cols-[minmax(0,1fr)_minmax(14rem,0.55fr)] divide-x border-t">
                   <TestCasesPanel />
                   <ActionsPanel />
@@ -383,6 +404,7 @@ function WideBody({
           )}
         </ResizablePanelGroup>
       </ResizablePanel>
+      <AiHelpDockPanel order={3} />
     </ResizablePanelGroup>
   );
 }
@@ -401,10 +423,11 @@ function NarrowBody({
   const [view, setView] = useState<NarrowView>("statement");
 
   // Run / play / submit from the Code view: show the result.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: only on a new event
-  useEffect(() => {
-    if (attention > 0) setView("results");
-  }, [attention]);
+  const [seen, setSeen] = useState(attention);
+  if (seen !== attention) {
+    setSeen(attention);
+    setView("results");
+  }
 
   const views: { key: NarrowView; label: string; icon: LucideIcon }[] = [
     { key: "statement", label: t("statement"), icon: FileText },
@@ -425,7 +448,10 @@ function NarrowBody({
         </div>
         {/* Hidden, not unmounted: the one editor keeps its code and undo. */}
         <div
-          className={cn("flex h-full flex-col p-2", view !== "code" && "hidden")}
+          className={cn(
+            "flex h-full flex-col p-2",
+            view !== "code" && "hidden",
+          )}
         >
           {editor}
         </div>
