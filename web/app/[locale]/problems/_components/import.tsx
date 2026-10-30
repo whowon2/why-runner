@@ -399,7 +399,7 @@ function ImportPreview({
                 <TableCell className="max-w-56 truncate">{p.title}</TableCell>
                 <TableCell>{p.difficulty ?? "—"}</TableCell>
                 <TableCell>{p.inputs.length}</TableCell>
-                <TableCell>{p.exampleCount}</TableCell>
+                <TableCell>{p.visible.filter(Boolean).length}</TableCell>
                 <TableCell className="max-w-48 truncate font-mono text-xs">
                   {p.tags.join(", ") || "—"}
                 </TableCell>

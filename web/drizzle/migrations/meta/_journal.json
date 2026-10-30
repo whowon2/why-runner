@@ -351,6 +351,13 @@
       "when": 1793293068929,
       "tag": "0049_signup_username_ra",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1793294885616,
+      "tag": "0050_test_visibility",
+      "breakpoints": true
     }
   ]
 }

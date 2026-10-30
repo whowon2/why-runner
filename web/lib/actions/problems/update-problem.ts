@@ -27,7 +27,7 @@ const updateProblemSchema = z.object({
     .optional(),
   inputs: z.array(z.string()).optional(),
   outputs: z.array(z.string()).optional(),
-  exampleCount: z.number().int().min(0).optional(),
+  visible: z.array(z.boolean()).optional(),
   compareMode: z.enum(ProblemCompareMode.enumValues).optional(),
   floatEpsilon: z.number().gt(0).lte(1).optional(),
   // `null` removes the checker; omitted leaves it as is. Portugol can't be a
@@ -54,7 +54,7 @@ export async function updateProblem(input: UpdateProblemInput) {
       eq(problem.id, input.problemId),
       eq(problem.createdBy, currentUser.id),
     ),
-    columns: { title: true, compareMode: true },
+    columns: { title: true, compareMode: true, inputs: true, visible: true },
   });
 
   if (!existing) throw new Error("Problem not found.");
@@ -66,6 +66,14 @@ export async function updateProblem(input: UpdateProblemInput) {
   const values: Partial<typeof problem.$inferInsert> = { ...fields };
   if (values.title && values.title !== existing.title) {
     values.slug = generateSlug(values.title);
+  }
+
+  // Keep one flag per test: pad new tests as hidden, drop flags of removed
+  // ones (a stale array could only hide tests, but keep it tidy).
+  if (values.inputs || values.visible) {
+    const count = (values.inputs ?? existing.inputs).length;
+    const flags = values.visible ?? existing.visible;
+    values.visible = Array.from({ length: count }, (_, i) => flags[i] === true);
   }
 
   const compareMode = values.compareMode ?? existing.compareMode;

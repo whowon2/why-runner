@@ -676,7 +676,8 @@
       "difficultyLabel": "Dificuldade",
       "difficultyPlaceholder": "Selecione uma dificuldade",
       "difficultyRequired": "Dificuldade é obrigatória",
-      "examplesShown": "Exemplos mostrados aos participantes",
+      "exampleCheckbox": "Exemplo (visível aos alunos)",
+      "noExamplesHint": "Nenhum teste está marcado como exemplo, então os alunos não verão nenhum caso de teste, a menos que uma aula mostre todos os testes.",
       "inputLabel": "Entrada {n}",
       "outputLabel": "Saída {n}",
       "inputOutputPlaceholder": "1 2 3",
@@ -866,7 +867,8 @@
         "locked": "Resolva este problema para desbloquear o conjunto completo de testes e o download.",
         "download": "Baixar todos os testes em um arquivo zip",
         "input": "Entrada",
-        "output": "Saída"
+        "output": "Saída",
+        "testLabel": "Teste {index}"
       }
     },
     "TagPicker": {
@@ -916,8 +918,15 @@
     "publish": "Publicar",
     "unpublish": "Despublicar",
     "addLesson": "Adicionar exercício",
-    "showOutputs": "Mostrar saídas esperadas para os alunos",
-    "showOutputsHint": "Permite que os alunos vejam saídas de casos de borda, para você poder checar respostas com valores fixos (hardcoded) durante a revisão.",
+    "TestVisibility": {
+      "label": "Casos de teste que os alunos veem",
+      "problem_default": "Só exemplos",
+      "problem_defaultHint": "Os alunos veem os testes marcados como exemplo em cada problema. Nos outros, veem só o número do teste quando falha.",
+      "show_all": "Todos",
+      "show_allHint": "Os alunos veem a entrada e a saída esperada de todos os testes, antes e depois de enviar. Útil para checar respostas fixas (hardcoded); revela as respostas.",
+      "hide_all": "Nenhum",
+      "hide_allHint": "Os alunos não veem entradas nem saídas, só qual teste falhou. Vale só nesta aula; a prática continua mostrando os exemplos do problema."
+    },
     "Lesson": {
       "primaryLanguage": "Linguagem sugerida: {language}",
       "anyLanguage": "Você pode enviar em qualquer linguagem.",
@@ -926,6 +935,8 @@
       "testCasesTitle": "Casos de teste",
       "testCaseInput": "Entrada {index}",
       "testCaseOutput": "Saída esperada {index}",
+      "hiddenTestCases": "{count, plural, one {Mais # caso de teste está oculto.} other {Mais # casos de teste estão ocultos.}}",
+      "allTestCasesHidden": "{count, plural, one {O caso de teste está oculto nesta aula.} other {Todos os # casos de teste estão ocultos nesta aula.}}",
       "answerWithBlocks": "Responda encaixando blocos. Abra \"Ver código\" para ver o Portugol que seus blocos geram.",
       "answerWithParsons": "Coloque as linhas na ordem e indentação certas e envie."
     },
@@ -1017,7 +1028,8 @@
       "outputs": "Saídas esperadas (stdout), mesmo tamanho e ordem das entradas.",
       "difficulty": "Dificuldade do problema. Omita para definir depois.",
       "tags": "Temas do problema. Duplicatas são removidas.",
-      "exampleCount": "Quantos dos primeiros casos de teste são mostrados aos alunos como exemplo. No máximo o número de casos de teste.",
+      "visible": "Uma marcação por caso de teste, na ordem: true mostra o teste aos alunos como exemplo. Se omitido, só o primeiro teste é exemplo.",
+      "exampleCount": "Obsoleto, use visible. Os N primeiros casos de teste viram exemplos. Não pode ser usado junto com visible.",
       "narrative": "História opcional exibida acima do enunciado, em Markdown.",
       "timeLimitMs": "Limite de tempo por caso de teste, em milissegundos.",
       "memoryLimitMb": "Limite de memória, em megabytes."

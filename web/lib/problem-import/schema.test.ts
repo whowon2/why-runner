@@ -24,7 +24,7 @@ describe("parseImportPayload", () => {
     const wrapped = parseImportPayload({ problems: [valid] });
     expect(bare).toEqual(wrapped);
     expect(bare.ok && bare.problems[0]).toMatchObject({
-      exampleCount: 1,
+      visible: [true, false],
       tags: [],
       timeLimitMs: 1000,
       memoryLimitMb: 512,
@@ -39,6 +39,39 @@ describe("parseImportPayload", () => {
 
   test("exampleCount larger than test cases is located", () => {
     const [err] = errorsOf([{ ...valid, exampleCount: 5 }]);
+    expect(err).toMatchObject({ index: 0, field: "exampleCount" });
+  });
+
+  test("visible length mismatch is located at visible", () => {
+    const [err] = errorsOf([{ ...valid, visible: [true] }]);
+    expect(err).toMatchObject({ index: 0, field: "visible" });
+    expect(err.message).toContain("expected 2");
+  });
+
+  test("visible is imported as given", () => {
+    const result = parseImportPayload([{ ...valid, visible: [false, true] }]);
+    expect(result.ok && result.problems[0].visible).toEqual([false, true]);
+  });
+
+  test("legacy exampleCount is converted to visible", () => {
+    const result = parseImportPayload([
+      {
+        ...valid,
+        inputs: ["a", "b", "c"],
+        outputs: ["A", "B", "C"],
+        exampleCount: 2,
+      },
+    ]);
+    expect(result.ok && result.problems[0]).toMatchObject({
+      visible: [true, true, false],
+    });
+    expect(result.ok && "exampleCount" in result.problems[0]).toBe(false);
+  });
+
+  test("visible and exampleCount together are rejected", () => {
+    const [err] = errorsOf([
+      { ...valid, visible: [true, false], exampleCount: 1 },
+    ]);
     expect(err).toMatchObject({ index: 0, field: "exampleCount" });
   });
 

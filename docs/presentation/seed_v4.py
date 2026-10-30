@@ -207,8 +207,8 @@ def main():
         # ------------------------------------------- checker demo problem
         cp = uid("checker-problem")
         q("DELETE FROM problem WHERE id = %s", cp)
-        q("INSERT INTO problem (id, title, description, difficulty, created_by, inputs, outputs, example_count, slug,"
-          " status, code, compare_mode) VALUES (%s, %s, %s, 'easy', %s, %s, %s, 1, 'um-divisor-demo-v4', 'draft',"
+        q("INSERT INTO problem (id, title, description, difficulty, created_by, inputs, outputs, visible, slug,"
+          " status, code, compare_mode) VALUES (%s, %s, %s, 'easy', %s, %s, %s, '{t,f,f}', 'um-divisor-demo-v4', 'draft',"
           " 'DEMO-201', 'checker')", cp, "Um divisor qualquer",
           "Leia um inteiro composto **N** e imprima **qualquer** divisor de N entre 2 e N − 1.\n\n"
           "Há várias respostas certas: um corretor confere cada uma.",

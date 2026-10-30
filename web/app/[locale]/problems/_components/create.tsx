@@ -14,6 +14,7 @@ import remarkMath from "remark-math";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -70,13 +71,15 @@ export function NewProblem({
     compareMode: z.enum(COMPARE_MODES),
     description: z.string(),
     difficulty: z.enum(["easy", "medium", "hard"]).optional(),
-    exampleCount: z.number().int().min(1),
-    inputs: z.array(z.string()),
     narrative: z.string(),
-    outputs: z.array(z.string()),
     floatEpsilon: z.number().gt(0).lte(1),
     tags: z.array(z.enum(PROBLEM_TAGS)),
     title: z.string(),
+    // One object per test so input, output and the example flag move
+    // together (useFieldArray can't track arrays of plain strings).
+    tests: z.array(
+      z.object({ input: z.string(), output: z.string(), visible: z.boolean() }),
+    ),
   })
     .refine(
       (v) => v.compareMode !== "checker" || v.checkerCode.trim().length > 0,
@@ -94,27 +97,21 @@ export function NewProblem({
       compareMode: problem.compareMode,
       description: problem.description,
       difficulty: problem.difficulty ?? undefined,
-      exampleCount: problem.exampleCount,
       floatEpsilon: problem.floatEpsilon,
-      inputs: problem.inputs,
       narrative: problem.narrative ?? "",
-      outputs: problem.outputs,
       tags: problem.tags,
       title: problem.title,
+      tests: problem.inputs.map((input, i) => ({
+        input,
+        output: problem.outputs[i] ?? "",
+        visible: problem.visible[i] === true,
+      })),
     },
     resolver: zodResolver(formSchema),
     shouldFocusError: false,
   });
 
-  const inputs = useFieldArray({
-    control: form.control,
-    name: "inputs" as never,
-  });
-
-  const outputs = useFieldArray({
-    control: form.control,
-    name: "outputs" as never,
-  });
+  const tests = useFieldArray({ control: form.control, name: "tests" });
 
   const { mutate: updateProblem, isPending } = useUpdateProblem();
   const { mutate: generateNarrative, isPending: isGeneratingNarrative } =
@@ -132,13 +129,10 @@ export function NewProblem({
           title: values.title,
           difficulty: values.difficulty ?? null,
           description: values.description,
-          exampleCount: Math.min(
-            values.exampleCount,
-            values.inputs.length || 1,
-          ),
-          inputs: values.inputs,
+          inputs: values.tests.map((test) => test.input),
+          visible: values.tests.map((test) => test.visible),
           narrative: values.narrative || null,
-          outputs: values.outputs,
+          outputs: values.tests.map((test) => test.output),
           tags: values.tags,
           compareMode: values.compareMode,
           floatEpsilon: values.floatEpsilon,
@@ -185,14 +179,13 @@ export function NewProblem({
     );
   }
 
+  // New tests, typed or AI-suggested, start hidden from students.
   function addInput() {
-    inputs.append("");
-    outputs.append("");
+    tests.append({ input: "", output: "", visible: false });
   }
 
   function addEdgeCase(input: string, output: string) {
-    inputs.append(input);
-    outputs.append(output);
+    tests.append({ input, output, visible: false });
   }
 
   function handleGenerateNarrative() {
@@ -235,11 +228,8 @@ export function NewProblem({
   }
 
   useEffect(() => {
-    if (inputs.fields.length === 0) {
-      inputs.append("");
-    }
-    if (outputs.fields.length === 0) {
-      outputs.append("");
+    if (tests.fields.length === 0) {
+      tests.append({ input: "", output: "", visible: false });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -403,90 +393,88 @@ export function NewProblem({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="exampleCount"
-                render={({ field }) => (
-                  <FormItem className="max-w-[200px]">
-                    <FormLabel>{t("examplesShown")}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min={1}
-                        max={formValues.inputs?.length || 1}
-                        {...field}
-                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex gap-4">
-                <div className="flex w-full flex-col gap-4">
-                  {inputs.fields.map((input, index) => (
-                    <div className="flex justify-between gap-4" key={input.id}>
+              <div className="flex flex-col gap-4">
+                {tests.fields.map((test, index) => (
+                  <div
+                    className="flex flex-col gap-4 md:flex-row"
+                    key={test.id}
+                  >
+                    <FormField
+                      control={form.control}
+                      name={`tests.${index}.input`}
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel>
+                            {t("inputLabel", { n: index + 1 })}
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className="min-h-[100px] font-mono"
+                              placeholder={t("inputOutputPlaceholder")}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`tests.${index}.output`}
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel>
+                            {t("outputLabel", { n: index + 1 })}
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className="min-h-[100px] font-mono"
+                              placeholder={t("inputOutputPlaceholder")}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex items-center justify-between gap-2 md:mt-7 md:flex-col md:items-end md:justify-start">
                       <FormField
                         control={form.control}
-                        name={`inputs.${index}`}
+                        name={`tests.${index}.visible`}
                         render={({ field }) => (
-                          <FormItem className="w-full">
-                            <FormLabel>
-                              {t("inputLabel", { n: index + 1 })}
-                            </FormLabel>
+                          <FormItem className="flex items-center gap-2">
                             <FormControl>
-                              <Textarea
-                                className="min-h-[100px] font-mono"
-                                placeholder={t("inputOutputPlaceholder")}
-                                {...field}
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={(checked) =>
+                                  field.onChange(checked === true)
+                                }
                               />
                             </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex w-full flex-col gap-4">
-                  {outputs.fields.map((input, index) => (
-                    <div className="flex justify-between gap-4" key={input.id}>
-                      <FormField
-                        control={form.control}
-                        name={`outputs.${index}`}
-                        render={({ field }) => (
-                          <FormItem className="w-full">
-                            <FormLabel>
-                              {t("outputLabel", { n: index + 1 })}
+                            <FormLabel className="whitespace-nowrap font-normal">
+                              {t("exampleCheckbox")}
                             </FormLabel>
-                            <FormControl>
-                              <Textarea
-                                className="min-h-[100px] font-mono"
-                                placeholder={t("inputOutputPlaceholder")}
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
                       <Button
                         variant="ghost"
-                        className="mt-7 max-w-min text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
-                        onClick={() => {
-                          inputs.remove(index);
-                          outputs.remove(index);
-                        }}
+                        className="max-w-min text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                        onClick={() => tests.remove(index)}
                         type="button"
                       >
                         <Delete className="w-5 h-5" />
                       </Button>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
+              {tests.fields.length > 0 &&
+                !formValues.tests?.some((test) => test.visible) && (
+                  <p className="text-muted-foreground text-sm">
+                    {t("noExamplesHint")}
+                  </p>
+                )}
               <Button
                 variant="secondary"
                 className="max-w-min"
@@ -568,12 +556,13 @@ export function NewProblem({
               </ReactMarkdown>
             </div>
 
-            {formValues.inputs && formValues.inputs.length > 0 && (
+            {formValues.tests?.some((test) => test.visible) && (
               <div className="space-y-6 pt-6">
                 <h3 className="text-xl font-bold tracking-tight">
                   {t("examplesTitle")}
                 </h3>
-                {formValues.inputs.map((input, idx) => (
+                {formValues.tests?.map(({ input, output, visible }, idx) =>
+                  !visible ? null : (
                   <div
                     key={idx}
                     className="flex flex-col md:flex-row gap-6 bg-muted/30 p-6 rounded-lg border"
@@ -594,14 +583,15 @@ export function NewProblem({
                         <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
                           {t("outputLabel", { n: idx + 1 })}
                         </h4>
-                        <CopyButton value={formValues.outputs?.[idx] ?? ""} />
+                        <CopyButton value={output} />
                       </div>
                       <pre translate="no" className="notranslate p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">
-                        {formValues.outputs?.[idx] || " "}
+                        {output || " "}
                       </pre>
                     </div>
                   </div>
-                ))}
+                  ),
+                )}
               </div>
             )}
           </div>

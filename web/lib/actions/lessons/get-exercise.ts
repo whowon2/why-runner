@@ -3,6 +3,7 @@
 import { db } from "@/drizzle/db";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { assertClassMember } from "@/lib/actions/classes/assert-class-member";
+import { exerciseVisibilityContext, visibleTests } from "@/lib/judge-report";
 import { parsonsLines, shuffle } from "@/lib/parsons";
 
 export async function getExercise(exerciseId: string) {
@@ -44,6 +45,13 @@ export async function getExercise(exerciseId: string) {
   // The Parsons solution is the answer key in order: students only ever get
   // its lines, freshly shuffled on every load.
   const { parsonsSolution, ...exerciseFields } = found;
+  // Hidden tests' inputs and outputs never leave the server.
+  const { inputs, outputs, ...problemFields } = found.problem;
+  const { tests, hiddenCount } = visibleTests(
+    inputs,
+    outputs,
+    exerciseVisibilityContext(found, currentUser.id),
+  );
   const parsonsShuffled =
     found.mode === "parsons" && parsonsSolution
       ? shuffle(parsonsLines(parsonsSolution))
@@ -52,14 +60,9 @@ export async function getExercise(exerciseId: string) {
   return {
     ...exerciseFields,
     parsonsShuffled,
-    problem: {
-      ...found.problem,
-      // Test-case inputs are always visible so students can see the edge
-      // cases their solution is graded against; expected outputs are only
-      // included when the lesson's owner has opted in (`showOutputs`) — off
-      // by default.
-      outputs: found.lesson.showOutputs ? found.problem.outputs : [],
-    },
+    problem: problemFields,
+    tests,
+    hiddenTestCount: hiddenCount,
     done: !!passed,
     lessonSubmitted: !!lessonSubmission,
     // Students may resubmit freely before the due date — only a passed due

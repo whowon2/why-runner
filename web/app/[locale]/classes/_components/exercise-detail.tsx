@@ -38,6 +38,7 @@ import {
   useStarterComments,
 } from "@/components/reset-code-button";
 import { ParsonsEditor } from "@/components/parsons/parsons-editor";
+import { SubmissionDetails } from "@/components/submissions/submission-details";
 import { VisualAnswer } from "@/components/submissions/visual-answer";
 import type { Language } from "@/drizzle/schema";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
@@ -49,6 +50,7 @@ import {
   generatePortugol,
   type SerializedWorkspace,
 } from "@/lib/blocks/portugol-generator";
+import type { VisibleTest } from "@/lib/judge-report";
 import type { ParsonsLine } from "@/lib/parsons";
 import { nextCodeOnLanguageChange } from "@/lib/starter-code";
 import { cn } from "@/lib/utils";
@@ -112,8 +114,8 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
         </Card>
 
         <ExerciseTestCases
-          inputs={exercise.problem.inputs}
-          outputs={exercise.problem.outputs}
+          hiddenCount={exercise.hiddenTestCount}
+          tests={exercise.tests}
         />
 
         <ExerciseConstraintsNotice exerciseId={exercise.id} />
@@ -330,20 +332,19 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
   );
 }
 
-// Inputs are always shown so students can see the edge cases their solution
-// is graded against; expected outputs are only present when the lesson
-// owner turned `showOutputs` on (masked to an empty array server-side
-// otherwise — see `getExercise`), so this renders whichever the server sent.
+// Only the tests this viewer may see arrive from the server (see
+// `getExercise`), numbered as in the problem so they match failing-test
+// reports; the rest are just counted.
 function ExerciseTestCases({
-  inputs,
-  outputs,
+  tests,
+  hiddenCount,
 }: {
-  inputs: string[];
-  outputs: string[];
+  tests: VisibleTest[];
+  hiddenCount: number;
 }) {
   const t = useTranslations("RoadmapPage.Lesson");
 
-  if (inputs.length === 0) return null;
+  if (tests.length === 0 && hiddenCount === 0) return null;
 
   return (
     <Card className="bg-transparent shadow-none">
@@ -351,10 +352,10 @@ function ExerciseTestCases({
         <CardTitle className="text-base">{t("testCasesTitle")}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        {inputs.map((input, i) => (
-          <div className="flex flex-col gap-1" key={`${i}-${input}`}>
+        {tests.map(({ index, input, output }) => (
+          <div className="flex flex-col gap-1" key={index}>
             <p className="text-muted-foreground text-xs">
-              {t("testCaseInput", { index: i + 1 })}
+              {t("testCaseInput", { index })}
             </p>
             <pre
               translate="no"
@@ -362,21 +363,24 @@ function ExerciseTestCases({
             >
               {input}
             </pre>
-            {outputs[i] !== undefined && (
-              <>
-                <p className="text-muted-foreground text-xs">
-                  {t("testCaseOutput", { index: i + 1 })}
-                </p>
-                <pre
-                  translate="no"
-                  className="notranslate w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 font-mono text-xs text-foreground"
-                >
-                  {outputs[i]}
-                </pre>
-              </>
-            )}
+            <p className="text-muted-foreground text-xs">
+              {t("testCaseOutput", { index })}
+            </p>
+            <pre
+              translate="no"
+              className="notranslate w-full overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-2 font-mono text-xs text-foreground"
+            >
+              {output}
+            </pre>
           </div>
         ))}
+        {hiddenCount > 0 && (
+          <p className="text-muted-foreground text-sm">
+            {tests.length === 0
+              ? t("allTestCasesHidden", { count: hiddenCount })
+              : t("hiddenTestCases", { count: hiddenCount })}
+          </p>
+        )}
       </CardContent>
     </Card>
   );
@@ -504,10 +508,12 @@ function ExerciseSubmissions({ exerciseId }: { exerciseId: string }) {
                       {s.code}
                     </pre>
                   </div>
-                  {s.constraintViolationDetail && (
-                    <div className="mt-2 rounded-md border border-purple-200 bg-purple-50 p-2 font-mono text-purple-700 text-xs whitespace-pre-wrap dark:border-purple-900 dark:bg-purple-950/30 dark:text-purple-300">
-                      {s.constraintViolationDetail}
-                    </div>
+                  {s.output && (
+                    <SubmissionDetails
+                      constraintViolationDetail={s.constraintViolationDetail}
+                      output={s.output}
+                      status={s.status}
+                    />
                   )}
                 </AccordionContent>
               </AccordionItem>

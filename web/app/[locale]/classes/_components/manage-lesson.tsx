@@ -18,8 +18,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingSwap } from "@/components/ui/loading-swap";
-import { Switch } from "@/components/ui/switch";
-import type { Lesson } from "@/drizzle/schema";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { type Lesson, TestVisibility } from "@/drizzle/schema";
 import { useCreateExerciseEntry } from "@/hooks/use-exercise-entry";
 import {
   useDeleteLesson,
@@ -164,21 +164,34 @@ export function ManageLesson({
           />
         </label>
 
-        <label
-          className="flex items-center gap-2 text-sm"
-          title={t("showOutputsHint")}
-        >
-          {t("showOutputs")}
-          <Switch
-            checked={lesson.showOutputs}
-            onCheckedChange={(checked) =>
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          {t("TestVisibility.label")}
+          <ToggleGroup
+            onValueChange={(value) => {
+              // Radix sends "" when the active item is clicked again.
+              if (!value) return;
               updateLesson(
-                { lessonId: lesson.id, showOutputs: checked },
+                {
+                  lessonId: lesson.id,
+                  testVisibility: value as TestVisibility,
+                },
                 { onError: (error) => toast.error(error.message) },
-              )
-            }
-          />
-        </label>
+              );
+            }}
+            type="single"
+            value={lesson.testVisibility}
+          >
+            {TestVisibility.enumValues.map((mode) => (
+              <ToggleGroupItem
+                key={mode}
+                title={t(`TestVisibility.${mode}Hint`)}
+                value={mode}
+              >
+                {t(`TestVisibility.${mode}`)}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </div>
       </div>
 
       <div className="border-t pt-4">

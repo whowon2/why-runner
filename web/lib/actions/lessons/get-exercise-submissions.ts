@@ -3,7 +3,7 @@
 import { db } from "@/drizzle/db";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { resolvePendingConstraintClassifications } from "@/lib/constraints/classify";
-import { redactReport } from "@/lib/judge-report";
+import { exerciseVisibilityContext, redactReport } from "@/lib/judge-report";
 
 // Scoped by exerciseId, not problemId: the same problem can back more than
 // one exercise (across lessons, contests, and standalone practice), so a
@@ -31,25 +31,21 @@ export async function getExerciseSubmissions(exerciseId: string) {
 
   if (rows.length === 0) return rows;
 
-  // Expected outputs follow the lesson's showOutputs toggle (inputs are
-  // already public on the exercise page); the lesson owner sees everything.
+  // Same rule as the exercise page's "Test cases" card (see getExercise).
   const found = await db.query.exercise.findFirst({
     where: (e, { eq }) => eq(e.id, exerciseId),
     columns: {},
     with: {
-      lesson: { columns: { createdBy: true, showOutputs: true } },
-      problem: { columns: { createdBy: true, exampleCount: true } },
+      lesson: {
+        columns: { createdBy: true, testVisibility: true },
+        with: { classroom: { columns: { createdBy: true } } },
+      },
+      problem: { columns: { createdBy: true, visible: true } },
     },
   });
   if (!found) return [];
 
-  const ctx = {
-    fullAccess:
-      found.lesson.createdBy === currentUser.id ||
-      found.problem.createdBy === currentUser.id,
-    exampleCount: found.problem.exampleCount,
-    exercise: { showOutputs: found.lesson.showOutputs },
-  };
+  const ctx = exerciseVisibilityContext(found, currentUser.id);
 
   return rows.map((row) => ({
     ...row,

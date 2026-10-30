@@ -81,7 +81,7 @@ export async function exportContestData(contestId: string): Promise<string> {
         username: user.username,
         email: user.email,
         problemCreatedBy: problem.createdBy,
-        exampleCount: problem.exampleCount,
+        visible: problem.visible,
       })
       .from(submission)
       .innerJoin(user, eq(user.id, submission.userId))
@@ -190,7 +190,7 @@ export async function exportContestData(contestId: string): Promise<string> {
       truncate(
         redactReport(s.output, {
           fullAccess: s.problemCreatedBy === currentUser.id,
-          exampleCount: s.exampleCount,
+          visible: s.visible,
         }),
       ),
       path,

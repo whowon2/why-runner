@@ -11,7 +11,7 @@ interface SeedProblem {
   title: string;
   description: string;
   difficulty: "easy" | "medium" | "hard";
-  exampleCount: number;
+  visible: boolean[];
   inputs: string[];
   outputs: string[];
 }
@@ -69,7 +69,7 @@ async function main() {
         createdBy: "system",
         inputs: p.inputs,
         outputs: p.outputs,
-        exampleCount: p.exampleCount,
+        visible: p.visible,
       })
       .returning();
 
