@@ -676,7 +676,8 @@
       "difficultyLabel": "Difficulty",
       "difficultyPlaceholder": "Select a difficulty",
       "difficultyRequired": "Difficulty is required",
-      "examplesShown": "Examples shown to solvers",
+      "exampleCheckbox": "Example (visible to students)",
+      "noExamplesHint": "No test is marked as an example, so students will not see any test case unless a lesson shows all tests.",
       "inputLabel": "Input {n}",
       "outputLabel": "Output {n}",
       "inputOutputPlaceholder": "1 2 3",
@@ -866,7 +867,8 @@
         "locked": "Solve this problem to unlock the full test set and download.",
         "download": "Download all tests as a zip file",
         "input": "Input",
-        "output": "Output"
+        "output": "Output",
+        "testLabel": "Test {index}"
       }
     },
     "TagPicker": {
@@ -916,8 +918,15 @@
     "publish": "Publish",
     "unpublish": "Unpublish",
     "addLesson": "Add exercise",
-    "showOutputs": "Show expected outputs to students",
-    "showOutputsHint": "Lets students see edge-case outputs, so you can check submitted code for hardcoded answers during review.",
+    "TestVisibility": {
+      "label": "Test cases students see",
+      "problem_default": "Examples only",
+      "problem_defaultHint": "Students see the tests marked as examples in each problem. Other tests show only their number when they fail.",
+      "show_all": "All",
+      "show_allHint": "Students see every test's input and expected output, before and after submitting. Useful for checking code for hardcoded answers; it reveals the answers.",
+      "hide_all": "None",
+      "hide_allHint": "Students see no test inputs or outputs, only which test failed. Applies to this lesson only; practice keeps the problem's examples."
+    },
     "Lesson": {
       "primaryLanguage": "Suggested language: {language}",
       "anyLanguage": "You may submit in any language.",
@@ -926,6 +935,8 @@
       "testCasesTitle": "Test cases",
       "testCaseInput": "Input {index}",
       "testCaseOutput": "Expected output {index}",
+      "hiddenTestCases": "{count, plural, one {# more test case is hidden.} other {# more test cases are hidden.}}",
+      "allTestCasesHidden": "{count, plural, one {The test case is hidden in this lesson.} other {All # test cases are hidden in this lesson.}}",
       "answerWithBlocks": "Answer by snapping blocks together. Open \"View code\" to see the Portugol your blocks become.",
       "answerWithParsons": "Put the lines in the right order and indentation, then submit."
     },
@@ -1017,7 +1028,8 @@
       "outputs": "Expected outputs (stdout), same length and order as inputs.",
       "difficulty": "Problem difficulty. Leave out to set it later.",
       "tags": "Theme tags. Duplicates are removed.",
-      "exampleCount": "How many of the first test cases are shown to students as examples. At most the number of test cases.",
+      "visible": "One flag per test case, in order: true shows that test to students as an example. Leave out to show only the first test.",
+      "exampleCount": "Deprecated, use visible. The first N test cases become examples. Cannot be combined with visible.",
       "narrative": "Optional story shown above the statement, in Markdown.",
       "timeLimitMs": "Time limit per test case, in milliseconds.",
       "memoryLimitMb": "Memory limit, in megabytes."

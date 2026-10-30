@@ -1,0 +1,142 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { useMemo } from "react";
+import {
+  HiddenTestNotice,
+  isHiddenFailure,
+} from "@/components/submissions/hidden-test-notice";
+import { parseReport } from "@/lib/judge-report";
+
+/**
+ * A judged submission's report as the server redacted it for this viewer:
+ * all passed, the failing test's input/expected/actual and stderr, a
+ * constraint violation, or the hidden-test notice. Shared by contest and
+ * lesson exercise submission lists.
+ */
+export function SubmissionDetails({
+  output,
+  status,
+  constraintViolationDetail,
+}: {
+  output: string | null;
+  status?: string;
+  constraintViolationDetail?: string | null;
+}) {
+  const t = useTranslations("ContestsPage.Tabs.Problem.Submissions");
+
+  // 1. Safe JSON Parsing
+  const report = useMemo(() => parseReport(output), [output]);
+
+  // 2. Fallback: If it's not JSON (e.g. old logs or raw crash), show text
+  if (!report) {
+    return (
+      <div
+        translate="no"
+        className="notranslate bg-muted p-2 rounded-md text-xs font-mono whitespace-pre-wrap max-h-60 overflow-auto w-full"
+      >
+        {output || t("noOutput")}
+      </div>
+    );
+  }
+
+  // Constraint violation: passed all test cases but broke a solution
+  // constraint — distinct from both a pass and a wrong-answer/error fail.
+  if (status === "CONSTRAINT_VIOLATION") {
+    return (
+      <div className="flex flex-col gap-2 w-full">
+        <div className="text-purple-500 font-medium">
+          {t("constraintViolation", { count: report.total_tests })}
+        </div>
+        {constraintViolationDetail && (
+          <div className="bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-900 p-2 rounded-md text-xs whitespace-pre-wrap">
+            {constraintViolationDetail}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (status === "PENDING_CONSTRAINT_CLASSIFICATION") {
+    return (
+      <div className="text-indigo-500 font-medium">
+        {t("pendingClassification")}
+      </div>
+    );
+  }
+
+  // 3. Success State
+  if (report.passed) {
+    return (
+      <div className="flex flex-col gap-2 w-full">
+        <div className="text-green-500 font-medium">
+          {t("allTestsPassed", { count: report.total_tests })}
+        </div>
+      </div>
+    );
+  }
+
+  // 4. Failure State
+  const fail = report.failure_details;
+  if (!fail) return <div>{t("unknownError")}</div>;
+
+  // Hidden test: the server withheld its data, show the verdict only.
+  if (isHiddenFailure(fail)) return <HiddenTestNotice report={report} />;
+
+  return (
+    <div className="flex flex-col gap-3 w-full text-sm">
+      {/* Summary Header */}
+      <div className="font-medium text-red-500 flex items-center gap-2">
+        <span>{t("failedOn", { index: fail.index })}</span>
+        <span className="text-gray-500 text-xs font-normal">
+          {t("passedCount", {
+            passed: report.passed_count,
+            total: report.total_tests,
+          })}
+        </span>
+      </div>
+
+      {/* Grid Layout for Inputs/Outputs */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CodeBlock label={t("inputLabel")} content={fail.input ?? ""} />
+        <CodeBlock label={t("yourOutputLabel")} content={fail.actual ?? ""} />
+      </div>
+
+      {/* Expected Output (Full Width) */}
+      {fail.expected !== undefined && (
+        <CodeBlock label={t("expectedOutputLabel")} content={fail.expected} />
+      )}
+
+      {/* Runtime Errors (Stderr) */}
+      {fail.error && (
+        <div className="w-full">
+          <span className="text-xs font-semibold text-red-500 mb-1 block">
+            {t("errorLog")}
+          </span>
+          <div
+            translate="no"
+            className="notranslate bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 p-2 rounded-md font-mono text-xs whitespace-pre-wrap"
+          >
+            {fail.error}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CodeBlock({ label, content }: { label: string; content: string }) {
+  const t = useTranslations("ContestsPage.Tabs.Problem.Submissions");
+
+  return (
+    <div className="flex flex-col gap-1 w-full min-w-0">
+      <span className="text-xs font-semibold text-gray-500">{label}</span>
+      <div
+        translate="no"
+        className="notranslate bg-muted/50 border rounded-md p-2 font-mono text-xs whitespace-pre-wrap break-all h-full max-h-40 overflow-auto"
+      >
+        {content || <span className="text-gray-400 italic">{t("empty")}</span>}
+      </div>
+    </div>
+  );
+}

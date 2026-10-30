@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   integer,
+  pgEnum,
   pgTable,
   primaryKey,
   text,
@@ -14,6 +15,17 @@ import { problem } from "./problems";
 import { ExerciseMode, Language, submission } from "./submissions";
 import { user } from "./users";
 
+// Which test cases students see on a lesson's exercises (the "Test cases"
+// card and failing-test reports). `problem_default` follows each test's
+// `problem.visible` flag; the other two override it for the whole lesson.
+export const TestVisibility = pgEnum("test_visibility", [
+  "problem_default",
+  "show_all",
+  "hide_all",
+]);
+
+export type TestVisibility = (typeof TestVisibility.enumValues)[number];
+
 /** A professor-curated assignment: a classroom-scoped collection of exercises. */
 export const lesson = pgTable("lesson", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -25,11 +37,9 @@ export const lesson = pgTable("lesson", {
   description: text("description").default("").notNull(),
   dueDate: timestamp("due_date"),
   isPublished: boolean("is_published").default(false).notNull(),
-  // When on, the exercise page also shows each test case's expected output
-  // alongside its input (inputs are always shown). Off by default — lets a
-  // professor opt a lesson into revealing edge cases for manual
-  // hardcode-detection review, at the cost of making answers visible.
-  showOutputs: boolean("show_outputs").default(false).notNull(),
+  testVisibility: TestVisibility("test_visibility")
+    .default("problem_default")
+    .notNull(),
   createdBy: text("created_by").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")

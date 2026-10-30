@@ -21,10 +21,9 @@ export function ProblemTestsTab({ problemId }: { problemId: string }) {
     const JSZip = (await import("jszip")).default;
     const zip = new JSZip();
 
-    data.all.forEach((testCase, i) => {
-      const n = i + 1;
-      zip.file(`input${n}.txt`, testCase.input);
-      zip.file(`output${n}.txt`, testCase.output);
+    data.all.forEach((testCase) => {
+      zip.file(`input${testCase.index}.txt`, testCase.input);
+      zip.file(`output${testCase.index}.txt`, testCase.output);
     });
 
     const blob = await zip.generateAsync({ type: "blob" });
@@ -41,31 +40,36 @@ export function ProblemTestsTab({ problemId }: { problemId: string }) {
       <div>
         <h2 className="mb-2 font-semibold text-lg">{t("sampleTitle")}</h2>
         <div className="space-y-4">
-          {data.samples.map((testCase, i) => (
-            <div className="flex gap-4" key={`sample-${i}-${testCase.input}`}>
-              <div className="min-w-0 w-full">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">{t("input")}:</span>
-                  <CopyButton value={testCase.input} />
+          {data.samples.map((testCase) => (
+            <div className="flex flex-col gap-1" key={testCase.index}>
+              <span className="text-muted-foreground text-sm">
+                {t("testLabel", { index: testCase.index })}
+              </span>
+              <div className="flex gap-4">
+                <div className="min-w-0 w-full">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{t("input")}:</span>
+                    <CopyButton value={testCase.input} />
+                  </div>
+                  <pre
+                    translate="no"
+                    className="notranslate mt-1 overflow-x-auto rounded-none border p-2"
+                  >
+                    {testCase.input}
+                  </pre>
                 </div>
-                <pre
-                  translate="no"
-                  className="notranslate mt-1 overflow-x-auto rounded-none border p-2"
-                >
-                  {testCase.input}
-                </pre>
-              </div>
-              <div className="min-w-0 w-full">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">{t("output")}:</span>
-                  <CopyButton value={testCase.output} />
+                <div className="min-w-0 w-full">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{t("output")}:</span>
+                    <CopyButton value={testCase.output} />
+                  </div>
+                  <pre
+                    translate="no"
+                    className="notranslate mt-1 overflow-x-auto rounded-none border p-2"
+                  >
+                    {testCase.output}
+                  </pre>
                 </div>
-                <pre
-                  translate="no"
-                  className="notranslate mt-1 overflow-x-auto rounded-none border p-2"
-                >
-                  {testCase.output}
-                </pre>
               </div>
             </div>
           ))}

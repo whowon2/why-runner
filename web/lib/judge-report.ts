@@ -44,14 +44,57 @@ export interface JudgeReport {
   constraint_violation?: unknown;
 }
 
-export type RedactContext = {
-  /** Problem owner (or, for exercises, the lesson owner): sees everything. */
+export type TestVisibility = "problem_default" | "show_all" | "hide_all";
+
+export type VisibilityContext = {
+  /**
+   * Problem author (or, for exercises, the lesson or class owner): sees
+   * every test.
+   */
   fullAccess: boolean;
-  /** Tests 1..exampleCount are public samples. */
-  exampleCount: number;
-  /** Set for lesson exercise submissions. */
-  exercise?: { showOutputs: boolean };
+  /** `problem.visible`: entry i flags test i+1. Missing = hidden. */
+  visible: readonly boolean[];
+  /** Lesson exercises only; practice and contests use `problem_default`. */
+  mode?: TestVisibility;
 };
+
+/**
+ * The one visibility rule: may this viewer see test `index` (1-based, as in
+ * `JudgeReport`)? Used for the exercise "Test cases" card, practice samples
+ * and failing-test redaction, so they can't disagree.
+ */
+export function isTestVisible(index: number, ctx: VisibilityContext): boolean {
+  if (ctx.fullAccess) return true;
+  switch (ctx.mode ?? "problem_default") {
+    case "show_all":
+      return true;
+    case "hide_all":
+      return false;
+    default:
+      return ctx.visible[index - 1] === true;
+  }
+}
+
+export interface VisibleTest {
+  /** 1-based, the test's number in the problem (and in judge reports). */
+  index: number;
+  input: string;
+  output: string;
+}
+
+/** The tests a viewer may see, keeping their original numbers. */
+export function visibleTests(
+  inputs: readonly string[],
+  outputs: readonly string[],
+  ctx: VisibilityContext,
+): { tests: VisibleTest[]; hiddenCount: number } {
+  const tests = inputs.flatMap((input, i) =>
+    isTestVisible(i + 1, ctx)
+      ? [{ index: i + 1, input, output: outputs[i] ?? "" }]
+      : [],
+  );
+  return { tests, hiddenCount: inputs.length - tests.length };
+}
 
 const TIMEOUT_ACTUAL = "Execution timed out";
 
@@ -90,21 +133,11 @@ export function parseReport(raw: string | null): JudgeReport | null {
 
 function redactFailure(
   f: TestCaseResult,
-  ctx: RedactContext,
+  ctx: VisibilityContext,
   verdict?: SubmissionStatus,
 ): TestCaseResult {
   const kind = failureKind(f, verdict);
-  if (ctx.fullAccess) return { ...f, failure_kind: kind };
-
-  // Exercise inputs are already shown on the exercise page; only the
-  // expected output follows the lesson's showOutputs toggle.
-  if (ctx.exercise) {
-    if (ctx.exercise.showOutputs) return { ...f, failure_kind: kind };
-    const { expected: _expected, ...rest } = f;
-    return { ...rest, failure_kind: kind, redacted: true };
-  }
-
-  if (f.index <= ctx.exampleCount) return { ...f, failure_kind: kind };
+  if (isTestVisible(f.index, ctx)) return { ...f, failure_kind: kind };
 
   // Hidden test: verdict and test number only. `actual` and stderr go too,
   // since code can echo the input there. Compiler output doesn't depend on
@@ -123,7 +156,7 @@ function redactFailure(
  */
 export function redactReport(
   raw: string | null,
-  ctx: RedactContext,
+  ctx: VisibilityContext,
 ): string | null {
   const report = parseReport(raw);
   if (!report?.failure_details) return raw;
@@ -142,14 +175,40 @@ export function redactReport(
 export function redactSubmission<
   T extends {
     output: string | null;
-    problem: { createdBy: string; exampleCount: number };
+    problem: { createdBy: string; visible: boolean[] };
   },
 >(row: T, viewerId: string): T {
   return {
     ...row,
     output: redactReport(row.output, {
       fullAccess: row.problem.createdBy === viewerId,
-      exampleCount: row.problem.exampleCount,
+      visible: row.problem.visible,
     }),
+  };
+}
+
+/**
+ * Visibility for a lesson exercise. The problem's author, the lesson's owner
+ * and the class owner see everything; everyone else gets the lesson's mode.
+ */
+export function exerciseVisibilityContext(
+  found: {
+    problem: { createdBy: string; visible: boolean[] };
+    lesson: {
+      createdBy: string;
+      testVisibility: TestVisibility;
+      classroom: { createdBy: string };
+    };
+  },
+  viewerId: string,
+): VisibilityContext {
+  return {
+    fullAccess: [
+      found.problem.createdBy,
+      found.lesson.createdBy,
+      found.lesson.classroom.createdBy,
+    ].includes(viewerId),
+    visible: found.problem.visible,
+    mode: found.lesson.testVisibility,
   };
 }

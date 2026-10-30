@@ -4,8 +4,11 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { problem, submission } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { visibleTests } from "@/lib/judge-report";
 
 export interface ProblemTestCase {
+  /** 1-based test number in the problem. */
+  index: number;
   input: string;
   output: string;
 }
@@ -21,7 +24,7 @@ export async function getProblemTests(problemId: string): Promise<{
     columns: {
       inputs: true,
       outputs: true,
-      exampleCount: true,
+      visible: true,
     },
   });
 
@@ -29,9 +32,11 @@ export async function getProblemTests(problemId: string): Promise<{
     return { samples: [], all: null };
   }
 
-  const samples = problemRow.inputs
-    .slice(0, problemRow.exampleCount)
-    .map((input, i) => ({ input, output: problemRow.outputs[i] }));
+  const { tests: samples } = visibleTests(
+    problemRow.inputs,
+    problemRow.outputs,
+    { fullAccess: false, visible: problemRow.visible },
+  );
 
   const solved = await db.query.submission.findFirst({
     where: and(
@@ -46,6 +51,7 @@ export async function getProblemTests(problemId: string): Promise<{
   }
 
   const all = problemRow.inputs.map((input, i) => ({
+    index: i + 1,
     input,
     output: problemRow.outputs[i],
   }));

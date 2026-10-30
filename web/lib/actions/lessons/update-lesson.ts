@@ -1,8 +1,9 @@
 "use server";
 
 import { eq } from "drizzle-orm";
+import { z } from "zod";
 import { db } from "@/drizzle/db";
-import { lesson } from "@/drizzle/schema";
+import { lesson, TestVisibility } from "@/drizzle/schema";
 import { normalizeLessonTitle } from "@/lib/actions/lessons/lesson-title";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 
@@ -20,10 +21,15 @@ export async function updateLesson(input: {
   title?: string;
   description?: string;
   dueDate?: Date | null;
-  showOutputs?: boolean;
+  testVisibility?: TestVisibility;
 }) {
   const currentUser = await getCurrentUser({});
   await assertOwnsLesson(input.lessonId, currentUser.id);
+
+  const testVisibility = z
+    .enum(TestVisibility.enumValues)
+    .optional()
+    .parse(input.testVisibility);
 
   const [updated] = await db
     .update(lesson)
@@ -35,9 +41,7 @@ export async function updateLesson(input: {
         ? { description: input.description.trim() }
         : {}),
       ...(input.dueDate !== undefined ? { dueDate: input.dueDate } : {}),
-      ...(input.showOutputs !== undefined
-        ? { showOutputs: input.showOutputs }
-        : {}),
+      ...(testVisibility !== undefined ? { testVisibility } : {}),
     })
     .where(eq(lesson.id, input.lessonId))
     .returning();

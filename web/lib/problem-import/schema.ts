@@ -20,7 +20,10 @@ export const problemImportSchema = z
       )
       .default([])
       .transform((tags) => [...new Set(tags)]),
-    exampleCount: z.number().int().min(1).default(1),
+    // visible[i] marks test i+1 as an example shown to students.
+    visible: z.array(z.boolean()).optional(),
+    /** Deprecated: the first N tests are examples. Converted to `visible`. */
+    exampleCount: z.number().int().min(0).optional(),
     inputs: z.array(z.string()).min(1, "At least one test case is required"),
     outputs: z.array(z.string()).min(1, "At least one test case is required"),
     narrative: z.string().optional(),
@@ -45,14 +48,35 @@ export const problemImportSchema = z
         message: `expected ${p.inputs.length} items to match inputs, got ${p.outputs.length}`,
       });
     }
-    if (p.exampleCount > p.inputs.length) {
+    if (p.visible && p.visible.length !== p.inputs.length) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["visible"],
+        message: `expected ${p.inputs.length} items to match inputs, got ${p.visible.length}`,
+      });
+    }
+    if (p.exampleCount !== undefined && p.visible) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["exampleCount"],
+        message: "exampleCount is deprecated; use only visible",
+      });
+    } else if (
+      p.exampleCount !== undefined &&
+      p.exampleCount > p.inputs.length
+    ) {
       ctx.addIssue({
         code: "custom",
         path: ["exampleCount"],
         message: `must be at most the number of test cases (${p.inputs.length})`,
       });
     }
-  });
+  })
+  // Without either field only the first test is an example, as before.
+  .transform(({ exampleCount = 1, visible, ...p }) => ({
+    ...p,
+    visible: visible ?? p.inputs.map((_, i) => i < exampleCount),
+  }));
 
 export type ProblemImport = z.infer<typeof problemImportSchema>;
 
@@ -132,7 +156,7 @@ export function parseImportPayload(data: unknown): ParseImportResult {
 }
 
 export type ImportFieldDoc = {
-  name: keyof ProblemImport;
+  name: keyof z.input<typeof problemImportSchema>;
   type: string;
   required: boolean;
   default?: string;
@@ -151,7 +175,17 @@ export const IMPORT_FIELDS: ImportFieldDoc[] = [
     values: ProblemDifficulty.enumValues,
   },
   { name: "tags", type: "string[]", required: false, default: "[]", values: PROBLEM_TAGS },
-  { name: "exampleCount", type: "integer", required: false, default: "1" },
+  {
+    name: "visible",
+    type: "boolean[] (one per test; true = example)",
+    required: false,
+    default: "[true, false, …]",
+  },
+  {
+    name: "exampleCount",
+    type: "integer (deprecated: first N tests visible)",
+    required: false,
+  },
   { name: "narrative", type: "string (Markdown)", required: false },
   {
     name: "timeLimitMs",
@@ -175,9 +209,9 @@ export const IMPORT_TEMPLATE = {
         "Read two integers A and B on a single line and print A + B.\n\n**Input:** Two integers A and B (−10⁹ ≤ A, B ≤ 10⁹).\n\n**Output:** A single integer: A + B.",
       difficulty: "easy",
       tags: ["input-output", "math"],
-      exampleCount: 2,
       inputs: ["3 5", "100 200", "-7 3"],
       outputs: ["8", "300", "-4"],
+      visible: [true, true, false],
       narrative: "Ana is counting apples from two baskets…",
       timeLimitMs: 1000,
       memoryLimitMb: 256,

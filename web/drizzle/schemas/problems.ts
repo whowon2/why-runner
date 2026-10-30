@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  boolean,
   doublePrecision,
   integer,
   pgEnum,
@@ -92,7 +93,10 @@ export const problem = pgTable("problem", {
   createdBy: text("created_by").notNull(),
   inputs: text("inputs").array().default([]).notNull(),
   outputs: text("outputs").array().default([]).notNull(),
-  exampleCount: integer("example_count").default(1).notNull(),
+  // Parallel to inputs/outputs: visible[i] marks test i+1 as an example
+  // students may see. A missing entry counts as hidden, so a short array can
+  // only hide data, never leak it (see isTestVisible in lib/judge-report.ts).
+  visible: boolean("visible").array().default([]).notNull(),
   timeLimitMs: integer("time_limit_ms").default(1000).notNull(),
   memoryLimitMb: integer("memory_limit_mb").default(512).notNull(),
   // Problems created before compare modes existed were migrated to `exact`.

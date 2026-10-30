@@ -3,7 +3,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import type { Lesson } from "@/drizzle/schema";
+import type { Lesson, TestVisibility } from "@/drizzle/schema";
 import type { getLesson } from "@/lib/actions/lessons/get-lesson";
 import {
   deleteLesson,
@@ -72,7 +72,7 @@ export const useUpdateLesson = () => {
       title?: string;
       description?: string;
       dueDate?: Date | null;
-      showOutputs?: boolean;
+      testVisibility?: TestVisibility;
     }) => {
       return await updateLesson(input);
     },
@@ -85,7 +85,7 @@ export const useUpdateLesson = () => {
         queryKey: lessonKey(variables.lessonId),
       });
       invalidateClass(queryClient, context?.classroomId);
-      // Exercise pages show the due date and (un)masked outputs, but none is
+      // Exercise pages show the due date and the visible tests, but none is
       // on screen while the owner edits the lesson: mark them stale so they
       // refetch when next opened, without refetching now.
       queryClient.invalidateQueries({

@@ -134,7 +134,7 @@ export async function getProblems({
         createdBy: problem.createdBy,
         creatorName: user.name,
         creatorUsername: user.username,
-        exampleCount: problem.exampleCount,
+        visible: problem.visible,
         timeLimitMs: problem.timeLimitMs,
         memoryLimitMb: problem.memoryLimitMb,
         createdAt: problem.createdAt,
