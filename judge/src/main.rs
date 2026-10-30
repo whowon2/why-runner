@@ -92,6 +92,14 @@ struct PoolState {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
 
+    // Which build is running: version from Cargo.toml, commit from the
+    // Dockerfile's GIT_SHA build arg ("dev" for local cargo builds).
+    println!(
+        "WhyRunner judge v{} ({})",
+        env!("CARGO_PKG_VERSION"),
+        option_env!("GIT_SHA").unwrap_or("dev")
+    );
+
     let concurrency = parse_concurrency(
         env::var("JUDGE_CONCURRENCY").ok().as_deref(),
         std::thread::available_parallelism().map_or(1, |n| n.get()),
