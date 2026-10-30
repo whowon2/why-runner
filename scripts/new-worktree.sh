@@ -59,6 +59,8 @@ if [ -n "${ZELLIJ:-}" ]; then
     zellij action new-tab --name "$name" --cwd "$dest" -- claude >/dev/null
   fi
   zellij action new-pane --direction right --cwd "$dest/web" -- bun dev -p "$port" >/dev/null
+  # Splits open 50/50; each resize step is 5%, so 4 steps leave the dev pane at 30%.
+  for _ in 1 2 3 4; do zellij action resize decrease left; done
   echo "opened zellij tab '$name': claude + bun dev on :$port"
 else
   echo "start an agent there:  cd $dest && claude"
