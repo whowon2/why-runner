@@ -98,11 +98,12 @@ and avoid glibc version mismatches.
 
 Portugol input is space/newline-normalized (`split_whitespace().join("\n")`)
 before being piped in — Portugol's console runner expects one input token per
-line, unlike the other languages which get raw stdin. The Portugol console jar
-(`portugol/portugol-console-2.7.5.jar`) and its ANTLR/audio library dependencies
-(`portugol/lib/`) are bundled directly in the judge image at `/portugol/` (not
-built as a separate Docker image) and bind-mounted into sandboxed runs via
-`--dir=/portugol`.
+line, unlike the other languages which get raw stdin. The Portugol console jar and its
+ANTLR/audio library dependencies are built inside the judge Dockerfile
+(`portugol-builder` stage, upstream UNIVALI-LITE/Portugol-Studio pinned by
+`PORTUGOL_COMMIT`), copied into the image at `/portugol/`, and bind-mounted
+into sandboxed runs via `--dir=/portugol`. Local `portugol/*.jar` and
+`portugol/lib/` are gitignored leftovers, not used by the image build.
 
 ### `Portugol-Studio/`
 
