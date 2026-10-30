@@ -122,3 +122,39 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
     </div>
   );
 }
+
+/** One-row Run all / Submit + latest verdict, under the maximized editor. */
+export function CompactActions() {
+  const t = useTranslations("Workspace.Actions");
+  const { source, examples, playExamples, submit } = useWorkspace();
+  const latest = source.submissions?.[0];
+  const locked = source.lockedReason !== null;
+
+  return (
+    <div className="flex shrink-0 items-center justify-end gap-2 pt-2">
+      {latest && (
+        <span className={cn("mr-auto text-sm", statusTone(latest.status))}>
+          <StatusBadge status={latest.status} />
+        </span>
+      )}
+      {source.runsEnabled && (
+        <Button
+          disabled={examples.busy || source.tests.length === 0}
+          onClick={() => playExamples(source.tests.map((x) => x.index))}
+          variant="outline"
+        >
+          {examples.busy ? <Loader className="animate-spin" /> : <PlayCircle />}
+          {t("runAll")}
+        </Button>
+      )}
+      <Button
+        disabled={locked || source.submitting}
+        onClick={submit}
+        title={source.lockedReason ?? undefined}
+      >
+        {source.submitting ? <Loader className="animate-spin" /> : <Check />}
+        {t("submit")}
+      </Button>
+    </div>
+  );
+}

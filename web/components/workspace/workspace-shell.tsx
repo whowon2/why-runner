@@ -44,7 +44,7 @@ import {
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import { ActionsPanel } from "./actions-panel";
+import { ActionsPanel, CompactActions } from "./actions-panel";
 import { ConsoleBody } from "./console-panel";
 import { SettingsDrawer } from "./settings-drawer";
 import { SubmissionHistory } from "./submission-history";
@@ -68,6 +68,8 @@ export type WorkspaceDrawer = {
   title: string;
   description?: string;
   content: ReactNode;
+  /** For wide content such as the leaderboard table. */
+  wide?: boolean;
 };
 
 const CONSOLE_KEY = "workspace-console-collapsed";
@@ -160,7 +162,10 @@ export function WorkspaceShell({
         )}
 
         <Sheet onOpenChange={(open) => !open && setPanel(null)} open={!!drawer}>
-          <SheetContent side="left">
+          <SheetContent
+            className={cn(drawer?.wide && "sm:max-w-5xl")}
+            side="left"
+          >
             {drawer && (
               <>
                 <SheetHeader>
@@ -169,7 +174,7 @@ export function WorkspaceShell({
                     <SheetDescription>{drawer.description}</SheetDescription>
                   )}
                 </SheetHeader>
-                {drawer.content}
+                <div className="min-w-0 overflow-x-auto">{drawer.content}</div>
               </>
             )}
           </SheetContent>
@@ -384,7 +389,8 @@ function WideBody({
             minSize={30}
             order={1}
           >
-            {editor}
+            <div className="min-h-0 flex-1">{editor}</div>
+            {maximized && <CompactActions />}
           </ResizablePanel>
           {!maximized && (
             <>

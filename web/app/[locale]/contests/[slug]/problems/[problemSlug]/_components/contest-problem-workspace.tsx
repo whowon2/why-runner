@@ -144,13 +144,14 @@ function ContestWorkspace({
   const { mutate, isPending: submitting } = useCreateSubmission();
 
   const ended = !!contest.endDate && contest.endDate <= now;
-  const lockedReason = !isMember
-    ? t("Locked.notParticipant")
-    : ended || !contest.endDate
+  const lockedReason =
+    ended || !contest.endDate
       ? t("Locked.contestEnded")
-      : answered.includes(letter)
-        ? t("Locked.solved")
-        : null;
+      : !isMember
+        ? t("Locked.notParticipant")
+        : answered.includes(letter)
+          ? t("Locked.solved")
+          : null;
 
   const source = useMemo<WorkspaceSource>(
     () => ({
@@ -234,6 +235,7 @@ function ContestWorkspace({
         drawers={{
           leaderboard: {
             title: t("Drawers.leaderboard"),
+            wide: true,
             content: <Leaderboard contest={contest} userId={userId} />,
           },
         }}
