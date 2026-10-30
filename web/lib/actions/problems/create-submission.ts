@@ -13,6 +13,7 @@ import { type ActionResult, fail, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { notifyJudge } from "@/lib/judge";
 import { letters } from "@/lib/letters";
+import { normalizeCode } from "@/lib/normalize-code";
 import { languageSchema, MAX_CODE_LENGTH } from "@/lib/submission-limits";
 
 const RATE_LIMIT_WINDOW_SECS = 30;
@@ -25,9 +26,14 @@ const inputSchema = z.object({
   problemId: z.string().min(1),
   code: z.string().min(1),
   language: languageSchema,
-});
+})
+  // Pasted invisible characters would break the program (normalize-code).
+  .transform((input) => ({
+    ...input,
+    code: normalizeCode(input.code, input.language),
+  }));
 
-export type CreateContestSubmissionInput = z.infer<typeof inputSchema>;
+export type CreateContestSubmissionInput = z.input<typeof inputSchema>;
 
 export type CreateContestSubmissionError =
   | "RATE_LIMITED"

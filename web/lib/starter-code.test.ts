@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { Language } from "@/drizzle/schemas/submissions";
-import { getStarterCode, nextCodeOnLanguageChange } from "./starter-code";
+import {
+  getStarterCode,
+  isStarterCode,
+  nextCodeOnLanguageChange,
+} from "./starter-code";
 
 const comments = { read: "READ_INPUT", write: "WRITE_OUTPUT" };
 
@@ -59,5 +63,48 @@ describe("nextCodeOnLanguageChange", () => {
   test("another language's starter is kept when prev differs", () => {
     const java = getStarterCode("java", comments);
     expect(nextCodeOnLanguageChange(java, "c", "rust", comments)).toBe(java);
+  });
+});
+
+describe("nextCodeOnLanguageChange with a saved draft", () => {
+  test("untouched code loads the saved draft", () => {
+    const c = getStarterCode("c", comments);
+    expect(
+      nextCodeOnLanguageChange(c, "c", "python", comments, "print(42)"),
+    ).toBe("print(42)");
+    expect(
+      nextCodeOnLanguageChange("", null, "python", comments, "print(42)"),
+    ).toBe("print(42)");
+  });
+
+  test("edited code ignores the saved draft", () => {
+    expect(
+      nextCodeOnLanguageChange("x = 1", "python", "c", comments, "int x;"),
+    ).toBe("x = 1");
+  });
+
+  test("starter in another locale counts as untouched", () => {
+    const pt = getStarterCode("c", { read: "Lê a entrada", write: "Escreve" });
+    expect(nextCodeOnLanguageChange(pt, "c", "rust", comments)).toBe(
+      getStarterCode("rust", comments),
+    );
+  });
+});
+
+describe("isStarterCode", () => {
+  test.each(Language.enumValues)("%s starter matches in any locale", (lang) => {
+    expect(isStarterCode(getStarterCode(lang, comments), lang)).toBe(true);
+    expect(
+      isStarterCode(getStarterCode(lang, { read: "lê", write: "escreve" }), lang),
+    ).toBe(true);
+  });
+
+  test("edited starter does not match", () => {
+    const code = getStarterCode("python", comments).replace("a + b", "a * b");
+    expect(isStarterCode(code, "python")).toBe(false);
+  });
+
+  test("other language's starter does not match", () => {
+    expect(isStarterCode(getStarterCode("c", comments), "cpp")).toBe(false);
   });
 });

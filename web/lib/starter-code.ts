@@ -81,17 +81,39 @@ export function getStarterCode(
   return TEMPLATES[language](comments);
 }
 
-// Code to show after switching language: the new language's starter when the
-// editor is blank or still holds the untouched starter of the previous
-// language, otherwise the user's code as-is.
+const COMMENT_MARK = "\u0000";
+
+// Whether `code` is `language`'s starter template, whatever text its
+// input/output comments hold: the comments follow the UI locale, so the
+// untouched pt-BR starter must still count as untouched after switching to
+// English.
+export function isStarterCode(code: string, language: Language): boolean {
+  const template = getStarterCode(language, {
+    read: COMMENT_MARK,
+    write: COMMENT_MARK,
+  }).split("\n");
+  const lines = code.split("\n");
+  if (lines.length !== template.length) return false;
+  return template.every((line, i) => {
+    const mark = line.indexOf(COMMENT_MARK);
+    if (mark === -1) return lines[i] === line;
+    const prefix = line.slice(0, mark);
+    return lines[i].startsWith(prefix) && lines[i].length > prefix.length;
+  });
+}
+
+// Code to show after switching language: when the editor is blank or still
+// holds the untouched starter of the previous language, the user's saved
+// draft for the new language if there is one, else its starter; otherwise
+// the user's code as-is.
 export function nextCodeOnLanguageChange(
   code: string,
   prev: Language | null,
   next: Language,
   comments: StarterComments,
+  saved?: string | null,
 ): string {
   const untouched =
-    code.trim() === "" ||
-    (prev !== null && code === getStarterCode(prev, comments));
-  return untouched ? getStarterCode(next, comments) : code;
+    code.trim() === "" || (prev !== null && isStarterCode(code, prev));
+  return untouched ? (saved ?? getStarterCode(next, comments)) : code;
 }

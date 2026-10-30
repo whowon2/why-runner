@@ -1,58 +1,32 @@
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback } from "react";
+import { createLocalSetting } from "@/hooks/use-local-setting";
 
 // One size for every code editor, remembered across visits and tabs.
-const STORAGE_KEY = "whyrunner:editor-font-size";
 export const EDITOR_FONT_SIZE_MIN = 10;
 export const EDITOR_FONT_SIZE_MAX = 32;
 export const EDITOR_FONT_SIZE_DEFAULT = 14;
-
-const listeners = new Set<() => void>();
-// Used when localStorage throws (blocked site data, private mode), so the
-// controls still work for the current page.
-let memorySize: number | null = null;
 
 function clamp(size: number) {
   return Math.min(EDITOR_FONT_SIZE_MAX, Math.max(EDITOR_FONT_SIZE_MIN, size));
 }
 
-function read(): number {
-  if (memorySize !== null) return memorySize;
-  try {
-    const stored = Number(localStorage.getItem(STORAGE_KEY));
-    return Number.isInteger(stored) && stored > 0
-      ? clamp(stored)
+const useStoredFontSize = createLocalSetting(
+  "whyrunner:editor-font-size",
+  (stored) => {
+    const size = Number(stored);
+    return Number.isInteger(size) && size > 0
+      ? clamp(size)
       : EDITOR_FONT_SIZE_DEFAULT;
-  } catch {
-    return EDITOR_FONT_SIZE_DEFAULT;
-  }
-}
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  // Another tab changed the size.
-  window.addEventListener("storage", listener);
-  return () => {
-    listeners.delete(listener);
-    window.removeEventListener("storage", listener);
-  };
-}
+  },
+  String,
+  EDITOR_FONT_SIZE_DEFAULT,
+);
 
 export function useEditorFontSize() {
-  const fontSize = useSyncExternalStore(
-    subscribe,
-    read,
-    () => EDITOR_FONT_SIZE_DEFAULT,
+  const [fontSize, setStored] = useStoredFontSize();
+  const setFontSize = useCallback(
+    (size: number) => setStored(clamp(size)),
+    [setStored],
   );
-
-  const setFontSize = useCallback((size: number) => {
-    const next = clamp(size);
-    try {
-      localStorage.setItem(STORAGE_KEY, String(next));
-    } catch {
-      memorySize = next;
-    }
-    for (const listener of listeners) listener();
-  }, []);
-
   return { fontSize, setFontSize };
 }

@@ -16,6 +16,7 @@ export const useCreateExerciseSubmission = () => {
       queryClient.invalidateQueries({
         queryKey: ["submissions", "exercise", variables.exerciseId],
       });
+      queryClient.invalidateQueries({ queryKey: ["submissions", "me"] });
     },
   });
 };

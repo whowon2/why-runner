@@ -25,10 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  HiddenTestNotice,
-  isHiddenFailure,
-} from "@/components/submissions/hidden-test-notice";
+import { SubmissionDetails } from "@/components/submissions/submission-details";
 import { useProblemPracticeSubmissions } from "@/hooks/use-problem-practice-submissions";
 import { useProblemTests } from "@/hooks/use-problem-tests";
 import { type JudgeReport, parseReport } from "@/lib/judge-report";
@@ -87,6 +84,7 @@ export function ProblemResultsTab({ problemId }: { problemId: string }) {
               <TableCell>
                 <SubmissionDetailsDialog
                   code={submission.code}
+                  status={submission.status}
                   constraintViolationDetail={
                     submission.constraintViolationDetail
                   }
@@ -107,8 +105,10 @@ function SubmissionDetailsDialog({
   output,
   problemId,
   constraintViolationDetail,
+  status,
 }: {
   code: string;
+  status: string;
   output: string | null;
   problemId: string;
   constraintViolationDetail?: string | null;
@@ -149,46 +149,12 @@ function SubmissionDetailsDialog({
             </pre>
           </div>
 
-          {constraintViolationDetail && (
-            <div>
-              <span className="text-xs font-semibold text-purple-500">
-                {t("constraintViolation")}
-              </span>
-              <pre translate="no" className="notranslate mt-1 max-h-40 overflow-auto rounded-md border border-purple-200 bg-purple-50 p-2 font-mono text-xs whitespace-pre-wrap dark:border-purple-900 dark:bg-purple-950/30">
-                {constraintViolationDetail}
-              </pre>
-            </div>
-          )}
-
-          {report &&
-            !report.passed &&
-            report.failure_details &&
-            isHiddenFailure(report.failure_details) && (
-              <HiddenTestNotice report={report} />
-            )}
-
-          {report &&
-            !report.passed &&
-            report.failure_details &&
-            !isHiddenFailure(report.failure_details) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <span className="text-xs font-semibold text-muted-foreground">
-                  {t("inputOutput")}
-                </span>
-                <pre translate="no" className="notranslate mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
-                  {report.failure_details.input}
-                </pre>
-              </div>
-              <div>
-                <span className="text-xs font-semibold text-muted-foreground">
-                  {t("inputOutput")}
-                </span>
-                <pre translate="no" className="notranslate mt-1 max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
-                  {report.failure_details.expected}
-                </pre>
-              </div>
-            </div>
+          {output && (
+            <SubmissionDetails
+              constraintViolationDetail={constraintViolationDetail}
+              output={output}
+              status={status}
+            />
           )}
 
           {report?.passed && tests && tests.samples.length > 0 && (
@@ -224,11 +190,6 @@ function SubmissionDetailsDialog({
             </div>
           )}
 
-          {!report && output && (
-            <pre translate="no" className="notranslate max-h-40 overflow-auto rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
-              {output}
-            </pre>
-          )}
         </div>
       </DialogContent>
     </Dialog>

@@ -16,6 +16,7 @@ export const useCreateProblemSubmission = () => {
       queryClient.invalidateQueries({
         queryKey: ["problem-submissions", variables.problemId],
       });
+      queryClient.invalidateQueries({ queryKey: ["submissions", "me"] });
     },
   });
 };

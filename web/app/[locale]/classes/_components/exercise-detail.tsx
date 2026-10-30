@@ -38,10 +38,12 @@ import {
   useStarterComments,
 } from "@/components/reset-code-button";
 import { ParsonsEditor } from "@/components/parsons/parsons-editor";
+import { LatestVerdict } from "@/components/submissions/latest-verdict";
 import { SubmissionDetails } from "@/components/submissions/submission-details";
 import { VisualAnswer } from "@/components/submissions/visual-answer";
 import type { Language } from "@/drizzle/schema";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
+import { useCodeDraft } from "@/hooks/use-code-draft";
 import { useCreateExerciseSubmission } from "@/hooks/use-create-exercise-submission";
 import { useExercise } from "@/hooks/use-exercise";
 import { useExerciseConstraints } from "@/hooks/use-exercise-constraints";
@@ -54,7 +56,11 @@ import type { VisibleTest } from "@/lib/judge-report";
 import type { ParsonsLine } from "@/lib/parsons";
 import { nextCodeOnLanguageChange } from "@/lib/starter-code";
 import { cn } from "@/lib/utils";
-import { AIDialog } from "../../contests/_components/ai-dialog";
+import {
+  AIDialog,
+  AiHelpDockPanel,
+} from "../../contests/_components/ai-dialog";
+import { AiHelpDockProvider } from "../../contests/_components/ai-help-dock";
 import { StatusBadge } from "@/components/submissions/status-badge";
 import { isFinalFailure, statusTone } from "@/lib/submission-status";
 
@@ -80,11 +86,14 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
   }
 
   return (
+    <AiHelpDockProvider>
     <ResizablePanelGroup className="min-h-[70vh]" direction="horizontal">
       <ResizablePanel
         className="flex flex-col gap-4 pr-4"
         defaultSize={40}
+        id="statement"
         minSize={25}
+        order={1}
       >
         <Card className="bg-transparent shadow-none">
           <CardHeader>
@@ -124,7 +133,12 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
       </ResizablePanel>
 
       <ResizableHandle withHandle />
-      <ResizablePanel className="flex flex-col gap-4 pl-4" minSize={25}>
+      <ResizablePanel
+        className="flex flex-col gap-4 pl-4"
+        id="editor"
+        minSize={25}
+        order={2}
+      >
         {exercise.submissionsLocked ? (
           <Card className="bg-transparent shadow-none">
             <CardContent>
@@ -144,7 +158,9 @@ export function ExerciseDetail({ exerciseId }: { exerciseId: string }) {
           <ExerciseSubmit exerciseId={exercise.id} />
         )}
       </ResizablePanel>
+      <AiHelpDockPanel order={3} />
     </ResizablePanelGroup>
+    </AiHelpDockProvider>
   );
 }
 
@@ -157,6 +173,7 @@ function BlocksSubmit({ exerciseId }: { exerciseId: string }) {
   const [workspace, setWorkspace] = useState<SerializedWorkspace | null>(null);
   const [showCode, setShowCode] = useState(false);
   const { mutate, isPending } = useCreateExerciseSubmission();
+  const { data: submissions } = useExerciseSubmissions(exerciseId);
 
   const generated = useMemo(
     () => (workspace ? generatePortugol(workspace) : null),
@@ -193,9 +210,12 @@ function BlocksSubmit({ exerciseId }: { exerciseId: string }) {
             <Code2 />
             {showCode ? tBlocks("hideCode") : tBlocks("viewCode")}
           </Button>
-          <Button disabled={isPending} onClick={handleSubmit}>
-            <Upload />
-          </Button>
+          <div className="flex gap-2">
+            <LatestVerdict submission={submissions?.[0]} />
+            <Button disabled={isPending} onClick={handleSubmit}>
+              <Upload />
+            </Button>
+          </div>
         </div>
         <BlockWorkspace
           className="h-[min(600px,60vh)] w-full"
@@ -224,6 +244,7 @@ function ParsonsSubmit({
     lines.map((text) => ({ text, indent: 0 })),
   );
   const { mutate, isPending } = useCreateExerciseSubmission();
+  const { data: submissions } = useExerciseSubmissions(exerciseId);
 
   function handleSubmit() {
     mutate(
@@ -241,7 +262,8 @@ function ParsonsSubmit({
   return (
     <Card className="bg-transparent shadow-none">
       <CardContent className="flex flex-col gap-4">
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          <LatestVerdict submission={submissions?.[0]} />
           <Button disabled={isPending} onClick={handleSubmit}>
             <Upload />
           </Button>
@@ -260,11 +282,28 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState<Language | null>(null);
   const { mutate, isPending } = useCreateExerciseSubmission();
+  const { data: submissions } = useExerciseSubmissions(exerciseId);
   const starterComments = useStarterComments();
+  const { draftFor, clearDraft } = useCodeDraft({
+    target: { kind: "exercise", id: exerciseId },
+    code,
+    setCode,
+    language,
+    setLanguage,
+    latest: submissions?.[0],
+  });
 
   function handleLanguageChange(value: string) {
     const next = value as Language;
-    setCode(nextCodeOnLanguageChange(code, language, next, starterComments));
+    setCode(
+      nextCodeOnLanguageChange(
+        code,
+        language,
+        next,
+        starterComments,
+        draftFor(next),
+      ),
+    );
     setLanguage(next);
   }
 
@@ -302,7 +341,10 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
           onChange={(c) => c !== undefined && setCode(c)}
           toolbar={
             <div className="flex justify-between gap-2">
-              <Select onValueChange={handleLanguageChange}>
+              <Select
+                onValueChange={handleLanguageChange}
+                value={language ?? undefined}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder={tUpload("languagePlaceholder")} />
                 </SelectTrigger>
@@ -317,9 +359,13 @@ function ExerciseSubmit({ exerciseId }: { exerciseId: string }) {
               <ResetCodeButton
                 code={code}
                 language={language}
-                onReset={setCode}
+                onReset={(starter) => {
+                  clearDraft(language);
+                  setCode(starter);
+                }}
                 onUndo={setCode}
               />
+              <LatestVerdict submission={submissions?.[0]} />
               <Button disabled={isPending} onClick={handleSubmit}>
                 <Upload />
               </Button>

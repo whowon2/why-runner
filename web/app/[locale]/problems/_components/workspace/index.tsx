@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Language, Problem } from "@/drizzle/schema";
+import { useCodeDraft } from "@/hooks/use-code-draft";
+import { useProblemPracticeSubmissions } from "@/hooks/use-problem-practice-submissions";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 import { ProblemDescription } from "../description";
@@ -35,6 +37,16 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
   // state living inside that tab's own component gets wiped on tab switch.
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState<Language | null>(null);
+  const { data: submissions } = useProblemPracticeSubmissions(problem.id);
+  const latest = submissions?.[0];
+  const draft = useCodeDraft({
+    target: { kind: "problem", id: problem.id },
+    code,
+    setCode,
+    language,
+    setLanguage,
+    latest,
+  });
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -111,14 +123,19 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
           )}
         </div>
 
-        <div className="mt-4 rounded-none bg-white/40 dark:bg-neutral-900/40 backdrop-blur-xl border border-white/20 shadow-2xl shadow-indigo-500/5 p-6">
+        {/* No backdrop-blur here: it would make this box the containing
+            block for the code editor's fixed fullscreen layer. */}
+        <div className="mt-4 rounded-none bg-white/40 dark:bg-neutral-900/40 border border-white/20 shadow-2xl shadow-indigo-500/5 p-6">
           <TabsContent value="task">
             <ProblemDescription problemId={problem.id} />
           </TabsContent>
           <TabsContent value="submit">
             <ProblemSubmitTab
+              clearDraft={draft.clearDraft}
               code={code}
+              draftFor={draft.draftFor}
               language={language}
+              latest={latest}
               problemId={problem.id}
               setCode={setCode}
               setLanguage={setLanguage}

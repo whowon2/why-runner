@@ -20,6 +20,8 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { useUserContestStatus } from "@/hooks/use-user-contest-status";
 import { Link, usePathname } from "@/i18n/navigation";
 import { letters } from "@/lib/letters";
+import { AiHelpDockPanel } from "../../ai-dialog";
+import { AiHelpDockProvider } from "../../ai-help-dock";
 import { SelectProblem } from "./select-problem";
 import { SubmissionList } from "./submission-list";
 import { UploadCode } from "./upload";
@@ -132,6 +134,7 @@ export function ProblemTab({
         />
 
         {problem && (
+          <AiHelpDockProvider>
           <ResizablePanelGroup
             className={
               isWide
@@ -170,11 +173,17 @@ export function ProblemTab({
                   minSize={30}
                   order={2}
                 >
-                  <UploadCode contest={contest} problem={problem} />
+                  <UploadCode
+                    contest={contest}
+                    problem={problem}
+                    user={user}
+                  />
                 </ResizablePanel>
               </Fragment>
             )}
+            <AiHelpDockPanel order={3} />
           </ResizablePanelGroup>
+          </AiHelpDockProvider>
         )}
       </CardContent>
     </Card>

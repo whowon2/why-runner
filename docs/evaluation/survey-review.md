@@ -148,13 +148,13 @@ runtime error / no output, 31 wrong output (many printed `input()` prompts
 like "Digite os valores…" into stdout), 5 letter case only. H: 13 tried,
 4 passed; failures were runtime errors or wrong output, none whitespace-only.
 In all of production, 17 of 18 problems are `exact`.
-| F2 | AI panel can't be scrolled (2) | `max-h` + `overflow-y-auto` on the AI dialog; later a dockable side panel | XS |
-| F3 | Changing site language erased the code (1) | Persist the editor draft per exercise/problem in localStorage, restore on mount | S |
-| F4 | Auto-closing brackets intrusive (1) | Toggle next to the font-size control (Monaco `autoClosingBrackets`), persisted | XS |
-| F5 | Verdict far from the editor (1) | Show the latest verdict badge in the editor toolbar, near submit | S |
+| F2 | AI panel can't be scrolled (2) | `max-h` + `overflow-y-auto` on the AI dialog; later a dockable side panel **Fixed (web 1.1.0).** | XS |
+| F3 | Changing site language erased the code (1) | Persist the editor draft per exercise/problem in localStorage, restore on mount **Fixed (web 1.1.0).** | S |
+| F4 | Auto-closing brackets intrusive (1) | Toggle next to the font-size control (Monaco `autoClosingBrackets`), persisted **Fixed (web 1.1.0).** | XS |
+| F5 | Verdict far from the editor (1) | Show the latest verdict badge in the editor toolbar, near submit **Fixed (web 1.1.0).** | S |
 | F6 | Can't run before submitting (2) | "Run with custom input": a non-graded judge run with rate limit, no submission row | M (web + judge) |
-| F8 | Wrong output from `input("Digite…")` prompts (found in the data, 31 G failures) | Explain it in the failure view: when the actual output has extra text before the expected lines, show a hint "don't print prompts in `input()`" | S |
-| F7 | Pasting code from another editor (1) | Reproduce first (likely indentation tabs vs spaces or smart quotes); fix if confirmed | S, unknown |
+| F8 | Wrong output from `input("Digite…")` prompts (found in the data, 31 G failures) | Explain it in the failure view: when the actual output has extra text before the expected lines, show a hint "don't print prompts in `input()`" **Fixed (web 1.1.0).** | S |
+| F7 | Pasting code from another editor (1) | Reproduce first (likely indentation tabs vs spaces or smart quotes); fix if confirmed **Fixed (web 1.1.0).** | S, unknown |
 
 ## No fixes
 

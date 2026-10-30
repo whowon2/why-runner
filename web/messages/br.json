@@ -79,7 +79,10 @@
     "exitFullscreen": "Sair da tela cheia (Esc)",
     "fontSmaller": "Diminuir fonte",
     "fontLarger": "Aumentar fonte",
-    "fontSize": "Tamanho da fonte: {size}px"
+    "fontSize": "Tamanho da fonte: {size}px",
+    "autoClose": "Fechar parênteses e aspas automaticamente",
+    "autoCloseOn": "Fechar parênteses e aspas automaticamente: ligado",
+    "autoCloseOff": "Fechar parênteses e aspas automaticamente: desligado"
   },
   "ProblemPicker": {
     "searchPlaceholder": "Buscar por nome ou código…",
@@ -1143,6 +1146,9 @@
           "codeLabel": "Seu código",
           "constraintViolation": "Passou em todos os {count} testes, mas violou uma restrição de solução",
           "pendingClassification": "Passou em todos os testes — verificando algoritmo exigido...",
+          "latestVerdict": "Última submissão: ver detalhes",
+          "latestVerdictTitle": "Última submissão",
+          "extraOutputHint": "Seu programa imprimiu texto a mais, por exemplo a mensagem de um <code>input()</code>. Imprima só o que a saída pede.",
           "AI": {
             "title": "Assistente de IA",
             "description": "Receba ajuda da nossa IA para entender por que sua solução pode estar falhando ou no que melhorar. A IA analisará seu código com base no problema e na sua solução e fornecerá sugestões.",
@@ -1153,7 +1159,10 @@
             "error": "Ocorreu um erro ao tentar obter ajuda da IA. Por favor, tente novamente mais tarde.",
             "noResponse": "A IA não forneceu uma resposta. Por favor, tente novamente.",
             "next": "Mostrar próxima dica",
-            "maxReached": "Esta é a ajuda máxima permitida neste torneio."
+            "maxReached": "Esta é a ajuda máxima permitida neste torneio.",
+            "dock": "Fixar ao lado",
+            "openAsDialog": "Abrir em janela",
+            "closePanel": "Fechar painel"
           },
           "Upload": {
             "languagePlaceholder": "Linguagem",
