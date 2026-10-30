@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { LegalFooterLinks } from "@/components/legal-footer-links";
 import { Separator } from "@/components/ui/separator";
+import { APP_COMMIT, APP_VERSION } from "@/lib/version";
 
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -34,6 +35,9 @@ export async function Footer() {
         >
           <GithubIcon className="size-4" />
         </a>
+        <p translate="no" className="notranslate text-xs text-muted-foreground">
+          v{APP_VERSION} ({APP_COMMIT})
+        </p>
       </div>
     </footer>
   );

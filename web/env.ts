@@ -20,6 +20,8 @@ export const env = createEnv({
     // Optional: comma-separated emails that may open read-only previews of
     // every survey form (/surveys/preview/[form]). Admins always can.
     SURVEY_PREVIEW_EMAILS: z.string().optional(),
+    // Set by Vercel on every deployment; shown in the footer and /api/version.
+    VERCEL_GIT_COMMIT_SHA: z.string().optional(),
   },
   client: {},
   runtimeEnv: {
@@ -36,5 +38,6 @@ export const env = createEnv({
     FLY_API_TOKEN: process.env.FLY_API_TOKEN,
     FLY_JUDGE_APP: process.env.FLY_JUDGE_APP,
     SURVEY_PREVIEW_EMAILS: process.env.SURVEY_PREVIEW_EMAILS,
+    VERCEL_GIT_COMMIT_SHA: process.env.VERCEL_GIT_COMMIT_SHA,
   },
 });

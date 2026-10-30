@@ -29,6 +29,10 @@ When the user asks for new work, or work unrelated to the current branch's task 
 
 Follow-ups, fixes and small tweaks to the current branch's own task stay here. If unsure whether something is related, ask. Parallel worktrees share one Postgres DB: if both branches need migrations, flag the numbering collision in `web/drizzle/migrations/`. Each worktree gets its own dev port (`DEV_PORT` in its `web/.env.local`, with `BETTER_AUTH_URL` and `NEXT_PUBLIC_BETTER_AUTH_URL` matching): run `bun dev -p $DEV_PORT` there, never plain `bun dev`. GitHub/Google OAuth callbacks are registered for `:3000` only, so social login may fail on other ports; use email login there. Cleanup: `scripts/prune-worktrees.sh` (`-n` = dry run) removes every sibling worktree whose branch is merged into `origin/main` (merge commit or merged PR) and has no uncommitted changes, deletes its local branch, and closes its zellij tab. Run it from the main checkout after merging a worktree's PR, or when the user asks to clean up.
 
+## Versioning
+
+`judge/Cargo.toml` and `web/package.json` carry each service's semver version, bumped by hand in the PR that changes that service (patch = fix, minor = feature, major = breaking DB/judge contract). On every push to `main`, CI tags the commit `judge-vX.Y.Z` / `web-vX.Y.Z` when that version is new, and pushes the judge image as `whowon/why-runner-judge:latest`, `:sha-<commit>` and `:vX.Y.Z` (Fly still needs `fly deploy -a why-runner-judge`). To see what's running: the judge prints `WhyRunner judge vX.Y.Z (<sha>)` at startup (`fly logs`); the web shows `vX.Y.Z (<sha>)` in the footer and at `/api/version`.
+
 ## Where to look
 
 - Frontend/API work → read `web/CLAUDE.md` first, then work inside `web/`.

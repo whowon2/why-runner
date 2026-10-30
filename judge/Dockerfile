@@ -2,6 +2,10 @@ FROM rust:1.91.1-bookworm AS builder
 WORKDIR /app
 COPY . .
 
+# Commit the image is built from, baked into the binary and printed at
+# startup (`.git` is not in the build context). CI passes it.
+ARG GIT_SHA=unknown
+ENV GIT_SHA=$GIT_SHA
 RUN cargo build --release
 
 FROM debian:bookworm AS isolate-builder
