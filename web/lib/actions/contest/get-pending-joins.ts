@@ -5,6 +5,7 @@ import { db } from "@/drizzle/db";
 import { publicUserColumns } from "@/lib/public-user";
 import { contest, userOnContest } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { canManageContest } from "@/lib/auth/permissions";
 
 export async function getPendingJoins(contestId: string) {
   const currentUser = await getCurrentUser({});
@@ -14,7 +15,7 @@ export async function getPendingJoins(contestId: string) {
     columns: { createdBy: true },
   });
 
-  if (!owned || owned.createdBy !== currentUser.id) {
+  if (!owned || !(await canManageContest(owned, currentUser.id))) {
     throw new Error("Forbidden");
   }
 

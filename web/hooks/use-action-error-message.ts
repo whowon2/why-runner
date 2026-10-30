@@ -13,6 +13,9 @@ const KNOWN_CODES = [
   "USERNAME_TAKEN",
   "RA_INVALID",
   "RA_TAKEN",
+  "USER_NOT_FOUND",
+  "IS_OWNER",
+  "CANNOT_DEMOTE_SELF",
 ] as const;
 
 type KnownCode = (typeof KNOWN_CODES)[number];

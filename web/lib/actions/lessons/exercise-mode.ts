@@ -10,6 +10,7 @@ import {
   type ProblemValidation,
 } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { assertCanManageExercise } from "@/lib/auth/permissions";
 import { notifyJudge } from "@/lib/judge";
 import { type CompareSettings, computeIoHash } from "@/lib/problem-io-hash";
 import { getProblemChecker } from "@/lib/problem-checker";
@@ -17,14 +18,13 @@ import { getProblemChecker } from "@/lib/problem-checker";
 async function getOwnedExercise(exerciseId: string) {
   const currentUser = await getCurrentUser({});
 
+  await assertCanManageExercise(exerciseId, currentUser.id);
+
   const found = await db.query.exercise.findFirst({
     where: eq(exercise.id, exerciseId),
     with: { lesson: true, problem: true },
   });
   if (!found) throw new Error("Exercise not found");
-  if (found.lesson.createdBy !== currentUser.id) {
-    throw new Error("Not the lesson owner");
-  }
   // The checker only feeds the staleness hash; it never leaves the server.
   const checker = await getProblemChecker(found.problemId);
   return { ...found, problem: { ...found.problem, checker } };

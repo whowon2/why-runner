@@ -24,7 +24,7 @@ export function ContestDescription({ contestId }: { contestId: string }) {
   if (!user || !contest) return null;
 
   const c = contest;
-  const isCreatedByUser = c.createdBy === user.id;
+  const isCreatedByUser = c.canManage;
   const status = getContestStatus(c.status, c.startDate, c.endDate, now);
   const startDate = c.startDate ? new Date(c.startDate) : null;
   const endDate = c.endDate ? new Date(c.endDate) : null;

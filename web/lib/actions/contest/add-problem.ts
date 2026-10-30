@@ -6,6 +6,7 @@ import { db } from "@/drizzle/db";
 import { contest, problem, problemOnContest } from "@/drizzle/schema";
 import { type ActionResult, fail, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { canManageContest, isAdmin } from "@/lib/auth/permissions";
 import { isContestLocked } from "@/lib/contest/editable";
 
 const inputSchema = z.object({
@@ -26,19 +27,22 @@ export async function addProblemToContest(
     columns: { createdBy: true, status: true, startDate: true },
   });
 
-  if (!owned || owned.createdBy !== currentUser.id) {
+  if (!owned || !(await canManageContest(owned, currentUser.id))) {
     throw new Error("Forbidden");
   }
   if (isContestLocked(owned)) return fail("CONTEST_STARTED");
 
-  // Other users' drafts are invisible, so they can't be attached either.
+  // Other users' drafts are invisible, so they can't be attached either
+  // (admins see every problem).
   const attachable = await db.query.problem.findFirst({
     where: and(
       eq(problem.id, input.problemId),
-      or(
-        eq(problem.status, "published"),
-        eq(problem.createdBy, currentUser.id),
-      ),
+      (await isAdmin(currentUser.id))
+        ? undefined
+        : or(
+            eq(problem.status, "published"),
+            eq(problem.createdBy, currentUser.id),
+          ),
     ),
     columns: { id: true },
   });

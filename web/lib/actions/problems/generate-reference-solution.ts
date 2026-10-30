@@ -5,6 +5,7 @@ import { db } from "@/drizzle/db";
 import { type Language, problem } from "@/drizzle/schema";
 import { type ActionResult, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { ownerOrAdminFilter } from "@/lib/auth/permissions";
 import {
   getReferenceSolutionPrompt,
   SYSTEM_INSTRUCTION_REFERENCE_SOLUTION,
@@ -27,13 +28,15 @@ export async function generateReferenceSolution(
   language: Language,
 ): Promise<ActionResult<string, "RATE_LIMITED">> {
   const currentUser = await getCurrentUser({});
+  // Creator or admin.
+  const ownerFilter = await ownerOrAdminFilter(
+    problem.createdBy,
+    currentUser.id,
+  );
   languageSchema.parse(language);
 
   const found = await db.query.problem.findFirst({
-    where: and(
-      eq(problem.id, problemId),
-      eq(problem.createdBy, currentUser.id),
-    ),
+    where: and(eq(problem.id, problemId), ownerFilter),
   });
 
   if (!found) throw new Error("Problem not found.");

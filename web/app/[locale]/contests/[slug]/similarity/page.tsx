@@ -10,12 +10,12 @@ export default async function ContestSimilarityPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const user = await requireUser({ redirectTo: "/auth/signin" });
+  await requireUser({ redirectTo: "/auth/signin" });
   const { slug } = await params;
 
   const contest = await getContestBySlug(slug);
-  // Contest owner only; `getContestProblemSimilarity` enforces this again.
-  if (!contest || contest.createdBy !== user.id) notFound();
+  // Contest owner or admin; `getContestProblemSimilarity` enforces this again.
+  if (!contest?.canManage) notFound();
 
   const attached = await db.query.problemOnContest.findMany({
     where: (p, { eq }) => eq(p.contestId, contest.id),

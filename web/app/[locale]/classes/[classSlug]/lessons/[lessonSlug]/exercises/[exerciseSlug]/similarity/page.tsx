@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/drizzle/db";
+import { getClassAccess } from "@/lib/auth/permissions";
 import { requireUser } from "@/lib/auth/require-user";
 import { ExerciseSimilarity } from "../../../../../../_components/exercise-similarity";
 
@@ -19,15 +20,15 @@ export default async function ExerciseSimilarityPage({
     where: (e, { eq }) => eq(e.slug, exerciseSlug),
     columns: { id: true },
     with: {
-      lesson: { columns: { title: true, slug: true, createdBy: true } },
+      lesson: { columns: { title: true, slug: true, classroomId: true } },
       problem: { columns: { title: true } },
     },
   });
-  // Lesson owner only; `getExerciseSimilarity` enforces this again.
+  // Class managers only; `getExerciseSimilarity` enforces this again.
   if (
     !exercise ||
     exercise.lesson.slug !== lessonSlug ||
-    exercise.lesson.createdBy !== user.id
+    !(await getClassAccess(exercise.lesson.classroomId, user.id)).canManage
   )
     notFound();
 

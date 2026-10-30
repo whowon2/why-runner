@@ -5,6 +5,7 @@ import { db } from "@/drizzle/db";
 import { publicUserColumns } from "@/lib/public-user";
 import { contest } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { canManageContest } from "@/lib/auth/permissions";
 import { redactSubmission } from "@/lib/judge-report";
 
 const problemColumns = { inputs: false, outputs: false } as const;
@@ -21,7 +22,7 @@ export async function getContestSubmissions(input: {
     columns: { createdBy: true },
   });
 
-  const isOwner = owned?.createdBy === currentUser.id;
+  const isOwner = !!owned && (await canManageContest(owned, currentUser.id));
 
   const rows = await db.query.submission.findMany({
     where: (submissions, { and, eq }) => {

@@ -11,6 +11,7 @@ import {
   userOnContest,
 } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { canManageContest } from "@/lib/auth/permissions";
 import { redactReport } from "@/lib/judge-report";
 import {
   codeFilePath,
@@ -36,7 +37,7 @@ export async function exportContestData(contestId: string): Promise<string> {
     columns: { createdBy: true, startDate: true, endDate: true },
   });
 
-  if (!found || found.createdBy !== currentUser.id) {
+  if (!found || !(await canManageContest(found, currentUser.id))) {
     throw new Error("Unauthorized");
   }
 

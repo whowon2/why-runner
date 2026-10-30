@@ -11,7 +11,7 @@ export default async function SurveyPreviewPage({
 }) {
   const { form } = await params;
   const user = await requireUser({ redirectTo: "/auth/signin" });
-  if (!canPreviewSurveys(user)) notFound();
+  if (!(await canPreviewSurveys(user))) notFound();
   if (!(SURVEY_FORMS as readonly string[]).includes(form)) notFound();
 
   return (

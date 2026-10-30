@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "@/drizzle/db";
 import { ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { canManageContest } from "@/lib/auth/permissions";
 import { publicUserColumns } from "@/lib/public-user";
 import { PICK_MODES } from "@/lib/similarity/pick";
 import { runSimilarity } from "@/lib/similarity/run";
@@ -14,7 +15,7 @@ const inputSchema = z.object({
   pick: z.enum(PICK_MODES),
 });
 
-/** Contest owner only: pairwise code similarity of participants' answers to one problem. */
+/** Contest owner or admin only: pairwise code similarity of participants' answers to one problem. */
 export async function getContestProblemSimilarity(
   rawInput: z.infer<typeof inputSchema>,
 ) {
@@ -25,7 +26,7 @@ export async function getContestProblemSimilarity(
     where: (c, { eq }) => eq(c.id, input.contestId),
     columns: { id: true, createdBy: true },
   });
-  if (!found || found.createdBy !== currentUser.id) {
+  if (!found || !(await canManageContest(found, currentUser.id))) {
     throw new Error("Forbidden");
   }
 

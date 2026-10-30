@@ -16,8 +16,8 @@ export default async function Page({
 
   const contest = await getContestBySlug(slug);
 
+  // Drafts are already hidden from anyone but the creator and admins.
   if (!contest) notFound();
-  if (contest.status === "draft" && contest.createdBy !== user.id) notFound();
 
   return (
     <div className="flex w-full flex-col flex-1 items-center justify-center gap-4 p-4">

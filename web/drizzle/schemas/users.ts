@@ -4,6 +4,7 @@ import {
   boolean,
   index,
   integer,
+  pgEnum,
   pgTable,
   primaryKey,
   text,
@@ -13,6 +14,9 @@ import {
 } from "drizzle-orm/pg-core";
 import { contest } from "./contests";
 import { type ProblemPreview, problem } from "./problems";
+
+export const UserRole = pgEnum("user_role", ["user", "admin"]);
+export type UserRole = (typeof UserRole.enumValues)[number];
 
 export const user = pgTable(
   "user",
@@ -31,6 +35,9 @@ export const user = pgTable(
     website: text("website"),
     // IFMG student ID (Registro do Aluno): 7 digits, leading zeros, so text.
     ra: text("ra").unique(),
+    // Platform role. Authorization reads it from the DB (`isAdmin`), never
+    // from the cached session; only the admin users page may change it.
+    role: UserRole("role").default("user").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()

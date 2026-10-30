@@ -3,12 +3,12 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { type ProblemConstraint, exerciseConstraint } from "@/drizzle/schema";
-import { assertClassMember } from "@/lib/actions/classes/assert-class-member";
+import { assertClassMember } from "@/lib/auth/permissions";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 
 // Read access is any class member (students need to see what's expected of
-// them before/after submitting), not just the lesson owner — mutations
-// (create/update/delete/upsert) stay owner-gated in their own actions.
+// them before/after submitting), not just class managers — mutations
+// (create/update/delete/upsert) stay manager-gated in their own actions.
 export async function getExerciseConstraints(
   exerciseId: string,
 ): Promise<ProblemConstraint[]> {

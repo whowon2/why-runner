@@ -11,10 +11,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { useClass } from "@/hooks/use-class";
 import { useClassLessons } from "@/hooks/use-lessons";
+import { AddCoTeacherDialog } from "./add-co-teacher-dialog";
 import { CreateLessonButton } from "./create-lesson-button";
 import { DeleteClassDialog } from "./delete-class-dialog";
 import { EditClassDialog } from "./edit-class-dialog";
 import { LeaveClassButton } from "./leave-class-button";
+import { MemberRoleButton } from "./member-role-button";
 import { RemoveMemberButton } from "./remove-member-button";
 
 export function ClassDetail({ classroomId }: { classroomId: string }) {
@@ -27,13 +29,16 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
   if (isClassPending) return <Skeleton className="h-32 w-full" />;
   if (!classData) return null;
 
-  const { classroom, isOwner, memberCount, members } = classData;
+  // canManage: owner, co-teachers and admins. isOwner: owner-level (owner or
+  // admin) — only they delete the class and manage co-teachers.
+  const { classroom, role, canManage, isOwner, memberCount, members } =
+    classData;
 
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
         action={
-          isOwner ? (
+          canManage ? (
             <>
               <Button
                 onClick={() => {
@@ -59,7 +64,10 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
                 classSlug={classroom.slug}
                 classroomId={classroomId}
               />
-              <DeleteClassDialog classroomId={classroomId} />
+              {isOwner && <DeleteClassDialog classroomId={classroomId} />}
+              {role === "teacher" && (
+                <LeaveClassButton classroomId={classroomId} />
+              )}
             </>
           ) : (
             <LeaveClassButton classroomId={classroomId} />
@@ -70,7 +78,61 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
         title={classroom.name}
       />
 
-      {isOwner && (
+      {canManage && (
+        <Card className="bg-transparent shadow-none">
+          <CardHeader className="flex flex-row items-center justify-between gap-2">
+            <CardTitle className="text-base">{t("teachers")}</CardTitle>
+            {isOwner && <AddCoTeacherDialog classroomId={classroomId} />}
+          </CardHeader>
+          <CardContent>
+            <ul className="flex flex-col gap-1">
+              {classData.owner && (
+                <li className="flex items-center gap-2">
+                  <Link
+                    className="text-sm hover:underline"
+                    href={`/user/${classData.owner.username}`}
+                  >
+                    {classData.owner.name}
+                  </Link>
+                  <Badge variant="default">{t("roleOwner")}</Badge>
+                </li>
+              )}
+              {classData.coTeachers.map((m) => (
+                <li
+                  className="flex items-center justify-between gap-2"
+                  key={m.id}
+                >
+                  <span className="flex items-center gap-2">
+                    <Link
+                      className="text-sm hover:underline"
+                      href={`/user/${m.username}`}
+                    >
+                      {m.name}
+                    </Link>
+                    <Badge variant="outline">{t("roleCoTeacher")}</Badge>
+                  </span>
+                  {isOwner && (
+                    <span className="flex items-center">
+                      <MemberRoleButton
+                        classroomId={classroomId}
+                        role="teacher"
+                        userId={m.id}
+                      />
+                      <RemoveMemberButton
+                        classroomId={classroomId}
+                        coTeacher
+                        userId={m.id}
+                      />
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
+      {canManage && (
         <Card className="bg-transparent shadow-none">
           <CardHeader>
             <CardTitle className="text-base">{t("students")}</CardTitle>
@@ -100,10 +162,19 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
                         </span>
                       )}
                     </div>
-                    <RemoveMemberButton
-                      classroomId={classroomId}
-                      userId={m.id}
-                    />
+                    <span className="flex items-center">
+                      {isOwner && (
+                        <MemberRoleButton
+                          classroomId={classroomId}
+                          role="student"
+                          userId={m.id}
+                        />
+                      )}
+                      <RemoveMemberButton
+                        classroomId={classroomId}
+                        userId={m.id}
+                      />
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -147,7 +218,7 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
                       </p>
                     )}
                     <div className="flex flex-wrap items-center gap-2 text-xs">
-                      {!isOwner && (
+                      {!canManage && (
                         <Badge variant="outline">
                           {tLessons("exerciseProgress", {
                             done: lesson.completedCount ?? 0,
@@ -155,7 +226,7 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
                           })}
                         </Badge>
                       )}
-                      {isOwner && (
+                      {canManage && (
                         <Badge variant="outline">
                           {tLessons("exerciseCount", {
                             count: lesson.exerciseCount,
@@ -168,7 +239,7 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
                           {new Date(lesson.dueDate).toLocaleDateString()}
                         </Badge>
                       )}
-                      {!isOwner && lesson.mySubmission && (
+                      {!canManage && lesson.mySubmission && (
                         <Badge className="bg-blue-500">
                           {tLessons("submittedAt", {
                             date: new Date(
@@ -177,14 +248,14 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
                           })}
                         </Badge>
                       )}
-                      {!isOwner && lesson.mySubmission?.reviewedAt && (
+                      {!canManage && lesson.mySubmission?.reviewedAt && (
                         <Badge className="bg-green-600">
                           {tLessons("scoreLabel", {
                             score: lesson.mySubmission.score.toFixed(2),
                           })}
                         </Badge>
                       )}
-                      {!isOwner &&
+                      {!canManage &&
                         lesson.mySubmission &&
                         !lesson.mySubmission.reviewedAt &&
                         dueDatePassed && (

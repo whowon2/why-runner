@@ -58,7 +58,8 @@
       "changeLanguage": "Change language...",
       "copyLink": "Copy link to this page",
       "signIn": "Sign in",
-      "logout": "Log out"
+      "logout": "Log out",
+      "goAdmin": "Go to Admin"
     }
   },
   "ToolTips": {
@@ -94,7 +95,8 @@
     "login": "Login",
     "settings": "Settings",
     "notifications": "Notifications",
-    "surveys": "Surveys"
+    "surveys": "Surveys",
+    "admin": "Admin"
   },
   "Footer": {
     "copyright": "© {year} Why Runner",
@@ -1571,7 +1573,25 @@
     "gradebookNoStudents": "No students have joined yet.",
     "gradebookNoLessons": "No published assignments yet.",
     "gradebookLegend": "Each exercise scores the fraction of test cases passed (0–1); — means the assignment was not handed in.",
-    "backToClass": "Back to class"
+    "backToClass": "Back to class",
+    "roleOwner": "Owner",
+    "roleCoTeacher": "Co-teacher",
+    "teachers": "Teachers",
+    "addCoTeacher": "Add co-teacher",
+    "addCoTeacherTitle": "Add a co-teacher",
+    "addCoTeacherDescription": "Co-teachers manage lessons, grades and students like you, but cannot delete the class or manage other co-teachers.",
+    "addCoTeacherLabel": "Username or email",
+    "addCoTeacherPlaceholder": "username or name@example.com",
+    "addCoTeacherSubmit": "Add",
+    "addCoTeacherSuccess": "Co-teacher added.",
+    "memberActions": "Member actions",
+    "makeCoTeacher": "Make co-teacher",
+    "makeStudent": "Make student",
+    "roleChanged": "Role updated.",
+    "removeCoTeacher": "Remove co-teacher",
+    "removeCoTeacherTitle": "Remove this co-teacher?",
+    "removeCoTeacherDescription": "They will lose access to this class. You can add them again later.",
+    "removeCoTeacherSuccess": "Co-teacher removed."
   },
   "Blocks": {
     "start": "when the program starts",
@@ -1660,7 +1680,10 @@
     "USERNAME_INVALID": "Username must be 3–20 letters, numbers, dots or hyphens.",
     "USERNAME_TAKEN": "This username is already taken.",
     "RA_INVALID": "RA must be exactly 7 digits.",
-    "RA_TAKEN": "This RA is already registered to another account."
+    "RA_TAKEN": "This RA is already registered to another account.",
+    "USER_NOT_FOUND": "No user with that username or email.",
+    "IS_OWNER": "That's the class owner, who already manages the class.",
+    "CANNOT_DEMOTE_SELF": "You can't remove your own admin role."
   },
   "JudgeReport": {
     "wrongAnswerOnTest": "Wrong answer on test {index}",
@@ -1938,5 +1961,57 @@
     "MEMORY_LIMIT_EXCEEDED": "Memory limit exceeded",
     "COMPILATION_ERROR": "Compilation error",
     "RUNTIME_ERROR": "Runtime error"
+  },
+  "AdminPage": {
+    "title": "Admin",
+    "subtitle": "Manage every contest, class and user on the platform.",
+    "links": {
+      "contests": "All contests",
+      "contestsHint": "Every contest, drafts included.",
+      "classes": "All classes",
+      "classesHint": "Every class with its owner and students.",
+      "surveys": "Survey results",
+      "surveysHint": "Aggregated evaluation survey responses.",
+      "users": "Users",
+      "usersHint": "Promote or demote admins."
+    },
+    "backToAdmin": "Back to admin",
+    "showing": "Showing {count} of {total}",
+    "page": "Page {page} of {totalPages}",
+    "empty": "Nothing found.",
+    "owner": "Owner",
+    "Contests": {
+      "title": "All contests",
+      "subtitle": "Every contest on the platform, drafts included.",
+      "searchPlaceholder": "Search contests by name...",
+      "name": "Name",
+      "status": "Status",
+      "dates": "Dates",
+      "draft": "Draft",
+      "published": "Published",
+      "noDates": "No dates"
+    },
+    "Classes": {
+      "title": "All classes",
+      "subtitle": "Every class on the platform, with its owner.",
+      "searchPlaceholder": "Search classes by name...",
+      "name": "Name",
+      "students": "Students",
+      "lessons": "Lessons"
+    },
+    "Users": {
+      "title": "Users",
+      "subtitle": "Search users and promote or demote admins.",
+      "searchPlaceholder": "Search by name, username or email...",
+      "user": "User",
+      "email": "Email",
+      "role": "Role",
+      "roleUser": "User",
+      "roleAdmin": "Admin",
+      "you": "you",
+      "promote": "Make admin",
+      "demote": "Remove admin",
+      "roleUpdated": "Role updated."
+    }
   }
 }

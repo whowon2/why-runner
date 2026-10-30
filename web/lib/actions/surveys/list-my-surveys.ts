@@ -57,7 +57,7 @@ export async function listMySurveys(): Promise<{
       (e) => !answeredKeys.has(`${e.form}:${e.entity.id}`),
     ),
     answered,
-    isAdmin: isSurveyAdmin(currentUser),
-    canPreview: canPreviewSurveys(currentUser),
+    isAdmin: await isSurveyAdmin(currentUser),
+    canPreview: await canPreviewSurveys(currentUser),
   };
 }

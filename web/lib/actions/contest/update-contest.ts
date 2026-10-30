@@ -6,6 +6,7 @@ import { db } from "@/drizzle/db";
 import { AI_ASSISTANCE_LEVELS, contest } from "@/drizzle/schema";
 import { type ActionResult, fail, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { ownerOrAdminFilter } from "@/lib/auth/permissions";
 import { isContestLocked } from "@/lib/contest/editable";
 import { generateSlug } from "@/lib/slug";
 
@@ -38,11 +39,13 @@ export async function updateContest(
 > {
   const currentUser = await getCurrentUser({});
 
+  // Creator or admin.
+  const ownerFilter = await ownerOrAdminFilter(
+    contest.createdBy,
+    currentUser.id,
+  );
   const existing = await db.query.contest.findFirst({
-    where: and(
-      eq(contest.id, input.contestId),
-      eq(contest.createdBy, currentUser.id),
-    ),
+    where: and(eq(contest.id, input.contestId), ownerFilter),
     columns: { name: true, status: true, startDate: true, endDate: true },
   });
 
@@ -79,12 +82,7 @@ export async function updateContest(
   const [result] = await db
     .update(contest)
     .set(values)
-    .where(
-      and(
-        eq(contest.id, input.contestId),
-        eq(contest.createdBy, currentUser.id),
-      ),
-    )
+    .where(and(eq(contest.id, input.contestId), ownerFilter))
     .returning();
 
   return ok(result);

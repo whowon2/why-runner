@@ -2,7 +2,10 @@
 
 import { db } from "@/drizzle/db";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
-import { assertClassMember } from "@/lib/actions/classes/assert-class-member";
+import {
+  assertClassMember,
+  canSeeAllExerciseTests,
+} from "@/lib/auth/permissions";
 import { exerciseVisibilityContext, visibleTests } from "@/lib/judge-report";
 import { parsonsLines, shuffle } from "@/lib/parsons";
 
@@ -50,7 +53,10 @@ export async function getExercise(exerciseId: string) {
   const { tests, hiddenCount } = visibleTests(
     inputs,
     outputs,
-    exerciseVisibilityContext(found, currentUser.id),
+    exerciseVisibilityContext(
+      found,
+      await canSeeAllExerciseTests(found, currentUser.id),
+    ),
   );
   const parsonsShuffled =
     found.mode === "parsons" && parsonsSolution

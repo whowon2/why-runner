@@ -6,19 +6,20 @@ import { publicUserColumns } from "@/lib/public-user";
 import { classroomMembership, lesson } from "@/drizzle/schema";
 import { fail, ok } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { assertCanManageClass } from "@/lib/auth/permissions";
+import { isClassStudent } from "@/lib/class-roles";
 import { computeExerciseScore } from "@/lib/exercise-score";
 
-/** Professor-only: every class member's whole-lesson submission, exercise by exercise. */
+/** Class managers only: every student's whole-lesson submission, exercise by exercise. */
 export async function getLessonReview(lessonId: string) {
   const currentUser = await getCurrentUser({});
 
   const found = await db.query.lesson.findFirst({
     where: eq(lesson.id, lessonId),
-    with: { classroom: { columns: { slug: true } } },
+    with: { classroom: { columns: { slug: true, createdBy: true } } },
   });
   if (!found) throw new Error("Lesson not found");
-  if (found.createdBy !== currentUser.id)
-    throw new Error("Not the lesson owner");
+  await assertCanManageClass(found.classroomId, currentUser.id);
   // Professor can only review after the due date — while it's still open,
   // students may keep resubmitting, so any earlier "review" would just be a
   // snapshot of in-progress work. No due date set means review is always
@@ -48,20 +49,16 @@ export async function getLessonReview(lessonId: string) {
   ]);
 
   const students = members
-    .filter((m) => m.userId !== found.createdBy)
+    .filter((m) => isClassStudent(m, found.classroom.createdBy))
     .map((m) => m.user);
 
-  const submissionByUser = new Map(
-    lessonSubmissions.map((s) => [s.userId, s]),
-  );
+  const submissionByUser = new Map(lessonSubmissions.map((s) => [s.userId, s]));
 
   return ok({
     lesson: found,
     students: students.map((student) => {
       const answers = exercises.map((e) => {
-        const completion = e.completions.find(
-          (c) => c.userId === student.id,
-        );
+        const completion = e.completions.find((c) => c.userId === student.id);
         return {
           exerciseId: e.id,
           problem: e.problem,

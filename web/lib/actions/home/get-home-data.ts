@@ -171,7 +171,7 @@ export async function getHomeData() {
 
 export type HomeData = Awaited<ReturnType<typeof getHomeData>>;
 
-/** Published lessons in classes the user joined (not owns) that they haven't handed in yet. */
+/** Published lessons in classes the user studies in (not owns or co-teaches) that they haven't handed in yet. */
 async function getPendingLessons(userId: string, now: Date) {
   const lessons = await db
     .select({
@@ -189,6 +189,8 @@ async function getPendingLessons(userId: string, now: Date) {
       and(
         eq(classroomMembership.classroomId, classroom.id),
         eq(classroomMembership.userId, userId),
+        // Co-teachers don't hand lessons in.
+        eq(classroomMembership.role, "student"),
       ),
     )
     .leftJoin(

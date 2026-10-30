@@ -9,23 +9,22 @@ import {
   lessonSubmission,
   submission,
 } from "@/drizzle/schema";
-import { assertClassMember } from "@/lib/actions/classes/assert-class-member";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { assertClassMember } from "@/lib/auth/permissions";
 import { computeExerciseScore } from "@/lib/exercise-score";
 
-/** Lessons (assignments) in a class, for a member or the class owner. */
+/** Lessons (assignments) in a class, for a student or a class manager. */
 export async function listClassLessons(classroomId: string) {
   const currentUser = await getCurrentUser({});
-  const classroom = await assertClassMember(classroomId, currentUser.id);
-  const isOwner = classroom.createdBy === currentUser.id;
+  const { canManage } = await assertClassMember(classroomId, currentUser.id);
 
   const allLessons = await db.query.lesson.findMany({
     where: eq(lesson.classroomId, classroomId),
     orderBy: (l, { asc }) => [asc(l.createdAt)],
   });
 
-  // Non-owners only see published (assigned) lessons.
-  const lessons = isOwner
+  // Students only see published (assigned) lessons.
+  const lessons = canManage
     ? allLessons
     : allLessons.filter((l) => l.isPublished);
   if (lessons.length === 0) return [];
@@ -46,7 +45,7 @@ export async function listClassLessons(classroomId: string) {
 
   // Professors don't submit exercises — this per-user progress/submission
   // data is only meaningful (and only fetched) for the current student.
-  if (isOwner) {
+  if (canManage) {
     return lessons.map((l) => ({
       ...l,
       exerciseCount: exercisesByLesson.get(l.id)?.length ?? 0,
@@ -89,9 +88,7 @@ export async function listClassLessons(classroomId: string) {
       : [],
   ]);
 
-  const passedExerciseIds = new Set(
-    passedSubmissions.map((s) => s.exerciseId),
-  );
+  const passedExerciseIds = new Set(passedSubmissions.map((s) => s.exerciseId));
   const mySubmissionByLesson = new Map(
     mySubmissions.map((s) => [s.lessonId, s]),
   );

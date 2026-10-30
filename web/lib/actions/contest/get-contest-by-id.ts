@@ -4,6 +4,7 @@ import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { problemOnContest, userOnContest } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { canManageContest } from "@/lib/auth/permissions";
 
 const problemColumns = { inputs: false, outputs: false } as const;
 
@@ -27,8 +28,9 @@ export async function getContest(id: string) {
   });
 
   if (!found) return null;
-  if (found.status === "draft" && found.createdBy !== currentUser.id)
-    return null;
+  // Creator or admin: sees drafts and every owner control.
+  const canManage = await canManageContest(found, currentUser.id);
+  if (found.status === "draft" && !canManage) return null;
 
   const membership = await db.query.userOnContest.findFirst({
     where: and(
@@ -38,14 +40,14 @@ export async function getContest(id: string) {
     columns: { joinStatus: true },
   });
 
-  const isOwner = found.createdBy === currentUser.id;
   const joinStatus = membership?.joinStatus ?? null;
   const canViewProblems =
-    isOwner || !found.isPrivate || joinStatus === "accepted";
+    canManage || !found.isPrivate || joinStatus === "accepted";
 
   return {
     ...found,
     joinStatus,
+    canManage,
     problems: canViewProblems ? found.problems : [],
   };
 }
@@ -58,8 +60,9 @@ export async function getContestBySlug(slug: string) {
   });
 
   if (!found) return null;
-  if (found.status === "draft" && found.createdBy !== currentUser.id)
-    return null;
+  // Creator or admin: sees drafts and every owner control.
+  const canManage = await canManageContest(found, currentUser.id);
+  if (found.status === "draft" && !canManage) return null;
 
-  return found;
+  return { ...found, canManage };
 }

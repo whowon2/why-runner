@@ -7,6 +7,7 @@ import {
   type StructuralConstraintRuleType,
 } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { assertCanManageExercise } from "@/lib/auth/permissions";
 
 export async function updateStructuralConstraint(input: {
   id: string;
@@ -17,16 +18,12 @@ export async function updateStructuralConstraint(input: {
 
   const existing = await db.query.exerciseConstraint.findFirst({
     where: eq(exerciseConstraint.id, input.id),
-    with: { exercise: { with: { lesson: { columns: { createdBy: true } } } } },
   });
 
-  if (
-    !existing ||
-    existing.kind !== "structural" ||
-    existing.exercise.lesson.createdBy !== currentUser.id
-  ) {
+  if (!existing || existing.kind !== "structural") {
     throw new Error("Constraint not found.");
   }
+  await assertCanManageExercise(existing.exerciseId, currentUser.id);
 
   const [updated] = await db
     .update(exerciseConstraint)

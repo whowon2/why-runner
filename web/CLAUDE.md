@@ -124,8 +124,8 @@ GOOGLE_CLIENT_SECRET=
 GEMINI_KEY=
 ANTHROPIC_API_KEY=   # optional, makes Claude Haiku the first AI provider (Gemini becomes the fallback)
 FLY_API_TOKEN=       # optional, wakes the idle-stopped Fly judge (lib/judge.ts)
-SURVEY_ADMIN_EMAILS= # optional, comma-separated emails that can open /surveys/results
-SURVEY_PREVIEW_EMAILS= # optional, comma-separated emails that can open read-only /surveys/preview/[form]
+SURVEY_ADMIN_EMAILS= # seed-only: `bun db:seed:admins` promotes these emails to admin (run once after migrating); not read at runtime
+SURVEY_PREVIEW_EMAILS= # optional, comma-separated emails that can open read-only /surveys/preview/[form] (admins always can)
 ```
 
 ## Local Test Accounts
@@ -136,8 +136,10 @@ Email/password accounts in the local dev database (shared by every worktree), fo
 | ------- | ------------------- | ---------------- |
 | teacher | `teacher@email.com` | `teacherteacher` |
 | student | `user@email.com`    | `useruser`       |
+| co-teacher | `coteacher@email.com` | `coteachercoteacher` |
+| admin   | `admin@email.com`   | `adminadmin`     |
 
-If one is missing (fresh DB), create it through the normal sign-up page. Social login only works on `:3000`, so use these on other worktree ports.
+If one is missing (fresh DB), create it through the normal sign-up page; the admin account also needs `role = 'admin'` (`/admin/users`, or `SURVEY_ADMIN_EMAILS=admin@email.com bun db:seed:admins`). Social login only works on `:3000`, so use these on other worktree ports.
 
 ## Conventions
 

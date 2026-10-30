@@ -6,15 +6,7 @@ import { db } from "@/drizzle/db";
 import { lesson, TestVisibility } from "@/drizzle/schema";
 import { normalizeLessonTitle } from "@/lib/actions/lessons/lesson-title";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
-
-async function assertOwnsLesson(lessonId: string, userId: string) {
-  const found = await db.query.lesson.findFirst({
-    where: eq(lesson.id, lessonId),
-  });
-  if (!found) throw new Error("Lesson not found");
-  if (found.createdBy !== userId) throw new Error("Not the lesson owner");
-  return found;
-}
+import { assertCanManageLesson } from "@/lib/auth/permissions";
 
 export async function updateLesson(input: {
   lessonId: string;
@@ -24,7 +16,7 @@ export async function updateLesson(input: {
   testVisibility?: TestVisibility;
 }) {
   const currentUser = await getCurrentUser({});
-  await assertOwnsLesson(input.lessonId, currentUser.id);
+  await assertCanManageLesson(input.lessonId, currentUser.id);
 
   const testVisibility = z
     .enum(TestVisibility.enumValues)
@@ -54,7 +46,7 @@ export async function setLessonPublished(input: {
   isPublished: boolean;
 }) {
   const currentUser = await getCurrentUser({});
-  await assertOwnsLesson(input.lessonId, currentUser.id);
+  await assertCanManageLesson(input.lessonId, currentUser.id);
 
   const [updated] = await db
     .update(lesson)
@@ -67,7 +59,10 @@ export async function setLessonPublished(input: {
 
 export async function deleteLesson(lessonId: string) {
   const currentUser = await getCurrentUser({});
-  const found = await assertOwnsLesson(lessonId, currentUser.id);
+  const { lesson: found } = await assertCanManageLesson(
+    lessonId,
+    currentUser.id,
+  );
 
   // Published lessons may already have student submissions/grades riding on
   // them — unpublish first (setLessonPublished) if it truly needs deleting.

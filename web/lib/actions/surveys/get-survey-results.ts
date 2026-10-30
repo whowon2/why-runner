@@ -23,7 +23,7 @@ export async function getSurveyResults(
   input: unknown,
 ): Promise<SurveyResultsData | null> {
   const currentUser = await getCurrentUser({});
-  if (!isSurveyAdmin(currentUser)) return null;
+  if (!(await isSurveyAdmin(currentUser))) return null;
 
   const parsed = inputSchema.safeParse(input);
   if (!parsed.success) return null;

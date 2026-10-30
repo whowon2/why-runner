@@ -13,11 +13,17 @@ export async function joinClass(code: string) {
   });
   if (!found) throw new Error("Class not found for that code");
 
-  // Owner already has full access to their own class; no membership row needed.
+  // Owner already has full access to their own class; no membership row
+  // needed. An existing row is kept as is, so a co-teacher re-entering the
+  // code is never downgraded to student.
   if (found.createdBy !== currentUser.id) {
     await db
       .insert(classroomMembership)
-      .values({ userId: currentUser.id, classroomId: found.id })
+      .values({
+        userId: currentUser.id,
+        classroomId: found.id,
+        role: "student",
+      })
       .onConflictDoNothing();
   }
 

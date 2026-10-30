@@ -47,6 +47,14 @@ export const auth = betterAuth({
       // /update-user guard below).
       username: { type: "string", required: false, input: true },
       ra: { type: "string", required: false, input: true },
+      // UI hint only (cached session); authorization reads it fresh via
+      // `isAdmin` in lib/auth/permissions.ts.
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: "user",
+        input: false,
+      },
     },
   },
   hooks: {

@@ -23,7 +23,10 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data: session } = authClient.useSession();
-  const isOwner = session?.user?.id === problem.createdBy;
+  // Admins manage every problem; the session role is only a UI hint, the
+  // problem actions re-check it on the server.
+  const isOwner =
+    session?.user?.id === problem.createdBy || session?.user?.role === "admin";
   const tab =
     searchParams.get("tab") ||
     (isOwner && problem.status === "draft" ? "edit" : "task");

@@ -2,15 +2,14 @@
 
 import { and, eq } from "drizzle-orm";
 import { db } from "@/drizzle/db";
-import {
-  exercise,
-  exerciseCompletion,
-  lesson,
-  lessonSubmission,
-} from "@/drizzle/schema";
+import { exerciseCompletion, lessonSubmission } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import {
+  assertCanManageExercise,
+  assertCanManageLesson,
+} from "@/lib/auth/permissions";
 
-/** Professor-only: mark a student's whole-lesson submission reviewed. Score
+/** Class managers only: mark a student's whole-lesson submission reviewed. Score
  * is never set here — it's always derived from judge results (see
  * `getLessonReview`). Only possible after the lesson's due date. */
 export async function markLessonSubmissionReviewed(input: {
@@ -19,12 +18,10 @@ export async function markLessonSubmissionReviewed(input: {
 }) {
   const currentUser = await getCurrentUser({});
 
-  const found = await db.query.lesson.findFirst({
-    where: eq(lesson.id, input.lessonId),
-  });
-  if (!found) throw new Error("Lesson not found");
-  if (found.createdBy !== currentUser.id)
-    throw new Error("Not the lesson owner");
+  const { lesson: found } = await assertCanManageLesson(
+    input.lessonId,
+    currentUser.id,
+  );
   if (found.dueDate && found.dueDate > new Date()) {
     throw new Error("Can't review before the due date.");
   }
@@ -49,7 +46,7 @@ export async function markLessonSubmissionReviewed(input: {
   return updated;
 }
 
-/** Professor-only: attach free-text feedback to one student's answer to one
+/** Class managers only: attach free-text feedback to one student's answer to one
  * exercise within a submitted lesson. Independent of every other exercise's
  * feedback and of the lesson's overall reviewed state. Only possible after
  * the lesson's due date (same gate as `getLessonReview`). */
@@ -60,13 +57,10 @@ export async function setExerciseFeedback(input: {
 }) {
   const currentUser = await getCurrentUser({});
 
-  const found = await db.query.exercise.findFirst({
-    where: eq(exercise.id, input.exerciseId),
-    with: { lesson: true },
-  });
-  if (!found) throw new Error("Exercise not found");
-  if (found.lesson.createdBy !== currentUser.id)
-    throw new Error("Not the lesson owner");
+  const { exercise: found } = await assertCanManageExercise(
+    input.exerciseId,
+    currentUser.id,
+  );
   if (found.lesson.dueDate && found.lesson.dueDate > new Date()) {
     throw new Error("Can't review before the due date.");
   }

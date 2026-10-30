@@ -5,7 +5,7 @@ import { SurveyResults } from "../_components/survey-results";
 
 export default async function SurveyResultsPage() {
   const user = await requireUser({ redirectTo: "/auth/signin" });
-  if (!isSurveyAdmin(user)) notFound();
+  if (!(await isSurveyAdmin(user))) notFound();
 
   return (
     <div className="flex w-full flex-1 flex-col items-center gap-4 p-4">

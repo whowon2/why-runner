@@ -73,7 +73,7 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
 
   if (!data) return null;
 
-  const { lesson, classroom, exercises, isOwner, submittedAt } = data;
+  const { lesson, classroom, exercises, canManage, submittedAt } = data;
   const dueDatePassed = !!(
     lesson.dueDate && new Date(lesson.dueDate) < new Date()
   );
@@ -82,7 +82,7 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
     <div className="flex flex-col gap-6">
       <PageHeader
         action={
-          isOwner ? (
+          canManage ? (
             <>
               <EditLessonDialog
                 description={lesson.description}
@@ -116,12 +116,12 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
 
       <div className="flex flex-wrap items-center gap-2">
         {/* Owners edit the due date in ManageLesson instead. */}
-        {!isOwner && lesson.dueDate && (
+        {!canManage && lesson.dueDate && (
           <Badge className="w-fit" variant="outline">
             {t("dueDatePrefix")} {new Date(lesson.dueDate).toLocaleDateString()}
           </Badge>
         )}
-        {!isOwner &&
+        {!canManage &&
           (submittedAt ? (
             <Badge className="w-fit bg-blue-500">
               {t("submittedAt", {
@@ -134,7 +134,7 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
       {/* Students can resubmit the whole lesson as many times as they like
           before the due date — the button stays visible (relabeled
           "resubmit") instead of disappearing after the first submit. */}
-      {!isOwner && !dueDatePassed && exercises.length > 0 && (
+      {!canManage && !dueDatePassed && exercises.length > 0 && (
         <SubmitLessonButton
           incompleteCount={exercises.filter((e) => !e.done).length}
           isSubmitting={isSubmitting}
@@ -148,7 +148,7 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
         />
       )}
 
-      {isOwner && (
+      {canManage && (
         <ManageLesson
           classSlug={classroom.slug}
           exerciseCount={exercises.length}
@@ -190,9 +190,9 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
                 {e.mode !== "code" && (
                   <Badge variant="secondary">{tMode(`${e.mode}.label`)}</Badge>
                 )}
-                {isOwner && <ExerciseModeDialog exerciseId={e.id} />}
-                {isOwner && <ExerciseConstraintsDialog exerciseId={e.id} />}
-                {isOwner && e.mode !== "parsons" && (
+                {canManage && <ExerciseModeDialog exerciseId={e.id} />}
+                {canManage && <ExerciseConstraintsDialog exerciseId={e.id} />}
+                {canManage && e.mode !== "parsons" && (
                   <Button asChild size="sm" variant="outline">
                     <Link
                       href={`/classes/${classroom.slug}/lessons/${lesson.slug}/exercises/${e.slug}/similarity`}
@@ -202,7 +202,7 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
                     </Link>
                   </Button>
                 )}
-                {isOwner && (
+                {canManage && (
                   <ExerciseOwnerControls
                     canRemove={!lesson.isPublished}
                     exerciseId={e.id}
