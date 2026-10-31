@@ -7,8 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 bun dev           # Start dev server
 bun build         # Production build
-bun lint          # Biome check
-bun format        # Biome format --write
+bun lint          # oxlint
+bun format        # oxfmt (writes)
 
 bun db:push       # Push schema changes to DB (no migration file)
 bun db:generate   # Generate migration SQL
@@ -69,7 +69,7 @@ Server-only helpers (no auth of their own) go outside `lib/actions/` and start w
 
 1. `createSubmission` server action rate-limits (5/30s), validates user is accepted in contest, writes `PENDING` row
 2. Calls `notifyJudge()` (`lib/judge.ts`): `pg_notify('new_submission', submissionId)` for a running judge, plus (after the response, if `FLY_API_TOKEN` is set) a Fly Machines API start for a judge that idle-exited
-3. Judge executes code in Docker (python:3.9-slim or equivalent) and writes result back
+3. Judge runs the code in an `isolate` sandbox (see `judge/CLAUDE.md`) and writes the result back
 4. Frontend polls submission status via React Query
 
 ### Custom Runs
@@ -137,6 +137,9 @@ GITHUB_SECRET=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GEMINI_KEY=
+BLOB_READ_WRITE_TOKEN= # Vercel Blob (profile image uploads)
+RESEND_API_KEY=      # optional, sending email
+EMAIL_FROM=          # optional, sender address for Resend
 ANTHROPIC_API_KEY=   # optional, makes Claude Haiku the first AI provider (Gemini becomes the fallback)
 FLY_API_TOKEN=       # optional, wakes the idle-stopped Fly judge (lib/judge.ts)
 SURVEY_ADMIN_EMAILS= # seed-only: `bun db:seed:admins` promotes these emails to admin (run once after migrating); not read at runtime
@@ -158,9 +161,8 @@ If one is missing (fresh DB), create it through the normal sign-up page; the adm
 
 ## Conventions
 
-- **Linting/formatting:** Biome (not ESLint/Prettier). Run `bun lint` before committing.
+- **Linting/formatting:** oxlint + oxfmt (not ESLint/Prettier/Biome; config in `.oxlintrc.json` / `.oxfmtrc.json`). Run `bun lint` before committing.
 - **Path alias:** `@/` maps to project root.
-- **Imports:** Biome organizes imports automatically on format.
 - **UI:** Tailwind v4 + Radix UI primitives. No CSS modules.
 - **Forms:** React Hook Form + Zod schemas.
 - **URL state:** `nuqs` for search params.
