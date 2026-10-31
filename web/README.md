@@ -1,73 +1,39 @@
-# 🏃‍♂️ Runner: Code Execution Platform web client
+# WhyRunner web
 
-This is the main web application and API surface for the Runner platform (a TCC - Trabalho de Conclusão de Curso project). It's designed to support code submissions, evaluations, and contests using a modern, scalable web stack.
+The Next.js web app for WhyRunner: the UI plus the server actions behind it. For the overview, architecture, environment variables and deployment, see the [root README](../README.md). Code conventions are in [`CLAUDE.md`](CLAUDE.md).
 
-## 📦 Tech Stack
+## Tech stack
 
-- **Framework:** [Next.js](https://nextjs.org/) 16 (App Router) & React 19
-- **Runtime & PM:** [Bun](https://bun.sh/)
-- **Linter/Formatter:** [Biome](https://biomejs.dev/)
-- **Styling:** Tailwind CSS v4, Framer Motion, Radix UI variants
-- **Database & ORM:** PostgreSQL + [Drizzle ORM](https://orm.drizzle.team/)
-- **Authentication:** [Better Auth](https://better-auth.com/)
-- **Queueing:** PostgreSQL `LISTEN/NOTIFY` (to notify the Judge worker of new submissions)
-- **Internationalization:** next-intl
-- **Editor:** Monaco Editor
+- **Framework:** [Next.js](https://nextjs.org/) 16 (App Router, server actions) and React 19
+- **Runtime and package manager:** [Bun](https://bun.sh/)
+- **Lint and format:** oxlint and oxfmt
+- **UI:** Tailwind CSS v4, Radix UI, Motion, Monaco Editor, Blockly
+- **Database:** PostgreSQL with [Drizzle ORM](https://orm.drizzle.team/)
+- **Auth:** [Better Auth](https://better-auth.com/) (email/password, GitHub, Google)
+- **i18n:** next-intl (`br`, `en`)
 - **Validation:** Zod
 
-## 🚀 Getting Started
+## Commands
 
-### Prerequisites
+```bash
+bun install
+bun dev            # dev server (in a worktree: bun dev -p $DEV_PORT)
+bun run build      # runs migrations on production builds, then next build
+bun run lint       # oxlint
+bun run format     # oxfmt
+bun test           # unit tests for pure modules
 
-- [Docker](https://www.docker.com/) (For PostgreSQL database)
-- [Bun](https://bun.sh/)
+bun db:migrate     # apply drizzle/migrations
+bun db:generate    # generate a migration from schema changes
+bun db:push        # push the schema without a migration file
+bun db:studio      # Drizzle Studio
+bun db:seed        # seed data (also db:seed:lessons, db:seed:admins)
+```
 
-### Development Setup
+## How it talks to the judge
 
-1. **Install dependencies:**
+A server action writes a `PENDING` submission row and calls `pg_notify('new_submission', id)` (`lib/judge.ts`). The Rust judge in [`../judge`](../judge/README.md) listens on that channel, with a periodic sweep as a fallback. It runs the code in an `isolate` sandbox and writes the verdict back to the same row, and the UI polls that row with React Query. The web and the judge share only the database; there is no message queue.
 
-   ```bash
-   bun install
-   ```
+## Author
 
-2. **Environment Configuration:**
-   Create a `.env` file based on your local settings (Database, Auth secrets, etc.).
-
-3. **Database Setup:**
-   Run the database migrations and optionally seed the database:
-
-   ```bash
-   bun run db:push
-   # Or using migrations
-   bun run db:generate
-   bun run db:migrate
-   ```
-
-4. **Start the Development Server:**
-   ```bash
-   bun run dev
-   ```
-
-### Other Commands
-
-- `bun run lint` - Lint the codebase using Biome
-- `bun run format` - Format the codebase using Biome
-- `bun run db:studio` - Open Drizzle Studio to inspect the database GUI
-
-## 🧪 System Architecture
-
-1. **Web Frontend:** Displays problems, contests, leaderboards, and a code editor (Monaco).
-2. **Web API / Actions:** Next.js Server Actions write a `PENDING` submission row to Postgres and call `pg_notify('new_submission', ...)`.
-3. **Judge Worker (Rust):** A separate worker process (see the `judge` directory) listens on that Postgres channel (with a periodic sweep fallback), claims the row, executes the code inside a sandboxed Docker container per language, checks it against test cases, and saves the result to the DB.
-4. **Realtime view:** Users see their submission test results updated in the web application.
-
-## 🧑‍💻 Author
-
-**Juan Israel** – _Computer Engineering Student_
-
-TCC Advisor: _Prof. Suelen_
-Institution: _IFMG_
-
-## 📜 License
-
-MIT License. See `LICENSE` for more info.
+**Juan Israel**, Computer Engineering, IFMG. TCC advisor: Prof. Suelen.
