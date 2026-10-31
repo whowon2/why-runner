@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, Loader, Play } from "lucide-react";
+import { Check, Copy, Loader, Play, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { CodeRunStatus, Language } from "@/drizzle/schema";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
+import { useCancelRun } from "@/hooks/use-cancel-run";
 import { useCreateRun } from "@/hooks/use-create-run";
 import { useRun } from "@/hooks/use-run";
 import type { CreateRunInput } from "@/lib/actions/runs/create-run";
@@ -34,6 +35,7 @@ export function useCodeRunner(defaultStdin = "") {
   const [stdin, setStdin] = useState(defaultStdin);
   const [runId, setRunId] = useState<string | null>(null);
   const { mutate, isPending } = useCreateRun();
+  const cancelMutation = useCancelRun();
   const result = useRun(runId);
   const running =
     isPending ||
@@ -50,7 +52,30 @@ export function useCodeRunner(defaultStdin = "") {
     });
   }
 
-  return { stdin, setStdin, runId, result, running, run };
+  /** Only a run no judge has claimed yet can be canceled. */
+  const cancelable =
+    runId !== null &&
+    result.data?.status === "PENDING" &&
+    !cancelMutation.isPending;
+
+  function cancel() {
+    if (runId === null) return;
+    cancelMutation.mutate(runId, {
+      onError: (error) =>
+        toast.error(t("cancelFailed"), { description: errorMessage(error) }),
+    });
+  }
+
+  return {
+    stdin,
+    setStdin,
+    runId,
+    result,
+    running,
+    run,
+    cancelable,
+    cancel,
+  };
 }
 
 export type CodeRunner = ReturnType<typeof useCodeRunner>;
@@ -117,10 +142,21 @@ export function RunPanel({
       {runner.runId !== null && (
         <div aria-live="polite" className="flex flex-col gap-2 border p-3">
           {pending || !run ? (
-            <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
               <Loader className="size-4 animate-spin" />
               {t("waiting")}
-            </p>
+              {runner.cancelable && (
+                <Button
+                  onClick={runner.cancel}
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  <X />
+                  {t("cancel")}
+                </Button>
+              )}
+            </div>
           ) : (
             <>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
@@ -129,7 +165,7 @@ export function RunPanel({
                     "font-medium",
                     run.status === "OK"
                       ? "text-green-600 dark:text-green-400"
-                      : run.status === "ERROR"
+                      : run.status === "ERROR" || run.status === "CANCELED"
                         ? "text-muted-foreground"
                         : "text-destructive",
                   )}
@@ -153,11 +189,13 @@ export function RunPanel({
                   </span>
                 )}
               </div>
-              <OutputBlock
-                label={t("stdout")}
-                text={run.stdout ?? ""}
-                truncated={run.stdoutTruncated}
-              />
+              {run.status !== "CANCELED" && (
+                <OutputBlock
+                  label={t("stdout")}
+                  text={run.stdout ?? ""}
+                  truncated={run.stdoutTruncated}
+                />
+              )}
               {run.stderr && (
                 <OutputBlock
                   label={

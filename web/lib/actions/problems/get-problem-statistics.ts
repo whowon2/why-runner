@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, ne, sql } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import { problem, submission } from "@/drizzle/schema";
 
@@ -29,7 +29,13 @@ export async function getProblemStatistics(problemId: string) {
         count: sql<number>`count(distinct ${submission.userId})`,
       })
       .from(submission)
-      .where(eq(submission.problemId, problemId)),
+      .where(
+        and(
+          eq(submission.problemId, problemId),
+          // Withdrawn before the judge ran it: not an attempt.
+          ne(submission.status, "CANCELED"),
+        ),
+      ),
   ]);
 
   const solvedByCount = Number(solvedRow?.count ?? 0);

@@ -27,6 +27,8 @@ export const CodeRunStatus = pgEnum("code_run_status", [
   "MEMORY_LIMIT_EXCEEDED",
   "COMPILATION_ERROR",
   "ERROR",
+  // Withdrawn by its author while still PENDING (`cancelRun`).
+  "CANCELED",
 ]);
 
 export type CodeRunStatus = (typeof CodeRunStatus.enumValues)[number];

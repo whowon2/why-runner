@@ -1698,6 +1698,7 @@
     "CANNOT_DEMOTE_SELF": "Você não pode remover seu próprio papel de admin.",
     "RUNS_DISABLED": "Executar código não está disponível aqui.",
     "RUN_IN_PROGRESS": "Aguarde a execução atual terminar.",
+    "ALREADY_RUNNING": "O juiz já começou a executar, então não dá mais para cancelar.",
     "INPUT_TOO_LARGE": "Sua entrada é grande demais (máx. {max} caracteres)."
   },
   "JudgeReport": {
@@ -1975,7 +1976,8 @@
     "TIME_LIMIT_EXCEEDED": "Tempo limite excedido",
     "MEMORY_LIMIT_EXCEEDED": "Limite de memória excedido",
     "COMPILATION_ERROR": "Erro de compilação",
-    "RUNTIME_ERROR": "Erro de execução"
+    "RUNTIME_ERROR": "Erro de execução",
+    "CANCELED": "Cancelada"
   },
   "AdminPage": {
     "title": "Admin",
@@ -2046,7 +2048,9 @@
     "compilerOutput": "Saída do compilador",
     "empty": "(vazia)",
     "copy": "Copiar",
-    "truncated": "Saída muito longa: só os primeiros 64 KB são mostrados."
+    "truncated": "Saída muito longa: só os primeiros 64 KB são mostrados.",
+    "cancel": "Cancelar",
+    "cancelFailed": "Não foi possível cancelar a execução"
   },
   "CodeRunStatus": {
     "PENDING": "Na fila",
@@ -2056,7 +2060,8 @@
     "TIME_LIMIT_EXCEEDED": "Tempo limite excedido",
     "MEMORY_LIMIT_EXCEEDED": "Limite de memória excedido",
     "COMPILATION_ERROR": "Erro de compilação",
-    "ERROR": "Erro do juiz"
+    "ERROR": "Erro do juiz",
+    "CANCELED": "Cancelada"
   },
   "Workspace": {
     "Rail": {
@@ -2098,7 +2103,8 @@
       "judging": "Corrigindo…",
       "finished": "Concluído",
       "match": "Saída correta",
-      "mismatch": "Saída incorreta"
+      "mismatch": "Saída incorreta",
+      "canceled": "Você cancelou esta submissão antes de ela ser avaliada. Ela não conta como tentativa."
     },
     "Tests": {
       "title": "Casos de teste",
@@ -2118,7 +2124,8 @@
       "submit": "Enviar",
       "latest": "Última submissão",
       "showDetails": "Ver detalhes no console",
-      "passedCount": "{passed}/{total} testes"
+      "passedCount": "{passed}/{total} testes",
+      "stopRuns": "Parar"
     },
     "History": {
       "title": "Suas submissões",
@@ -2162,5 +2169,10 @@
       "tryIt": "Abrir no editor",
       "subtitle": "Seu problema “{title}”: enunciado, testes e configurações."
     }
+  },
+  "SubmissionCancel": {
+    "cancel": "Cancelar",
+    "hint": "Nenhum juiz pegou esta submissão ainda. Cancele para parar de esperar; ela não conta como tentativa.",
+    "failed": "Não foi possível cancelar a submissão"
   }
 }

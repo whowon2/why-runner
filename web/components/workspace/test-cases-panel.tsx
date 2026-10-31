@@ -67,7 +67,9 @@ function CustomInputRow({ onSelect }: { onSelect?: () => void }) {
           "font-medium text-xs",
           run.status === "OK"
             ? "text-green-600 dark:text-green-400"
-            : "text-destructive",
+            : run.status === "CANCELED"
+              ? "text-muted-foreground"
+              : "text-destructive",
         )}
       >
         {tStatus(run.status)}
@@ -150,7 +152,14 @@ function TestRow({
           )}
         />
       ) : (
-        <span className="font-medium text-destructive text-xs">
+        <span
+          className={cn(
+            "font-medium text-xs",
+            run.status === "CANCELED"
+              ? "text-muted-foreground"
+              : "text-destructive",
+          )}
+        >
           {tStatus(run.status)}
         </span>
       );

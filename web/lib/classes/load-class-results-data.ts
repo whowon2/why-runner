@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, count, eq, inArray, sql } from "drizzle-orm";
+import { and, count, eq, inArray, ne, sql } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import {
   classroomMembership,
@@ -146,6 +146,8 @@ export async function loadClassActivity(
       and(
         inArray(submission.exerciseId, exerciseIds),
         inArray(submission.userId, studentIds),
+        // Withdrawn before the judge ran it: not an attempt.
+        ne(submission.status, "CANCELED"),
       ),
     )
     .groupBy(submission.userId, submission.exerciseId);

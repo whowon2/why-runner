@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import type { CodeRunStatus } from "@/drizzle/schema";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { unwrap } from "@/lib/action-result";
+import { cancelRun } from "@/lib/actions/runs/cancel-run";
 import { type CreateRunInput, createRun } from "@/lib/actions/runs/create-run";
 import { getRun, type RunResult } from "@/lib/actions/runs/get-run";
 import type { RunProgram } from "@/components/code-run/code-run";
@@ -31,6 +32,8 @@ export function useExampleRuns() {
   const [busy, setBusy] = useState(false);
   // Bumped on every new play batch, so a stale `playAll` loop stops.
   const batch = useRef(0);
+  // The run currently being waited on, so `cancel` can withdraw it.
+  const current = useRef<string | null>(null);
 
   // Polls through the same cache key as `useRun`, so the console showing
   // this run reads the same data without a second request stream.
@@ -59,6 +62,7 @@ export function useExampleRuns() {
       );
       setPlays((prev) => ({ ...prev, [index]: { runId: id, done: false } }));
       onStarted?.(id);
+      current.current = id;
       await waitForRun(id);
       setPlays((prev) => ({ ...prev, [index]: { runId: id, done: true } }));
       return true;
@@ -83,11 +87,11 @@ export function useExampleRuns() {
     onStarted?: (index: number, runId: string) => void,
   ) {
     if (!program || busy || examples.length === 0) return;
-    const current = ++batch.current;
+    const thisBatch = ++batch.current;
     setBusy(true);
     try {
       for (const example of examples) {
-        if (batch.current !== current) break;
+        if (batch.current !== thisBatch) break;
         const ok = await playOne(example.index, program, example.input, (id) =>
           onStarted?.(example.index, id),
         );
@@ -95,11 +99,28 @@ export function useExampleRuns() {
         if (!ok) break;
       }
     } finally {
-      if (batch.current === current) setBusy(false);
+      if (batch.current === thisBatch) setBusy(false);
     }
   }
 
-  return { plays, busy, play };
+  /**
+   * Stops the batch: no further example starts, and the run being waited on
+   * is withdrawn if no judge has claimed it yet (a claimed one just
+   * finishes). Its play then shows `CANCELED` instead of polling forever.
+   */
+  async function cancel() {
+    batch.current++;
+    setBusy(false);
+    const runId = current.current;
+    if (!runId) return;
+    const result = await cancelRun(runId);
+    // ALREADY_RUNNING is fine: that run will finish on its own.
+    if (result.ok) {
+      queryClient.invalidateQueries({ queryKey: ["code-run", runId] });
+    }
+  }
+
+  return { plays, busy, play, cancel };
 }
 
 export type ExampleRuns = ReturnType<typeof useExampleRuns>;

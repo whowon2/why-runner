@@ -60,6 +60,9 @@ export const SubmissionStatus = pgEnum("submission_status", [
   "MEMORY_LIMIT_EXCEEDED",
   "COMPILATION_ERROR",
   "RUNTIME_ERROR",
+  // Withdrawn by its author while still PENDING (`cancelSubmission`). The
+  // judge never claims it; never an attempt, verdict or penalty.
+  "CANCELED",
 ]);
 
 export const submission = pgTable("submission", {

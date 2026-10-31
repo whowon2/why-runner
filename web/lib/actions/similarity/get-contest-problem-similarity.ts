@@ -43,6 +43,7 @@ export async function getContestProblemSimilarity(
         eq(s.contestId, found.id),
         eq(s.problemId, input.problemId),
         ne(s.userId, found.createdBy),
+        ne(s.status, "CANCELED"),
       ),
     columns: {
       id: true,

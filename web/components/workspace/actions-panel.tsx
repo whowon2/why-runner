@@ -1,8 +1,9 @@
 "use client";
 
-import { Check, Loader, PlayCircle } from "lucide-react";
+import { Check, Loader, PlayCircle, Square } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import { CancelSubmissionButton } from "@/components/submissions/cancel-submission-button";
 import { StatusBadge } from "@/components/submissions/status-badge";
 import { Button } from "@/components/ui/button";
 import { parseReport } from "@/lib/judge-report";
@@ -34,20 +35,23 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2">
         {source.runsEnabled && (
           <div className="grid gap-2">
-            <Button
-              disabled={examples.busy || source.tests.length === 0}
-              onClick={() =>
-                act(() => playExamples(source.tests.map((x) => x.index)))
-              }
-              variant="outline"
-            >
-              {examples.busy ? (
-                <Loader className="animate-spin" />
-              ) : (
+            {examples.busy ? (
+              <Button onClick={examples.cancel} variant="outline">
+                <Square />
+                {t("stopRuns")}
+              </Button>
+            ) : (
+              <Button
+                disabled={source.tests.length === 0}
+                onClick={() =>
+                  act(() => playExamples(source.tests.map((x) => x.index)))
+                }
+                variant="outline"
+              >
                 <PlayCircle />
-              )}
-              {t("runAll")}
-            </Button>
+                {t("runAll")}
+              </Button>
+            )}
           </div>
         )}
         <Button
@@ -92,7 +96,10 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
                 )
               )}
             </button>
-            <span className="ml-auto">
+            <span className="ml-auto flex items-center gap-2">
+              {latest.status === "PENDING" && (
+                <CancelSubmissionButton submissionId={latest.id} />
+              )}
               <AiHelpButton submission={latest} />
             </span>
           </div>
@@ -112,20 +119,34 @@ export function CompactActions() {
   return (
     <div className="flex shrink-0 items-center justify-end gap-2 pt-2">
       {latest && (
-        <span className={cn("mr-auto text-sm", statusTone(latest.status))}>
+        <span
+          className={cn(
+            "mr-auto flex items-center gap-2 text-sm",
+            statusTone(latest.status),
+          )}
+        >
           <StatusBadge status={latest.status} />
+          {latest.status === "PENDING" && (
+            <CancelSubmissionButton compact submissionId={latest.id} />
+          )}
         </span>
       )}
-      {source.runsEnabled && (
-        <Button
-          disabled={examples.busy || source.tests.length === 0}
-          onClick={() => playExamples(source.tests.map((x) => x.index))}
-          variant="outline"
-        >
-          {examples.busy ? <Loader className="animate-spin" /> : <PlayCircle />}
-          {t("runAll")}
-        </Button>
-      )}
+      {source.runsEnabled &&
+        (examples.busy ? (
+          <Button onClick={examples.cancel} variant="outline">
+            <Square />
+            {t("stopRuns")}
+          </Button>
+        ) : (
+          <Button
+            disabled={source.tests.length === 0}
+            onClick={() => playExamples(source.tests.map((x) => x.index))}
+            variant="outline"
+          >
+            <PlayCircle />
+            {t("runAll")}
+          </Button>
+        ))}
       <Button
         disabled={locked || source.submitting}
         onClick={submit}

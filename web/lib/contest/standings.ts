@@ -30,6 +30,8 @@ export function classifyStatus(status: Submission["status"]): StatusClass {
     // errors aren't penalised either (ICPC convention).
     case "ERROR":
     case "COMPILATION_ERROR":
+    // Withdrawn by its author before the judge ran it.
+    case "CANCELED":
       return "ignored";
   }
 }

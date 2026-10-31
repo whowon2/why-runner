@@ -1,6 +1,6 @@
 "use server";
 
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, ne } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import {
   exercise,
@@ -42,6 +42,8 @@ export async function submitLesson(lessonId: string) {
         where: and(
           eq(submission.exerciseId, e.id),
           eq(submission.userId, currentUser.id),
+          // A canceled submission was never judged: hand in the one before.
+          ne(submission.status, "CANCELED"),
         ),
         orderBy: desc(submission.createdAt),
       });
