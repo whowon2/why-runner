@@ -47,9 +47,21 @@ export function createLocalSetting<T>(
     for (const listener of listeners) listener();
   }
 
-  return function useLocalSetting() {
+  function hasStored() {
+    if (memoryValue) return true;
+    try {
+      return localStorage.getItem(key) !== null;
+    } catch {
+      return false;
+    }
+  }
+
+  function useLocalSetting() {
     const value = useSyncExternalStore(subscribe, read, () => fallback);
     const setValue = useCallback((next: T) => write(next), []);
     return [value, setValue] as const;
-  };
+  }
+
+  // For code outside React (the account settings sync).
+  return Object.assign(useLocalSetting, { get: read, set: write, hasStored });
 }

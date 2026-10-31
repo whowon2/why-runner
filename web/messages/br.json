@@ -82,7 +82,11 @@
     "fontSize": "Tamanho da fonte: {size}px",
     "autoClose": "Fechar parênteses e aspas automaticamente",
     "autoCloseOn": "Fechar parênteses e aspas automaticamente: ligado",
-    "autoCloseOff": "Fechar parênteses e aspas automaticamente: desligado"
+    "autoCloseOff": "Fechar parênteses e aspas automaticamente: desligado",
+    "vimStatus": "Modo do vim"
+  },
+  "Preferences": {
+    "saveFailed": "Não foi possível salvar esta configuração na sua conta. Ela continua salva neste navegador."
   },
   "ProblemPicker": {
     "searchPlaceholder": "Buscar por nome ou código…",
@@ -1461,7 +1465,8 @@
   "SettingsPage": {
     "nav": {
       "appearance": "Aparência",
-      "notifications": "Notificações"
+      "notifications": "Notificações",
+      "editor": "Editor"
     },
     "appearance": {
       "mode": "modo",
@@ -1471,6 +1476,25 @@
       "description": "Mude completamente o visual do site escolhendo um dos temas prontos, ou criando seu próprio tema personalizado.",
       "preset": "predefinido",
       "custom": "personalizado"
+    },
+    "editor": {
+      "title": "Editor",
+      "description": "Configurações do editor de código em problemas, contests e lições. Salvas na sua conta, então acompanham você em outros computadores.",
+      "fontSize": "Tamanho da fonte",
+      "smaller": "Diminuir fonte",
+      "larger": "Aumentar fonte",
+      "autoClose": "Fechar parênteses e aspas automaticamente",
+      "vim": "Atalhos do Vim",
+      "vimDescription": "Edição modal com as teclas do vim. Dentro do editor, Esc volta ao modo normal em vez de sair da tela cheia.",
+      "tabSize": "Tamanho do tab",
+      "wordWrap": "Quebrar linhas longas",
+      "lineNumbers": "Números de linha",
+      "lineNumberModes": {
+        "on": "ligado",
+        "off": "desligado",
+        "relative": "relativo"
+      },
+      "minimap": "Minimapa"
     },
     "notifications": {
       "title": "Notificações",

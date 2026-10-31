@@ -13,6 +13,7 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
+import { useColorMode } from "@/hooks/use-color-mode";
 import { Fragment, useEffect, useRef, useState } from "react";
 import {
   CommandDialog,
@@ -73,6 +74,7 @@ export function CommandPalette() {
   const searchParams = useSearchParams();
   const locale = useLocale();
   const { theme, setTheme } = useTheme();
+  const { setColorMode } = useColorMode();
   const { stored, setPreset, previewPreset } = useThemeTokens();
   const { data: session } = authClient.useSession();
   const [view, setView] = useState<"root" | CommandView>("root");
@@ -278,7 +280,7 @@ export function CommandPalette() {
                   value={modeValue(mode.id)}
                   keywords={[t(`modes.${mode.id}`)]}
                   onSelect={() => {
-                    setTheme(mode.id);
+                    setColorMode(mode.id);
                     previewPreset(null);
                     close();
                   }}

@@ -12,6 +12,7 @@ import {
 } from "react";
 import { applyTheme } from "@/lib/themes/apply-theme";
 import { type ResolvedTheme, resolveTheme } from "@/lib/themes/palette";
+import { bindPreference, savePreference } from "@/lib/preferences-sync";
 import { DEFAULT_PRESET_ID, getPresetById } from "@/lib/themes/presets";
 import { readStoredTheme, writeStoredTheme } from "@/lib/themes/storage";
 import type {
@@ -61,6 +62,18 @@ export function ThemeTokensProvider({
     if (fromStorage) setStored(fromStorage);
   }, []);
 
+  useEffect(
+    () =>
+      bindPreference("theme", {
+        readLocal: () => readStoredTheme() ?? undefined,
+        apply: (theme) => {
+          setStored(theme);
+          writeStoredTheme(theme);
+        },
+      }),
+    [],
+  );
+
   const shown = useMemo(
     () =>
       resolveTheme(
@@ -79,6 +92,7 @@ export function ThemeTokensProvider({
     setStored(next);
     setPreviewId(null);
     writeStoredTheme(next);
+    savePreference({ theme: next });
   }, []);
 
   const setCustomTokens = useCallback(
@@ -101,6 +115,7 @@ export function ThemeTokensProvider({
         };
         const next: StoredTheme = { mode: "custom", custom: nextCustom };
         writeStoredTheme(next);
+        savePreference({ theme: next });
         return next;
       });
     },

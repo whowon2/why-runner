@@ -19,7 +19,7 @@ import {
   User as UserIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
+import { useColorMode } from "@/hooks/use-color-mode";
 import { useMemo } from "react";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
@@ -51,7 +51,7 @@ export function useCommands(): Command[] {
   const t = useTranslations("CommandPalette");
   const tLegal = useTranslations("Footer.links");
   const router = useRouter();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setColorMode } = useColorMode();
   const { data: session } = authClient.useSession();
 
   return useMemo(() => {
@@ -172,7 +172,7 @@ export function useCommands(): Command[] {
         label: t("commands.toggleMode"),
         icon: SunMoon,
         keywords: ["dark", "light"],
-        action: () => setTheme(resolvedTheme === "dark" ? "light" : "dark"),
+        action: () => setColorMode(resolvedTheme === "dark" ? "light" : "dark"),
       },
       {
         id: "change-language",
@@ -227,5 +227,5 @@ export function useCommands(): Command[] {
     }));
 
     return [...navigation, ...create, ...preferences, ...account, ...legal];
-  }, [t, tLegal, router, session, resolvedTheme, setTheme]);
+  }, [t, tLegal, router, session, resolvedTheme, setColorMode]);
 }

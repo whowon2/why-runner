@@ -174,7 +174,12 @@ export function WorkspaceShell({
                     <SheetDescription>{drawer.description}</SheetDescription>
                   )}
                 </SheetHeader>
-                <div className="min-w-0 overflow-x-auto">{drawer.content}</div>
+                {/* shrink-0: overflow-x also makes it scroll vertically when
+                    squeezed, putting its scrollbar over the content; let the
+                    sheet scroll instead. */}
+                <div className="min-w-0 shrink-0 overflow-x-auto">
+                  {drawer.content}
+                </div>
               </>
             )}
           </SheetContent>
