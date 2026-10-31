@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
+import { PreferencesSync } from "./preferences-sync";
 import { ThemeProvider } from "./theme-provider";
 import { ThemeTokensProvider } from "./theme-tokens-provider";
 
@@ -23,7 +24,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="dark">
-        <ThemeTokensProvider>{children}</ThemeTokensProvider>
+        <ThemeTokensProvider>
+          <PreferencesSync />
+          {children}
+        </ThemeTokensProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

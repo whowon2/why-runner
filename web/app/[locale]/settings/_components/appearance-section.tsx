@@ -2,7 +2,7 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
+import { useColorMode } from "@/hooks/use-color-mode";
 import { useEffect, useState } from "react";
 import { useThemeTokens } from "@/providers/theme-tokens-provider";
 import { CustomThemeForm } from "./custom-theme-form";
@@ -14,7 +14,7 @@ export function AppearanceSection() {
   const t = useTranslations("SettingsPage.appearance");
   const { stored } = useThemeTokens();
   const [mode, setMode] = useState<AppearanceMode>(stored.mode);
-  const { theme, setTheme } = useTheme();
+  const { theme, setColorMode } = useColorMode();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export function AppearanceSection() {
           <button
             type="button"
             disabled={!mounted}
-            onClick={() => setTheme("light")}
+            onClick={() => setColorMode("light")}
             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium cursor-pointer disabled:cursor-default ${
               mounted && theme === "light"
                 ? "bg-primary text-primary-foreground"
@@ -43,7 +43,7 @@ export function AppearanceSection() {
           <button
             type="button"
             disabled={!mounted}
-            onClick={() => setTheme("dark")}
+            onClick={() => setColorMode("dark")}
             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium cursor-pointer border-l disabled:cursor-default ${
               mounted && theme === "dark"
                 ? "bg-primary text-primary-foreground"

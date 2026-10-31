@@ -11,7 +11,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
+import { useColorMode } from "@/hooks/use-color-mode";
 import { useEffect, useState } from "react";
 import { useCommandPalette } from "@/components/command-palette/palette-context";
 import { getPaletteShortcutKeys } from "@/components/command-palette/shortcut-label";
@@ -33,7 +33,7 @@ import { NotificationBell } from "./notifications/notification-bell";
 import { Dock, DockIcon } from "./ui/dock";
 
 export function UserDock() {
-  const { setTheme, theme } = useTheme();
+  const { theme, resolvedTheme, setColorMode } = useColorMode();
   const [mounted, setMounted] = useState(false);
   const t = useTranslations();
   const pathname = usePathname();
@@ -56,7 +56,7 @@ export function UserDock() {
   function handleChangeTheme() {
     if (!theme) return;
 
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    setColorMode(resolvedTheme === "dark" ? "light" : "dark");
   }
 
   useEffect(() => {
