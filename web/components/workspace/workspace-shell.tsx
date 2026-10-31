@@ -140,7 +140,7 @@ export function WorkspaceShell({
     // The AI help dialog can dock its hints as a panel right of the editor.
     <AiHelpDockProvider>
       <div className="fixed inset-0 z-40 flex h-dvh flex-col bg-background">
-        <header className="flex h-11 shrink-0 items-center gap-3 border-b px-3">
+        <header className="flex h-11 shrink-0 items-center gap-3 border-b bg-muted/40 px-3">
           {!isWide && <RailMenu items={items} onPanel={setPanel} />}
           <h1 className="min-w-0 truncate font-semibold text-sm sm:text-base">
             {title}
@@ -174,7 +174,12 @@ export function WorkspaceShell({
                     <SheetDescription>{drawer.description}</SheetDescription>
                   )}
                 </SheetHeader>
-                <div className="min-w-0 overflow-x-auto">{drawer.content}</div>
+                {/* shrink-0: overflow-x also makes it scroll vertically when
+                    squeezed, putting its scrollbar over the content; let the
+                    sheet scroll instead. */}
+                <div className="min-w-0 shrink-0 overflow-x-auto">
+                  {drawer.content}
+                </div>
               </>
             )}
           </SheetContent>
@@ -202,13 +207,14 @@ function Rail({
   onPanel: (panel: string) => void;
 }) {
   return (
-    <nav className="flex w-16 shrink-0 flex-col items-stretch gap-1 overflow-y-auto border-r py-2">
+    <nav className="flex w-16 shrink-0 flex-col items-stretch gap-1 overflow-y-auto border-r bg-muted/40 py-2">
       {items.map((item) => {
         const className = cn(
           "relative flex flex-col items-center gap-1 px-1 py-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+          // Active: accent bar on the left edge, like an editor's activity bar.
           (item.active || (item.panel && item.panel === panel)) &&
-            "bg-muted text-foreground",
-          item.done && "text-green-600 dark:text-green-400",
+            "bg-primary/10 text-primary before:absolute before:inset-y-1 before:left-0 before:w-0.5 before:bg-primary hover:bg-primary/15 hover:text-primary",
+          item.done && "text-success",
         );
         const body = (
           <>
@@ -331,7 +337,7 @@ function WideBody({
                   {statement}
                 </div>
                 <button
-                  className="flex h-9 shrink-0 items-center justify-between border-t px-3 font-semibold text-sm hover:bg-muted"
+                  className="flex h-9 shrink-0 items-center justify-between border-t bg-muted/40 px-3 font-semibold text-muted-foreground text-xs uppercase tracking-wide transition-colors hover:bg-muted hover:text-foreground"
                   onClick={() => setCollapsed(false)}
                   type="button"
                 >
@@ -362,7 +368,7 @@ function WideBody({
                   order={2}
                 >
                   <button
-                    className="flex h-9 shrink-0 items-center justify-between border-y px-3 font-semibold text-sm hover:bg-muted"
+                    className="flex h-9 shrink-0 items-center justify-between border-y bg-muted/40 px-3 font-semibold text-muted-foreground text-xs uppercase tracking-wide transition-colors hover:bg-muted hover:text-foreground"
                     onClick={() => setCollapsed(true)}
                     type="button"
                   >
@@ -478,13 +484,13 @@ function NarrowBody({
           </div>
         </div>
       </div>
-      <nav className="grid h-14 shrink-0 grid-cols-3 border-t">
+      <nav className="grid h-14 shrink-0 grid-cols-3 border-t bg-muted/40">
         {views.map(({ key, label, icon: Icon }) => (
           <button
             aria-pressed={view === key}
             className={cn(
-              "flex flex-col items-center justify-center gap-0.5 text-xs text-muted-foreground",
-              view === key && "bg-muted text-foreground",
+              "flex flex-col items-center justify-center gap-0.5 text-xs text-muted-foreground transition-colors",
+              view === key && "bg-primary/10 text-primary",
             )}
             key={key}
             onClick={() => setView(key)}

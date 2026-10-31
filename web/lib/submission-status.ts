@@ -34,15 +34,15 @@ export function isPendingStatus(status: SubmissionStatus | null | undefined) {
 }
 
 const TONE: Record<SubmissionStatus, string> = {
-  PASSED: "text-green-500 border-green-500",
-  PENDING: "text-gray-500 border-gray-500",
-  RUNNING: "text-blue-500 border-blue-500",
+  PASSED: "text-success border-success",
+  PENDING: "text-muted-foreground border-border",
+  RUNNING: "text-primary border-primary",
   PENDING_CONSTRAINT_CLASSIFICATION: "text-indigo-500 border-indigo-500",
   CONSTRAINT_VIOLATION: "text-purple-500 border-purple-500",
-  FAILED: "text-red-500 border-red-500",
-  WRONG_ANSWER: "text-red-500 border-red-500",
+  FAILED: "text-destructive border-destructive",
+  WRONG_ANSWER: "text-destructive border-destructive",
   RUNTIME_ERROR: "text-rose-600 border-rose-600",
-  TIME_LIMIT_EXCEEDED: "text-amber-500 border-amber-500",
+  TIME_LIMIT_EXCEEDED: "text-warning border-warning",
   MEMORY_LIMIT_EXCEEDED: "text-fuchsia-500 border-fuchsia-500",
   COMPILATION_ERROR: "text-yellow-600 border-yellow-600",
   ERROR: "text-orange-500 border-orange-500",

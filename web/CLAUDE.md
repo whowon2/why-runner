@@ -7,8 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 bun dev           # Start dev server
 bun build         # Production build
-bun lint          # Biome check
-bun format        # Biome format --write
+bun lint          # oxlint
+bun format        # oxfmt (writes)
 
 bun db:push       # Push schema changes to DB (no migration file)
 bun db:generate   # Generate migration SQL
@@ -64,12 +64,13 @@ Server-only helpers (no auth of their own) go outside `lib/actions/` and start w
 - `problemOnContest` — Problem assignment to contest
 - `activityFeed` — User activity events
 - `code_run` — ungraded "Run with custom input" executions (own `code_run_status` enum: `PENDING|RUNNING|OK|RUNTIME_ERROR|TIME_LIMIT_EXCEEDED|MEMORY_LIMIT_EXCEEDED|COMPILATION_ERROR|ERROR|CANCELED`), deleted by the judge after 24 h
+- `user_preference` — one row per user with every account-wide setting (light/dark/system, theme preset or custom tokens, editor font size/auto-close/vim/tab size/word wrap/line numbers/minimap); NULL column = default. Notification opt-outs stay in `notification_preference`
 
 ### Submission Pipeline
 
 1. `createSubmission` server action rate-limits (5/30s), validates user is accepted in contest, writes `PENDING` row
 2. Calls `notifyJudge()` (`lib/judge.ts`): `pg_notify('new_submission', submissionId)` for a running judge, plus (after the response, if `FLY_API_TOKEN` is set) a Fly Machines API start for a judge that idle-exited
-3. Judge executes code in Docker (python:3.9-slim or equivalent) and writes result back
+3. Judge runs the code in an `isolate` sandbox (see `judge/CLAUDE.md`) and writes the result back
 4. Frontend polls submission status via React Query
 5. While it is still `PENDING` (no judge has claimed it, e.g. the judge is down), its author can withdraw it: `cancelSubmission` (`lib/actions/submissions/cancel-submission.ts`) sets `CANCELED` with an atomic `WHERE status = 'PENDING'` (judge already claimed it → `ALREADY_RUNNING`). `CancelSubmissionButton` shows next to a pending verdict in the workspace. A judge that claims a row it can't load writes `ERROR` with the reason right away (see `judge/CLAUDE.md`), so version skew shows up as a judge error instead of an endless spinner.
 
@@ -87,6 +88,16 @@ Server-only helpers (no auth of their own) go outside `lib/actions/` and start w
 ### Editor Workspace
 
 The standalone problem (`/problems/[slug]`), contest problem (`/contests/[slug]/problems/[problemSlug]`) and lesson exercise pages render in one fullscreen shell (`components/workspace/`): `WorkspaceProvider` takes a `WorkspaceSource` (visible tests, compare settings, runs gate, lock reason, own submissions newest first, AI cap, `submit`, `toRunProgram`) from a per-context adapter (`problems/_components/workspace/index.tsx`, `contests/[slug]/problems/[problemSlug]/_components/contest-problem-workspace.tsx`, `classes/_components/exercise-workspace.tsx`); `WorkspaceShell` lays out top bar, icon rail (drawers via `?panel=`), statement + Console, editor (`CodePane` with `useCodeDraft`, or blocks/Parsons panes), Test cases and Actions; below 1024px one view at a time. The verdict shows inline: it's the newest row of the context's submission query. The site dock/footer are hidden on these routes by `SiteChrome` + `isWorkspacePath` (`lib/workspace-routes.ts`) — add any new editor route there. Problem editing lives at `/problems/[slug]/edit`; old `?tab=` and contest `?problem=` URLs redirect.
+
+### Themes
+
+Presets live in `lib/themes/presets.ts`: six UI tokens per light/dark mode plus an optional `palette` (success/warning tones and editor syntax colors, from the theme's official palette). `resolveTheme` (`lib/themes/palette.ts`) falls back to `derivePalette` for custom themes and palette-less modes. The tokens and `--success`/`--warning` go on `<html>` (provider + the inline init script in `app/[locale]/layout.tsx`); `globals.css` derives `--muted`, `--border`, `--accent`, etc. from them with `color-mix`, so use those Tailwind tokens (`text-success`, `bg-primary/10`, …) instead of fixed hues. `CodeEditor` builds its Monaco theme from the shown theme (`lib/themes/monaco-theme.ts`).
+
+### User Preferences
+
+Settings are read synchronously from per-setting local stores mirrored in `localStorage` (editor: `hooks/use-editor-settings.tsx`; theme: `ThemeTokensProvider`; mode: `next-themes`), so the pre-paint theme script and signed-out visitors work as before. Each store is bound in `lib/preferences-sync.ts`; `PreferencesSync` (`providers/`) applies the signed-in account's row once per load (settings changed in this page win), seeds a missing row from this browser (`seedUserPreferences`), and committed changes go through `savePreference` (one debounced `updateUserPreferences` patch, zod-validated by `lib/preferences.ts`). Commit light/dark through `useColorMode()`, never raw `setTheme` (that's for previews only). New setting = nullable column + schema field + binding.
+
+Vim mode (`monaco-vim`, lazy) must drive the CDN-loaded Monaco: `next.config.ts` aliases `monaco-editor/esm/vs/editor/editor.api` to `lib/monaco-global.ts` (the global instance). Don't import `monaco-editor` at runtime elsewhere.
 
 ### Auth
 
@@ -139,6 +150,9 @@ GITHUB_SECRET=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GEMINI_KEY=
+BLOB_READ_WRITE_TOKEN= # Vercel Blob (profile image uploads)
+RESEND_API_KEY=      # optional, sending email
+EMAIL_FROM=          # optional, sender address for Resend
 ANTHROPIC_API_KEY=   # optional, makes Claude Haiku the first AI provider (Gemini becomes the fallback)
 FLY_API_TOKEN=       # optional, wakes the idle-stopped Fly judge (lib/judge.ts)
 SURVEY_ADMIN_EMAILS= # seed-only: `bun db:seed:admins` promotes these emails to admin (run once after migrating); not read at runtime
@@ -160,9 +174,8 @@ If one is missing (fresh DB), create it through the normal sign-up page; the adm
 
 ## Conventions
 
-- **Linting/formatting:** Biome (not ESLint/Prettier). Run `bun lint` before committing.
+- **Linting/formatting:** oxlint + oxfmt (not ESLint/Prettier/Biome; config in `.oxlintrc.json` / `.oxfmtrc.json`). Run `bun lint` before committing.
 - **Path alias:** `@/` maps to project root.
-- **Imports:** Biome organizes imports automatically on format.
 - **UI:** Tailwind v4 + Radix UI primitives. No CSS modules.
 - **Forms:** React Hook Form + Zod schemas.
 - **URL state:** `nuqs` for search params.

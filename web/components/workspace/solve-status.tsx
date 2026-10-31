@@ -14,7 +14,7 @@ export function SolveStatus({
   if (!submissions) return null;
   if (submissions.some((s) => s.status === "PASSED")) {
     return (
-      <span className="flex items-center gap-1.5 font-medium text-green-600 dark:text-green-400">
+      <span className="flex items-center gap-1.5 font-medium text-success">
         <CheckCircle2 className="size-4" />
         {t("solved")}
       </span>
@@ -22,7 +22,7 @@ export function SolveStatus({
   }
   // A canceled submission was never judged: not an attempt.
   return submissions.some((s) => s.status !== "CANCELED") ? (
-    <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
+    <span className="flex items-center gap-1.5 text-warning">
       <CircleDot className="size-4" />
       {t("attempted")}
     </span>

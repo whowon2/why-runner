@@ -164,7 +164,7 @@ export function RunPanel({
                   className={cn(
                     "font-medium",
                     run.status === "OK"
-                      ? "text-green-600 dark:text-green-400"
+                      ? "text-success"
                       : run.status === "ERROR" || run.status === "CANCELED"
                         ? "text-muted-foreground"
                         : "text-destructive",

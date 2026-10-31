@@ -1,10 +1,10 @@
 "use client";
 
-import { Bell, Palette } from "lucide-react";
+import { Bell, Code, Palette } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
-export type SettingsSection = "appearance" | "notifications";
+export type SettingsSection = "appearance" | "editor" | "notifications";
 
 export function SettingsNav({
   active,
@@ -20,6 +20,7 @@ export function SettingsNav({
     icon: typeof Palette;
   }[] = [
     { id: "appearance", label: t("appearance"), icon: Palette },
+    { id: "editor", label: t("editor"), icon: Code },
     { id: "notifications", label: t("notifications"), icon: Bell },
   ];
 

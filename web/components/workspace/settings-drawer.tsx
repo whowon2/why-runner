@@ -2,19 +2,21 @@
 
 import { Minus, Moon, Plus, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
+import { useColorMode } from "@/hooks/use-color-mode";
+import { PresetGrid } from "@/app/[locale]/settings/_components/preset-grid";
+import { EditorSettingsControls } from "@/components/editor-settings-controls";
 import { Button } from "@/components/ui/button";
 import {
   EDITOR_FONT_SIZE_MAX,
   EDITOR_FONT_SIZE_MIN,
   useEditorFontSize,
-} from "@/hooks/use-editor-font-size";
+} from "@/hooks/use-editor-settings";
 
-/** Editor font size (shared with every editor) and the site theme. */
+/** Editor settings (shared with every editor), light/dark and the color preset. */
 export function SettingsDrawer() {
   const t = useTranslations("Workspace.Settings");
   const { fontSize, setFontSize } = useEditorFontSize();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setColorMode } = useColorMode();
   const dark = resolvedTheme === "dark";
 
   return (
@@ -43,15 +45,20 @@ export function SettingsDrawer() {
           </Button>
         </div>
       </div>
+      <EditorSettingsControls />
       <div className="flex items-center justify-between gap-4">
         <span className="text-sm">{t("theme")}</span>
         <Button
-          onClick={() => setTheme(dark ? "light" : "dark")}
+          onClick={() => setColorMode(dark ? "light" : "dark")}
           variant="outline"
         >
           {dark ? <Moon /> : <Sun />}
           {dark ? t("dark") : t("light")}
         </Button>
+      </div>
+      <div className="flex flex-col gap-3">
+        <span className="text-sm">{t("preset")}</span>
+        <PresetGrid className="grid-cols-2 sm:grid-cols-2 md:grid-cols-2" />
       </div>
     </div>
   );

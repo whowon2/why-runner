@@ -1,5 +1,5 @@
 {
-  "id": "63c18fb7-0498-4ac4-9c90-91ea7e1c9cf7",
+  "id": "2f5447de-4a21-4131-a7ba-7e1f2b62af5f",
   "prevId": "4ed6265d-17e1-471a-bed5-a3c5fd1f556c",
   "version": "7",
   "dialect": "postgresql",
@@ -69,8 +69,12 @@
           "name": "ai_usage_user_id_user_id_fk",
           "tableFrom": "ai_usage",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -118,8 +122,12 @@
           "name": "problem_checker_problem_id_problem_id_fk",
           "tableFrom": "problem_checker",
           "tableTo": "problem",
-          "columnsFrom": ["problem_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "problem_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -188,12 +196,16 @@
         "classroom_slug_unique": {
           "name": "classroom_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["slug"]
+          "columns": [
+            "slug"
+          ]
         },
         "classroom_join_code_unique": {
           "name": "classroom_join_code_unique",
           "nullsNotDistinct": false,
-          "columns": ["join_code"]
+          "columns": [
+            "join_code"
+          ]
         }
       },
       "policies": {},
@@ -238,8 +250,12 @@
           "name": "classroom_membership_user_id_user_id_fk",
           "tableFrom": "classroom_membership",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -247,8 +263,12 @@
           "name": "classroom_membership_classroom_id_classroom_id_fk",
           "tableFrom": "classroom_membership",
           "tableTo": "classroom",
-          "columnsFrom": ["classroom_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "classroom_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -256,7 +276,10 @@
       "compositePrimaryKeys": {
         "classroom_membership_user_id_classroom_id_pk": {
           "name": "classroom_membership_user_id_classroom_id_pk",
-          "columns": ["user_id", "classroom_id"]
+          "columns": [
+            "user_id",
+            "classroom_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -435,8 +458,12 @@
           "name": "code_run_user_id_user_id_fk",
           "tableFrom": "code_run",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -444,8 +471,12 @@
           "name": "code_run_problem_id_problem_id_fk",
           "tableFrom": "code_run",
           "tableTo": "problem",
-          "columnsFrom": ["problem_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "problem_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -453,8 +484,12 @@
           "name": "code_run_contest_id_contest_id_fk",
           "tableFrom": "code_run",
           "tableTo": "contest",
-          "columnsFrom": ["contest_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "contest_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -462,8 +497,12 @@
           "name": "code_run_exercise_id_exercise_id_fk",
           "tableFrom": "code_run",
           "tableTo": "exercise",
-          "columnsFrom": ["exercise_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "exercise_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -576,8 +615,12 @@
           "name": "exercise_constraint_exercise_id_exercise_id_fk",
           "tableFrom": "exercise_constraint",
           "tableTo": "exercise",
-          "columnsFrom": ["exercise_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "exercise_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -682,7 +725,9 @@
         "contest_slug_unique": {
           "name": "contest_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["slug"]
+          "columns": [
+            "slug"
+          ]
         }
       },
       "policies": {},
@@ -789,8 +834,12 @@
           "name": "exercise_lesson_id_lesson_id_fk",
           "tableFrom": "exercise",
           "tableTo": "lesson",
-          "columnsFrom": ["lesson_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "lesson_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -798,8 +847,12 @@
           "name": "exercise_problem_id_problem_id_fk",
           "tableFrom": "exercise",
           "tableTo": "problem",
-          "columnsFrom": ["problem_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "problem_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -809,7 +862,9 @@
         "exercise_slug_unique": {
           "name": "exercise_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["slug"]
+          "columns": [
+            "slug"
+          ]
         }
       },
       "policies": {},
@@ -865,8 +920,12 @@
           "name": "exercise_completion_user_id_user_id_fk",
           "tableFrom": "exercise_completion",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -874,8 +933,12 @@
           "name": "exercise_completion_exercise_id_exercise_id_fk",
           "tableFrom": "exercise_completion",
           "tableTo": "exercise",
-          "columnsFrom": ["exercise_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "exercise_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -883,8 +946,12 @@
           "name": "exercise_completion_submission_id_submission_id_fk",
           "tableFrom": "exercise_completion",
           "tableTo": "submission",
-          "columnsFrom": ["submission_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "submission_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -892,7 +959,10 @@
       "compositePrimaryKeys": {
         "exercise_completion_user_id_exercise_id_pk": {
           "name": "exercise_completion_user_id_exercise_id_pk",
-          "columns": ["user_id", "exercise_id"]
+          "columns": [
+            "user_id",
+            "exercise_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -985,8 +1055,12 @@
           "name": "lesson_classroom_id_classroom_id_fk",
           "tableFrom": "lesson",
           "tableTo": "classroom",
-          "columnsFrom": ["classroom_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "classroom_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -996,7 +1070,9 @@
         "lesson_slug_unique": {
           "name": "lesson_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["slug"]
+          "columns": [
+            "slug"
+          ]
         }
       },
       "policies": {},
@@ -1039,8 +1115,12 @@
           "name": "lesson_submission_user_id_user_id_fk",
           "tableFrom": "lesson_submission",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1048,8 +1128,12 @@
           "name": "lesson_submission_lesson_id_lesson_id_fk",
           "tableFrom": "lesson_submission",
           "tableTo": "lesson",
-          "columnsFrom": ["lesson_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "lesson_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1057,7 +1141,10 @@
       "compositePrimaryKeys": {
         "lesson_submission_user_id_lesson_id_pk": {
           "name": "lesson_submission_user_id_lesson_id_pk",
-          "columns": ["user_id", "lesson_id"]
+          "columns": [
+            "user_id",
+            "lesson_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -1237,8 +1324,12 @@
           "name": "notification_recipient_id_user_id_fk",
           "tableFrom": "notification",
           "tableTo": "user",
-          "columnsFrom": ["recipient_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "recipient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1246,8 +1337,12 @@
           "name": "notification_contest_id_contest_id_fk",
           "tableFrom": "notification",
           "tableTo": "contest",
-          "columnsFrom": ["contest_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "contest_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1255,8 +1350,12 @@
           "name": "notification_submission_id_submission_id_fk",
           "tableFrom": "notification",
           "tableTo": "submission",
-          "columnsFrom": ["submission_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "submission_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1264,8 +1363,12 @@
           "name": "notification_problem_id_problem_id_fk",
           "tableFrom": "notification",
           "tableTo": "problem",
-          "columnsFrom": ["problem_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "problem_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1273,8 +1376,12 @@
           "name": "notification_exercise_id_exercise_id_fk",
           "tableFrom": "notification",
           "tableTo": "exercise",
-          "columnsFrom": ["exercise_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "exercise_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1316,8 +1423,12 @@
           "name": "notification_preference_user_id_user_id_fk",
           "tableFrom": "notification_preference",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1325,9 +1436,108 @@
       "compositePrimaryKeys": {
         "notification_preference_user_id_type_pk": {
           "name": "notification_preference_user_id_type_pk",
-          "columns": ["user_id", "type"]
+          "columns": [
+            "user_id",
+            "type"
+          ]
         }
       },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_preference": {
+      "name": "user_preference",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "color_mode": {
+          "name": "color_mode",
+          "type": "color_mode",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "theme": {
+          "name": "theme",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "editor_font_size": {
+          "name": "editor_font_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "editor_auto_close": {
+          "name": "editor_auto_close",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "editor_vim": {
+          "name": "editor_vim",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "editor_tab_size": {
+          "name": "editor_tab_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "editor_word_wrap": {
+          "name": "editor_word_wrap",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "editor_line_numbers": {
+          "name": "editor_line_numbers",
+          "type": "editor_line_numbers",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "editor_minimap": {
+          "name": "editor_minimap",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_preference_user_id_user_id_fk": {
+          "name": "user_preference_user_id_user_id_fk",
+          "tableFrom": "user_preference",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
@@ -1477,12 +1687,16 @@
         "problem_slug_unique": {
           "name": "problem_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["slug"]
+          "columns": [
+            "slug"
+          ]
         },
         "problem_code_unique": {
           "name": "problem_code_unique",
           "nullsNotDistinct": false,
-          "columns": ["code"]
+          "columns": [
+            "code"
+          ]
         }
       },
       "policies": {},
@@ -1622,8 +1836,12 @@
           "name": "submission_user_id_user_id_fk",
           "tableFrom": "submission",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -1631,8 +1849,12 @@
           "name": "submission_problem_id_problem_id_fk",
           "tableFrom": "submission",
           "tableTo": "problem",
-          "columnsFrom": ["problem_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "problem_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1795,8 +2017,12 @@
           "name": "survey_response_user_id_user_id_fk",
           "tableFrom": "survey_response",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1804,8 +2030,12 @@
           "name": "survey_response_contest_id_contest_id_fk",
           "tableFrom": "survey_response",
           "tableTo": "contest",
-          "columnsFrom": ["contest_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "contest_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1813,8 +2043,12 @@
           "name": "survey_response_lesson_id_lesson_id_fk",
           "tableFrom": "survey_response",
           "tableTo": "lesson",
-          "columnsFrom": ["lesson_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "lesson_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1936,8 +2170,12 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1978,8 +2216,12 @@
           "name": "problem_on_contest_problem_id_problem_id_fk",
           "tableFrom": "problem_on_contest",
           "tableTo": "problem",
-          "columnsFrom": ["problem_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "problem_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -1987,8 +2229,12 @@
           "name": "problem_on_contest_contest_id_contest_id_fk",
           "tableFrom": "problem_on_contest",
           "tableTo": "contest",
-          "columnsFrom": ["contest_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "contest_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1996,7 +2242,10 @@
       "compositePrimaryKeys": {
         "problem_on_contest_problem_id_contest_id_pk": {
           "name": "problem_on_contest_problem_id_contest_id_pk",
-          "columns": ["problem_id", "contest_id"]
+          "columns": [
+            "problem_id",
+            "contest_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -2080,8 +2329,12 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2091,7 +2344,9 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": ["token"]
+          "columns": [
+            "token"
+          ]
         }
       },
       "policies": {},
@@ -2222,12 +2477,16 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         },
         "user_ra_unique": {
           "name": "user_ra_unique",
           "nullsNotDistinct": false,
-          "columns": ["ra"]
+          "columns": [
+            "ra"
+          ]
         }
       },
       "policies": {},
@@ -2278,8 +2537,12 @@
           "name": "user_on_contest_user_id_user_id_fk",
           "tableFrom": "user_on_contest",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2287,8 +2550,12 @@
           "name": "user_on_contest_contest_id_contest_id_fk",
           "tableFrom": "user_on_contest",
           "tableTo": "contest",
-          "columnsFrom": ["contest_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "contest_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -2296,7 +2563,10 @@
       "compositePrimaryKeys": {
         "user_on_contest_user_id_contest_id_pk": {
           "name": "user_on_contest_user_id_contest_id_pk",
-          "columns": ["user_id", "contest_id"]
+          "columns": [
+            "user_id",
+            "contest_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -2409,8 +2679,12 @@
           "name": "problem_reference_solution_problem_id_problem_id_fk",
           "tableFrom": "problem_reference_solution",
           "tableTo": "problem",
-          "columnsFrom": ["problem_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "problem_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2504,8 +2778,12 @@
           "name": "problem_validation_problem_id_problem_id_fk",
           "tableFrom": "problem_validation",
           "tableTo": "problem",
-          "columnsFrom": ["problem_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "problem_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2521,7 +2799,10 @@
     "public.classroom_role": {
       "name": "classroom_role",
       "schema": "public",
-      "values": ["student", "teacher"]
+      "values": [
+        "student",
+        "teacher"
+      ]
     },
     "public.code_run_status": {
       "name": "code_run_status",
@@ -2534,14 +2815,16 @@
         "TIME_LIMIT_EXCEEDED",
         "MEMORY_LIMIT_EXCEEDED",
         "COMPILATION_ERROR",
-        "ERROR",
-        "CANCELED"
+        "ERROR"
       ]
     },
     "public.problem_constraint_kind": {
       "name": "problem_constraint_kind",
       "schema": "public",
-      "values": ["structural", "algorithm_requirement"]
+      "values": [
+        "structural",
+        "algorithm_requirement"
+      ]
     },
     "public.structural_constraint_rule_type": {
       "name": "structural_constraint_rule_type",
@@ -2555,17 +2838,29 @@
     "public.contest_ai_assistance": {
       "name": "contest_ai_assistance",
       "schema": "public",
-      "values": ["off", "concept", "hint", "pinpoint"]
+      "values": [
+        "off",
+        "concept",
+        "hint",
+        "pinpoint"
+      ]
     },
     "public.contest_status": {
       "name": "contest_status",
       "schema": "public",
-      "values": ["draft", "published"]
+      "values": [
+        "draft",
+        "published"
+      ]
     },
     "public.test_visibility": {
       "name": "test_visibility",
       "schema": "public",
-      "values": ["problem_default", "show_all", "hide_all"]
+      "values": [
+        "problem_default",
+        "show_all",
+        "hide_all"
+      ]
     },
     "public.notification_type": {
       "name": "notification_type",
@@ -2578,20 +2873,50 @@
         "LESSON_UNLOCKED"
       ]
     },
+    "public.color_mode": {
+      "name": "color_mode",
+      "schema": "public",
+      "values": [
+        "light",
+        "dark",
+        "system"
+      ]
+    },
+    "public.editor_line_numbers": {
+      "name": "editor_line_numbers",
+      "schema": "public",
+      "values": [
+        "on",
+        "off",
+        "relative"
+      ]
+    },
     "public.problem_compare_mode": {
       "name": "problem_compare_mode",
       "schema": "public",
-      "values": ["exact", "tokens", "float", "checker"]
+      "values": [
+        "exact",
+        "tokens",
+        "float",
+        "checker"
+      ]
     },
     "public.problem_difficulty": {
       "name": "problem_difficulty",
       "schema": "public",
-      "values": ["easy", "medium", "hard"]
+      "values": [
+        "easy",
+        "medium",
+        "hard"
+      ]
     },
     "public.problem_status": {
       "name": "problem_status",
       "schema": "public",
-      "values": ["draft", "published"]
+      "values": [
+        "draft",
+        "published"
+      ]
     },
     "public.problem_tag": {
       "name": "problem_tag",
@@ -2626,12 +2951,23 @@
     "public.exercise_mode": {
       "name": "exercise_mode",
       "schema": "public",
-      "values": ["code", "blocks", "parsons"]
+      "values": [
+        "code",
+        "blocks",
+        "parsons"
+      ]
     },
     "public.language": {
       "name": "language",
       "schema": "public",
-      "values": ["c", "cpp", "java", "python", "portugol", "rust"]
+      "values": [
+        "c",
+        "cpp",
+        "java",
+        "python",
+        "portugol",
+        "rust"
+      ]
     },
     "public.submission_status": {
       "name": "submission_status",
@@ -2648,8 +2984,7 @@
         "TIME_LIMIT_EXCEEDED",
         "MEMORY_LIMIT_EXCEEDED",
         "COMPILATION_ERROR",
-        "RUNTIME_ERROR",
-        "CANCELED"
+        "RUNTIME_ERROR"
       ]
     },
     "public.survey_form": {
@@ -2665,7 +3000,10 @@
     "public.user_role": {
       "name": "user_role",
       "schema": "public",
-      "values": ["user", "admin"]
+      "values": [
+        "user",
+        "admin"
+      ]
     }
   },
   "schemas": {},

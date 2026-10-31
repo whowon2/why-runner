@@ -1,10 +1,8 @@
-import { TOKEN_CSS_VAR, type ThemeTokens } from "./types";
+import { type ResolvedTheme, themeCssVars } from "./palette";
 
-export function applyThemeTokens(tokens: ThemeTokens) {
+export function applyTheme(theme: ResolvedTheme) {
   const root = document.documentElement;
-  for (const key of Object.keys(
-    TOKEN_CSS_VAR,
-  ) as (keyof typeof TOKEN_CSS_VAR)[]) {
-    root.style.setProperty(TOKEN_CSS_VAR[key], tokens[key]);
+  for (const [name, value] of Object.entries(themeCssVars(theme))) {
+    root.style.setProperty(name, value);
   }
 }

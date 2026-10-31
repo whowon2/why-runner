@@ -66,7 +66,7 @@ function CustomInputRow({ onSelect }: { onSelect?: () => void }) {
         className={cn(
           "font-medium text-xs",
           run.status === "OK"
-            ? "text-green-600 dark:text-green-400"
+            ? "text-success"
             : run.status === "CANCELED"
               ? "text-muted-foreground"
               : "text-destructive",
@@ -80,8 +80,8 @@ function CustomInputRow({ onSelect }: { onSelect?: () => void }) {
   return (
     <div
       className={cn(
-        "flex items-center gap-2 border border-dashed px-2 py-1.5 text-sm",
-        selected && "border-primary bg-primary/5",
+        "flex items-center gap-2 border border-dashed px-2 py-1.5 text-sm transition-colors hover:bg-muted/60",
+        selected && "border-primary bg-primary/10 hover:bg-primary/10",
       )}
     >
       <button
@@ -92,7 +92,12 @@ function CustomInputRow({ onSelect }: { onSelect?: () => void }) {
         }}
         type="button"
       >
-        <span className="flex w-8 shrink-0 justify-center bg-muted py-0.5">
+        <span
+          className={cn(
+            "flex w-8 shrink-0 justify-center bg-muted py-0.5 text-muted-foreground",
+            selected && "bg-primary text-primary-foreground",
+          )}
+        >
           <Terminal className="size-3.5" />
         </span>
         <span className="truncate">{t("custom")}</span>
@@ -168,8 +173,8 @@ function TestRow({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 border px-2 py-1.5 text-sm",
-        selected && "border-primary bg-primary/5",
+        "flex items-center gap-2 border px-2 py-1.5 text-sm transition-colors hover:bg-muted/60",
+        selected && "border-primary bg-primary/10 hover:bg-primary/10",
       )}
     >
       <button
@@ -180,7 +185,12 @@ function TestRow({
         }}
         type="button"
       >
-        <span className="w-8 shrink-0 bg-muted py-0.5 text-center font-mono text-xs">
+        <span
+          className={cn(
+            "w-8 shrink-0 bg-muted py-0.5 text-center font-mono text-muted-foreground text-xs",
+            selected && "bg-primary text-primary-foreground",
+          )}
+        >
           {String(test.index).padStart(2, "0")}
         </span>
         <span className="truncate">{t("example", { index: test.index })}</span>
@@ -205,7 +215,7 @@ function TestRow({
 
 export function PanelTitle({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-9 shrink-0 items-center border-b px-3 font-semibold text-sm">
+    <div className="flex h-9 shrink-0 items-center border-b bg-muted/40 px-3 font-semibold text-muted-foreground text-xs uppercase tracking-wide">
       {children}
     </div>
   );

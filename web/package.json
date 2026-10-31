@@ -1,6 +1,6 @@
 {
   "name": "why-runner",
-  "version": "1.4.0",
+  "version": "1.6.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -53,6 +53,7 @@
     "jszip": "^3.10.1",
     "katex": "^0.18.2",
     "lucide-react": "^0.561.0",
+    "monaco-vim": "0.4.4",
     "motion": "^12.23.26",
     "next": "^16.0.10",
     "next-intl": "^4.6.0",

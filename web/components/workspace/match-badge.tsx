@@ -15,7 +15,7 @@ export function MatchBadge({ match }: { match: boolean | null }) {
     );
   }
   return match ? (
-    <span className="flex items-center gap-1 font-medium text-green-600 dark:text-green-400">
+    <span className="flex items-center gap-1 font-medium text-success">
       <CheckCircle2 className="size-3.5" />
       {t("match")}
     </span>
