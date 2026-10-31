@@ -46,6 +46,7 @@ const TONE: Record<SubmissionStatus, string> = {
   MEMORY_LIMIT_EXCEEDED: "text-fuchsia-500 border-fuchsia-500",
   COMPILATION_ERROR: "text-yellow-600 border-yellow-600",
   ERROR: "text-orange-500 border-orange-500",
+  CANCELED: "text-muted-foreground border-muted-foreground",
 };
 
 /** Text + border colour classes for a status (unknown values: muted). */

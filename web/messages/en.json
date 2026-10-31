@@ -1722,6 +1722,7 @@
     "CANNOT_DEMOTE_SELF": "You can't remove your own admin role.",
     "RUNS_DISABLED": "Running code is not available here.",
     "RUN_IN_PROGRESS": "Wait for your current run to finish.",
+    "ALREADY_RUNNING": "The judge already started it, so it can no longer be canceled.",
     "INPUT_TOO_LARGE": "Your input is too large (max {max} characters)."
   },
   "JudgeReport": {
@@ -1999,7 +2000,8 @@
     "TIME_LIMIT_EXCEEDED": "Time limit exceeded",
     "MEMORY_LIMIT_EXCEEDED": "Memory limit exceeded",
     "COMPILATION_ERROR": "Compilation error",
-    "RUNTIME_ERROR": "Runtime error"
+    "RUNTIME_ERROR": "Runtime error",
+    "CANCELED": "Canceled"
   },
   "AdminPage": {
     "title": "Admin",
@@ -2070,7 +2072,9 @@
     "compilerOutput": "Compiler output",
     "empty": "(empty)",
     "copy": "Copy",
-    "truncated": "Output too long: only the first 64 KB is shown."
+    "truncated": "Output too long: only the first 64 KB is shown.",
+    "cancel": "Cancel",
+    "cancelFailed": "Could not cancel the run"
   },
   "CodeRunStatus": {
     "PENDING": "Pending",
@@ -2080,7 +2084,8 @@
     "TIME_LIMIT_EXCEEDED": "Time limit exceeded",
     "MEMORY_LIMIT_EXCEEDED": "Memory limit exceeded",
     "COMPILATION_ERROR": "Compilation error",
-    "ERROR": "Judge error"
+    "ERROR": "Judge error",
+    "CANCELED": "Canceled"
   },
   "Workspace": {
     "Rail": {
@@ -2122,7 +2127,8 @@
       "judging": "Judging…",
       "finished": "Finished",
       "match": "Output matches",
-      "mismatch": "Wrong output"
+      "mismatch": "Wrong output",
+      "canceled": "You canceled this submission before it was judged. It does not count as an attempt."
     },
     "Tests": {
       "title": "Test cases",
@@ -2142,7 +2148,8 @@
       "submit": "Submit",
       "latest": "Last submission",
       "showDetails": "Show details in the console",
-      "passedCount": "{passed}/{total} tests"
+      "passedCount": "{passed}/{total} tests",
+      "stopRuns": "Stop"
     },
     "History": {
       "title": "Your submissions",
@@ -2187,5 +2194,10 @@
       "tryIt": "Open in the editor",
       "subtitle": "Your problem “{title}”: statement, tests and settings."
     }
+  },
+  "SubmissionCancel": {
+    "cancel": "Cancel",
+    "hint": "No judge has picked this submission up yet. Cancel it to stop waiting; it will not count as an attempt.",
+    "failed": "Could not cancel the submission"
   }
 }

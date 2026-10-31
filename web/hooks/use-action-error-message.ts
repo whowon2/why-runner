@@ -19,6 +19,7 @@ const KNOWN_CODES = [
   "RUNS_DISABLED",
   "RUN_IN_PROGRESS",
   "INPUT_TOO_LARGE",
+  "ALREADY_RUNNING",
 ] as const;
 
 type KnownCode = (typeof KNOWN_CODES)[number];
