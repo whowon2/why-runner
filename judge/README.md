@@ -13,10 +13,10 @@ This is the worker service for the Runner platform. It polls PostgreSQL for subm
 
 1. The Judge listens for Postgres `LISTEN/NOTIFY` on the `new_submission` channel and does a periodic sweep every 60s as a fallback, then claims `PENDING` submissions with `UPDATE ... FOR UPDATE SKIP LOCKED` (safe across multiple judge-worker replicas).
 2. Submissions abandoned mid-job by a crashed or killed worker (stuck `RUNNING`) are reclaimed and retried up to a fixed retry limit, then dead-lettered to `ERROR` if still stuck.
-3. It fetches the submitted code and problem test cases from Postgres, then spawns a sandboxed, network-less `isolate` box per test case to run the code, passing input via base64-encoded streams.
+3. It fetches the submitted code and problem test cases from Postgres, then spawns a sandboxed, network-less `isolate` box per test case to run the code, feeding each test's input on stdin.
 4. The code is executed against each test case's input, and `stdout` is compared with the expected output.
-5. Constraints (Time Limit Exceeded), compile errors, and runtime crashes are each reported distinctly.
-6. The compiled results (`PASSED`, `FAILED`, `ERROR`) and failure details are serialized into JSON and saved back to the database.
+5. The first failing test case sets the verdict: `WRONG_ANSWER`, `TIME_LIMIT_EXCEEDED`, `MEMORY_LIMIT_EXCEEDED`, `COMPILATION_ERROR`, `RUNTIME_ERROR`, or `ERROR` for a judge-side fault (`PASSED` if all pass).
+6. The verdict and a JSON report with per-test details are saved back to the submission row.
 
 ## 🚀 Getting Started
 
