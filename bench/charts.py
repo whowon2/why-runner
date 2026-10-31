@@ -615,12 +615,51 @@ def e2e():
     save(f, "e2e_stages")
 
 
+def survey():
+    """Classroom test 2026-10-29 (lesson_student form): SUS bands and the specific items.
+    Aggregates only (survey_lesson_student.json, from docs/evaluation/survey-review.md)."""
+    d = json.loads((RES / "survey_lesson_student.json").read_text())
+    sus = d["sus"]
+    SUMMARY["survey"] = {"responses": d["responses"], "sus": sus}
+
+    f, ax = fig(12, 5.0)
+    bands = d["sus_bands"]
+    xs = np.arange(len(bands))
+    bars = ax.bar(xs, [b["n"] for b in bands], 0.6, color=T["accent"], edgecolor=T["surface"], linewidth=2)
+    label_bars(ax, bars, lambda v: f"{v:.0f}", size=16)
+    ax.set_xticks(xs, [f"{b['band'].replace('>=', '≥').replace('-', '–').replace('.', L(',', '.'))}\n{L('nota', 'grade')} {b['grade']}"
+                       for b in bands])
+    ax.set_ylim(0, max(b["n"] for b in bands) * 1.25)
+    axis_labels(ax, L(f"pontuação SUS (média {sus['mean']:.1f}, mediana {sus['median']:.1f})".replace(".", ","),
+                      f"SUS score (mean {sus['mean']:.1f}, median {sus['median']:.1f})"),
+                L(f"alunos (de {d['responses']})", f"students (of {d['responses']})"))
+    save(f, "survey_sus_bands")
+
+    f, ax = fig(12, 5.4)
+    ax.yaxis.grid(False)
+    ax.xaxis.grid(True, color=T["grid"], linewidth=0.8)
+    items = d["specific_items"]
+    y = np.arange(len(items))
+    bars = ax.barh(y, [it["mean"] for it in items], 0.6, color=T["accent"], edgecolor=T["surface"], linewidth=2)
+    for b, it in zip(bars, items):
+        v = f"{it['mean']:.2f}"
+        ax.annotate(v.replace(".", ",") if T["lang"] == "pt" else v, (b.get_width(), b.get_y() + b.get_height() / 2),
+                    xytext=(8, 0), textcoords="offset points", va="center", fontsize=14, color=T["text"])
+    ax.set_yticks(y, [it[T["lang"]] for it in items])
+    ax.invert_yaxis()
+    ax.set_xlim(1, 5.4)
+    ax.set_xticks([1, 2, 3, 4, 5])
+    axis_labels(ax, L("média de concordância (1 = discordo totalmente, 5 = concordo totalmente)",
+                      "mean agreement (1 = strongly disagree, 5 = strongly agree)"))
+    save(f, "survey_items")
+
+
 def main():
     global T
     for name in ("deck", "light"):
         T = THEMES[name]
         for step in (concurrency, lang_cost, e2e, sandbox, verdicts, regrade, plagiarism, constraints, ai,
-                     web_compute, ci):
+                     web_compute, ci, survey):
             try:
                 step()
             except FileNotFoundError as e:

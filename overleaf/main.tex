@@ -28,11 +28,11 @@
 \maketitle
 
 \begin{abstract}
-  Existing online judges primarily focus on correctness-based evaluation, often neglecting pedagogical feedback and real-time contest dynamics essential for educational contexts. This paper introduces WhyRunner: Programming Online Judge, a modular and secure system that integrates sandboxed code execution with distinct verdicts and configurable output comparison (including custom checkers), a concurrent judge worker pool, real-time contest management, a professor-curated lesson/exercise authoring model with a class gradebook, AI-assisted problem authoring with mandatory pre-publish validation, AI-powered feedback, and MOSS-style code similarity detection. This paper presents the system's architecture, development methodology, and implementation, and a reproducible performance evaluation of the judge, the similarity detector, and the AI features. An in-app survey instrument for the classroom evaluation is integrated, and the first classroom test is scheduled for 29 October 2026; no classroom results are reported here.
+  Existing online judges primarily focus on correctness-based evaluation, often neglecting pedagogical feedback and real-time contest dynamics essential for educational contexts. This paper introduces WhyRunner: Programming Online Judge, a modular and secure system that integrates sandboxed code execution with distinct verdicts and configurable output comparison (including custom checkers), a concurrent judge worker pool, real-time contest management, a professor-curated lesson/exercise authoring model with a class gradebook, AI-assisted problem authoring with mandatory pre-publish validation, AI-powered feedback, and MOSS-style code similarity detection. This paper presents the system's architecture, development methodology, and implementation, and a reproducible performance evaluation of the judge, the similarity detector, and the AI features. A first classroom test is also reported: 30 first-year students of a technical high-school course solved one exercise list and answered the in-app student questionnaire. The mean System Usability Scale score was 72.1, above the usual benchmark of 68; students valued the AI hints and the immediate feedback most, and their main complaint was exact output matching. Their feedback led to changes made within two days of the test. No contest or instructor evaluation has been carried out yet.
 \end{abstract}
 
 \begin{resumo}
-  Os juízes online existentes focam principalmente na avaliação baseada em correção, negligenciando o feedback pedagógico e a dinâmica de competições em tempo real, essenciais em contextos educacionais. Este artigo apresenta o WhyRunner: Programming Online Judge, um sistema modular e seguro que integra execução de código em ambiente isolado (sandbox), gerenciamento de competições em tempo real, vereditos distintos e comparação de saída configurável (inclusive com corretores personalizados), um conjunto concorrente de workers de correção, um modelo de autoria de aulas/exercícios curado pelo docente com boletim da turma, autoria de problemas assistida por IA com validação obrigatória antes da publicação, feedback assistido por inteligência artificial e detecção de similaridade de código no estilo MOSS. Este artigo descreve a arquitetura do sistema, a metodologia de desenvolvimento e a implementação, e apresenta uma avaliação de desempenho reproduzível do juiz, do detector de similaridade e dos recursos de IA. O instrumento de pesquisa para a avaliação em sala já está integrado ao sistema, e o primeiro teste em sala está marcado para 29 de outubro de 2026; nenhum resultado com alunos é relatado aqui.
+  Os juízes online existentes focam principalmente na avaliação baseada em correção, negligenciando o feedback pedagógico e a dinâmica de competições em tempo real, essenciais em contextos educacionais. Este artigo apresenta o WhyRunner: Programming Online Judge, um sistema modular e seguro que integra execução de código em ambiente isolado (sandbox), gerenciamento de competições em tempo real, vereditos distintos e comparação de saída configurável (inclusive com corretores personalizados), um conjunto concorrente de workers de correção, um modelo de autoria de aulas/exercícios curado pelo docente com boletim da turma, autoria de problemas assistida por IA com validação obrigatória antes da publicação, feedback assistido por inteligência artificial e detecção de similaridade de código no estilo MOSS. Este artigo descreve a arquitetura do sistema, a metodologia de desenvolvimento e a implementação, e apresenta uma avaliação de desempenho reproduzível do juiz, do detector de similaridade e dos recursos de IA. Também é relatado um primeiro teste em sala: 30 alunos do primeiro ano de um curso técnico integrado ao ensino médio resolveram uma lista de exercícios e responderam ao questionário do aluno, integrado ao sistema. A nota média na System Usability Scale foi 72,1, acima da referência usual de 68; os alunos valorizaram sobretudo as dicas da IA e a correção imediata, e a principal queixa foi a exigência de saída idêntica à esperada. O retorno da turma levou a mudanças feitas nos dois dias seguintes ao teste. Ainda não houve avaliação de competições nem com professores.
 \end{resumo}
 
 \section{Introduction}
@@ -45,7 +45,7 @@ Many platforms are rigid in design, making it difficult for educators and studen
 
 To address these limitations, this work presents \textbf{WhyRunner}, a modern and modular online judge system developed specifically for educational contexts. WhyRunner was designed from the ground up with three core objectives: (1) to provide rich, automated feedback using artificial intelligence; (2) to support safe, scalable, and multi-language code execution through kernel-level sandboxing; and (3) to enable flexible real-time contest management for classroom or remote settings.
 
-This paper details the design, development, and current implementation status of WhyRunner, and evaluates its performance with a suite of reproducible benchmarks (\S\ref{sec:performance}): judge throughput and latency, per-language execution cost, sandbox overhead, verdict classification accuracy, the impact of output comparison modes, the quality and cost of code similarity detection, the structural-constraint checker, and the latency and reliability of the AI features. Its educational evaluation with students and an instructor has not been carried out yet; the instrument is built into the system and the first classroom test is scheduled for 29 October 2026 (\S\ref{sec:evaluation-status}).
+This paper details the design, development, and current implementation status of WhyRunner, and evaluates its performance with a suite of reproducible benchmarks (\S\ref{sec:performance}): judge throughput and latency, per-language execution cost, sandbox overhead, verdict classification accuracy, the impact of output comparison modes, the quality and cost of code similarity detection, the structural-constraint checker, and the latency and reliability of the AI features. It also reports a first classroom evaluation, in which 30 students solved one exercise list and answered the questionnaire built into the system (\S\ref{sec:evaluation-status}); contests and the instructor's perspective have not been evaluated yet.
 
 \section{Methodology}\label{sec:methodology}
 
@@ -84,7 +84,7 @@ A security review of the web layer was also carried out during development. Next
 
 \subsection{Current Validation Status}
 
-WhyRunner has not yet been evaluated in a real classroom setting. All development-cycle feedback so far came from informal testing (the Discord MVP session above) and the author's own use of the system; no student or instructor cohort, contest, or usability questionnaire has been run against it. What has been validated is technical: automated tests run on every push (\S\ref{sec:integration}), and a benchmark suite measures the judge, the similarity detector, and the AI features (\S\ref{sec:performance}). The instrument for the educational evaluation is already built and integrated into the system (\S\ref{sec:evaluation-status}), and the first classroom test is scheduled for 29 October 2026; its results are not part of this paper.
+Two kinds of validation were carried out. The technical one is continuous: automated tests run on every push (\S\ref{sec:integration}), and a benchmark suite measures the judge, the similarity detector, and the AI features (\S\ref{sec:performance}). The educational one so far consists of a single classroom test on 29 October 2026, in which one class of students solved an exercise list and answered the student questionnaire built into the system (\S\ref{sec:evaluation-status}). The feedback from that session fed one more development cycle, whose changes are listed with the results. No contest has been run in a classroom and no instructor has answered the questionnaire yet.
 
 \section{Related Work} \label{sec:related}
 
@@ -488,13 +488,113 @@ Each AI feature was called ten times with its production prompt through the prod
 
 Contest standings and the class gradebook are recomputed on the server from the submissions on every visit. With synthetic data far larger than a class, computing standings for 1000 participants and 52\,252 submissions took 116\,ms, and building a gradebook for 1000 students and 240 exercises, including its CSV export, took 267\,ms; for 30 students both took under 2\,ms (database time not included). The continuous-integration pipeline (\S\ref{sec:integration}) had a median of 31\,s per run.
 
-\section{Evaluation Status}\label{sec:evaluation-status}
+\section{Classroom Evaluation}\label{sec:evaluation-status}
 
-WhyRunner has not yet been evaluated with a real cohort of students or instructors: no classroom contest, lesson assignment, or usability study has been run against the system as described in this paper, and no result in this paper comes from students.
+The instrument for the educational evaluation is built into the system. When a contest or a lesson the user took part in ends, the application invites the participant to answer a questionnaire; eligibility (participation and the activity having ended) is checked on the server. There are four questionnaires, for instructors and for students, about contests and about exercise lists. Each starts with an informed-consent term (TCLE) and includes the System Usability Scale (SUS) \cite{brooke1996sus}, whose 0--100 score is computed automatically, followed by Likert items specific to the activity and open questions. Responses are anonymous in the analysis; a results page restricted to the researcher shows response counts, the mean, median, and standard deviation of the SUS score per questionnaire, filters by activity, and exports the responses as CSV.
 
-The instrument for that evaluation is built into the system. When a contest or a lesson the user took part in ends, the application invites the participant to answer a questionnaire; eligibility (participation and the activity having ended) is checked on the server. There are four questionnaires, for instructors and for students, about contests and about exercise lists. Each starts with an informed-consent term (TCLE) and includes the System Usability Scale \cite{brooke1996sus}, whose 0--100 score is computed automatically. Responses are anonymous in the analysis; a results page restricted to the researcher shows response counts, the mean, median, and standard deviation of the SUS score per questionnaire, filters by activity, and exports the responses as CSV.
+\subsection{Participants and Procedure}
 
-The first classroom test is scheduled for 29 October 2026, with a contest and an exercise list in a programming class, followed by the questionnaires. Its analysis will be descriptive: SUS scores, the instructor's perspective on building and running the activities, and usage data recorded by the system itself (verdicts, attempts until acceptance, and hint requests).
+The first classroom test took place on 29 October 2026 at IFMG, in one class of the first year of the Técnico em Informática course integrated with high school. The students solved one exercise list (a lesson with two problems) in Python and answered the student questionnaire for exercise lists right after the session; all 30 responses were submitted within ten minutes. Of the 30 respondents, 24 had never used an online judge and 6 had used one a few times. Only this questionnaire was answered: no contest was held in the session and no instructor questionnaire was answered, so the results below describe the students' view of one exercise list, not the contest path or the instructor's experience.
+
+\subsection{Usability (SUS)}
+
+The mean SUS score was 72.1 (median 76.2, standard deviation 18.3, range 22.5--95; 95\% confidence interval about 65.6--78.6). This is above the benchmark average of 68 \cite{sauro2011sus}; on the adjective scale of Bangor et al. \cite{bangor2009sus} it falls in the ``good'' range, roughly a C+/B$-$ grade. The spread is wide (Figure~\ref{fig:sus-bands}): 13 respondents scored 80.3 or more (grade A), 4 between 68 and 80, 8 between 51 and 67, and 5 below 51. The median is higher than the mean because a small group of low scores pulls the mean down. No respondent gave the same answer to all ten items.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/survey_sus_bands.png}
+\caption{Distribution of SUS scores among the 30 respondents, grouped by grade band.}
+\label{fig:sus-bands}
+\end{figure}
+
+Table~\ref{tab:sus-items} gives the mean of each SUS item. Integration of the functions and learnability were the strongest positive items. The weakest were the two about autonomy: the need for technical support (item 4, where 9 of 30 students agreed or strongly agreed) and confidence when using the system (item 9), which is consistent with a class in which 80\% had never used an online judge.
+
+\begin{table}[h]
+\centering
+\footnotesize
+\begin{tabular}{|l|r|}
+\hline
+\textbf{SUS item (1--5)} & \textbf{Mean} \\
+\hline
+5. Functions are well integrated                     & 4.13 \\
+7. Most people would learn to use it quickly         & 4.07 \\
+3. Easy to use                                       & 3.93 \\
+1. Would like to use it frequently                   & 3.77 \\
+9. Felt confident using it                           & 3.50 \\
+\hline
+4. Would need technical support (negative)           & 2.57 \\
+10. Needed to learn a lot first (negative)           & 2.13 \\
+6. Too much inconsistency (negative)                 & 2.03 \\
+8. Cumbersome to use (negative)                      & 1.97 \\
+2. Unnecessarily complex (negative)                  & 1.87 \\
+\hline
+\end{tabular}
+\caption{Mean answer per SUS item (n = 30). For the negative items, lower is better.}
+\label{tab:sus-items}
+\end{table}
+
+\subsection{Activity-Specific Items}
+
+Table~\ref{tab:survey-items} shows the Likert items about the exercise list. The classroom flow scored highest: joining the class and finding the list (24 of 30 students fully agreed) and knowing how to hand it in (no answer below 3). Most students would use WhyRunner to study alone. The AI hints were rated as helpful without giving away the answer by the 23 students who used them. The judge's feedback was rated lower than the AI's, and the gain in confidence was the lowest item. The answer-mode item only covers plain code, since every student used the code editor rather than blocks or Parsons problems.
+
+\begin{table}[h]
+\centering
+\footnotesize
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Item (1 = strongly disagree, 5 = strongly agree)} & \textbf{Mean} & \textbf{n} \\
+\hline
+Joining the class and finding the list was easy    & 4.70 & 30 \\
+It was clear how to hand in the list               & 4.43 & 30 \\
+Would use WhyRunner to study alone                 & 4.13 & 30 \\
+AI hints helped without giving the answer          & 4.04 & 23 \\
+The judge's feedback helped me fix my errors        & 3.53 & 30 \\
+The answer mode helped me solve the exercises      & 3.41 & 29 \\
+I feel more confident programming after the list   & 3.23 & 30 \\
+\hline
+\end{tabular}
+\caption{Activity-specific items of the student questionnaire for exercise lists.}
+\label{tab:survey-items}
+\end{table}
+
+\subsection{Open Answers}
+
+The answers to ``what helped'' fall mostly into two themes: the AI assistance (about 14 mentions, e.g., ``as dicas sem entregar a resposta da IA'') and the immediate automatic correction (about 9, e.g., ``respostas e feedbacks quase imediatos''); a few mentioned the classroom flow and the ease of the interface. All seven general comments were positive, one noting that the system ``não mostra resposta, o que é muito bom, pois desenvolve o raciocínio lógico''.
+
+The most frequent complaint (about 9 mentions) was that the output had to match the expected output exactly, down to spaces. Submission data from the session confirms it: both problems of the list used exact comparison, a setting kept by problems created before the \texttt{tokens} mode existed. In one of them, whose expected output had a trailing space after every number, 26 failed submissions from 13 students differed from the expected output only in whitespace and would have been accepted under \texttt{tokens}; 12 of those 13 students passed after further attempts. Many other failures on that problem came from programs that printed the prompt of Python's \texttt{input()} to the standard output. The second complaint (about 6 mentions) was that the judge's errors were unclear: students could not see their own output or the Python traceback. Smaller themes were a small editor (3), an AI explanation panel that could not be scrolled (2), the wish to run the program before submitting (2), and single reports of code erased when changing the site language, the verdict shown far from the editor, intrusive auto-closing brackets, and problems pasting code from another editor. Some students found the statements unclear or the exercises hard, which concerns the content written by the instructor rather than the platform. One student reported being deaf and finding the activity somewhat hard.
+
+\subsection{Changes After the Test}
+
+The feedback collected in the session and in the questionnaire fed one more development cycle. Table~\ref{tab:feedback-fixes} lists the main changes, all merged within two days of the test. The exact-output complaint was deliberately not addressed by switching the existing problems to \texttt{tokens}; it remains a limitation (\S\ref{sec:limitations}). Requests outside the scope of this work, such as a mobile app, avatars, and more languages, were not acted upon, and output that differs in letter case or wording is still rejected, since respecting the output specification is part of what a judge teaches.
+
+\begin{table}[h]
+\centering
+\footnotesize
+\begin{tabular}{|p{4.6cm}|p{8.6cm}|c|}
+\hline
+\textbf{Classroom feedback} & \textbf{Change} & \textbf{PR} \\
+\hline
+Interface opened in English & Portuguese is the default locale & \#81 \\
+Browser translation broke the starter code & Code surfaces excluded from automatic translation & \#81 \\
+Small editor & Fullscreen toggle and persisted font size & \#81 \\
+Students typed their enrollment number as username & Onboarding step removed; optional enrollment-number field shown to the class's teachers & \#82 \\
+No own output or Python traceback on failure & Exercise submissions show input, own output, expected output, and error output for visible tests; per-test visibility & \#83 \\
+AI explanation could not be scrolled & Scrollable help, which can also be docked beside the editor & \#88 \\
+Changing the language erased the code & Editor drafts saved in the browser and restored & \#88 \\
+Intrusive auto-closing brackets & Persisted toggle next to the font size & \#88 \\
+Verdict far from the editor & Latest verdict and pass count in the editor toolbar & \#88 \\
+Code pasted from another editor failed & Invisible characters and line endings normalized on submit & \#88 \\
+Prompts of \texttt{input()} printed to the output & Hint in the failure view to print only the requested output & \#88 \\
+No way to run before submitting & Ungraded run with custom input in the judge sandbox & \#89 \\
+\hline
+\end{tabular}
+\caption{Classroom feedback and the resulting changes, with their pull requests.}
+\label{tab:feedback-fixes}
+\end{table}
+
+\subsection{Threats to Validity}
+
+The evaluation is small and descriptive: one class, one exercise list, one language, and a questionnaire answered right after a single session, with no comparison group and no pre/post measure, so it shows how students perceived the system, not whether it improved their learning. Thirty respondents are enough for a reasonably stable SUS mean (about $\pm$7 points) but not for subgroup analysis. A novelty effect is likely, and social desirability may have raised the scores if the students knew the developer was present. Finally, only students answered: contests and the instructor's perspective remain unevaluated.
 
 \section{Discussion}
 
@@ -511,6 +611,7 @@ WhyRunner exhibits several notable strengths:
   \item \textbf{Contest-grade judging:} distinct verdicts, configurable output comparison with custom checkers, and ICPC-style standings bring the judge close to contest systems, while compile errors and judge faults never cost the student penalty time.
   \item \textbf{Scales with cores and holds up under a class-sized burst:} the worker pool graded 100 simultaneous submissions $2.8\times$ faster with four workers, with no wrong verdict, and the sandbox adds only about 5\,ms per run.
   \item \textbf{Integrity tools for the instructor:} the similarity detector ignores renaming, reformatting, and comments, separated copies from independent solutions with an AUC of 0.998 on a synthetic corpus, and runs in under a second for a 300-student exercise.
+  \item \textbf{Well received by novice students:} in the first classroom test, students who had mostly never used an online judge rated its usability above the SUS benchmark (72.1) and found joining a class, finding the exercise list, and handing it in easy (\S\ref{sec:evaluation-status}).
   \item \textbf{Measured, reproducible claims:} every performance figure in this paper comes from scripts and raw data in the repository, and continuous integration checks every change, including the enum contract between the two services.
 \end{itemize}
 
@@ -522,7 +623,8 @@ Despite its strengths, WhyRunner has some limitations:
   \item \textbf{Dependency on third-party AI APIs:} The feedback system relies on external model providers. The fallback chain (\S\ref{sec:ai-chain}) tolerates the outage of a single model, but not of every provider at once, and answers may vary between models. Per-user limits bound the cost a single user can generate, but total cost still grows with the number of active users.
   \item \textbf{Sandbox deployment and memory accounting:} \texttt{isolate} requires the \texttt{CAP\_SYS\_ADMIN} and \texttt{CAP\_NET\_ADMIN} capabilities, which many managed container platforms do not grant, so the judge is in practice deployed on a self-managed virtual machine. In addition, memory caps are currently applied per process (as an address-space limit) rather than to the whole box, so a submission that spawns several processes can use more memory in total than its nominal cap; enabling \texttt{isolate}'s control-group mode would fix this but requires further host configuration.
   \item \textbf{Deployment complexity:} The initial setup requires knowledge of Docker, Linux capabilities, and PostgreSQL configuration, which may present a barrier for non-technical instructors.
-  \item \textbf{No classroom validation yet:} As noted in \S\ref{sec:methodology}, WhyRunner as a whole, including contests, the Class/Lesson/Exercise model (\S\ref{sec:class-lesson-model}), AI-assisted authoring, solution-constraint enforcement (\S\ref{sec:prepublish-validation}), the gradebook, and similarity detection, is functionally complete but has not been evaluated with a real cohort of students or instructors. The survey instrument is ready and the first classroom test is scheduled for 29 October 2026 (\S\ref{sec:evaluation-status}); until then the research question remains open.
+  \item \textbf{Narrow classroom evaluation:} The only classroom evaluation so far (\S\ref{sec:evaluation-status}) covers one class, one exercise list, one language (Python), and the students' perspective only, measured right after a single session with no comparison group and no pre/post measure. Contests, AI-assisted authoring, the gradebook, similarity detection, and the instructor's experience have not been evaluated in class, so the research question is only partially answered.
+  \item \textbf{Exact output matching on older problems:} Problems created before the \texttt{tokens} comparison mode existed still compare output exactly, and in the classroom test this was the students' most frequent complaint (\S\ref{sec:evaluation-status}). Switching those problems to \texttt{tokens} was deliberately left out of the post-test changes.
   \item \textbf{No concurrency gain in production as deployed:} the worker pool only helps on a multi-core machine. The production judge runs on a single shared vCPU, where the default resolves to one worker, and the benchmark showed no speedup with four workers on one CPU (\S\ref{sec:concurrency}).
   \item \textbf{Memory-limit verdict is a heuristic:} without \texttt{isolate}'s control-group mode there is no clean out-of-memory signal, so MLE is inferred from peak memory and error messages; a program that crashes right after a failed allocation is graded as a runtime error (\S\ref{sec:perf-verdicts}).
   \item \textbf{Portugol errors are graded as wrong answers:} the Portugol console runner reports compilation and runtime errors on standard output with exit status 0, so in the verdict benchmark all such programs received a wrong-answer verdict instead of a compilation or runtime error (\S\ref{sec:perf-verdicts}). Portugol is also the slowest language to judge, about 1.3\,s per test case, because its runner compiles the program on every run.
@@ -537,7 +639,9 @@ Despite its strengths, WhyRunner has some limitations:
 Planned improvements include:
 
 \begin{itemize}
-  \item \textbf{Classroom evaluation:} Run the scheduled classroom test (29 October 2026) with the contest path and the Class/Lesson/Exercise model, using the integrated questionnaires (SUS \cite{brooke1996sus} and the instructor's perspective on creating the activities, reviewing submissions, and dosing the AI assistance), and analyze the results together with the usage data the system records.
+  \item \textbf{Broader classroom evaluation:} Repeat the classroom test with a contest, more classes and languages, and the instructor questionnaire (the instructor's perspective on creating the activities, reviewing submissions, and dosing the AI assistance), ideally with a comparison group or a pre/post measure, and analyze it together with the usage data the system records.
+  \item \textbf{Whitespace-tolerant comparison by default:} Move the problems that still use exact comparison to \texttt{tokens}, which in the classroom data would have accepted 26 submissions that differed from the expected output only in whitespace, and make the comparison mode more visible in the problem editor.
+  \item \textbf{Accessibility review:} One student reported being deaf and finding the activity somewhat hard; the platform is text-based, but no accessibility review has been done.
   \item \textbf{Detection of AI-generated code:} Complement the similarity detector, which finds copies between students, with signals that a submission was produced by an AI assistant.
   \item \textbf{\texttt{isolate} control-group mode:} Enable \texttt{isolate}'s cgroup mode to enforce memory per box instead of per process and to obtain a clean out-of-memory signal, replacing the MLE heuristic.
   \item \textbf{Multi-core production judge:} Deploy the judge on a machine with several cores (or several single-core replicas, which the row-level claim already supports) so that the worker pool's measured speedup reaches production.
@@ -548,7 +652,7 @@ Planned improvements include:
 
 \section{Conclusion}
 
-WhyRunner introduces a novel approach to online code evaluation in educational settings by combining real-time contest features, secure multi-language execution, and AI-powered feedback. It has grown beyond timed contests into a professor-curated Class/Lesson/Exercise authoring platform, adding AI-assisted reference solutions, problem review, narrative generation, and tag suggestion behind a multi-provider model chain; pre-publish reference-solution validation; solution-constraint enforcement; per-exercise grading with a class gradebook; and an in-app notification system, extending the same secure judge pipeline to asynchronous, instructor-led coursework. The judge now reports distinct verdicts, compares output in configurable ways including custom checkers, and grades submissions concurrently, and instructors can check a contest or exercise for copied code. A reproducible benchmark suite measured these components and also exposed their limits, such as the memory-limit heuristic and Portugol's error reporting. The system as described here is implemented and technically evaluated, but not yet evaluated with real students or instructors; the survey instrument is integrated and the first classroom test, scheduled for 29 October 2026, is the immediate next step (\S\ref{sec:future-work}).
+WhyRunner introduces a novel approach to online code evaluation in educational settings by combining real-time contest features, secure multi-language execution, and AI-powered feedback. It has grown beyond timed contests into a professor-curated Class/Lesson/Exercise authoring platform, adding AI-assisted reference solutions, problem review, narrative generation, and tag suggestion behind a multi-provider model chain; pre-publish reference-solution validation; solution-constraint enforcement; per-exercise grading with a class gradebook; and an in-app notification system, extending the same secure judge pipeline to asynchronous, instructor-led coursework. The judge now reports distinct verdicts, compares output in configurable ways including custom checkers, and grades submissions concurrently, and instructors can check a contest or exercise for copied code. A reproducible benchmark suite measured these components and also exposed their limits, such as the memory-limit heuristic and Portugol's error reporting. A first classroom test with 30 students who solved one exercise list gave a mean SUS score of 72.1, above the usual benchmark; students most valued the AI hints that do not give the answer and the immediate feedback, and the problems they reported, such as missing program output and the impossibility of running code before submitting, were fixed shortly after. The evaluation is still narrow, one class and only the students' perspective, so contests and the instructor's view remain the next step (\S\ref{sec:future-work}).
 
 With a modular and extensible design, WhyRunner can evolve to meet broader needs in computer science teaching and competitive programming training. The continued integration of AI technologies and developer tooling positions it as a promising platform for the future of automated learning environments.
 

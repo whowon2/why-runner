@@ -74,7 +74,7 @@ with an audience where 80% had never used a judge.
 |---|---|---|---|
 | Output must match exactly (spaces, one letter) | **~9** | "a saída precisa ser exatamente igual aos exemplos… tive que refazer várias vezes" | **Fixable now (data)**: the `tokens` compare mode already exists (migration 0048), but problems created before migration 0048 were set to `exact`. Switching the lesson's problems to `tokens` removes the whitespace complaints. Letter-case/wording differences stay a teaching point. |
 | Judge errors unclear; no actual output; no Python traceback | ~6 | "mostrar como ficou a minha saída… tive que abrir outro editor"; "Não encontrei os erros que aparecem no próprio python" | **Fixed** (#83): exercises now render `SubmissionDetails`, which shows input / your output / expected and the stderr (Python traceback) for visible tests. Hidden tests still hide them by design. |
-| Can't run code before submitting / test with my own input | 2 | "deveria ter como rodar o programa antes de enviar" | **Fixable, new feature**: a "Run with custom input" that uses the judge without grading. Medium effort (judge + rate limit). |
+| Can't run code before submitting / test with my own input | 2 | "deveria ter como rodar o programa antes de enviar" | **Fixed** (#89): "Run with custom input" runs the program once in the judge sandbox without grading (judge 1.1.0, web 1.2.0). |
 | Small editor / screen | 3 | "A tela ser pequena", "Tela cheia" | **Fixed** (#81: fullscreen + font size). |
 | AI explanation panel can't be scrolled; wanted it as a side panel | 2 | "não da para subir ou descer a página para ler tudo" | **Bug, fixable**: confirmed, `ai-dialog.tsx`'s `DialogContent` has no max height or overflow, so long answers run off screen. Side-panel layout is a follow-up. |
 | Changing the site language erased the code | 1 | "Se eu tentar mudar o idioma do site depois de já ter feito código, ele apaga todo" | **Fixable**: keep the editor draft (localStorage per exercise) across locale navigation. pt-BR default (#81) makes it rarer. |
@@ -135,7 +135,7 @@ lógico", "usaria sempre".
 
 | # | Survey complaint | Fix | Effort |
 |---|---|---|---|
-| F1 | Output must match exactly (~9) | Switch the lesson's pre-0048 problems from `exact` to `tokens` comparison; make the problem editor show the compare mode prominently | XS (data) |
+| F1 | Output must match exactly (~9) | Switch the lesson's pre-0048 problems from `exact` to `tokens` comparison; make the problem editor show the compare mode prominently **Skipped by decision**: kept as a known limitation / future work in the thesis. | XS (data) |
 
 Evidence for F1 (production submissions, read-only): the lesson had two
 problems, both `exact`: G "Matriz ao cubo" (5 tests, expected output has a
@@ -152,7 +152,7 @@ In all of production, 17 of 18 problems are `exact`.
 | F3 | Changing site language erased the code (1) | Persist the editor draft per exercise/problem in localStorage, restore on mount **Fixed (web 1.1.0).** | S |
 | F4 | Auto-closing brackets intrusive (1) | Toggle next to the font-size control (Monaco `autoClosingBrackets`), persisted **Fixed (web 1.1.0).** | XS |
 | F5 | Verdict far from the editor (1) | Show the latest verdict badge in the editor toolbar, near submit **Fixed (web 1.1.0).** | S |
-| F6 | Can't run before submitting (2) | "Run with custom input": a non-graded judge run with rate limit, no submission row | M (web + judge) |
+| F6 | Can't run before submitting (2) | "Run with custom input": a non-graded judge run with rate limit, no submission row **Fixed (#89, judge 1.1.0, web 1.2.0).** | M (web + judge) |
 | F8 | Wrong output from `input("Digite…")` prompts (found in the data, 31 G failures) | Explain it in the failure view: when the actual output has extra text before the expected lines, show a hint "don't print prompts in `input()`" **Fixed (web 1.1.0).** | S |
 | F7 | Pasting code from another editor (1) | Reproduce first (likely indentation tabs vs spaces or smart quotes); fix if confirmed **Fixed (web 1.1.0).** | S, unknown |
 

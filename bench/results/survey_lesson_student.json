@@ -1,0 +1,28 @@
+{
+  "_source": "docs/evaluation/survey-review.md (lesson_student export, form v1). Aggregates only; the raw CSV is not checked in.",
+  "date": "2026-10-29",
+  "lesson": "Lista de exercícios 12 - extra 2",
+  "responses": 30,
+  "never_used_judge": 24,
+  "used_judge_a_few_times": 6,
+  "language": "Python",
+  "sus": {"mean": 72.1, "median": 76.2, "sd": 18.3, "min": 22.5, "max": 95, "ci95": [65.6, 78.6],
+          "benchmark": 68},
+  "sus_bands": [
+    {"band": "< 51", "grade": "F", "n": 5},
+    {"band": "51-67", "grade": "C/D", "n": 8},
+    {"band": "68-80", "grade": "B/C", "n": 4},
+    {"band": ">= 80.3", "grade": "A", "n": 13}
+  ],
+  "sus_items": {"sus1": 3.77, "sus2": 1.87, "sus3": 3.93, "sus4": 2.57, "sus5": 4.13,
+                "sus6": 2.03, "sus7": 4.07, "sus8": 1.97, "sus9": 3.50, "sus10": 2.13},
+  "specific_items": [
+    {"key": "join", "pt": "Entrar na turma e achar a lista", "en": "Joining the class and finding the list", "mean": 4.70, "n": 30},
+    {"key": "hand_in", "pt": "Saber como entregar a lista", "en": "Clear how to hand in the list", "mean": 4.43, "n": 30},
+    {"key": "study_alone", "pt": "Usaria para estudar sozinho", "en": "Would use it to study alone", "mean": 4.13, "n": 30},
+    {"key": "ai_hints", "pt": "Dicas da IA ajudaram sem dar a resposta", "en": "AI hints helped without giving the answer", "mean": 4.04, "n": 23},
+    {"key": "judge_feedback", "pt": "Retorno do juiz ajudou a corrigir", "en": "Judge feedback helped fix my errors", "mean": 3.53, "n": 30},
+    {"key": "answer_mode", "pt": "Modo de resposta ajudou a resolver", "en": "Answer mode helped me solve", "mean": 3.41, "n": 29},
+    {"key": "confidence", "pt": "Mais confiante após a lista", "en": "More confident programming after the list", "mean": 3.23, "n": 30}
+  ]
+}
