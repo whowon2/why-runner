@@ -86,6 +86,10 @@ Server-only helpers (no auth of their own) go outside `lib/actions/` and start w
 
 The standalone problem (`/problems/[slug]`), contest problem (`/contests/[slug]/problems/[problemSlug]`) and lesson exercise pages render in one fullscreen shell (`components/workspace/`): `WorkspaceProvider` takes a `WorkspaceSource` (visible tests, compare settings, runs gate, lock reason, own submissions newest first, AI cap, `submit`, `toRunProgram`) from a per-context adapter (`problems/_components/workspace/index.tsx`, `contests/[slug]/problems/[problemSlug]/_components/contest-problem-workspace.tsx`, `classes/_components/exercise-workspace.tsx`); `WorkspaceShell` lays out top bar, icon rail (drawers via `?panel=`), statement + Console, editor (`CodePane` with `useCodeDraft`, or blocks/Parsons panes), Test cases and Actions; below 1024px one view at a time. The verdict shows inline: it's the newest row of the context's submission query. The site dock/footer are hidden on these routes by `SiteChrome` + `isWorkspacePath` (`lib/workspace-routes.ts`) — add any new editor route there. Problem editing lives at `/problems/[slug]/edit`; old `?tab=` and contest `?problem=` URLs redirect.
 
+### Themes
+
+Presets live in `lib/themes/presets.ts`: six UI tokens per light/dark mode plus an optional `palette` (success/warning tones and editor syntax colors, from the theme's official palette). `resolveTheme` (`lib/themes/palette.ts`) falls back to `derivePalette` for custom themes and palette-less modes. The tokens and `--success`/`--warning` go on `<html>` (provider + the inline init script in `app/[locale]/layout.tsx`); `globals.css` derives `--muted`, `--border`, `--accent`, etc. from them with `color-mix`, so use those Tailwind tokens (`text-success`, `bg-primary/10`, …) instead of fixed hues. `CodeEditor` builds its Monaco theme from the shown theme (`lib/themes/monaco-theme.ts`).
+
 ### Auth
 
 Better Auth with email/password + GitHub + Google OAuth. Session access:

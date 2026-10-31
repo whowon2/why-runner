@@ -7,13 +7,44 @@ import { SiteChrome } from "@/components/site-chrome";
 import { Toaster } from "@/components/ui/sonner";
 import { UserDock } from "@/components/user-dock";
 import { DEFAULT_PRESET_ID, PRESETS } from "@/lib/themes/presets";
+import {
+  derivePalette,
+  resolveTheme,
+  themeCssVars,
+} from "@/lib/themes/palette";
 import { THEME_STORAGE_KEY } from "@/lib/themes/storage";
 import { TOKEN_CSS_VAR } from "@/lib/themes/types";
 import { Providers } from "@/providers";
 import "../globals.css";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
-const THEME_INIT_SCRIPT = `(function(){try{var raw=localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)});var presets=${JSON.stringify(PRESETS)};var vars=${JSON.stringify(TOKEN_CSS_VAR)};var mode=localStorage.getItem("theme")==="light"?"light":"dark";var stored=raw?JSON.parse(raw):{mode:"preset",presetId:${JSON.stringify(DEFAULT_PRESET_ID)}};var tokens;if(stored.mode==="custom"){tokens=stored.custom[mode];}else{var preset=presets.find(function(p){return p.id===stored.presetId;})||presets[0];tokens=preset[mode];}var root=document.documentElement;Object.keys(vars).forEach(function(key){root.style.setProperty(vars[key],tokens[key]);});}catch(e){}})();`;
+// CSS variables per preset and mode, so the init script only looks them up.
+const PRESET_VARS = Object.fromEntries(
+  PRESETS.map((preset) => [
+    preset.id,
+    {
+      light: themeCssVars(
+        resolveTheme({ mode: "preset", presetId: preset.id }, "light"),
+      ),
+      dark: themeCssVars(
+        resolveTheme({ mode: "preset", presetId: preset.id }, "dark"),
+      ),
+    },
+  ]),
+);
+// A custom theme's palette doesn't depend on its tokens, only on the mode.
+const CUSTOM_EXTRA_VARS = {
+  light: themeCssVars({
+    tokens: PRESETS[0].light,
+    palette: derivePalette(PRESETS[0].light, "light"),
+  }),
+  dark: themeCssVars({
+    tokens: PRESETS[0].dark,
+    palette: derivePalette(PRESETS[0].dark, "dark"),
+  }),
+};
+
+const THEME_INIT_SCRIPT = `(function(){try{var raw=localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)});var presets=${JSON.stringify(PRESET_VARS)};var tokenVars=${JSON.stringify(TOKEN_CSS_VAR)};var extra=${JSON.stringify(CUSTOM_EXTRA_VARS)};var mode=localStorage.getItem("theme")==="light"?"light":"dark";var stored=raw?JSON.parse(raw):{mode:"preset",presetId:${JSON.stringify(DEFAULT_PRESET_ID)}};var vars={};if(stored.mode==="custom"){var tokens=stored.custom[mode];vars["--success"]=extra[mode]["--success"];vars["--warning"]=extra[mode]["--warning"];Object.keys(tokenVars).forEach(function(key){vars[tokenVars[key]]=tokens[key];});}else{vars=(presets[stored.presetId]||presets[${JSON.stringify(DEFAULT_PRESET_ID)}])[mode];}var root=document.documentElement;Object.keys(vars).forEach(function(name){root.style.setProperty(name,vars[name]);});}catch(e){}})();`;
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
