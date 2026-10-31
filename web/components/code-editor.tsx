@@ -1,6 +1,10 @@
 "use client";
 
-import Editor, { type EditorProps, type Monaco } from "@monaco-editor/react";
+import Editor, {
+  type EditorProps,
+  type Monaco,
+  type OnMount,
+} from "@monaco-editor/react";
 import {
   AArrowDown,
   AArrowUp,
@@ -17,12 +21,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useEditorAutoClose } from "@/hooks/use-editor-auto-close";
 import {
   EDITOR_FONT_SIZE_MAX,
   EDITOR_FONT_SIZE_MIN,
+  useEditorAutoClose,
   useEditorFontSize,
-} from "@/hooks/use-editor-font-size";
+  useEditorLineNumbers,
+  useEditorMinimap,
+  useEditorTabSize,
+  useEditorVim,
+  useEditorWordWrap,
+} from "@/hooks/use-editor-settings";
 import { buildMonacoTheme, MONACO_THEME } from "@/lib/themes/monaco-theme";
 import { cn } from "@/lib/utils";
 import { useThemeTokens } from "@/providers/theme-tokens-provider";
@@ -43,6 +52,10 @@ import { useThemeTokens } from "@/providers/theme-tokens-provider";
  *
  * Colors come from the app theme (`buildMonacoTheme`): the shown preset or
  * custom theme, redefined on every preset, preview or light/dark change.
+ *
+ * The user's editor settings (`use-editor-settings`: tab size, word wrap,
+ * line numbers, minimap, vim) override the caller's `options`. Vim mode loads
+ * `monaco-vim` on demand and shows its mode/command line under the editor.
  */
 export function CodeEditor({
   toolbar,
@@ -50,6 +63,7 @@ export function CodeEditor({
   className,
   options,
   beforeMount,
+  onMount,
   maximized,
   onMaximizedChange,
   ...props
@@ -70,6 +84,14 @@ export function CodeEditor({
   const { fontSize, setFontSize } = useEditorFontSize();
   const [autoClose, setAutoClose] = useEditorAutoClose();
   const autoCloseMode = autoClose ? "languageDefined" : "never";
+  const [vim] = useEditorVim();
+  const [tabSize] = useEditorTabSize();
+  const [wordWrap] = useEditorWordWrap();
+  const [lineNumbers] = useEditorLineNumbers();
+  const [minimap] = useEditorMinimap();
+  const [editor, setEditor] = useState<Parameters<OnMount>[0] | null>(null);
+  const editorAreaRef = useRef<HTMLDivElement>(null);
+  const vimStatusRef = useRef<HTMLDivElement>(null);
   const [ownFullscreen, setOwnFullscreen] = useState(false);
   const controlled = maximized !== undefined;
   const fullscreen = controlled ? maximized : ownFullscreen;
@@ -89,6 +111,22 @@ export function CodeEditor({
   }, [monaco, shown, activeMode]);
 
   useEffect(() => {
+    if (!vim || !editor || !monaco) return;
+    let disposed = false;
+    let vimMode: { dispose: () => void } | undefined;
+    // monaco-vim reads Monaco from the global (`lib/monaco-global.ts`).
+    (globalThis as { monaco?: Monaco }).monaco ??= monaco;
+    import("monaco-vim").then(({ initVimMode }) => {
+      if (disposed) return;
+      vimMode = initVimMode(editor, vimStatusRef.current);
+    });
+    return () => {
+      disposed = true;
+      vimMode?.dispose();
+    };
+  }, [vim, editor, monaco]);
+
+  useEffect(() => {
     if (!fullscreen) return;
 
     function onKeyDown(event: KeyboardEvent) {
@@ -96,6 +134,14 @@ export function CodeEditor({
       // Esc that closes an open select/popover/tooltip shouldn't also leave
       // fullscreen; Radix removes the content only after this handler runs.
       if (document.querySelector("[data-radix-popper-content-wrapper]")) {
+        return;
+      }
+      // In vim, Esc inside the editor leaves insert/visual mode instead.
+      if (
+        vim &&
+        event.target instanceof Node &&
+        editorAreaRef.current?.contains(event.target)
+      ) {
         return;
       }
       setFullscreenRef.current(false);
@@ -111,7 +157,7 @@ export function CodeEditor({
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [fullscreen, controlled]);
+  }, [fullscreen, controlled, vim]);
 
   return (
     // Only classes change when toggling fullscreen, so Monaco stays mounted
@@ -203,7 +249,7 @@ export function CodeEditor({
       </div>
       <div
         className={cn(
-          "min-h-0 border",
+          "flex min-h-0 flex-col border",
           ((fullscreen && !controlled) || height === undefined) && "flex-1",
         )}
         style={
@@ -211,31 +257,53 @@ export function CodeEditor({
             ? undefined
             : { height }
         }
+        ref={editorAreaRef}
       >
-        <Editor
-          {...props}
-          beforeMount={(m) => {
-            defineTheme(m);
-            setMonaco(m);
-            beforeMount?.(m);
-          }}
-          className="rounded-none"
-          height="100%"
-          options={{
-            automaticLayout: true,
-            ...options,
-            fontSize,
-            autoClosingBrackets: autoCloseMode,
-            autoClosingQuotes: autoCloseMode,
-            autoClosingOvertype: autoClose ? "auto" : "never",
-            autoSurround: autoClose ? "languageDefined" : "never",
-            // Pasted text with U+2028/U+2029 would otherwise open a native,
-            // English-only confirm() (Monaco's standalone dialog service).
-            unusualLineTerminators: "auto",
-          }}
-          theme={MONACO_THEME}
-          width="100%"
-        />
+        <div className="min-h-0 flex-1">
+          <Editor
+            {...props}
+            beforeMount={(m) => {
+              defineTheme(m);
+              setMonaco(m);
+              beforeMount?.(m);
+            }}
+            className="rounded-none"
+            height="100%"
+            onMount={(mounted, m) => {
+              setEditor(mounted);
+              onMount?.(mounted, m);
+            }}
+            options={{
+              automaticLayout: true,
+              ...options,
+              fontSize,
+              autoClosingBrackets: autoCloseMode,
+              autoClosingQuotes: autoCloseMode,
+              autoClosingOvertype: autoClose ? "auto" : "never",
+              autoSurround: autoClose ? "languageDefined" : "never",
+              tabSize,
+              insertSpaces: true,
+              // The user's tab size wins over the starter code's indentation.
+              detectIndentation: false,
+              wordWrap: wordWrap ? "on" : "off",
+              lineNumbers,
+              minimap: { enabled: minimap },
+              // Pasted text with U+2028/U+2029 would otherwise open a native,
+              // English-only confirm() (Monaco's standalone dialog service).
+              unusualLineTerminators: "auto",
+            }}
+            theme={MONACO_THEME}
+            width="100%"
+          />
+        </div>
+        {vim && (
+          <div
+            aria-label={t("vimStatus")}
+            aria-live="polite"
+            className="h-6 shrink-0 truncate border-t px-2 font-mono text-muted-foreground text-xs leading-6"
+            ref={vimStatusRef}
+          />
+        )}
       </div>
     </div>
   );

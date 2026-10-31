@@ -8,6 +8,12 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin();
 
 const config: NextConfig = {
+  turbopack: {
+    resolveAlias: {
+      // monaco-vim imports Monaco's API; give it the CDN-loaded instance.
+      "monaco-editor/esm/vs/editor/editor.api": "./lib/monaco-global.ts",
+    },
+  },
   experimental: {
     serverActions: {
       // Profile image uploads accept up to 5 MB (see upload-profile-image.ts),

@@ -6,6 +6,7 @@ export * from "./schemas/constraints";
 export * from "./schemas/contests";
 export * from "./schemas/lessons";
 export * from "./schemas/notifications";
+export * from "./schemas/preferences";
 export * from "./schemas/problems";
 export * from "./schemas/submissions";
 export * from "./schemas/surveys";

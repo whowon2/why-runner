@@ -82,7 +82,11 @@
     "fontSize": "Font size: {size}px",
     "autoClose": "Auto-close brackets and quotes",
     "autoCloseOn": "Auto-close brackets and quotes: on",
-    "autoCloseOff": "Auto-close brackets and quotes: off"
+    "autoCloseOff": "Auto-close brackets and quotes: off",
+    "vimStatus": "Vim mode"
+  },
+  "Preferences": {
+    "saveFailed": "Couldn't save this setting to your account. It's still kept in this browser."
   },
   "ProblemPicker": {
     "searchPlaceholder": "Search by name or code…",
@@ -1461,7 +1465,8 @@
   "SettingsPage": {
     "nav": {
       "appearance": "Appearance",
-      "notifications": "Notifications"
+      "notifications": "Notifications",
+      "editor": "Editor"
     },
     "appearance": {
       "mode": "mode",
@@ -1471,6 +1476,25 @@
       "description": "Completely change the look and feel of the website by picking one of the presets, or by creating your own custom theme.",
       "preset": "preset",
       "custom": "custom"
+    },
+    "editor": {
+      "title": "Editor",
+      "description": "Settings for the code editor on problems, contests and lessons. Saved to your account, so they follow you to other computers.",
+      "fontSize": "Font size",
+      "smaller": "Smaller font",
+      "larger": "Larger font",
+      "autoClose": "Auto-close brackets and quotes",
+      "vim": "Vim keybindings",
+      "vimDescription": "Modal editing with vim keys. Inside the editor, Esc returns to normal mode instead of leaving fullscreen.",
+      "tabSize": "Tab size",
+      "wordWrap": "Wrap long lines",
+      "lineNumbers": "Line numbers",
+      "lineNumberModes": {
+        "on": "on",
+        "off": "off",
+        "relative": "relative"
+      },
+      "minimap": "Minimap"
     },
     "notifications": {
       "title": "Notifications",

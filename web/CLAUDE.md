@@ -64,6 +64,7 @@ Server-only helpers (no auth of their own) go outside `lib/actions/` and start w
 - `problemOnContest` — Problem assignment to contest
 - `activityFeed` — User activity events
 - `code_run` — ungraded "Run with custom input" executions (own `code_run_status` enum: `PENDING|RUNNING|OK|RUNTIME_ERROR|TIME_LIMIT_EXCEEDED|MEMORY_LIMIT_EXCEEDED|COMPILATION_ERROR|ERROR`), deleted by the judge after 24 h
+- `user_preference` — one row per user with every account-wide setting (light/dark/system, theme preset or custom tokens, editor font size/auto-close/vim/tab size/word wrap/line numbers/minimap); NULL column = default. Notification opt-outs stay in `notification_preference`
 
 ### Submission Pipeline
 
@@ -89,6 +90,12 @@ The standalone problem (`/problems/[slug]`), contest problem (`/contests/[slug]/
 ### Themes
 
 Presets live in `lib/themes/presets.ts`: six UI tokens per light/dark mode plus an optional `palette` (success/warning tones and editor syntax colors, from the theme's official palette). `resolveTheme` (`lib/themes/palette.ts`) falls back to `derivePalette` for custom themes and palette-less modes. The tokens and `--success`/`--warning` go on `<html>` (provider + the inline init script in `app/[locale]/layout.tsx`); `globals.css` derives `--muted`, `--border`, `--accent`, etc. from them with `color-mix`, so use those Tailwind tokens (`text-success`, `bg-primary/10`, …) instead of fixed hues. `CodeEditor` builds its Monaco theme from the shown theme (`lib/themes/monaco-theme.ts`).
+
+### User Preferences
+
+Settings are read synchronously from per-setting local stores mirrored in `localStorage` (editor: `hooks/use-editor-settings.tsx`; theme: `ThemeTokensProvider`; mode: `next-themes`), so the pre-paint theme script and signed-out visitors work as before. Each store is bound in `lib/preferences-sync.ts`; `PreferencesSync` (`providers/`) applies the signed-in account's row once per load (settings changed in this page win), seeds a missing row from this browser (`seedUserPreferences`), and committed changes go through `savePreference` (one debounced `updateUserPreferences` patch, zod-validated by `lib/preferences.ts`). Commit light/dark through `useColorMode()`, never raw `setTheme` (that's for previews only). New setting = nullable column + schema field + binding.
+
+Vim mode (`monaco-vim`, lazy) must drive the CDN-loaded Monaco: `next.config.ts` aliases `monaco-editor/esm/vs/editor/editor.api` to `lib/monaco-global.ts` (the global instance). Don't import `monaco-editor` at runtime elsewhere.
 
 ### Auth
 
