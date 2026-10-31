@@ -2133,7 +2133,8 @@
       "larger": "Aumentar",
       "theme": "Tema",
       "dark": "Escuro",
-      "light": "Claro"
+      "light": "Claro",
+      "preset": "Tema de cores"
     },
     "Status": {
       "solved": "Resolvido",

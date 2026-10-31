@@ -6,10 +6,12 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
 } from "react";
-import { applyThemeTokens } from "@/lib/themes/apply-theme";
+import { applyTheme } from "@/lib/themes/apply-theme";
+import { type ResolvedTheme, resolveTheme } from "@/lib/themes/palette";
 import { DEFAULT_PRESET_ID, getPresetById } from "@/lib/themes/presets";
 import { readStoredTheme, writeStoredTheme } from "@/lib/themes/storage";
 import type {
@@ -23,6 +25,8 @@ type ThemeTokensContextValue = {
   stored: StoredTheme;
   activeMode: ThemeMode;
   activeTokens: ThemeTokens;
+  /** What's on screen: `stored`, or the previewed preset, with its palette. */
+  shown: ResolvedTheme;
   setPreset: (presetId: string) => void;
   setCustomTokens: (tokens: ThemeTokens) => void;
   // Temporarily shows a preset without persisting it; null restores `stored`.
@@ -57,12 +61,18 @@ export function ThemeTokensProvider({
     if (fromStorage) setStored(fromStorage);
   }, []);
 
-  useEffect(() => {
-    const shown: StoredTheme = previewId
-      ? { mode: "preset", presetId: previewId }
-      : stored;
-    applyThemeTokens(tokensFor(shown, activeMode));
-  }, [stored, previewId, activeMode]);
+  const shown = useMemo(
+    () =>
+      resolveTheme(
+        previewId ? { mode: "preset", presetId: previewId } : stored,
+        activeMode,
+      ),
+    [stored, previewId, activeMode],
+  );
+
+  // Layout effect: applied before any child's effect reads the new colors
+  // (the code editor rebuilds its Monaco theme in one).
+  useLayoutEffect(() => applyTheme(shown), [shown]);
 
   const setPreset = useCallback((presetId: string) => {
     const next: StoredTheme = { mode: "preset", presetId };
@@ -107,11 +117,12 @@ export function ThemeTokensProvider({
       stored,
       activeMode,
       activeTokens,
+      shown,
       setPreset,
       setCustomTokens,
       previewPreset: setPreviewId,
     }),
-    [stored, activeMode, activeTokens, setPreset, setCustomTokens],
+    [stored, activeMode, activeTokens, shown, setPreset, setCustomTokens],
   );
 
   return (

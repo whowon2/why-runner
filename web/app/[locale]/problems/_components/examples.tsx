@@ -20,7 +20,7 @@ export function ProblemExamples({
             </div>
             <pre
               translate="no"
-              className="notranslate mt-1 overflow-x-auto rounded-none border p-2"
+              className="notranslate mt-1 overflow-x-auto rounded-none border bg-muted/60 p-2 font-mono"
             >
               {input}
             </pre>
@@ -32,7 +32,7 @@ export function ProblemExamples({
             </div>
             <pre
               translate="no"
-              className="notranslate mt-1 overflow-x-auto rounded-none border p-2"
+              className="notranslate mt-1 overflow-x-auto rounded-none border bg-muted/60 p-2 font-mono"
             >
               {outputs[i]}
             </pre>

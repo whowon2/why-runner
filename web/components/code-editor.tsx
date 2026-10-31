@@ -1,6 +1,6 @@
 "use client";
 
-import Editor, { type EditorProps } from "@monaco-editor/react";
+import Editor, { type EditorProps, type Monaco } from "@monaco-editor/react";
 import {
   AArrowDown,
   AArrowUp,
@@ -9,7 +9,6 @@ import {
   Minimize2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +23,9 @@ import {
   EDITOR_FONT_SIZE_MIN,
   useEditorFontSize,
 } from "@/hooks/use-editor-font-size";
+import { buildMonacoTheme, MONACO_THEME } from "@/lib/themes/monaco-theme";
 import { cn } from "@/lib/utils";
+import { useThemeTokens } from "@/providers/theme-tokens-provider";
 
 /**
  * Monaco editor used by every solution editor (lesson exercise, problem
@@ -39,12 +40,16 @@ import { cn } from "@/lib/utils";
  * Pass `maximized`/`onMaximizedChange` to let the parent own the toggle (the
  * editor workspace shell collapses its other panels instead); the editor then
  * doesn't cover the viewport itself, only Esc still leaves.
+ *
+ * Colors come from the app theme (`buildMonacoTheme`): the shown preset or
+ * custom theme, redefined on every preset, preview or light/dark change.
  */
 export function CodeEditor({
   toolbar,
   height,
   className,
   options,
+  beforeMount,
   maximized,
   onMaximizedChange,
   ...props
@@ -56,7 +61,12 @@ export function CodeEditor({
   onMaximizedChange?: (maximized: boolean) => void;
 }) {
   const t = useTranslations("CodeEditor");
-  const { resolvedTheme } = useTheme();
+  const { shown, activeMode } = useThemeTokens();
+  // From beforeMount: `useMonaco()` rejects unhandled when its effect is
+  // cleaned up before the loader resolves (dev StrictMode).
+  const [monaco, setMonaco] = useState<Monaco | null>(null);
+  const defineTheme = (m: Monaco) =>
+    m.editor.defineTheme(MONACO_THEME, buildMonacoTheme(shown, activeMode));
   const { fontSize, setFontSize } = useEditorFontSize();
   const [autoClose, setAutoClose] = useEditorAutoClose();
   const autoCloseMode = autoClose ? "languageDefined" : "never";
@@ -68,6 +78,15 @@ export function CodeEditor({
     ? (on) => onMaximizedChange?.(on)
     : setOwnFullscreen;
   const setFullscreen = (on: boolean) => setFullscreenRef.current(on);
+
+  useEffect(() => {
+    if (!monaco) return;
+    monaco.editor.defineTheme(
+      MONACO_THEME,
+      buildMonacoTheme(shown, activeMode),
+    );
+    monaco.editor.setTheme(MONACO_THEME);
+  }, [monaco, shown, activeMode]);
 
   useEffect(() => {
     if (!fullscreen) return;
@@ -184,7 +203,7 @@ export function CodeEditor({
       </div>
       <div
         className={cn(
-          "min-h-0",
+          "min-h-0 border",
           ((fullscreen && !controlled) || height === undefined) && "flex-1",
         )}
         style={
@@ -195,6 +214,11 @@ export function CodeEditor({
       >
         <Editor
           {...props}
+          beforeMount={(m) => {
+            defineTheme(m);
+            setMonaco(m);
+            beforeMount?.(m);
+          }}
           className="rounded-none"
           height="100%"
           options={{
@@ -209,7 +233,7 @@ export function CodeEditor({
             // English-only confirm() (Monaco's standalone dialog service).
             unusualLineTerminators: "auto",
           }}
-          theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
+          theme={MONACO_THEME}
           width="100%"
         />
       </div>

@@ -3,6 +3,7 @@
 import { Minus, Moon, Plus, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
+import { PresetGrid } from "@/app/[locale]/settings/_components/preset-grid";
 import { Button } from "@/components/ui/button";
 import {
   EDITOR_FONT_SIZE_MAX,
@@ -10,7 +11,7 @@ import {
   useEditorFontSize,
 } from "@/hooks/use-editor-font-size";
 
-/** Editor font size (shared with every editor) and the site theme. */
+/** Editor font size (shared with every editor), light/dark and the color preset. */
 export function SettingsDrawer() {
   const t = useTranslations("Workspace.Settings");
   const { fontSize, setFontSize } = useEditorFontSize();
@@ -52,6 +53,10 @@ export function SettingsDrawer() {
           {dark ? <Moon /> : <Sun />}
           {dark ? t("dark") : t("light")}
         </Button>
+      </div>
+      <div className="flex flex-col gap-3">
+        <span className="text-sm">{t("preset")}</span>
+        <PresetGrid className="grid-cols-2 sm:grid-cols-2 md:grid-cols-2" />
       </div>
     </div>
   );

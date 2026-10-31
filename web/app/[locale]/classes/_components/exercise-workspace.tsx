@@ -186,7 +186,7 @@ function Workspace({ exercise }: { exercise: Exercise }) {
         statement={<ExerciseStatement exercise={exercise} />}
         status={
           exercise.done ? (
-            <span className="flex items-center gap-1.5 font-medium text-green-600 dark:text-green-400">
+            <span className="flex items-center gap-1.5 font-medium text-success">
               <CheckCircle2 className="size-4" />
               {t("Status.completed")}
             </span>

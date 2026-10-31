@@ -36,6 +36,7 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
           <div className="grid gap-2">
             <Button
               disabled={examples.busy || source.tests.length === 0}
+              className="border-primary/40 text-primary hover:bg-primary/10 hover:text-primary"
               onClick={() =>
                 act(() => playExamples(source.tests.map((x) => x.index)))
               }
@@ -51,7 +52,7 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
           </div>
         )}
         <Button
-          className="h-11"
+          className="h-11 font-semibold shadow-sm"
           disabled={locked || source.submitting}
           onClick={() => act(submit)}
           title={source.lockedReason ?? undefined}
@@ -65,7 +66,7 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
         {latest && (
           <div
             className={cn(
-              "flex flex-wrap items-center gap-2 border p-2 text-sm",
+              "flex flex-wrap items-center gap-2 border bg-muted/30 p-2 text-sm",
               statusTone(latest.status),
             )}
           >
