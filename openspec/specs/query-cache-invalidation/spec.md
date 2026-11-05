@@ -107,11 +107,15 @@ Saving the profile (`updateProfile`) SHALL invalidate, from the mutation hook it
 - **THEN** the profile card shows it without a full page reload
 
 ### Requirement: Class membership changes refresh every student-scoped view
-Adding a co-teacher, changing a member's role, and removing a member SHALL invalidate the class queries (`["classes"]` prefix: class detail, class list, gradebook, lesson lists), lesson reviews (`["lessons"]`) and exercise similarity (`["exercises"]`), since each change moves a user in or out of the class's students.
+Adding a co-teacher, changing a member's role, and removing a member SHALL invalidate the class queries (`["classes"]` prefix: class detail, class list, gradebook, lesson lists), lesson reviews (`["lessons"]`), exercise similarity (`["exercises"]`) and the "Add co-teacher" user search (`["co-teacher-search"]`, whose rows show each user's membership in the class), since each change moves a user in or out of the class's students.
 
 #### Scenario: Owner promotes a student then opens the gradebook
 - **WHEN** the owner makes a student a co-teacher and then opens the gradebook in the same session
 - **THEN** the gradebook SHALL be refetched without that user's row
+
+#### Scenario: Owner adds a co-teacher then searches for them again
+- **WHEN** the owner adds a user as co-teacher and reopens the "Add co-teacher" dialog with the same search
+- **THEN** that user's row SHALL show "Already co-teacher" and be disabled
 
 ### Requirement: Admin role change refreshes the users list
 Promoting or demoting a user on `/admin/users` SHALL invalidate the admin users queries (`["admin", "users"]`).
