@@ -22,12 +22,15 @@ v5 answers the review of v4:
   the slides that did not belong to the story (404 page, profile, themes,
   shortcut hint);
 - a text-fit check (FIT) next to v4's word count; both print as LINT.
+- after the classroom test (2026-10-29), part 09 shows its results (SUS chart and
+  item chart from bench/charts.py survey(), open-answer themes, feedback -> fixes).
 
 Builders shared with v4 are imported from build_v4.py; screenshots and charts
 live in docs/presentation/{screenshots,charts}.
 """
 
 import importlib.util
+import json
 import math
 import re
 import shutil
@@ -53,6 +56,8 @@ SLIDE_W, TOP, BOTTOM = v4.SLIDE_W, v4.TOP, v4.BOTTOM
 CC, LC, E2E, PQ, PP, VD, CS = v4.CC, v4.LC, v4.E2E, v4.PQ, v4.PP, v4.VD, v4.CS
 AI, AIR, WC, CI, RG, SB, TESTS = v4.AI, v4.AIR, v4.WC, v4.CI, v4.RG, v4.SB, v4.TESTS
 c100 = v4.c100
+# classroom test 2026-10-29, aggregates from docs/evaluation/survey-review.md
+SV = json.loads((ROOT / "bench/results/survey_lesson_student.json").read_text("utf-8"))
 
 # Theme slot -> color. The slot names are v3's roles, not their usual meaning.
 THEME = {"dk1": "FFFFFF",      # tx1: text on filled badges
@@ -153,7 +158,7 @@ PARTS = [("Introdução", "o problema e a pergunta"),
          ("Plágio", "quem copiou de quem"),
          ("Por dentro", "arquitetura e judge"),
          ("Desempenho", "benchmarks e testes"),
-         ("Avaliação", "como os alunos vão avaliar"),
+         ("Avaliação", "o que os alunos disseram"),
          ("Discussão", "limitações e próximos passos")]
 
 
@@ -376,6 +381,60 @@ def b_limits(s):
         s.text(4.35, y, 7.5, 0.7, t, size=18, anchor="ctr")
 
 
+def b_quotes(items):
+    """Two open-answer themes: approximate mention count, theme, one student quote."""
+    def build(s):
+        w, gap = 5.4, 0.5
+        x0 = (SLIDE_W - len(items) * w - (len(items) - 1) * gap) / 2
+        for i, (num, label, quote, col) in enumerate(items):
+            x = x0 + i * (w + gap)
+            s.box(x, 1.9, w, 4.1, fill="tx2", line=col, adj=5000)
+            s.text(x, 2.1, w, 1.3, num, size=66, color=col, bold=True, align="ctr", anchor="ctr", count=False)
+            s.text(x, 3.45, w, 0.5, label, size=24, bold=True, align="ctr")
+            s.text(x + 0.4, 4.25, w - 0.8, 1.2, f"“{quote}”", size=18, color="bg2", align="ctr", count=False)
+        s.caption("menções na pergunta aberta (30 respostas)", y=6.25)
+    return build
+
+
+FIXES = [("tela pequena", "tela cheia e tamanho da fonte", "#81"),
+         ("não via a saída nem o erro", "entrada, saída, esperado e traceback", "#83"),
+         ("texto da IA não rolava", "painel rolável, ou ao lado do código", "#88"),
+         ("trocar idioma apagava o código", "rascunho salvo no navegador", "#88"),
+         ("rodar antes de enviar", "botão Executar, com entrada própria", "#89")]
+
+
+def b_fixes(s):
+    s.text(1.1, 1.7, 4.2, 0.3, "OS ALUNOS DISSERAM", size=11, color="bg2", bold=True, mono=True, count=False)
+    s.text(6.1, 1.7, 4.8, 0.3, "MUDOU", size=11, color="accent1", bold=True, mono=True, count=False)
+    rows = FIXES + [("saída idêntica", "modo tokens: próximo passo", "")]
+    for i, (said, change, pr) in enumerate(rows):
+        y = 2.05 + i * 0.64
+        todo = not pr
+        s.box(0.9, y, 11.5, 0.54, line=AMBER if todo else "accent6")
+        s.text(1.1, y, 4.3, 0.54, said, size=15, anchor="ctr")
+        s.arrow(5.4, y + 0.27, 5.95, y + 0.27, color=AMBER if todo else "accent1")
+        s.text(6.1, y, 4.9, 0.54, change, size=15, bold=True, color=AMBER if todo else "accent1", anchor="ctr")
+        if pr:
+            s.text(11.1, y, 1.2, 0.54, pr, size=13, color="bg2", mono=True, align="r", anchor="ctr", count=False)
+
+
+def b_future(s):
+    s.pills(["torneio e professor em sala", "saída por tokens"], 2.9, size=18, h=0.7)
+    s.pills(["detectar código de IA", "isolate com cgroups"], 3.9, size=18, h=0.7, colors=["bg2", "bg2"])
+
+
+def b_cronograma(s):
+    steps_ = [("Teste em sala", "29/10 ✓", True), ("Correções", "30/10 ✓", True), ("Defesa", "", False)]
+    xs = [2.0, 5.95, 9.9]
+    for i, ((a, b, done), x) in enumerate(zip(steps_, xs)):
+        s.badge(x + 0.45, 2.4, str(i + 1), color="accent6" if done else "accent1", d=0.9, size=24)
+        s.text(x - 0.6, 3.5, 2.9, 0.5, a, size=22, bold=True, align="ctr")
+        if b:
+            s.text(x - 0.6, 4.05, 2.9, 0.4, b, size=16, color="accent1", align="ctr")
+        if i < 2:
+            s.arrow(x + 1.45, 2.85, xs[i + 1] + 0.35, 2.85, color="accent6")
+
+
 def b_thanks(s):
     s.text(0.8, 2.2, SLIDE_W - 1.6, 1.4, "Obrigado!", size=60, color="accent1", bold=True, align="ctr",
            anchor="ctr", count=False)
@@ -420,7 +479,7 @@ add("", b_cover,
 add("Roteiro da apresentação", b_agenda,
     "O roteiro: primeiro o problema e a pergunta de pesquisa, depois como o sistema foi construído. Em seguida "
     "o produto, na ordem em que ele é usado: o professor, o aluno, as aulas da turma e a detecção de plágio. Só "
-    "então como ele funciona por dentro, o desempenho medido, como os alunos vão avaliar, e por fim limitações "
+    "então como ele funciona por dentro, o desempenho medido, o que os alunos disseram no teste em sala, e por fim limitações "
     "e próximos passos.", kicker="ROTEIRO", max_words=60)
 
 # ---- 1 introdução
@@ -432,7 +491,7 @@ add("Juízes online corrigem código; ensinar é outra coisa", v4.b_wrong_answer
 add("A pergunta que guia o trabalho", b_question,
     "Daí a pergunta de pesquisa: será que feedback gerado por IA, somado a atividades montadas pelo professor, "
     "torna um juiz online mais útil para o ensino? O resto da apresentação mostra o que foi construído para "
-    "responder isso, e como vamos testar.", max_words=20)
+    "responder isso, e o que uma turma achou dele.", max_words=20)
 add("O objetivo é um juiz online feito para a sala de aula", v4.b_goal,
     "O objetivo geral é desenvolver e avaliar um juiz online voltado ao ensino. Três pilares: executar código com "
     "segurança em várias linguagens; explicar o erro, com dicas de IA que não entregam a solução; e deixar o "
@@ -783,42 +842,80 @@ add("Cada push roda três jobs no GitHub Actions", b_ci,
 
 # ---- 9 avaliação
 part(9)
-steps("convite", "termo", "SUS", "resultados", "data")
+steps("convite", "SUS", "turma", "nota", "itens", "ajudou", "atrapalhou", "correções")
 add("A avaliação acontece dentro do sistema, no fim da atividade", shot("v4-survey-banner.png"),
-    "Agora, como os alunos vão avaliar. Os questionários estão dentro do próprio sistema: quando o torneio ou a "
-    "lista termina, aparece este convite para quem participou.", step="convite")
-add("Quatro questionários, todos com termo de consentimento", shot("v4-survey-tcle.png"),
-    "São quatro formulários: professor e aluno, para torneio e para lista de exercícios. Todos começam pelo termo "
-    "de consentimento; as respostas são anônimas na análise.", step="termo")
+    "Como os alunos avaliaram. Os questionários estão dentro do próprio sistema: quando a lista ou o torneio "
+    "termina, aparece este convite para quem participou. Começa pelo termo de consentimento, e as respostas são "
+    "anônimas na análise.", step="convite")
 add("A usabilidade é medida pelo SUS", shot("v4-survey-sus.png"),
     "A usabilidade é medida pela System Usability Scale, de Brooke: dez afirmações de 1 a 5, e o sistema calcula "
-    "a nota de 0 a 100 automaticamente.", step="SUS")
-add("Os resultados saem prontos, anônimos e em CSV", shot("v4-survey-results.png", "Ainda sem respostas"),
-    "A página de resultados: número de respostas, SUS médio, mediana e desvio, filtro por atividade e exportação "
-    "em CSV. Está vazia porque ainda não aplicamos com alunos.", step="resultados")
-add("O primeiro teste em sala é em 29/10/2026", v4.b_date,
-    "O ponto mais importante: a avaliação com alunos ainda não aconteceu. O primeiro teste em sala está marcado "
-    "para 29 de outubro de 2026, com um torneio e uma lista de exercícios, e os questionários no final. Nenhum "
-    "número desta apresentação vem de alunos.", step="data")
+    "a nota de 0 a 100 automaticamente. Depois vêm perguntas específicas sobre a lista e duas perguntas abertas.",
+    step="SUS")
+add(f"{SV['responses']} alunos fizeram uma lista em sala, em 29/10/2026",
+    v4.b_big_numbers([(str(SV["responses"]), "alunos responderam", "accent1"),
+                      (str(SV["never_used_judge"]), "nunca usaram um juiz", "accent5"),
+                      ("1", "lista, em Python", "accent4")],
+                     "1º ano do Técnico em Informática integrado · IFMG"),
+    f"O teste em sala foi em 29 de outubro, numa turma do primeiro ano do Técnico em Informática integrado do "
+    f"IFMG. Os alunos resolveram uma lista de exercícios, a lista 12 extra 2, em Python, e responderam o "
+    f"questionário do aluno logo depois. {SV['responses']} responderam; {SV['never_used_judge']} nunca tinham "
+    f"usado um juiz online. Só alunos e só uma lista: não houve torneio nem questionário do professor nesse "
+    f"teste.", step="turma", max_words=18)
+add(f"SUS {fmt(SV['sus']['mean'])}: acima da referência de {SV['sus']['benchmark']}",
+    chart("survey_sus_bands", f"Mediana {fmt(SV['sus']['median'])} · desvio {fmt(SV['sus']['sd'])} · "
+                              f"IC 95%: {fmt(SV['sus']['ci95'][0])} a {fmt(SV['sus']['ci95'][1])}"),
+    f"A nota SUS média foi {fmt(SV['sus']['mean'])}, acima da referência de {SV['sus']['benchmark']}: na escala "
+    f"de Bangor, usabilidade boa. A mediana, {fmt(SV['sus']['median'])}, é maior que a média: 13 dos 30 deram "
+    f"nota A, acima de 80,3, e um grupo menor de notas baixas puxa a média para baixo. A dispersão é grande: "
+    f"desvio de {fmt(SV['sus']['sd'])}. Os itens mais fracos foram precisar de suporte técnico, 2,57, com 9 de 30 "
+    f"concordando, e sentir-se confiante, 3,50; faz sentido numa turma em que 80% nunca tinha usado um juiz.",
+    step="nota", max_words=16)
+add("Entrar e entregar foi fácil; ganhar confiança, nem tanto",
+    chart("survey_items", "Dicas da IA: 23 respostas; 7 alunos não usaram"),
+    "Nas perguntas específicas, de 1 a 5: entrar na turma e achar a lista, 4,70; saber como entregar, 4,43; "
+    "usaria para estudar sozinho, 4,13; as dicas da IA ajudaram sem dar a resposta, 4,04. O retorno do juiz "
+    "ficou atrás, 3,53, e o ganho de confiança foi o mais baixo, 3,23.", step="itens")
+add("O que mais ajudou: a IA e a correção imediata",
+    b_quotes([("~14", "dicas da IA", "As dicas sem entregar a resposta da IA", "accent4"),
+              ("~9", "correção imediata", "respostas e feedbacks quase imediatos", "accent1")]),
+    "Na pergunta aberta sobre o que ajudou, as respostas se agrupam em dois temas. Cerca de 14 citaram a IA: "
+    "dicas que não entregam a resposta, ajuda quase em tempo real. Cerca de 9 citaram a correção automática e "
+    "imediata. Os sete comentários gerais foram todos positivos.", step="ajudou")
+add("O que mais atrapalhou: a saída tinha que ser idêntica",
+    b_quotes([("~9", "saída idêntica", "tive que refazer várias vezes", AMBER),
+              ("~6", "erro do juiz pouco claro", "mostrar como ficou a minha saída", AMBER)]),
+    "A reclamação principal: a saída tinha que bater exatamente com a esperada, espaço por espaço. No problema "
+    "Matriz ao cubo, 26 envios de 13 alunos só diferiam em espaços. A segunda: o juiz não mostrava a saída do "
+    "aluno nem o erro do Python.", step="atrapalhou", max_words=16)
+add("Do retorno da turma às correções", b_fixes,
+    "O que mudou depois do teste, já em produção: editor em tela cheia e com tamanho de fonte; o exercício "
+    "mostra entrada, saída do aluno, saída esperada e o erro do Python nos casos visíveis; o painel da IA rola e "
+    "pode ficar ao lado do código; o rascunho não se perde ao trocar o idioma; o veredito aparece na barra do "
+    "editor; e o botão Executar roda o programa com uma entrada própria, sem contar como envio. A comparação "
+    "exata ficou de fora: os problemas antigos continuam no modo exato, e passar para tokens é o próximo passo.",
+    step="correções", max_words=60)
 
 # ---- 10 discussão
 part(10)
 add("O que o sistema faz bem", v4.b_strengths,
     "Pontos fortes: não há fila externa, só o PostgreSQL; o isolamento é o da IOI, sem Docker privilegiado; e a "
     "IA está sob controle do professor.")
-add("A maior limitação: ainda sem avaliação com alunos", b_limit("A pergunta de pesquisa ainda não tem resposta."),
-    "A primeira limitação é a maior: sem o teste em sala, a pergunta de pesquisa continua sem resposta.")
+add("A maior limitação: uma turma, uma lista, só alunos",
+    b_limit("30 alunos, uma aula, sem grupo de comparação. Torneio e professor ainda não foram avaliados."),
+    "A maior limitação é o tamanho da avaliação: uma turma, uma lista, só Python, questionário logo após uma "
+    "aula, sem grupo de comparação nem medida antes e depois. Também pode haver efeito de novidade. E só os "
+    "alunos responderam: o torneio e a visão do professor ainda não foram avaliados.", max_words=20)
 add("Limitações técnicas que os benchmarks mostraram", b_limits,
     "As limitações técnicas: em produção o judge tem uma vCPU, e aí o pool não ajuda. O console do Portugol "
     "imprime erros e termina com sucesso, então erro vira resposta errada. O MLE é heurístico; o modo cgroups do "
     "isolate resolveria. As restrições são busca no texto; um parser por linguagem resolveria. E o plágio só "
     "compara a mesma linguagem e não detecta código gerado por IA.", max_words=45)
-add("Próximos passos depois do teste em sala", v4.b_future,
-    "Trabalhos futuros: detectar código gerado por IA; ativar o modo cgroups do isolate; e um judge com vários "
-    "núcleos em produção. E, claro, a avaliação em sala.")
-add("Próximas etapas, em ordem", v4.b_cronograma,
-    "As próximas etapas, em ordem: o teste em sala no dia 29, a análise dos dados, com o SUS e os dados de uso do "
-    "próprio sistema, e a defesa.")
+add("Próximos passos", b_future,
+    "Trabalhos futuros: avaliar o torneio e a visão do professor em sala; passar os problemas antigos da "
+    "comparação exata para tokens, a maior reclamação dos alunos; detectar código gerado por IA; e ativar o modo "
+    "cgroups do isolate.", max_words=16)
+add("Onde estamos", b_cronograma,
+    "Onde estamos: o teste em sala foi no dia 29, a análise e as correções vieram logo depois, e agora a defesa.", max_words=16)
 reuse(13, "REFERÊNCIAS", v4.edit_references,
       "As referências, incluindo os quatro sistemas comparados, o artigo do winnowing de Schleimer, Wilkerson e "
       "Aiken, e o SUS de Brooke.")

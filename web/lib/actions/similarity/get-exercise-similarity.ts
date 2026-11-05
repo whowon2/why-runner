@@ -44,8 +44,12 @@ export async function getExerciseSimilarity(
   // The owner's and co-teachers' own test runs are not student work.
   const staffIds = await classStaffIds(classroom);
   const rows = await db.query.submission.findMany({
-    where: (s, { and, eq, notInArray }) =>
-      and(eq(s.exerciseId, found.id), notInArray(s.userId, staffIds)),
+    where: (s, { and, eq, ne, notInArray }) =>
+      and(
+        eq(s.exerciseId, found.id),
+        notInArray(s.userId, staffIds),
+        ne(s.status, "CANCELED"),
+      ),
     columns: {
       id: true,
       userId: true,

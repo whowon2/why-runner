@@ -20,6 +20,9 @@ pub enum SubmissionStatus {
     MEMORY_LIMIT_EXCEEDED,
     COMPILATION_ERROR,
     RUNTIME_ERROR,
+    /// Withdrawn by its author while still PENDING (web `cancelSubmission`).
+    /// Never claimed by the judge.
+    CANCELED,
 }
 
 /// How a run's stdout is compared with the declared output (`compare.rs`).
@@ -76,6 +79,9 @@ pub enum CodeRunStatus {
     CompilationError,
     /// Judge-side fault (sandbox failure, judge restarted mid-run).
     Error,
+    /// Withdrawn by its author while still PENDING (web `cancelRun`). Never
+    /// claimed by the judge.
+    Canceled,
 }
 
 /// A claimed `code_run` row: the student's program and their own stdin.

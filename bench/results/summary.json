@@ -767,5 +767,20 @@
       "files": 13,
       "expect_calls": 249
     }
+  },
+  "survey": {
+    "responses": 30,
+    "sus": {
+      "mean": 72.1,
+      "median": 76.2,
+      "sd": 18.3,
+      "min": 22.5,
+      "max": 95,
+      "ci95": [
+        65.6,
+        78.6
+      ],
+      "benchmark": 68
+    }
   }
 }

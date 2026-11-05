@@ -14,9 +14,10 @@ use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use tokio::sync::Notify;
 use tokio::time::{Duration, Instant, timeout};
+use uuid::Uuid;
 
 use crate::{
-    db::DbClient,
+    db::{Claimed, DbClient},
     models::{
         CodeRun, CompareMode, ConstraintKind, JudgeReport, Language, Problem, ProblemConstraint,
         ProblemValidation, Submission, SubmissionStatus, TestCaseResult,
@@ -274,7 +275,7 @@ async fn claim_and_process(slot: u32, db: &DbClient, state: &PoolState) -> bool 
 /// validation runs.
 async fn run_next_job(slot: u32, db: &DbClient) -> bool {
     match db.get_next_submission().await {
-        Ok(Some(sub)) => {
+        Ok(Some(Claimed::Ready(sub))) => {
             if sub.retry_count > 0 {
                 println!(
                     "[w{}] Processing submission: {} (retry {}/{})",
@@ -289,14 +290,24 @@ async fn run_next_job(slot: u32, db: &DbClient) -> bool {
             process_job(db, sub).await;
             return true;
         }
+        Ok(Some(Claimed::Unloadable { id, error })) => {
+            eprintln!("[w{}] Cannot load submission {}: {}", slot, id, error);
+            fail_submission(db, id, &unloadable_reason("submission", &error)).await;
+            return true;
+        }
         Ok(None) => {}
         Err(e) => eprintln!("[w{}] Failed to fetch next submission: {}", slot, e),
     }
 
     match db.get_next_run().await {
-        Ok(Some(run)) => {
+        Ok(Some(Claimed::Ready(run))) => {
             println!("[w{}] Processing run: {}", slot, run.id);
             process_run_job(db, run).await;
+            return true;
+        }
+        Ok(Some(Claimed::Unloadable { id, error })) => {
+            eprintln!("[w{}] Cannot load run {}: {}", slot, id, error);
+            fail_run(db, id, &unloadable_reason("run", &error)).await;
             return true;
         }
         Ok(None) => {}
@@ -304,9 +315,14 @@ async fn run_next_job(slot: u32, db: &DbClient) -> bool {
     }
 
     match db.get_next_validation().await {
-        Ok(Some(validation)) => {
+        Ok(Some(Claimed::Ready(validation))) => {
             println!("[w{}] Processing validation: {}", slot, validation.id);
             process_validation_job(db, validation).await;
+            true
+        }
+        Ok(Some(Claimed::Unloadable { id, error })) => {
+            eprintln!("[w{}] Cannot load validation {}: {}", slot, id, error);
+            fail_validation(db, id, &unloadable_reason("validation", &error)).await;
             true
         }
         Ok(None) => false,
@@ -317,11 +333,57 @@ async fn run_next_job(slot: u32, db: &DbClient) -> bool {
     }
 }
 
+/// Why a claimed job could not even be loaded. Almost always version skew:
+/// the website wrote something (a language, enum label, column) this judge
+/// build predates.
+fn unloadable_reason(kind: &str, error: &dyn std::fmt::Display) -> String {
+    format!(
+        "Judge v{} could not read this {}: {}. The judge is probably older than the website and needs to be updated.",
+        env!("CARGO_PKG_VERSION"),
+        kind,
+        error
+    )
+}
+
+/// Why a claimed job failed before it could run (its problem data could
+/// not be loaded).
+fn load_failed_reason(what: &str, error: &dyn std::fmt::Display) -> String {
+    format!(
+        "Judge v{} could not load {}: {}",
+        env!("CARGO_PKG_VERSION"),
+        what,
+        error
+    )
+}
+
+// The fail_* helpers end a claimed job as ERROR right away. If even that
+// write fails (database unreachable), the row stays RUNNING and the stale
+// reapers pick it up as before.
+
+async fn fail_submission(db: &DbClient, id: Uuid, reason: &str) {
+    if let Err(e) = db.fail_submission(id, reason).await {
+        eprintln!("❌ Failed to mark submission {} as ERROR: {}", id, e);
+    }
+}
+
+async fn fail_run(db: &DbClient, id: Uuid, reason: &str) {
+    if let Err(e) = db.fail_run(id, reason).await {
+        eprintln!("❌ Failed to mark run {} as ERROR: {}", id, e);
+    }
+}
+
+async fn fail_validation(db: &DbClient, id: Uuid, reason: &str) {
+    if let Err(e) = db.fail_validation(id, reason).await {
+        eprintln!("❌ Failed to mark validation {} as ERROR: {}", id, e);
+    }
+}
+
 async fn process_job(db: &DbClient, sub: Submission) {
     let problem = match db.get_problem(sub.problem_id).await {
         Ok(problem) => problem,
         Err(err) => {
             eprintln!("Failed to fetch problem: {}", err);
+            fail_submission(db, sub.id, &load_failed_reason("the problem", &err)).await;
             return;
         }
     };
@@ -335,6 +397,12 @@ async fn process_job(db: &DbClient, sub: Submission) {
             Ok(constraints) => constraints,
             Err(err) => {
                 eprintln!("Failed to fetch exercise constraints: {}", err);
+                fail_submission(
+                    db,
+                    sub.id,
+                    &load_failed_reason("the exercise's constraints", &err),
+                )
+                .await;
                 return;
             }
         },
@@ -381,6 +449,7 @@ async fn process_validation_job(db: &DbClient, validation: ProblemValidation) {
         Ok(problem) => problem,
         Err(err) => {
             eprintln!("Failed to fetch problem: {}", err);
+            fail_validation(db, validation.id, &load_failed_reason("the problem", &err)).await;
             return;
         }
     };
@@ -721,6 +790,26 @@ async fn prepare_checker(problem: &Problem) -> Result<runner::Prepared, String> 
     runner::prepare(code, language)
         .await
         .map_err(|result| format!("Checker failed to compile:\n{}", result.stderr))
+}
+
+#[cfg(test)]
+mod fail_reason_tests {
+    use super::{load_failed_reason, unloadable_reason};
+
+    #[test]
+    fn unloadable_reason_names_version_kind_and_error() {
+        let reason = unloadable_reason("submission", &"invalid value \"kotlin\" for enum Language");
+        assert!(reason.contains(env!("CARGO_PKG_VERSION")));
+        assert!(reason.contains("this submission"));
+        assert!(reason.contains("kotlin"));
+        assert!(reason.contains("needs to be updated"));
+    }
+
+    #[test]
+    fn load_failed_reason_names_what_and_error() {
+        let reason = load_failed_reason("the problem", &"connection reset");
+        assert!(reason.contains("could not load the problem: connection reset"));
+    }
 }
 
 #[cfg(test)]

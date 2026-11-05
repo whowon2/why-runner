@@ -30,6 +30,27 @@ const STALE_RUN_THRESHOLD: &str = "2 minutes";
 /// Runs are scratch work, deleted by the dispatcher sweep after this long.
 const RUN_RETENTION: &str = "24 hours";
 
+/// A row the judge has already claimed (set to `RUNNING`).
+pub enum Claimed<T> {
+    Ready(T),
+    /// Claimed, but loading it failed: usually a row written by a newer
+    /// website (a language/enum label or column this judge doesn't know).
+    /// The caller must fail it so it never sits `RUNNING` with no owner.
+    Unloadable {
+        id: Uuid,
+        error: sqlx::Error,
+    },
+}
+
+impl<T> Claimed<T> {
+    fn from_load(id: Uuid, row: Result<T>) -> Self {
+        match row {
+            Ok(row) => Claimed::Ready(row),
+            Err(error) => Claimed::Unloadable { id, error },
+        }
+    }
+}
+
 pub struct DbClient {
     pool: PgPool,
 }
@@ -66,8 +87,14 @@ impl DbClient {
         Ok(result.rows_affected())
     }
 
-    pub async fn get_next_submission(&self) -> Result<Option<Submission>> {
-        sqlx::query_as::<_, Submission>(&format!(
+    /// Claims the next claimable submission. The claim returns only the id
+    /// (it touches nothing but `status`/`updated_at`/`retry_count`) and the
+    /// row is loaded separately, so a row this judge can't decode (e.g. a
+    /// newer website wrote a language or column it doesn't know) comes back
+    /// as `Claimed::Unloadable` instead of failing the whole claim: the
+    /// caller fails it with the reason, and the rest of the queue moves on.
+    pub async fn get_next_submission(&self) -> Result<Option<Claimed<Submission>>> {
+        let id: Option<Uuid> = sqlx::query_scalar(&format!(
             "UPDATE submission
              SET status = 'RUNNING',
                  updated_at = now(),
@@ -79,12 +106,34 @@ impl DbClient {
                  FOR UPDATE SKIP LOCKED
                  LIMIT 1
              )
-             RETURNING id, code, language, problem_id, user_id, contest_id, question_letter, retry_count, exercise_id",
+             RETURNING id",
             claimable_submission()
         ))
         .bind(MAX_RETRIES)
         .fetch_optional(&self.pool)
-        .await
+        .await?;
+        let Some(id) = id else { return Ok(None) };
+
+        let row = sqlx::query_as::<_, Submission>(
+            "SELECT id, code, language, problem_id, user_id, contest_id, question_letter, retry_count, exercise_id
+             FROM submission WHERE id = $1",
+        )
+        .bind(id)
+        .fetch_one(&self.pool)
+        .await;
+        Ok(Some(Claimed::from_load(id, row)))
+    }
+
+    /// Ends a claimed submission as a judge-side `ERROR` (never penalised)
+    /// with `reason` as its output, instead of leaving it `RUNNING` for the
+    /// stale-reclaim/dead-letter path.
+    pub async fn fail_submission(&self, id: Uuid, reason: &str) -> Result<()> {
+        sqlx::query("UPDATE submission SET status = 'ERROR', output = $1 WHERE id = $2")
+            .bind(reason)
+            .bind(id)
+            .execute(&self.pool)
+            .await?;
+        Ok(())
     }
 
     pub async fn get_problem(&self, problem_id: Uuid) -> Result<Problem> {
@@ -173,8 +222,8 @@ impl DbClient {
     /// judge-worker replicas). No stale-`RUNNING` reclaim: unlike student
     /// submissions, an abandoned validation run has no retry budget — the
     /// professor just clicks "Validate" again, which creates a fresh row.
-    pub async fn get_next_validation(&self) -> Result<Option<ProblemValidation>> {
-        sqlx::query_as::<_, ProblemValidation>(
+    pub async fn get_next_validation(&self) -> Result<Option<Claimed<ProblemValidation>>> {
+        let id: Option<Uuid> = sqlx::query_scalar(
             "UPDATE problem_validation
              SET status = 'RUNNING',
                  updated_at = now()
@@ -185,17 +234,36 @@ impl DbClient {
                  FOR UPDATE SKIP LOCKED
                  LIMIT 1
              )
-             RETURNING id, code, language, problem_id",
+             RETURNING id",
         )
         .fetch_optional(&self.pool)
-        .await
+        .await?;
+        let Some(id) = id else { return Ok(None) };
+
+        let row = sqlx::query_as::<_, ProblemValidation>(
+            "SELECT id, code, language, problem_id FROM problem_validation WHERE id = $1",
+        )
+        .bind(id)
+        .fetch_one(&self.pool)
+        .await;
+        Ok(Some(Claimed::from_load(id, row)))
+    }
+
+    /// Ends a claimed validation as `ERROR` with `reason` as its output.
+    pub async fn fail_validation(&self, id: Uuid, reason: &str) -> Result<()> {
+        sqlx::query("UPDATE problem_validation SET status = 'ERROR', output = $1 WHERE id = $2")
+            .bind(reason)
+            .bind(id)
+            .execute(&self.pool)
+            .await?;
+        Ok(())
     }
 
     /// Claims one PENDING `code_run`, same atomic claim-and-lock shape as
     /// `get_next_validation`. No stale-`RUNNING` reclaim: `reap_stale_runs`
     /// fails abandoned runs instead.
-    pub async fn get_next_run(&self) -> Result<Option<CodeRun>> {
-        sqlx::query_as::<_, CodeRun>(
+    pub async fn get_next_run(&self) -> Result<Option<Claimed<CodeRun>>> {
+        let id: Option<Uuid> = sqlx::query_scalar(
             "UPDATE code_run
              SET status = 'RUNNING',
                  updated_at = now()
@@ -206,10 +274,29 @@ impl DbClient {
                  FOR UPDATE SKIP LOCKED
                  LIMIT 1
              )
-             RETURNING id, code, language, problem_id, stdin",
+             RETURNING id",
         )
         .fetch_optional(&self.pool)
-        .await
+        .await?;
+        let Some(id) = id else { return Ok(None) };
+
+        let row = sqlx::query_as::<_, CodeRun>(
+            "SELECT id, code, language, problem_id, stdin FROM code_run WHERE id = $1",
+        )
+        .bind(id)
+        .fetch_one(&self.pool)
+        .await;
+        Ok(Some(Claimed::from_load(id, row)))
+    }
+
+    /// Ends a claimed run as `ERROR` with `reason` as its stderr.
+    pub async fn fail_run(&self, id: Uuid, reason: &str) -> Result<()> {
+        sqlx::query("UPDATE code_run SET status = 'ERROR', stderr = $1 WHERE id = $2")
+            .bind(reason)
+            .bind(id)
+            .execute(&self.pool)
+            .await?;
+        Ok(())
     }
 
     /// The only problem data a run may read: never its tests or checker.
@@ -304,5 +391,30 @@ impl DbClient {
         .await?;
 
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Claimed;
+    use uuid::Uuid;
+
+    #[test]
+    fn claimed_keeps_the_id_when_loading_fails() {
+        let id = Uuid::new_v4();
+        let claimed: Claimed<()> = Claimed::from_load(id, Err(sqlx::Error::RowNotFound));
+        match claimed {
+            Claimed::Unloadable { id: got, error } => {
+                assert_eq!(got, id);
+                assert!(matches!(error, sqlx::Error::RowNotFound));
+            }
+            Claimed::Ready(_) => panic!("a failed load must not be Ready"),
+        }
+    }
+
+    #[test]
+    fn claimed_is_ready_when_loading_succeeds() {
+        let claimed = Claimed::from_load(Uuid::new_v4(), Ok(7));
+        assert!(matches!(claimed, Claimed::Ready(7)));
     }
 }
