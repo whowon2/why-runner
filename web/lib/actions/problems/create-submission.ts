@@ -10,6 +10,7 @@ import {
   userOnContest,
 } from "@/drizzle/schema";
 import { type ActionResult, fail, ok } from "@/lib/action-result";
+import { isLanguageAllowed } from "@/lib/allowed-languages";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { notifyJudge } from "@/lib/judge";
 import { letters } from "@/lib/letters";
@@ -21,12 +22,13 @@ const RATE_LIMIT_MAX = 5;
 
 // Only these fields come from the client. Everything else on the row
 // (status, userId, questionLetter, codeSize, …) is decided here.
-const inputSchema = z.object({
-  contestId: z.string().min(1),
-  problemId: z.string().min(1),
-  code: z.string().min(1),
-  language: languageSchema,
-})
+const inputSchema = z
+  .object({
+    contestId: z.string().min(1),
+    problemId: z.string().min(1),
+    code: z.string().min(1),
+    language: languageSchema,
+  })
   // Pasted invisible characters would break the program (normalize-code).
   .transform((input) => ({
     ...input,
@@ -38,7 +40,8 @@ export type CreateContestSubmissionInput = z.input<typeof inputSchema>;
 export type CreateContestSubmissionError =
   | "RATE_LIMITED"
   | "CODE_TOO_LARGE"
-  | "CONTEST_NOT_STARTED";
+  | "CONTEST_NOT_STARTED"
+  | "LANGUAGE_NOT_ALLOWED";
 
 export async function createSubmission(
   rawInput: CreateContestSubmissionInput,
@@ -92,12 +95,22 @@ export async function createSubmission(
   // standings and the contest UI compute it (`order` itself may have gaps
   // after removals).
   const attached = await db
-    .select({ problemId: problemOnContest.problemId })
+    .select({
+      problemId: problemOnContest.problemId,
+      allowedLanguages: problemOnContest.allowedLanguages,
+    })
     .from(problemOnContest)
     .where(eq(problemOnContest.contestId, input.contestId))
     .orderBy(asc(problemOnContest.order));
   const index = attached.findIndex((p) => p.problemId === input.problemId);
   if (index === -1) throw new Error("Problem not found.");
+
+  const { allowedLanguages } = attached[index];
+  if (!isLanguageAllowed(allowedLanguages, input.language)) {
+    return fail("LANGUAGE_NOT_ALLOWED", {
+      languages: allowedLanguages.join(", "),
+    });
+  }
 
   const questionLetter = letters[index] ?? String(index + 1);
 

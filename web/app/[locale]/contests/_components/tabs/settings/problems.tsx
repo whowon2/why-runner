@@ -6,8 +6,13 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+  AllowedLanguagesBadges,
+  AllowedLanguagesDialog,
+} from "@/components/allowed-languages-dialog";
 import type {
   Contest,
+  Language,
   ProblemOnContest,
   ProblemPreview,
 } from "@/drizzle/schema";
@@ -15,6 +20,7 @@ import { CreateProblemButton } from "@/app/[locale]/problems/_components/create-
 import { ProblemPicker } from "@/app/[locale]/problems/_components/problem-picker";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useAddProblemToContest } from "@/hooks/use-add-problem";
+import { useSetContestProblemLanguages } from "@/hooks/use-allowed-languages";
 import { useRemoveProblemFromContest } from "@/hooks/use-remove-problem";
 import { Link } from "@/i18n/navigation";
 import { contestLeaderboardKey } from "@/hooks/use-contest-leaderboard";
@@ -149,6 +155,13 @@ export function EditContestProblems({
               </div>
             </div>
             <div className="flex items-center gap-1">
+              <AllowedLanguagesBadges languages={probOnCont.allowedLanguages} />
+              <ProblemLanguagesButton
+                contestId={contest.id}
+                disabled={!canReorder}
+                languages={probOnCont.allowedLanguages}
+                problemId={probOnCont.problemId}
+              />
               {canReorder && (
                 <>
                   <Button
@@ -184,6 +197,44 @@ export function EditContestProblems({
         </Button>
       )}
     </div>
+  );
+}
+
+function ProblemLanguagesButton({
+  contestId,
+  problemId,
+  languages,
+  disabled,
+}: {
+  contestId: string;
+  problemId: string;
+  languages: Language[];
+  disabled: boolean;
+}) {
+  const t = useTranslations("AllowedLanguages");
+  const errorMessage = useActionErrorMessage();
+  const { mutate, isPending } = useSetContestProblemLanguages();
+
+  return (
+    <AllowedLanguagesDialog
+      description={t("contestDescription")}
+      disabled={disabled}
+      onSave={(next, done) =>
+        mutate(
+          { contestId, problemId, languages: next },
+          {
+            onSuccess: () => {
+              toast.success(t("saved"));
+              done();
+            },
+            onError: (error) =>
+              toast.error(t("error"), { description: errorMessage(error) }),
+          },
+        )
+      }
+      saving={isPending}
+      value={languages}
+    />
   );
 }
 

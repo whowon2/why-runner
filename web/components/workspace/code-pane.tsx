@@ -2,7 +2,7 @@
 
 import { FilePlus2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { CodeEditor } from "@/components/code-editor";
 import {
@@ -17,9 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Language } from "@/drizzle/schema";
+import type { Language } from "@/drizzle/schema";
 import { useCodeDraft } from "@/hooks/use-code-draft";
 import type { DraftTarget } from "@/lib/code-draft";
+import { offeredLanguages } from "@/lib/allowed-languages";
 import { nextCodeOnLanguageChange } from "@/lib/starter-code";
 import { useWorkspace } from "./workspace-context";
 
@@ -62,8 +63,30 @@ export function CodePane({ draftTarget }: { draftTarget: DraftTarget }) {
     latest: source.submissions?.[0],
   });
 
-  const current = useRef({ code, language });
-  current.current = { code, language };
+  // Lesson exercises and contest problems may restrict languages; the
+  // submit/run actions enforce the same list server-side.
+  const allowedKey = (source.allowedLanguages ?? []).join(",");
+  const offered = useMemo(
+    () => offeredLanguages(source.allowedLanguages ?? []),
+    // Keyed by content: the source object is rebuilt on every refetch.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [allowedKey],
+  );
+
+  const current = useRef({ code, language, offered });
+  current.current = { code, language, offered };
+
+  // A restored draft in a language that is no longer allowed, or nothing
+  // chosen while only one language is allowed: switch to an allowed one the
+  // same way a manual switch would (its draft or starter code).
+  const ensureAllowed = useEffectEvent(() => {
+    if (language ? offered.includes(language) : offered.length !== 1) return;
+    const preferred = source.defaultLanguage;
+    handleLanguageChange(
+      preferred && offered.includes(preferred) ? preferred : offered[0],
+    );
+  });
+  useEffect(() => ensureAllowed(), [language, offered]);
 
   useEffect(() => shareLanguage(language), [language, shareLanguage]);
 
@@ -82,12 +105,16 @@ export function CodePane({ draftTarget }: { draftTarget: DraftTarget }) {
         return { mode: "code", language, code };
       },
       load: (lang, value) => {
+        if (!current.current.offered.includes(lang)) {
+          toast.warning(t("languageNotAllowed", { language: lang }));
+          return;
+        }
         setLanguage(lang);
         setCode(value);
       },
     });
     return () => registerAnswer(null);
-  }, [registerAnswer, tUpload]);
+  }, [registerAnswer, t, tUpload]);
 
   function handleLanguageChange(value: string) {
     const next = value as Language;
@@ -138,7 +165,7 @@ export function CodePane({ draftTarget }: { draftTarget: DraftTarget }) {
               <SelectValue placeholder={tUpload("languagePlaceholder")} />
             </SelectTrigger>
             <SelectContent className="notranslate" translate="no">
-              {Language.enumValues.map((lang) => (
+              {offered.map((lang) => (
                 <SelectItem key={lang} value={lang}>
                   {lang}
                 </SelectItem>

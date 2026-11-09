@@ -12,6 +12,7 @@ import {
   userOnContest,
 } from "@/drizzle/schema";
 import { type ActionResult, fail, ok } from "@/lib/action-result";
+import { isLanguageAllowed } from "@/lib/allowed-languages";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { assertClassMember, isAdmin } from "@/lib/auth/permissions";
 import { blocksProgram } from "@/lib/blocks/program";
@@ -75,7 +76,12 @@ export type CreateRunError =
   | "RUN_IN_PROGRESS"
   | "INPUT_TOO_LARGE"
   | "CODE_TOO_LARGE"
-  | "CONTEST_NOT_STARTED";
+  | "CONTEST_NOT_STARTED"
+  | "LANGUAGE_NOT_ALLOWED";
+
+function languageNotAllowed(allowed: Language[]) {
+  return fail("LANGUAGE_NOT_ALLOWED", { languages: allowed.join(", ") });
+}
 
 /**
  * "Run with custom input": queues one ungraded execution of the program with
@@ -178,12 +184,17 @@ export async function createRun(
       }
 
       const attached = await db
-        .select({ problemId: problemOnContest.problemId })
+        .select({
+          problemId: problemOnContest.problemId,
+          allowedLanguages: problemOnContest.allowedLanguages,
+        })
         .from(problemOnContest)
         .where(eq(problemOnContest.contestId, input.contestId))
         .orderBy(asc(problemOnContest.order));
-      if (!attached.some((p) => p.problemId === input.problemId)) {
-        throw new Error("Problem not found.");
+      const entry = attached.find((p) => p.problemId === input.problemId);
+      if (!entry) throw new Error("Problem not found.");
+      if (!isLanguageAllowed(entry.allowedLanguages, input.language)) {
+        return languageNotAllowed(entry.allowedLanguages);
       }
 
       target = {
@@ -198,7 +209,12 @@ export async function createRun(
     case "exercise": {
       const linked = await db.query.exercise.findFirst({
         where: (exercise, { eq }) => eq(exercise.id, input.exerciseId),
-        columns: { id: true, problemId: true, mode: true },
+        columns: {
+          id: true,
+          problemId: true,
+          mode: true,
+          allowedLanguages: true,
+        },
         with: { lesson: { columns: { classroomId: true } } },
       });
       if (!linked) throw new Error("Exercise not found");
@@ -208,6 +224,12 @@ export async function createRun(
       // run the Portugol generated here, never client code.
       if (input.mode !== linked.mode) {
         throw new Error("This exercise expects a different kind of answer.");
+      }
+      if (
+        input.mode === "code" &&
+        !isLanguageAllowed(linked.allowedLanguages, input.language)
+      ) {
+        return languageNotAllowed(linked.allowedLanguages);
       }
       target = {
         problemId: linked.problemId,
