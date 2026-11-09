@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { Textarea } from "@/components/ui/textarea";
+import { useUnsavedChanges } from "@/components/unsaved-changes/unsaved-changes";
 import type { SurveyFormKey } from "@/drizzle/schemas/surveys";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useSubmitSurveyResponse } from "@/hooks/use-surveys";
@@ -98,7 +99,7 @@ export function SurveyForm({
     control,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<SurveyAnswers>({
     resolver: zodResolver(schema) as unknown as Resolver<SurveyAnswers>,
     defaultValues: {
@@ -110,6 +111,12 @@ export function SurveyForm({
       open: Object.fromEntries(definition.open.map((q) => [q.key, ""])),
     } as unknown as SurveyAnswers,
   });
+
+  // Answers live only in this page until submitted; a preview never saves.
+  useUnsavedChanges(
+    "survey-form",
+    entityId !== null && (isDirty || consent) && !submit.isSuccess,
+  );
 
   const onValid = (answers: SurveyAnswers) => {
     if (entityId === null) {

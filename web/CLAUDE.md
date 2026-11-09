@@ -99,6 +99,10 @@ Settings are read synchronously from per-setting local stores mirrored in `local
 
 Vim mode (`monaco-vim`, lazy) must drive the CDN-loaded Monaco: `next.config.ts` aliases `monaco-editor/esm/vs/editor/editor.api` to `lib/monaco-global.ts` (the global instance). Don't import `monaco-editor` at runtime elsewhere.
 
+### Saving and Unsaved Changes
+
+One save rule (`openspec/specs/unsaved-changes-guard`): a single control (switch, select, preset, lone date) saves on change and confirms; a form with several fields or free text saves only through its Save/Submit button, disabled until dirty, with `UnsavedChangesHint` beside it, and registers `useUnsavedChanges(id, isDirty)` (`components/unsaved-changes/`); small create/rename dialogs commit or cancel and aren't guarded. While any registered form is dirty, unload shows the browser prompt and in-app navigation (link clicks, the `useRouter` from `@/i18n/navigation`, Back/Forward) asks first in a dialog. After a successful save `form.reset(...)` so the form is clean again; wrap a navigation the form starts itself after saving in `allowNavigation(() => router.replace(...))`. Always import `useRouter` from `@/i18n/navigation`, never `next/navigation`, or the guard can't see it.
+
 ### Auth
 
 Better Auth with email/password + GitHub + Google OAuth. Session access:

@@ -30,6 +30,11 @@ import { AI_ASSISTANCE_LEVELS, type Contest } from "@/drizzle/schema";
 import { useActionErrorMessage } from "@/hooks/use-action-error-message";
 import { useUpdateContest } from "@/hooks/use-update-contest";
 import { useRouter } from "@/i18n/navigation";
+import {
+  allowNavigation,
+  UnsavedChangesHint,
+  useUnsavedChanges,
+} from "@/components/unsaved-changes/unsaved-changes";
 
 function toDateTimeLocal(date: Date | string | null) {
   if (!date) return "";
@@ -117,6 +122,8 @@ export function EditContestForm({ contest }: { contest: Contest }) {
     },
     resolver: zodResolver(formSchema),
   });
+  const { isDirty } = form.formState;
+  useUnsavedChanges("contest-settings", isDirty);
 
   function onSubmit(values: FormValues) {
     updateContest(
@@ -146,7 +153,9 @@ export function EditContestForm({ contest }: { contest: Contest }) {
           });
           queryClient.invalidateQueries({ queryKey: ["contests"] });
           if (updated?.slug && updated.slug !== contest.slug) {
-            router.replace(`/contests/${updated.slug}?tab=settings`);
+            allowNavigation(() =>
+              router.replace(`/contests/${updated.slug}?tab=settings`),
+            );
           }
         },
       },
@@ -299,9 +308,12 @@ export function EditContestForm({ contest }: { contest: Contest }) {
           )}
         />
 
-        <Button disabled={isPending || !form.formState.isDirty} type="submit">
-          {isPending ? <Loader className="animate-spin" /> : t("save")}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button disabled={isPending || !isDirty} type="submit">
+            {isPending ? <Loader className="animate-spin" /> : t("save")}
+          </Button>
+          <UnsavedChangesHint dirty={isDirty} />
+        </div>
       </form>
     </Form>
   );

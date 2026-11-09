@@ -6,7 +6,6 @@ import { Brain, Delete, Sparkles } from "lucide-react";
 import { markdownComponents } from "@/components/markdown-components";
 import { CopyButton } from "@/components/copy-button";
 import { useTranslations } from "next-intl";
-import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
@@ -40,6 +39,11 @@ import { useGenerateProblemNarrative } from "@/hooks/use-generate-problem-narrat
 import { useSuggestProblemTags } from "@/hooks/use-suggest-problem-tags";
 import { useUpdateProblem } from "@/hooks/use-update-problem";
 import { useRouter } from "@/i18n/navigation";
+import {
+  allowNavigation,
+  UnsavedChangesHint,
+  useUnsavedChanges,
+} from "@/components/unsaved-changes/unsaved-changes";
 import "katex/dist/katex.min.css";
 import { Eye, Pencil } from "lucide-react";
 import { ProblemTags } from "./badge";
@@ -66,21 +70,25 @@ export function NewProblem({
 
   const formSchema = z
     .object({
-    checkerCode: z.string(),
-    checkerLanguage: z.enum(CHECKER_LANGUAGES),
-    compareMode: z.enum(COMPARE_MODES),
-    description: z.string(),
-    difficulty: z.enum(["easy", "medium", "hard"]).optional(),
-    narrative: z.string(),
-    floatEpsilon: z.number().gt(0).lte(1),
-    tags: z.array(z.enum(PROBLEM_TAGS)),
-    title: z.string(),
-    // One object per test so input, output and the example flag move
-    // together (useFieldArray can't track arrays of plain strings).
-    tests: z.array(
-      z.object({ input: z.string(), output: z.string(), visible: z.boolean() }),
-    ),
-  })
+      checkerCode: z.string(),
+      checkerLanguage: z.enum(CHECKER_LANGUAGES),
+      compareMode: z.enum(COMPARE_MODES),
+      description: z.string(),
+      difficulty: z.enum(["easy", "medium", "hard"]).optional(),
+      narrative: z.string(),
+      floatEpsilon: z.number().gt(0).lte(1),
+      tags: z.array(z.enum(PROBLEM_TAGS)),
+      title: z.string(),
+      // One object per test so input, output and the example flag move
+      // together (useFieldArray can't track arrays of plain strings).
+      tests: z.array(
+        z.object({
+          input: z.string(),
+          output: z.string(),
+          visible: z.boolean(),
+        }),
+      ),
+    })
     .refine(
       (v) => v.compareMode !== "checker" || v.checkerCode.trim().length > 0,
       { message: t("Compare.checkerRequired"), path: ["checkerCode"] },
@@ -101,11 +109,16 @@ export function NewProblem({
       narrative: problem.narrative ?? "",
       tags: problem.tags,
       title: problem.title,
-      tests: problem.inputs.map((input, i) => ({
-        input,
-        output: problem.outputs[i] ?? "",
-        visible: problem.visible[i] === true,
-      })),
+      // A new problem starts with one blank test, part of the defaults so
+      // the form isn't dirty before the author types anything.
+      tests:
+        problem.inputs.length > 0
+          ? problem.inputs.map((input, i) => ({
+              input,
+              output: problem.outputs[i] ?? "",
+              visible: problem.visible[i] === true,
+            }))
+          : [{ input: "", output: "", visible: false }],
     },
     resolver: zodResolver(formSchema),
     shouldFocusError: false,
@@ -120,6 +133,8 @@ export function NewProblem({
     useSuggestProblemTags();
   const errorMessage = useActionErrorMessage();
   const router = useRouter();
+  const { isDirty } = form.formState;
+  useUnsavedChanges("problem-editor", isDirty);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     updateProblem(
@@ -164,8 +179,13 @@ export function NewProblem({
         },
         onSuccess(updated) {
           toast.success(t("createdSuccess"));
+          // What was submitted is now the saved state; keepValues leaves
+          // anything typed during the request in the fields.
+          form.reset(values, { keepValues: true });
           if (updated && updated.slug !== problem.slug) {
-            router.replace(`/problems/${updated.slug}/edit`);
+            allowNavigation(() =>
+              router.replace(`/problems/${updated.slug}/edit`),
+            );
           } else {
             // `problem` (title/description/difficulty/tests) is fetched
             // server-side once in page.tsx and passed down as a prop —
@@ -226,13 +246,6 @@ export function NewProblem({
       },
     );
   }
-
-  useEffect(() => {
-    if (tests.fields.length === 0) {
-      tests.append({ input: "", output: "", visible: false });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const formValues = form.watch();
 
@@ -500,8 +513,13 @@ export function NewProblem({
               <ProblemValidationPanel problemId={problem.id} />
 
               <Separator />
-              <div className="pt-6 flex justify-end">
-                <Button disabled={isPending} type="submit" size="lg">
+              <div className="pt-6 flex items-center justify-end gap-3">
+                <UnsavedChangesHint dirty={isDirty} />
+                <Button
+                  disabled={isPending || !isDirty}
+                  type="submit"
+                  size="lg"
+                >
                   {isPending ? t("creating") : t("submit")}
                 </Button>
               </div>
@@ -542,13 +560,16 @@ export function NewProblem({
                   {t("narrativeLabel")}
                 </span>
                 <div className="prose dark:prose-invert prose-sm max-w-none mt-1">
-                  <ReactMarkdown components={markdownComponents}>{formValues.narrative}</ReactMarkdown>
+                  <ReactMarkdown components={markdownComponents}>
+                    {formValues.narrative}
+                  </ReactMarkdown>
                 </div>
               </div>
             )}
 
             <div className="prose dark:prose-invert max-w-none text-foreground prose-p:leading-relaxed prose-pre:bg-muted/50">
-              <ReactMarkdown components={markdownComponents}
+              <ReactMarkdown
+                components={markdownComponents}
                 remarkPlugins={[remarkMath]}
                 rehypePlugins={[rehypeKatex]}
               >
@@ -563,33 +584,39 @@ export function NewProblem({
                 </h3>
                 {formValues.tests?.map(({ input, output, visible }, idx) =>
                   !visible ? null : (
-                  <div
-                    key={idx}
-                    className="flex flex-col md:flex-row gap-6 bg-muted/30 p-6 rounded-lg border"
-                  >
-                    <div className="min-w-0 flex-1 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
-                          {t("inputLabel", { n: idx + 1 })}
-                        </h4>
-                        <CopyButton value={input} />
+                    <div
+                      key={idx}
+                      className="flex flex-col md:flex-row gap-6 bg-muted/30 p-6 rounded-lg border"
+                    >
+                      <div className="min-w-0 flex-1 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                            {t("inputLabel", { n: idx + 1 })}
+                          </h4>
+                          <CopyButton value={input} />
+                        </div>
+                        <pre
+                          translate="no"
+                          className="notranslate p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50"
+                        >
+                          {input || " "}
+                        </pre>
                       </div>
-                      <pre translate="no" className="notranslate p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">
-                        {input || " "}
-                      </pre>
-                    </div>
-                    <div className="min-w-0 flex-1 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
-                          {t("outputLabel", { n: idx + 1 })}
-                        </h4>
-                        <CopyButton value={output} />
+                      <div className="min-w-0 flex-1 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                            {t("outputLabel", { n: idx + 1 })}
+                          </h4>
+                          <CopyButton value={output} />
+                        </div>
+                        <pre
+                          translate="no"
+                          className="notranslate p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50"
+                        >
+                          {output || " "}
+                        </pre>
                       </div>
-                      <pre translate="no" className="notranslate p-4 bg-muted/80 rounded-md overflow-x-auto text-sm font-mono text-foreground border border-border/50">
-                        {output || " "}
-                      </pre>
                     </div>
-                  </div>
                   ),
                 )}
               </div>

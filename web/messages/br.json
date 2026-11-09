@@ -2222,5 +2222,13 @@
     "saved": "Linguagens permitidas salvas.",
     "error": "Não foi possível salvar as linguagens permitidas.",
     "statement": "Linguagens permitidas: {languages}"
+  },
+  "UnsavedChanges": {
+    "title": "Descartar alterações não salvas?",
+    "description": "Você tem alterações que ainda não foram salvas. Se sair agora, elas serão perdidas.",
+    "stay": "Continuar editando",
+    "leave": "Sair sem salvar",
+    "hint": "Alterações não salvas",
+    "publishBlocked": "Salve suas alterações antes de publicar: a publicação usa a última versão salva."
   }
 }
