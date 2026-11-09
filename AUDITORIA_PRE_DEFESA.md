@@ -1,5 +1,5 @@
 # PROBLEMAS EM ABERTO — WhyRunner TCC
-> Atualizado: 2026-10-28 | Código: sem pendências | LaTeX: atualizado
+> Atualizado: 2026-10-31 | Código: sem pendências | LaTeX: atualizado
 >
 > **Correção (2026-10-28):** a versão anterior deste arquivo afirmava um contest em sala com 23 alunos, 6 problemas e 50+ submissões. **Isso é falso**: nenhuma avaliação em sala aconteceu até esta data. O primeiro teste em sala está agendado para **29/10/2026**.
 
@@ -41,10 +41,14 @@ Adicionar: screenshots do scoreboard, contagem de submissões por status, tempo 
 
 - ~~"Contest com 23 alunos, 6 problemas, 50+ submissões"~~: **afirmação falsa, removida.** Nunca houve esse contest.
 - Dados técnicos medidos agora existem: `bench/` (suíte de benchmarks reproduzível, resultados brutos em `bench/results/`), usados na seção *Performance Evaluation* de `overleaf/main.tex` e nos slides v4.
-- Avaliação com usuários: instrumento pronto (TCLE, 4 questionários, SUS automático, página de resultados); **primeiro teste em sala em 29/10/2026, ainda sem resultados.**
+- Avaliação com usuários: instrumento pronto (TCLE, 4 questionários, SUS automático, página de resultados); **teste em sala aplicado em 29/10/2026 com 30 alunos (ver abaixo).**
 
 ---
 
-## PENDENTE
+## ~~PENDENTE — teste em sala~~ ✅ Resolvido
 
-- Aplicar o teste em sala (29/10/2026), analisar os dados e atualizar *Evaluation Status* em `overleaf/main.tex` e os slides.
+- Teste em sala aplicado em 29/10/2026 (IFMG, 1º ano do Técnico em Informática integrado): 30 alunos responderam o questionário do aluno de uma lista de exercícios (`lesson_student`). Não houve torneio nem resposta do questionário do professor.
+- Análise em `docs/evaluation/survey-review.md` (SUS 72,1, mediana 76,2, DP 18,3, IC 95% ≈ 65,6–78,6) e correções em `docs/evaluation/post-evaluation-changes.md` (PRs #81–#84, #88, #89).
+- `overleaf/main.tex`: seção *Evaluation Status* virou *Classroom Evaluation* (participantes, SUS, itens, respostas abertas, retorno → correções, ameaças à validade); resumo, introdução, metodologia, limitações, trabalhos futuros e conclusão atualizados.
+- Slides v5: seção 09 com os resultados; limitação principal agora é o escopo estreito da avaliação.
+- Em aberto, como limitação declarada: só alunos e uma lista; torneio e professor não avaliados; F1 (trocar `exact` por `tokens`) não feito por decisão.

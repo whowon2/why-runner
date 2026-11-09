@@ -3,11 +3,13 @@ import { SubmissionStatus } from "@/drizzle/schemas/submissions";
 import { isFinalFailure, isPendingStatus, statusTone } from "./submission-status";
 
 describe("submission status helpers", () => {
-  test("every status is passed, pending, constraint-related or a final failure", () => {
+  test("every status is passed, pending, constraint-related, canceled or a final failure", () => {
     for (const status of SubmissionStatus.enumValues) {
       const buckets = [
         status === "PASSED",
         status === "CONSTRAINT_VIOLATION",
+        // Withdrawn before judging: neither pending nor a failure.
+        status === "CANCELED",
         isPendingStatus(status),
         isFinalFailure(status),
       ].filter(Boolean);
@@ -28,6 +30,7 @@ describe("submission status helpers", () => {
       expect(isFinalFailure(status)).toBe(true);
     }
     expect(isFinalFailure("PASSED")).toBe(false);
+    expect(isFinalFailure("CANCELED")).toBe(false);
     expect(isFinalFailure(null)).toBe(false);
   });
 

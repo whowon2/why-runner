@@ -20,7 +20,8 @@ export function SolveStatus({
       </span>
     );
   }
-  return submissions.length > 0 ? (
+  // A canceled submission was never judged: not an attempt.
+  return submissions.some((s) => s.status !== "CANCELED") ? (
     <span className="flex items-center gap-1.5 text-warning">
       <CircleDot className="size-4" />
       {t("attempted")}

@@ -4,6 +4,7 @@ import { Loader } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { RunButton, RunPanel } from "@/components/code-run/code-run";
+import { CancelSubmissionButton } from "@/components/submissions/cancel-submission-button";
 import { StatusBadge } from "@/components/submissions/status-badge";
 import { SubmissionDetails } from "@/components/submissions/submission-details";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -117,7 +118,14 @@ export function ExampleOutput({ index }: { index: number }) {
         ) : run.status === "OK" ? (
           <MatchBadge match={match} />
         ) : (
-          <span className="font-medium text-destructive">
+          <span
+            className={cn(
+              "font-medium",
+              run.status === "CANCELED"
+                ? "text-muted-foreground"
+                : "text-destructive",
+            )}
+          >
             {tStatus(run.status)}
           </span>
         )}
@@ -184,10 +192,15 @@ function SubmissionOutput({ previousId }: { previousId: string | null }) {
         <AiHelpButton submission={latest} />
       </div>
       {pending ? (
-        <p className="flex items-center gap-2 text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
           <Loader className="size-4 animate-spin" />
           {t("judging")}
-        </p>
+          {latest.status === "PENDING" && (
+            <CancelSubmissionButton submissionId={latest.id} />
+          )}
+        </div>
+      ) : latest.status === "CANCELED" ? (
+        <p className="text-muted-foreground">{t("canceled")}</p>
       ) : (
         <SubmissionDetails
           constraintViolationDetail={latest.constraintViolationDetail}

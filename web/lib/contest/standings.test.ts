@@ -84,6 +84,15 @@ describe("cells", () => {
     expect(row(input, "alice").penalty).toBe(7);
   });
 
+  test("CANCELED is not an attempt", () => {
+    const input = base([
+      sub("alice", "pa", "CANCELED", 3),
+      sub("alice", "pa", "PASSED", 7),
+    ]);
+    expect(row(input, "alice").cells.pa).toMatchObject({ attempts: 1 });
+    expect(row(input, "alice").penalty).toBe(7);
+  });
+
   test("COMPILATION_ERROR is not penalised", () => {
     const input = base([
       sub("alice", "pa", "COMPILATION_ERROR", 3),

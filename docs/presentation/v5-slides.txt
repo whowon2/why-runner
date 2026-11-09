@@ -81,15 +81,18 @@
  81  08 · DESEMPENHO  |  Cada push roda três jobs no GitHub Actions
  82  PARTE 09 DE 10  |  (sem título)
  83  09 · AVALIAÇÃO  |  A avaliação acontece dentro do sistema, no fim da atividade
- 84  09 · AVALIAÇÃO  |  Quatro questionários, todos com termo de consentimento
- 85  09 · AVALIAÇÃO  |  A usabilidade é medida pelo SUS
- 86  09 · AVALIAÇÃO  |  Os resultados saem prontos, anônimos e em CSV
- 87  09 · AVALIAÇÃO  |  O primeiro teste em sala é em 29/10/2026
- 88  PARTE 10 DE 10  |  (sem título)
- 89  10 · DISCUSSÃO  |  O que o sistema faz bem
- 90  10 · DISCUSSÃO  |  A maior limitação: ainda sem avaliação com alunos
- 91  10 · DISCUSSÃO  |  Limitações técnicas que os benchmarks mostraram
- 92  10 · DISCUSSÃO  |  Próximos passos depois do teste em sala
- 93  10 · DISCUSSÃO  |  Próximas etapas, em ordem
- 94  REFERÊNCIAS  |  (v3 slide 13)
- 95  —  |  (sem título)
+ 84  09 · AVALIAÇÃO  |  A usabilidade é medida pelo SUS
+ 85  09 · AVALIAÇÃO  |  30 alunos fizeram uma lista em sala, em 29/10/2026
+ 86  09 · AVALIAÇÃO  |  SUS 72,1: acima da referência de 68
+ 87  09 · AVALIAÇÃO  |  Entrar e entregar foi fácil; ganhar confiança, nem tanto
+ 88  09 · AVALIAÇÃO  |  O que mais ajudou: a IA e a correção imediata
+ 89  09 · AVALIAÇÃO  |  O que mais atrapalhou: a saída tinha que ser idêntica
+ 90  09 · AVALIAÇÃO  |  Do retorno da turma às correções
+ 91  PARTE 10 DE 10  |  (sem título)
+ 92  10 · DISCUSSÃO  |  O que o sistema faz bem
+ 93  10 · DISCUSSÃO  |  A maior limitação: uma turma, uma lista, só alunos
+ 94  10 · DISCUSSÃO  |  Limitações técnicas que os benchmarks mostraram
+ 95  10 · DISCUSSÃO  |  Próximos passos
+ 96  10 · DISCUSSÃO  |  Onde estamos
+ 97  REFERÊNCIAS  |  (v3 slide 13)
+ 98  —  |  (sem título)

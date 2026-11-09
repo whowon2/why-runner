@@ -42,7 +42,7 @@ Every class and lesson action and page SHALL decide access through this resoluti
 - **THEN** the action is rejected
 
 ### Requirement: Owner manages co-teachers
-The owner (or an admin) SHALL be able to add an existing user as co-teacher by exact username or email, which creates or upgrades their membership to `teacher`, and to change any member's role between `student` and `teacher`. Unknown users SHALL get a generic not-found error. Co-teachers and students SHALL NOT be able to add, promote, demote or remove co-teachers. The owner's own relation SHALL NOT be changeable.
+The owner (or an admin) SHALL be able to add an existing user as co-teacher by picking them from the search suggestions or by exact username or email (both case-insensitive), which creates or upgrades their membership to `teacher`, and to change any member's role between `student` and `teacher`. Unknown users SHALL get a generic not-found error. Co-teachers and students SHALL NOT be able to add, promote, demote or remove co-teachers. The owner's own relation SHALL NOT be changeable.
 
 #### Scenario: Invite by username
 - **WHEN** the owner adds `maria` as co-teacher and `maria` is not a member
@@ -59,6 +59,21 @@ The owner (or an admin) SHALL be able to add an existing user as co-teacher by e
 #### Scenario: Unknown user
 - **WHEN** the owner adds an email that matches no user
 - **THEN** the action fails with "user not found" and no row is written
+
+#### Scenario: Username is matched case-insensitively
+- **WHEN** the owner types `Maria` and the user's username is `maria`
+- **THEN** `maria` is added as co-teacher
+
+### Requirement: Co-teacher candidate search
+The add-co-teacher control SHALL suggest users through an owner-level search action. A query (2-320 characters, leading `@` ignored) containing `@` after its first character SHALL match only an exact, case-insensitive email, so emails cannot be enumerated by prefix; any other query SHALL match a case-insensitive prefix of the username or the name. Results SHALL exclude the searching user, be limited to 8, carry public columns plus the user's membership in the class and whether they are the owner, and include the email only on an exact email match. The owner and existing co-teachers SHALL be shown disabled; students SHALL be shown as "will be promoted".
+
+#### Scenario: Email prefix does not leak
+- **WHEN** the owner searches `mar@exa`
+- **THEN** no user is returned unless one has exactly that email
+
+#### Scenario: Pick a suggestion
+- **WHEN** the owner types `ma`, picks `@maria` from the list and confirms
+- **THEN** the add action is called with `maria`'s user id and she becomes co-teacher
 
 ### Requirement: Co-teacher UI
 The class page SHALL show the roster split into teachers (owner first, then co-teachers) and students to managers. Owner-level users SHALL see a control to add a co-teacher by username or email, and per-member actions to promote to teacher, demote to student and remove. Co-teachers SHALL see the remove action only on students. Delete-class SHALL be shown only to owner-level users.
