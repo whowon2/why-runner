@@ -32,6 +32,7 @@ see `survey-review.md`.
 | 23 | Professor survey P3: AI authoring tools answered in English with the site in Portuguese | Narrative, AI problem review and reference-solution generator receive the site locale (`clampLocale`, as student AI help) and write in that language; edge-case inputs/outputs and code stay verbatim, only comments are localized. Tag suggestion unchanged (returns taxonomy keys) | #100 (web 1.7.3) |
 | 24 | Professor survey P2: limit which languages students may use on an exercise (`primaryLanguage` was only a suggestion) | Allowed-languages list per lesson exercise and per contest problem (empty = any), set from a "Languages" dialog; the editor offers only those languages and the submit and custom-run actions reject others with `LANGUAGE_NOT_ALLOWED`; migration `0055` | #101 (web 1.8.0) |
 | 25 | Professor survey P10: class students listed in join order | Class page roster (students and co-teachers), gradebook and results export ordered by name with one shared pt-BR collator, case- and accent-insensitive ("Álvaro" < "ana" < "Zé"), username as tiebreak; teachers stay above students | #102 |
+| 26 | Professor survey P11: problem statistics only on the problem page | Lesson exercise workspace gets a Statistics drawer (solved by, attempted by, success rate). Class managers see this class's students on this exercise only (teachers not counted) plus the class size; students see the problem-wide numbers (web 1.9.0) | #103 |
 
 Out of scope by decision: feature flags.
 

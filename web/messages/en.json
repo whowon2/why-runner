@@ -867,7 +867,10 @@
         "title": "Task summary",
         "solvedBy": "Solved by",
         "attemptedBy": "Attempted by",
-        "successRate": "Success rate"
+        "successRate": "Success rate",
+        "students": "Students in the class",
+        "scopeClass": "Submissions to this exercise by this class's students (teachers not counted).",
+        "scopeGlobal": "Submissions to this problem by all users."
       },
       "Tests": {
         "title": "Tests",

@@ -1,6 +1,12 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, CheckCircle2, Code2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  BarChart3,
+  CheckCircle2,
+  Code2,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -10,6 +16,7 @@ import { toast } from "sonner";
 import "katex/dist/katex.min.css";
 import { DifficultyBadge } from "@/app/[locale]/problems/_components/badge";
 import { ProblemExamples } from "@/app/[locale]/problems/_components/examples";
+import { ExerciseStatisticsTab } from "@/app/[locale]/problems/_components/workspace/statistics";
 import { BlockWorkspace } from "@/components/blocks";
 import { PortugolCodePanel } from "@/components/blocks/portugol-code-panel";
 import { markdownComponents } from "@/components/markdown-components";
@@ -168,6 +175,12 @@ function Workspace({ exercise }: { exercise: Exercise }) {
           },
         ]
       : []),
+    {
+      key: "statistics",
+      label: t("Rail.statistics"),
+      icon: BarChart3,
+      panel: "statistics",
+    },
   ];
 
   const editor =
@@ -183,6 +196,12 @@ function Workspace({ exercise }: { exercise: Exercise }) {
     <WorkspaceProvider source={source}>
       <WorkspaceShell
         back={{ href: lessonHref, label: t("Rail.back") }}
+        drawers={{
+          statistics: {
+            title: t("Drawers.statistics"),
+            content: <ExerciseStatisticsTab exerciseId={exercise.id} />,
+          },
+        }}
         editor={editor}
         rail={rail}
         statement={<ExerciseStatement exercise={exercise} />}
