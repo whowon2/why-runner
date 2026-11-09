@@ -34,7 +34,7 @@ see `survey-review.md`.
 | 25 | Professor survey P10: class students listed in join order | Class page roster (students and co-teachers), gradebook and results export ordered by name with one shared pt-BR collator, case- and accent-insensitive ("Álvaro" < "ana" < "Zé"), username as tiebreak; teachers stay above students | #102 |
 | 26 | Professor survey P11: problem statistics only on the problem page | Lesson exercise workspace gets a Statistics drawer (solved by, attempted by, success rate). Class managers see this class's students on this exercise only (teachers not counted) plus the class size; students see the problem-wide numbers (web 1.9.0) | #103 |
 | 27 | Professor survey P5: leaving the problem editor without "Salvar rascunho" lost edits silently; some screens autosave, others need Save (SUS item 6 "inconsistent" = 3) | One save rule: single controls save on change, multi-field forms save explicitly with Save disabled until dirty and an "unsaved changes" hint, dialogs commit or cancel. Leave guard on the problem editor, contest settings, profile, exercise constraints and survey answers: browser prompt on reload/close, confirmation dialog on links, tab switches, command palette, language switch and Back/Forward. Publish warns when the editor has unsaved edits; a new problem is no longer "dirty" on load | #104 (web 1.10.0) |
-| 28 | Professor survey P12: submitted code hard to read outside the editor | Read-only code (workspace submission history, the teacher's lesson review, the generated Portugol panel) highlighted with the editor's own Monaco grammar and app theme via `colorize`, no editor per block, plain text until Monaco loads; new Portugol grammar so the editor highlights Portugol too. Unused `LatestVerdict` removed | TBD (web 1.11.0) |
+| 28 | Professor survey P12: submitted code hard to read outside the editor | Read-only code (workspace submission history, the teacher's lesson review, the generated Portugol panel) highlighted with the editor's own Monaco grammar and app theme via `colorize`, no editor per block, plain text until Monaco loads; new Portugol grammar so the editor highlights Portugol too. Unused `LatestVerdict` removed | #105 (web 1.11.0) |
 
 Out of scope by decision: feature flags.
 
@@ -47,7 +47,7 @@ Specs for each change are archived under `openspec/changes/archive/`
 `2026-11-09-exercise-allowed-languages` (web 1.8.0, #101), and for 25,
 `2026-11-09-sort-class-members-alphabetically` (web 1.8.1, #102), and for 27,
 `2026-11-09-unsaved-changes-guard` (web 1.10.0, #104), and for 28,
-`2026-11-09-submitted-code-highlighting` (web 1.11.0).
+`2026-11-09-submitted-code-highlighting` (web 1.11.0, #105).
 
 Not changed by decision: survey F1 (switching the pre-0048 problems from
 `exact` to `tokens`). It stays a known limitation / future work in the thesis.
