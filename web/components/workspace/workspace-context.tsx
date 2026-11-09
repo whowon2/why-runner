@@ -49,6 +49,10 @@ export type WorkspaceSource = {
   submit: (answer: WorkspaceAnswer) => void;
   submitting: boolean;
   toRunProgram: (answer: WorkspaceAnswer) => RunProgram | null;
+  /** Languages the code editor offers; empty or missing = every language. */
+  allowedLanguages?: Language[];
+  /** Picked when the current language isn't allowed (if it is allowed). */
+  defaultLanguage?: Language | null;
 };
 
 export type ConsoleEvent =

@@ -82,6 +82,8 @@ function Workspace({ exercise }: { exercise: Exercise }) {
         epsilon: exercise.problem.floatEpsilon,
       },
       runsEnabled: exercise.mode !== "parsons",
+      allowedLanguages: exercise.allowedLanguages,
+      defaultLanguage: exercise.primaryLanguage,
       lockedReason: exercise.submissionsLocked ? t("Locked.dueDate") : null,
       submissions: submissions as Submission[] | undefined,
       submissionsPending,
@@ -201,6 +203,7 @@ function Workspace({ exercise }: { exercise: Exercise }) {
 function ExerciseStatement({ exercise }: { exercise: Exercise }) {
   const t = useTranslations("RoadmapPage.Lesson");
   const tWs = useTranslations("Workspace.Status");
+  const tAllowed = useTranslations("AllowedLanguages");
   const tProblems = useTranslations("ProblemsPage");
   const tExamples = useTranslations("ContestsPage.Tabs.Problem.Examples");
   const { problem } = exercise;
@@ -214,9 +217,13 @@ function ExerciseStatement({ exercise }: { exercise: Exercise }) {
             ? t("answerWithBlocks")
             : exercise.mode === "parsons"
               ? t("answerWithParsons")
-              : exercise.primaryLanguage
-                ? t("primaryLanguage", { language: exercise.primaryLanguage })
-                : t("anyLanguage")}
+              : exercise.allowedLanguages.length > 0
+                ? tAllowed("statement", {
+                    languages: exercise.allowedLanguages.join(", "),
+                  })
+                : exercise.primaryLanguage
+                  ? t("primaryLanguage", { language: exercise.primaryLanguage })
+                  : t("anyLanguage")}
         </span>
         <span className="ml-auto text-muted-foreground text-xs">
           {tWs("limits", {
