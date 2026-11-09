@@ -99,6 +99,10 @@ Settings are read synchronously from per-setting local stores mirrored in `local
 
 Vim mode (`monaco-vim`, lazy) must drive the CDN-loaded Monaco: `next.config.ts` aliases `monaco-editor/esm/vs/editor/editor.api` to `lib/monaco-global.ts` (the global instance). Don't import `monaco-editor` at runtime elsewhere.
 
+### Saving and Unsaved Changes
+
+One save rule (`openspec/specs/unsaved-changes-guard`): a single control (switch, select, preset, lone date) saves on change and confirms; a form with several fields or free text saves only through its Save/Submit button, disabled until dirty, with `UnsavedChangesHint` beside it, and registers `useUnsavedChanges(id, isDirty)` (`components/unsaved-changes/`); small create/rename dialogs commit or cancel and aren't guarded. While any registered form is dirty, unload shows the browser prompt and in-app navigation (link clicks, the `useRouter` from `@/i18n/navigation`, Back/Forward) asks first in a dialog. After a successful save `form.reset(...)` so the form is clean again; wrap a navigation the form starts itself after saving in `allowNavigation(() => router.replace(...))`. Always import `useRouter` from `@/i18n/navigation`, never `next/navigation`, or the guard can't see it.
+
 ### Auth
 
 Better Auth with email/password + GitHub + Google OAuth. Session access:
@@ -136,6 +140,10 @@ Lesson exercises have `exercise.mode` (`exercise_mode` enum, default `code`), se
 - `parsons`: the professor's `exercise.parsonsSolution` is split into lines (`lib/parsons.ts`); students get them shuffled by `getExercise` (the solution itself is never sent to students — keep `parsonsSolution` out of student-facing queries). On submit the server checks the lines are exactly the solution's lines and assembles the program. A solution is only accepted after a judge run passes: `checkParsonsSolution` reuses `problem_validation` with `exercise_id` set, and the problem's own publish/staleness checks filter `exercise_id IS NULL`.
 - Both modes store `submission.editorMode` + `submission.visualSource`; `code` is always what the judge ran. `components/submissions/visual-answer.tsx` renders them read-only. The judge needs no changes (it claims rows with an explicit column list).
 - AI hints (`getUserPrompt`) get mode-specific instructions: blocks → refer to block labels in the student's locale; parsons → only order/indentation.
+
+### Allowed Languages
+
+`exercise.allowedLanguages` and `problemOnContest.allowedLanguages` (`language[]`, empty = any language) restrict what students may use on a lesson exercise in `code` mode (blocks/Parsons fix their own language) and on a contest problem. Rules live in `lib/allowed-languages.ts`. `createExerciseSubmission`, contest `createSubmission` and `createRun` return `LANGUAGE_NOT_ALLOWED` for anything else; standalone problems stay open. Teachers edit the lists with `AllowedLanguagesDialog` (`setExerciseAllowedLanguages`, `setContestProblemLanguages`, the latter frozen once the contest has started). The workspace passes the list as `WorkspaceSource.allowedLanguages`; `CodePane` offers only those languages and switches a restored disallowed draft language to an allowed one. The `Language` pg enum lives in `drizzle/schemas/language.ts` (re-exported by `submissions.ts`) so `users.ts` can use it without an import cycle.
 
 ## Environment Variables
 

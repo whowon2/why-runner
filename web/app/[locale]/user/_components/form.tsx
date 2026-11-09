@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { useUnsavedChanges } from "@/components/unsaved-changes/unsaved-changes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
@@ -66,6 +67,8 @@ export function UpdateForm({
     resolver: zodResolver(updateProfileSchema),
   });
 
+  useUnsavedChanges("profile-form", form.formState.isDirty);
+
   const { mutate: updateUser } = useUpdateProfile();
   const errorMessage = useActionErrorMessage();
 
@@ -81,6 +84,7 @@ export function UpdateForm({
       },
       onSuccess() {
         toast(t("updated"));
+        form.reset(values);
         onSavedAction?.();
       },
     });
@@ -148,10 +152,7 @@ export function UpdateForm({
                 <FormItem>
                   <FormLabel>{t("location")}</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t("locationPlaceholder")}
-                      {...field}
-                    />
+                    <Input placeholder={t("locationPlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

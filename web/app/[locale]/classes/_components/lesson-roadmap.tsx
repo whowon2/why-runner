@@ -44,6 +44,9 @@ import {
   useDeleteExerciseEntry,
   useMoveExerciseEntry,
 } from "@/hooks/use-exercise-entry";
+import { AllowedLanguagesDialog } from "@/components/allowed-languages-dialog";
+import type { Language } from "@/drizzle/schema";
+import { useSetExerciseAllowedLanguages } from "@/hooks/use-allowed-languages";
 import { useLesson } from "@/hooks/use-lesson";
 import { useSubmitLesson } from "@/hooks/use-submit-lesson";
 import { cn } from "@/lib/utils";
@@ -184,14 +187,29 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
                 <span>{e.problem.title}</span>
               </Link>
               <div className="flex items-center gap-2">
-                {e.primaryLanguage && (
-                  <Badge variant="outline">{e.primaryLanguage}</Badge>
-                )}
+                {e.mode === "code" && e.allowedLanguages.length > 0
+                  ? e.allowedLanguages.map((lang) => (
+                      <Badge key={lang} translate="no" variant="outline">
+                        {lang}
+                      </Badge>
+                    ))
+                  : e.primaryLanguage && (
+                      <Badge translate="no" variant="outline">
+                        {e.primaryLanguage}
+                      </Badge>
+                    )}
                 {e.mode !== "code" && (
                   <Badge variant="secondary">{tMode(`${e.mode}.label`)}</Badge>
                 )}
                 {canManage && <ExerciseModeDialog exerciseId={e.id} />}
                 {canManage && <ExerciseConstraintsDialog exerciseId={e.id} />}
+                {canManage && e.mode === "code" && (
+                  <ExerciseLanguagesDialog
+                    exerciseId={e.id}
+                    languages={e.allowedLanguages}
+                    lessonId={lesson.id}
+                  />
+                )}
                 {canManage && e.mode !== "parsons" && (
                   <Button asChild size="sm" variant="outline">
                     <Link
@@ -395,6 +413,40 @@ function ExerciseModeDialog({ exerciseId }: { exerciseId: string }) {
         <ExerciseModePanel exerciseId={exerciseId} />
       </DialogContent>
     </Dialog>
+  );
+}
+
+function ExerciseLanguagesDialog({
+  exerciseId,
+  lessonId,
+  languages,
+}: {
+  exerciseId: string;
+  lessonId: string;
+  languages: Language[];
+}) {
+  const t = useTranslations("AllowedLanguages");
+  const { mutate, isPending } = useSetExerciseAllowedLanguages(lessonId);
+
+  return (
+    <AllowedLanguagesDialog
+      description={t("exerciseDescription")}
+      onSave={(next, done) =>
+        mutate(
+          { exerciseId, languages: next },
+          {
+            onSuccess: () => {
+              toast.success(t("saved"));
+              done();
+            },
+            onError: (error) =>
+              toast.error(t("error"), { description: error.message }),
+          },
+        )
+      }
+      saving={isPending}
+      value={languages}
+    />
   );
 }
 

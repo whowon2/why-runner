@@ -28,6 +28,12 @@ see `survey-review.md`.
 | 19 | Survey F7: pasting code from another editor | Reproduced: Monaco keeps pasted no-break spaces (Python: `invalid non-printable character U+00A0`) and opens a native English `confirm()` for U+2028 line separators. Submit actions now normalize invisible spaces, zero-width characters, line endings and Python leading tabs; the editor drops U+2028/U+2029 silently | #88 |
 | 20 | Survey F8 (from production data): 31 failures on one problem printed `input("Digite…")` prompts | Failure view shows a hint when the output has the expected lines plus extra text: "print only what the output asks for". The practice Results dialog now shows the student's own output too | #88 |
 | 21 | Survey F6: no way to run the program before submitting | "Run" button and stdin box on every code editor (problem, contest, lesson code/blocks): one ungraded run in the judge sandbox showing stdout, stderr, exit code, time and memory. Separate `code_run` table and `new_run` channel (migration `0052`), 10 runs/min, contest toggle `allow_runs`, gated by `CUSTOM_RUN_ENABLED` | #89 |
+| 22 | Professor survey P4: students clicked "Criar turma" by mistake, right next to the join-code form on `/classes` | Join form alone in the header; "Criar turma" moved beside "Turmas que você leciona", or into a separate dashed "Dá aulas? Crie uma turma…" box for users who teach no class. `?createClass=1` now also accepted (only `=true` worked). Every user can still create classes | #99 (web 1.7.2) |
+| 23 | Professor survey P3: AI authoring tools answered in English with the site in Portuguese | Narrative, AI problem review and reference-solution generator receive the site locale (`clampLocale`, as student AI help) and write in that language; edge-case inputs/outputs and code stay verbatim, only comments are localized. Tag suggestion unchanged (returns taxonomy keys) | #100 (web 1.7.3) |
+| 24 | Professor survey P2: limit which languages students may use on an exercise (`primaryLanguage` was only a suggestion) | Allowed-languages list per lesson exercise and per contest problem (empty = any), set from a "Languages" dialog; the editor offers only those languages and the submit and custom-run actions reject others with `LANGUAGE_NOT_ALLOWED`; migration `0055` | #101 (web 1.8.0) |
+| 25 | Professor survey P10: class students listed in join order | Class page roster (students and co-teachers), gradebook and results export ordered by name with one shared pt-BR collator, case- and accent-insensitive ("Álvaro" < "ana" < "Zé"), username as tiebreak; teachers stay above students | #102 |
+| 26 | Professor survey P11: problem statistics only on the problem page | Lesson exercise workspace gets a Statistics drawer (solved by, attempted by, success rate). Class managers see this class's students on this exercise only (teachers not counted) plus the class size; students see the problem-wide numbers (web 1.9.0) | #103 |
+| 27 | Professor survey P5: leaving the problem editor without "Salvar rascunho" lost edits silently; some screens autosave, others need Save (SUS item 6 "inconsistent" = 3) | One save rule: single controls save on change, multi-field forms save explicitly with Save disabled until dirty and an "unsaved changes" hint, dialogs commit or cancel. Leave guard on the problem editor, contest settings, profile, exercise constraints and survey answers: browser prompt on reload/close, confirmation dialog on links, tab switches, command palette, language switch and Back/Forward. Publish warns when the editor has unsaved edits; a new problem is no longer "dirty" on load | #104 (web 1.10.0) |
 
 Out of scope by decision: feature flags.
 
@@ -35,7 +41,11 @@ Specs for each change are archived under `openspec/changes/archive/`
 (`2026-10-29-classroom-feedback-quick`, `2026-10-29-signup-ra`,
 `2026-10-30-test-visibility`, `2026-10-30-roles-coteachers`) and, for
 15–20, `survey-feedback-fixes` (web 1.1.0, #88), and for 21,
-`2026-10-30-custom-run` (judge 1.1.0, web 1.2.0, #89).
+`2026-10-30-custom-run` (judge 1.1.0, web 1.2.0, #89), and for 23,
+`2026-11-09-ai-authoring-locale` (web 1.7.3, #100), and for 24,
+`2026-11-09-exercise-allowed-languages` (web 1.8.0, #101), and for 25,
+`2026-11-09-sort-class-members-alphabetically` (web 1.8.1, #102), and for 27,
+`2026-11-09-unsaved-changes-guard` (web 1.10.0, #104).
 
 Not changed by decision: survey F1 (switching the pre-0048 problems from
 `exact` to `tokens`). It stays a known limitation / future work in the thesis.

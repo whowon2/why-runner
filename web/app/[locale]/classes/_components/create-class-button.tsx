@@ -2,7 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { parseAsBoolean, useQueryState } from "nuqs";
+import { createParser, useQueryState } from "nuqs";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -10,13 +10,20 @@ import { LoadingSwap } from "@/components/ui/loading-swap";
 import { useCreateClass } from "@/hooks/use-create-class";
 import { useRouter } from "@/i18n/navigation";
 
+// Accepts both `?createClass=true` (command palette) and `?createClass=1`;
+// nuqs' parseAsBoolean only understands "true".
+const parseAsFlag = createParser({
+  parse: (v) => v === "1" || v.toLowerCase() === "true",
+  serialize: (v) => (v ? "1" : "0"),
+});
+
 export function CreateClassButton() {
   const t = useTranslations("ClassesPage");
   const { mutateAsync: createClass, isPending } = useCreateClass();
   const router = useRouter();
   const [triggerFromQuery, setTriggerFromQuery] = useQueryState(
     "createClass",
-    parseAsBoolean.withDefault(false),
+    parseAsFlag.withDefault(false),
   );
   const hasFiredFromQuery = useRef(false);
 

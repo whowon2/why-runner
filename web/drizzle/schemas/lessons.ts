@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   integer,
@@ -112,6 +112,12 @@ export const exercise = pgTable(
     slug: text("slug").notNull().unique(),
     order: integer("order").default(0).notNull(),
     primaryLanguage: Language("primary_language"),
+    // Languages students may use in `code` mode; empty = any language
+    // (`lib/allowed-languages.ts`). Blocks/Parsons fix their own language.
+    allowedLanguages: Language("allowed_languages")
+      .array()
+      .default(sql`'{}'::language[]`)
+      .notNull(),
     // `blocks` forces primaryLanguage = portugol; `parsons` requires a
     // primaryLanguage and a `parsonsSolution` that passed the problem's
     // test cases (see `saveParsonsSolution`).

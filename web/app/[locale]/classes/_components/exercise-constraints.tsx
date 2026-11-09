@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import { useUnsavedChanges } from "@/components/unsaved-changes/unsaved-changes";
 import type {
   ProblemConstraint,
   StructuralConstraintRuleType,
@@ -28,7 +29,11 @@ import { useUpsertAlgorithmRequirementConstraint } from "@/hooks/use-upsert-algo
 // Solution constraints are an exercise-only feature: they attach to one
 // exercise entry (one problem inside one lesson), never to the problem
 // itself, and never apply to contests or standalone practice submissions.
-export function ExerciseConstraintsPanel({ exerciseId }: { exerciseId: string }) {
+export function ExerciseConstraintsPanel({
+  exerciseId,
+}: {
+  exerciseId: string;
+}) {
   const t = useTranslations("RoadmapPage.Constraints");
   const { data: constraints, isPending } = useExerciseConstraints(exerciseId);
 
@@ -96,6 +101,13 @@ function ruleTypeLabel(
   }
 }
 
+function parseConstructs(raw: string) {
+  return raw
+    .split(",")
+    .map((c) => c.trim())
+    .filter(Boolean);
+}
+
 function parseParams(raw: string | null): Record<string, unknown> {
   if (!raw) return {};
   try {
@@ -125,20 +137,27 @@ function StructuralConstraintRow({
     Array.isArray(params.constructs) ? params.constructs.join(", ") : "",
   );
 
+  // Compared with the saved params, which refetch after a save.
+  const savedConstructs = Array.isArray(params.constructs)
+    ? params.constructs.join(",")
+    : "";
+  const isDirty =
+    ruleType === "max_loop_nesting_depth"
+      ? (Number(maxDepth) || 0) !== (Number(params.maxDepth ?? 1) || 0)
+      : parseConstructs(constructs).join(",") !== savedConstructs;
+  useUnsavedChanges(`constraint:${constraint.id}`, isDirty);
+
   function handleSave() {
     const ruleParams =
       ruleType === "max_loop_nesting_depth"
         ? { maxDepth: Number(maxDepth) || 0 }
-        : {
-            constructs: constructs
-              .split(",")
-              .map((c) => c.trim())
-              .filter(Boolean),
-          };
+        : { constructs: parseConstructs(constructs) };
 
     update(
       { id: constraint.id, exerciseId, ruleType, ruleParams },
-      { onError: (e) => toast.error(t("addFailed"), { description: e.message }) },
+      {
+        onError: (e) => toast.error(t("addFailed"), { description: e.message }),
+      },
     );
   }
 
@@ -162,7 +181,7 @@ function StructuralConstraintRow({
         />
       )}
       <Button
-        disabled={isSaving}
+        disabled={isSaving || !isDirty}
         onClick={handleSave}
         size="sm"
         type="button"
@@ -208,6 +227,14 @@ function NewStructuralConstraintRow({
   );
   const [maxDepth, setMaxDepth] = useState("1");
   const [constructs, setConstructs] = useState("");
+  // A typed rule that wasn't added yet counts as unsaved.
+  useUnsavedChanges(
+    `constraint-new:${exerciseId}`,
+    availableRuleTypes.length > 0 &&
+      (ruleType === "max_loop_nesting_depth"
+        ? maxDepth !== "1"
+        : constructs.trim() !== ""),
+  );
 
   if (availableRuleTypes.length === 0) return null;
 
@@ -215,12 +242,7 @@ function NewStructuralConstraintRow({
     const ruleParams =
       ruleType === "max_loop_nesting_depth"
         ? { maxDepth: Number(maxDepth) || 0 }
-        : {
-            constructs: constructs
-              .split(",")
-              .map((c) => c.trim())
-              .filter(Boolean),
-          };
+        : { constructs: parseConstructs(constructs) };
 
     create(
       { exerciseId, ruleType, ruleParams },
@@ -290,6 +312,8 @@ function AlgorithmRequirementRow({
   useEffect(() => {
     setDescription(existing?.description ?? "");
   }, [existing?.description]);
+  const isDirty = description.trim() !== (existing?.description ?? "").trim();
+  useUnsavedChanges(`algorithm:${exerciseId}`, isDirty);
 
   return (
     <div className="flex flex-col gap-2">
@@ -302,7 +326,7 @@ function AlgorithmRequirementRow({
       <p className="text-muted-foreground text-xs">{t("algorithmHint")}</p>
       <div className="flex items-center gap-2">
         <Button
-          disabled={isPending || !description.trim()}
+          disabled={isPending || !description.trim() || !isDirty}
           onClick={() =>
             upsert(
               { exerciseId, description },
