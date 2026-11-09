@@ -28,6 +28,7 @@ see `survey-review.md`.
 | 19 | Survey F7: pasting code from another editor | Reproduced: Monaco keeps pasted no-break spaces (Python: `invalid non-printable character U+00A0`) and opens a native English `confirm()` for U+2028 line separators. Submit actions now normalize invisible spaces, zero-width characters, line endings and Python leading tabs; the editor drops U+2028/U+2029 silently | #88 |
 | 20 | Survey F8 (from production data): 31 failures on one problem printed `input("Digite…")` prompts | Failure view shows a hint when the output has the expected lines plus extra text: "print only what the output asks for". The practice Results dialog now shows the student's own output too | #88 |
 | 21 | Survey F6: no way to run the program before submitting | "Run" button and stdin box on every code editor (problem, contest, lesson code/blocks): one ungraded run in the judge sandbox showing stdout, stderr, exit code, time and memory. Separate `code_run` table and `new_run` channel (migration `0052`), 10 runs/min, contest toggle `allow_runs`, gated by `CUSTOM_RUN_ENABLED` | #89 |
+| 22 | Professor survey P5: leaving the problem editor without "Salvar rascunho" lost edits silently; some screens autosave, others need Save (SUS item 6 "inconsistent" = 3) | One save rule: single controls save on change, multi-field forms save explicitly with Save disabled until dirty and an "unsaved changes" hint, dialogs commit or cancel. Leave guard on the problem editor, contest settings, profile, exercise constraints and survey answers: browser prompt on reload/close, confirmation dialog on links, tab switches, command palette, language switch and Back/Forward. Publish warns when the editor has unsaved edits; a new problem is no longer "dirty" on load | (web 1.8.0) |
 
 Out of scope by decision: feature flags.
 
@@ -35,7 +36,8 @@ Specs for each change are archived under `openspec/changes/archive/`
 (`2026-10-29-classroom-feedback-quick`, `2026-10-29-signup-ra`,
 `2026-10-30-test-visibility`, `2026-10-30-roles-coteachers`) and, for
 15–20, `survey-feedback-fixes` (web 1.1.0, #88), and for 21,
-`2026-10-30-custom-run` (judge 1.1.0, web 1.2.0, #89).
+`2026-10-30-custom-run` (judge 1.1.0, web 1.2.0, #89), and for 22,
+`2026-11-09-unsaved-changes-guard` (web 1.8.0).
 
 Not changed by decision: survey F1 (switching the pre-0048 problems from
 `exact` to `tokens`). It stays a known limitation / future work in the thesis.

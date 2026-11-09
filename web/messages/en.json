@@ -2205,5 +2205,13 @@
     "cancel": "Cancel",
     "hint": "No judge has picked this submission up yet. Cancel it to stop waiting; it will not count as an attempt.",
     "failed": "Could not cancel the submission"
+  },
+  "UnsavedChanges": {
+    "title": "Discard unsaved changes?",
+    "description": "You have changes that haven't been saved yet. If you leave now, they will be lost.",
+    "stay": "Keep editing",
+    "leave": "Leave without saving",
+    "hint": "Unsaved changes",
+    "publishBlocked": "Save your changes before publishing: publishing uses the last saved version."
   }
 }

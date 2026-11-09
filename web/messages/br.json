@@ -2205,5 +2205,13 @@
     "cancel": "Cancelar",
     "hint": "Nenhum juiz pegou esta submissão ainda. Cancele para parar de esperar; ela não conta como tentativa.",
     "failed": "Não foi possível cancelar a submissão"
+  },
+  "UnsavedChanges": {
+    "title": "Descartar alterações não salvas?",
+    "description": "Você tem alterações que ainda não foram salvas. Se sair agora, elas serão perdidas.",
+    "stay": "Continuar editando",
+    "leave": "Sair sem salvar",
+    "hint": "Alterações não salvas",
+    "publishBlocked": "Salve suas alterações antes de publicar: a publicação usa a última versão salva."
   }
 }

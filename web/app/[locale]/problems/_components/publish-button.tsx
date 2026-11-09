@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Rocket } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { useHasUnsavedChanges } from "@/components/unsaved-changes/unsaved-changes";
 import { ShareIconButton } from "@/components/share-icon-button";
 import { Button } from "@/components/ui/button";
 import { LoadingSwap } from "@/components/ui/loading-swap";
@@ -22,11 +23,18 @@ export function PublishProblem({ problem }: { problem: Problem }) {
   const { mutate: publishProblem, isPending, isSuccess } = usePublishProblem();
   const queryClient = useQueryClient();
   const { data: validation } = useProblemValidation(problem.id);
+  // Publishing uses the saved problem, not what is typed in the editor.
+  const hasUnsavedEdits = useHasUnsavedChanges("problem-editor");
+  const tUnsaved = useTranslations("UnsavedChanges");
 
   const missing = getMissingProblemFields(problem);
   if (validation?.isStale) missing.push("validation");
 
   function handlePublish() {
+    if (hasUnsavedEdits) {
+      toast.error(tUnsaved("publishBlocked"));
+      return;
+    }
     publishProblem(problem.id, {
       onError: (error) => {
         const missingFields = isActionError(error, PUBLISH_MISSING_FIELDS)
@@ -73,6 +81,11 @@ export function PublishProblem({ problem }: { problem: Problem }) {
           />
         )}
       </div>
+      {hasUnsavedEdits && (
+        <p className="text-xs text-muted-foreground">
+          {tUnsaved("publishBlocked")}
+        </p>
+      )}
       {missing.length > 0 && (
         <p className="text-xs text-muted-foreground">
           {t("missingSummary")}:{" "}
