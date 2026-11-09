@@ -2,6 +2,7 @@
 
 import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { HighlightedCode } from "@/components/highlighted-code";
 import { StatusBadge } from "@/components/submissions/status-badge";
 import { SubmissionDetails } from "@/components/submissions/submission-details";
 import { VisualAnswer } from "@/components/submissions/visual-answer";
@@ -68,12 +69,11 @@ export function SubmissionHistory({ onLoaded }: { onLoaded?: () => void }) {
                 )}
             </div>
             <VisualAnswer submission={s} />
-            <pre
-              className="notranslate max-h-60 overflow-auto border bg-muted/50 p-2 font-mono text-xs whitespace-pre"
-              translate="no"
-            >
-              {s.code}
-            </pre>
+            <HighlightedCode
+              className="max-h-60 border bg-muted/50 p-2"
+              code={s.code}
+              language={s.language}
+            />
             {s.output && (
               <SubmissionDetails
                 constraintViolationDetail={s.constraintViolationDetail}
