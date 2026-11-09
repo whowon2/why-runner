@@ -140,7 +140,7 @@ and Escape/overlay cancel. Concurrent requests replace the pending one.
 
 ## Migration Plan
 
-Client-only, no DB/API change. Ship with a web minor bump (1.8.0). Rollback = revert.
+Client-only, no DB/API change. Ship with a web minor bump (1.10.0). Rollback = revert.
 
 ## Open Questions
 

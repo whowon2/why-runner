@@ -2,6 +2,7 @@ import type { Language, Submission } from "@/drizzle/schema";
 import { toCsv } from "@/lib/contest/export-bundle";
 import { computeExerciseScore, parseTestCounts } from "@/lib/exercise-score";
 import { formatScore } from "@/lib/gradebook";
+import { compareByName } from "@/lib/compare-by-name";
 
 export type ClassResultsLesson = {
   id: string;
@@ -88,10 +89,7 @@ export function buildClassResults(input: ClassResultsInput): ClassResultRow[] {
     input.activity.map((a) => [`${a.userId}:${a.exerciseId}`, a]),
   );
 
-  const students = [...input.students].sort(
-    (a, b) =>
-      a.name.localeCompare(b.name) || a.username.localeCompare(b.username),
-  );
+  const students = [...input.students].sort(compareByName);
 
   return students.flatMap((student) =>
     input.lessons.flatMap((lesson) => {

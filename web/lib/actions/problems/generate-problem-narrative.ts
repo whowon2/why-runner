@@ -12,6 +12,7 @@ import { consumeAiQuota } from "@/lib/rate-limit";
 
 export async function generateProblemNarrative(
   problemId: string,
+  locale: string,
 ): Promise<ActionResult<string, "RATE_LIMITED">> {
   const currentUser = await getCurrentUser({});
   // Creator or admin.
@@ -35,7 +36,7 @@ export async function generateProblemNarrative(
 
   const narrative = await generateText("narrative", {
     system: SYSTEM_INSTRUCTION_NARRATIVE,
-    prompt: getNarrativePrompt({ problem: found }),
+    prompt: getNarrativePrompt({ problem: found, locale }),
   });
 
   return ok(narrative.trim());

@@ -19,7 +19,7 @@ The system SHALL provide a gradebook page for each class, reachable from the cla
 - **THEN** the system SHALL reject the request and return no scores
 
 ### Requirement: Gradebook matrix lists students against published lesson exercises
-The gradebook SHALL have one row per class student (members with role `student` other than the owner, ordered by name) and one column per exercise of every published lesson in the class, grouped by lesson (lessons by creation order, exercises by their lesson order). Unpublished lessons SHALL NOT appear. Students SHALL be returned with public user columns plus their `ra` (no email). Each student's row SHALL show their RA alongside their name, or nothing when they have none.
+The gradebook SHALL have one row per class student (members with role `student` other than the owner, ordered by name using pt-BR collation that ignores case and accents, ties broken by username) and one column per exercise of every published lesson in the class, grouped by lesson (lessons by creation order, exercises by their lesson order). Unpublished lessons SHALL NOT appear. Students SHALL be returned with public user columns plus their `ra` (no email). Each student's row SHALL show their RA alongside their name, or nothing when they have none.
 
 #### Scenario: Class with two published lessons and one draft
 - **WHEN** a class has published lessons A (2 exercises) and B (1 exercise) and an unpublished lesson C
@@ -32,6 +32,10 @@ The gradebook SHALL have one row per class student (members with role `student` 
 #### Scenario: Co-teacher is not a row
 - **WHEN** the class has a co-teacher
 - **THEN** the gradebook SHALL have no row for them
+
+#### Scenario: Rows ordered case- and accent-insensitively
+- **WHEN** a class has students "Zé", "ana" and "Álvaro"
+- **THEN** the gradebook rows SHALL be in the order "Álvaro", "ana", "Zé"
 
 ### Requirement: Cell score reuses lesson grading
 Each cell SHALL show the student's score for that exercise computed exactly as lesson review does: the passed test-case fraction (`passed_count / total_tests`) of the submission snapshotted for that exercise when the student submitted the lesson. A cell SHALL be empty ("not submitted") when the student has not submitted that lesson, and SHALL be 0 when the lesson was submitted but that exercise has no snapshotted or parseable submission. The score SHALL NOT depend on specific submission status values.

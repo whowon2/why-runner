@@ -141,6 +141,10 @@ Lesson exercises have `exercise.mode` (`exercise_mode` enum, default `code`), se
 - Both modes store `submission.editorMode` + `submission.visualSource`; `code` is always what the judge ran. `components/submissions/visual-answer.tsx` renders them read-only. The judge needs no changes (it claims rows with an explicit column list).
 - AI hints (`getUserPrompt`) get mode-specific instructions: blocks → refer to block labels in the student's locale; parsons → only order/indentation.
 
+### Allowed Languages
+
+`exercise.allowedLanguages` and `problemOnContest.allowedLanguages` (`language[]`, empty = any language) restrict what students may use on a lesson exercise in `code` mode (blocks/Parsons fix their own language) and on a contest problem. Rules live in `lib/allowed-languages.ts`. `createExerciseSubmission`, contest `createSubmission` and `createRun` return `LANGUAGE_NOT_ALLOWED` for anything else; standalone problems stay open. Teachers edit the lists with `AllowedLanguagesDialog` (`setExerciseAllowedLanguages`, `setContestProblemLanguages`, the latter frozen once the contest has started). The workspace passes the list as `WorkspaceSource.allowedLanguages`; `CodePane` offers only those languages and switches a restored disallowed draft language to an allowed one. The `Language` pg enum lives in `drizzle/schemas/language.ts` (re-exported by `submissions.ts`) so `users.ts` can use it without an import cycle.
+
 ## Environment Variables
 
 Required in `.env`:
