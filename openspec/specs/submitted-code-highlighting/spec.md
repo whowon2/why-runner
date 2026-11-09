@@ -1,7 +1,7 @@
 # submitted-code-highlighting Specification
 
 ## Purpose
-TBD - created by archiving change submitted-code-highlighting. Update Purpose after archive.
+Read-only code views (submission history, lesson review, generated Portugol) highlight code with the code editor's own Monaco grammar and app theme, with a plain-text fallback; Portugol has a grammar in the editor and these views.
 ## Requirements
 ### Requirement: Read-only submitted code is syntax-highlighted
 Read-only code views SHALL highlight code with the same grammar and app theme as the code editor, without mounting an editor instance per view. This covers at least: the workspace submission history, the teacher's lesson review (each student's submitted answer) and the generated Portugol panel of block exercises. The language used SHALL be the submission's language (Portugol for the generated panel); a language with no grammar SHALL render as plain text.
