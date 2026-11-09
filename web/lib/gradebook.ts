@@ -1,5 +1,6 @@
 import { toCsv } from "@/lib/contest/export-bundle";
 import { computeExerciseScore } from "@/lib/exercise-score";
+import { compareByName } from "@/lib/compare-by-name";
 
 export type GradebookLesson = {
   id: string;
@@ -57,10 +58,7 @@ export function buildGradebook(input: GradebookInput): Gradebook {
     input.completions.map((c) => [`${c.userId}:${c.exerciseId}`, c.output]),
   );
 
-  const students = [...input.students].sort(
-    (a, b) =>
-      a.name.localeCompare(b.name) || a.username.localeCompare(b.username),
-  );
+  const students = [...input.students].sort(compareByName);
 
   const rows = students.map((student) => {
     const cells: (number | null)[] = [];
