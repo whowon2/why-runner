@@ -12,8 +12,16 @@ type AppearanceMode = "preset" | "custom";
 
 export function AppearanceSection() {
   const t = useTranslations("SettingsPage.appearance");
-  const { stored } = useThemeTokens();
+  const { stored, activeMode } = useThemeTokens();
   const [mode, setMode] = useState<AppearanceMode>(stored.mode);
+  // `stored` starts as the default preset and is replaced once localStorage
+  // (then the account) loads: follow it, so a saved custom theme opens on its
+  // own tab instead of looking unsaved.
+  const [shownStoredMode, setShownStoredMode] = useState(stored.mode);
+  if (stored.mode !== shownStoredMode) {
+    setShownStoredMode(stored.mode);
+    setMode(stored.mode);
+  }
   const { theme, setColorMode } = useColorMode();
   const [mounted, setMounted] = useState(false);
 
@@ -90,7 +98,11 @@ export function AppearanceSection() {
         </div>
       </div>
 
-      {mode === "preset" ? <PresetGrid /> : <CustomThemeForm />}
+      {mode === "preset" ? (
+        <PresetGrid />
+      ) : (
+        <CustomThemeForm key={activeMode} />
+      )}
     </section>
   );
 }

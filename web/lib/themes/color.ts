@@ -41,3 +41,10 @@ export function toHex([r, g, b]: Rgba, alpha?: number): string {
   const parts = alpha === undefined ? [r, g, b] : [r, g, b, alpha * 255];
   return `#${parts.map((x) => Math.round(x).toString(16).padStart(2, "0")).join("")}`;
 }
+
+/** Any CSS color as `#rrggbb` (alpha dropped); null if unparsable. Browser-only. */
+export function cssColorToHex(color: string): string | null {
+  if (typeof document === "undefined") return null;
+  const rgba = toRgba(color);
+  return rgba ? toHex(rgba) : null;
+}

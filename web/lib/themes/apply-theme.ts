@@ -1,8 +1,10 @@
 import { type ResolvedTheme, themeCssVars } from "./palette";
 
 export function applyTheme(theme: ResolvedTheme) {
-  const root = document.documentElement;
+  const style = document.documentElement.style;
   for (const [name, value] of Object.entries(themeCssVars(theme))) {
-    root.style.setProperty(name, value);
+    // Unchanged values skip the write, so re-applying the theme a live
+    // preview already painted doesn't invalidate the whole page's style.
+    if (style.getPropertyValue(name) !== value) style.setProperty(name, value);
   }
 }
