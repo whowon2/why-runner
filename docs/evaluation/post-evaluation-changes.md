@@ -38,7 +38,7 @@ Specs for each change are archived under `openspec/changes/archive/`
 `2026-10-30-test-visibility`, `2026-10-30-roles-coteachers`) and, for
 15–20, `survey-feedback-fixes` (web 1.1.0, #88), and for 21,
 `2026-10-30-custom-run` (judge 1.1.0, web 1.2.0, #89), and for 23,
-`ai-authoring-locale` (web 1.7.3).
+`2026-11-09-ai-authoring-locale` (web 1.7.3).
 
 Not changed by decision: survey F1 (switching the pre-0048 problems from
 `exact` to `tokens`). It stays a known limitation / future work in the thesis.
