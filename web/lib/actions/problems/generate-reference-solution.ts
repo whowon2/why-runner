@@ -26,6 +26,7 @@ function stripCodeFence(text: string): string {
 export async function generateReferenceSolution(
   problemId: string,
   language: Language,
+  locale: string,
 ): Promise<ActionResult<string, "RATE_LIMITED">> {
   const currentUser = await getCurrentUser({});
   // Creator or admin.
@@ -61,7 +62,7 @@ export async function generateReferenceSolution(
 
   const text = await generateText("reference-solution", {
     system: SYSTEM_INSTRUCTION_REFERENCE_SOLUTION,
-    prompt: getReferenceSolutionPrompt({ problem: found, language }),
+    prompt: getReferenceSolutionPrompt({ problem: found, language, locale }),
   });
 
   return ok(stripCodeFence(text));
