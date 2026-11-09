@@ -1566,6 +1566,7 @@
     "subtitle": "Create a class for your students, or join one with a code.",
     "empty": "You have no classes yet.",
     "createClass": "Create class",
+    "teachHint": "Teaching a course? Create a class and invite your students with its code.",
     "joinCodePlaceholder": "Enter class code",
     "join": "Join",
     "myClasses": "Classes you teach",
