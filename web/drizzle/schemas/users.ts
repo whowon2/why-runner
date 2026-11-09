@@ -13,6 +13,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { contest } from "./contests";
+import { Language } from "./language";
 import { type ProblemPreview, problem } from "./problems";
 
 export const UserRole = pgEnum("user_role", ["user", "admin"]);
@@ -168,6 +169,12 @@ export const problemOnContest = pgTable(
         onUpdate: "cascade",
       }),
     order: integer("order").notNull().default(0),
+    // Languages participants may use on this problem; empty = any language
+    // (`lib/allowed-languages.ts`).
+    allowedLanguages: Language("allowed_languages")
+      .array()
+      .default(sql`'{}'::language[]`)
+      .notNull(),
   },
   (t) => [primaryKey({ columns: [t.problemId, t.contestId] })],
 );

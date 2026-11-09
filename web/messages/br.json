@@ -1729,7 +1729,8 @@
     "RUNS_DISABLED": "Executar código não está disponível aqui.",
     "RUN_IN_PROGRESS": "Aguarde a execução atual terminar.",
     "ALREADY_RUNNING": "O juiz já começou a executar, então não dá mais para cancelar.",
-    "INPUT_TOO_LARGE": "Sua entrada é grande demais (máx. {max} caracteres)."
+    "INPUT_TOO_LARGE": "Sua entrada é grande demais (máx. {max} caracteres).",
+    "LANGUAGE_NOT_ALLOWED": "Esta linguagem não é permitida aqui. Permitidas: {languages}."
   },
   "JudgeReport": {
     "wrongAnswerOnTest": "Resposta errada no teste {index}",
@@ -2112,7 +2113,8 @@
       "results": "Resultados"
     },
     "Editor": {
-      "openFile": "Abrir arquivo"
+      "openFile": "Abrir arquivo",
+      "languageNotAllowed": "Este código está em {language}, que não é permitida aqui."
     },
     "Console": {
       "title": "Saída do console",
@@ -2205,5 +2207,16 @@
     "cancel": "Cancelar",
     "hint": "Nenhum juiz pegou esta submissão ainda. Cancele para parar de esperar; ela não conta como tentativa.",
     "failed": "Não foi possível cancelar a submissão"
+  },
+  "AllowedLanguages": {
+    "trigger": "Linguagens",
+    "title": "Linguagens permitidas",
+    "exerciseDescription": "Linguagens que os alunos podem usar neste exercício no modo código. Deixe todas desmarcadas para permitir qualquer linguagem. Exercícios de blocos e Parsons mantêm a própria linguagem.",
+    "contestDescription": "Linguagens que os participantes podem usar neste problema. Deixe todas desmarcadas para permitir qualquer linguagem. Não pode ser alterado depois que o contest começa.",
+    "any": "Qualquer linguagem",
+    "save": "Salvar",
+    "saved": "Linguagens permitidas salvas.",
+    "error": "Não foi possível salvar as linguagens permitidas.",
+    "statement": "Linguagens permitidas: {languages}"
   }
 }

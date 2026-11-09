@@ -1729,7 +1729,8 @@
     "RUNS_DISABLED": "Running code is not available here.",
     "RUN_IN_PROGRESS": "Wait for your current run to finish.",
     "ALREADY_RUNNING": "The judge already started it, so it can no longer be canceled.",
-    "INPUT_TOO_LARGE": "Your input is too large (max {max} characters)."
+    "INPUT_TOO_LARGE": "Your input is too large (max {max} characters).",
+    "LANGUAGE_NOT_ALLOWED": "This language isn't allowed here. Allowed: {languages}."
   },
   "JudgeReport": {
     "wrongAnswerOnTest": "Wrong answer on test {index}",
@@ -2112,7 +2113,8 @@
       "results": "Results"
     },
     "Editor": {
-      "openFile": "Open file"
+      "openFile": "Open file",
+      "languageNotAllowed": "This code is in {language}, which isn't allowed here."
     },
     "Console": {
       "title": "Console output",
@@ -2205,5 +2207,16 @@
     "cancel": "Cancel",
     "hint": "No judge has picked this submission up yet. Cancel it to stop waiting; it will not count as an attempt.",
     "failed": "Could not cancel the submission"
+  },
+  "AllowedLanguages": {
+    "trigger": "Languages",
+    "title": "Allowed languages",
+    "exerciseDescription": "Languages students may use on this exercise in code mode. Leave all unchecked to allow any language. Blocks and Parsons exercises keep their own language.",
+    "contestDescription": "Languages participants may use on this problem. Leave all unchecked to allow any language. Can't be changed once the contest has started.",
+    "any": "Any language",
+    "save": "Save",
+    "saved": "Allowed languages saved.",
+    "error": "Couldn't save the allowed languages.",
+    "statement": "Allowed languages: {languages}"
   }
 }

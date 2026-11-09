@@ -9,18 +9,10 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { problem } from "./problems";
+import { Language } from "./language";
 import { user } from "./users";
 
-export const Language = pgEnum("language", [
-  "c",
-  "cpp",
-  "java",
-  "python",
-  "portugol",
-  "rust",
-]);
-
-export type Language = (typeof Language.enumValues)[number];
+export { Language } from "./language";
 
 // How a lesson exercise is answered. `code` is the text editor; `blocks`
 // (Blockly → Portugol) and `parsons` (reorder given lines) are visual modes
