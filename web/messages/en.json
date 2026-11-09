@@ -1146,12 +1146,8 @@
           "yourOutputLabel": "Your Output",
           "expectedOutputLabel": "Expected Output",
           "errorLog": "Error Log (Stderr)",
-          "processing": "Processing...",
-          "codeLabel": "Your code",
           "constraintViolation": "Passed all {count} tests but violated a solution constraint",
           "pendingClassification": "Passed all tests — checking algorithm requirement...",
-          "latestVerdict": "Latest submission: view details",
-          "latestVerdictTitle": "Latest submission",
           "extraOutputHint": "Your program printed extra text, e.g. a prompt in <code>input()</code>. Print only what the output asks for.",
           "AI": {
             "title": "AI Assistant",

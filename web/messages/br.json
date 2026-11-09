@@ -1146,12 +1146,8 @@
           "yourOutputLabel": "Sua Saída",
           "expectedOutputLabel": "Saída Esperada",
           "errorLog": "Log de Erro (Stderr)",
-          "processing": "Processando...",
-          "codeLabel": "Seu código",
           "constraintViolation": "Passou em todos os {count} testes, mas violou uma restrição de solução",
           "pendingClassification": "Passou em todos os testes — verificando algoritmo exigido...",
-          "latestVerdict": "Última submissão: ver detalhes",
-          "latestVerdictTitle": "Última submissão",
           "extraOutputHint": "Seu programa imprimiu texto a mais, por exemplo a mensagem de um <code>input()</code>. Imprima só o que a saída pede.",
           "AI": {
             "title": "Assistente de IA",
