@@ -1566,6 +1566,7 @@
     "subtitle": "Crie uma turma para seus alunos, ou entre em uma com um código.",
     "empty": "Você ainda não tem turmas.",
     "createClass": "Criar turma",
+    "teachHint": "Dá aulas? Crie uma turma e convide seus alunos com o código dela.",
     "joinCodePlaceholder": "Digite o código da turma",
     "join": "Entrar",
     "myClasses": "Turmas que você leciona",

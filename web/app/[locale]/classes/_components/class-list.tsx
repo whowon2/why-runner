@@ -19,10 +19,7 @@ export function ClassList() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <PageHeader icon={School} title={t("title")} subtitle={t("subtitle")} />
-        <div className="flex items-center gap-2">
-          <JoinClassForm />
-          <CreateClassButton />
-        </div>
+        <JoinClassForm />
       </div>
 
       {isPending ? (
@@ -34,9 +31,12 @@ export function ClassList() {
         <>
           {data && data.taught.length > 0 && (
             <div className="flex flex-col gap-3">
-              <h2 className="font-medium text-muted-foreground text-sm">
-                {t("myClasses")}
-              </h2>
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="font-medium text-muted-foreground text-sm">
+                  {t("myClasses")}
+                </h2>
+                <CreateClassButton />
+              </div>
               <ClassGrid classes={data.taught} />
             </div>
           )}
@@ -55,6 +55,14 @@ export function ClassList() {
           )}
           {data && data.taught.length === 0 && data.joined.length === 0 && (
             <p className="text-muted-foreground">{t("empty")}</p>
+          )}
+          {/* Kept away from the join form so students, who only need the
+              code, don't create a class by mistake (professor survey P4). */}
+          {data && data.taught.length === 0 && (
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-dashed p-4">
+              <p className="text-muted-foreground text-sm">{t("teachHint")}</p>
+              <CreateClassButton />
+            </div>
           )}
         </>
       )}
