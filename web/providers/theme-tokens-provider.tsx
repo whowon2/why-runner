@@ -8,19 +8,21 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { applyTheme } from "@/lib/themes/apply-theme";
-import { type ResolvedTheme, resolveTheme } from "@/lib/themes/palette";
+import { cssColorToHex } from "@/lib/themes/color";
+import { withCustomTokens } from "@/lib/themes/custom";
+import {
+  derivePalette,
+  type ResolvedTheme,
+  resolveTheme,
+} from "@/lib/themes/palette";
 import { bindPreference, savePreference } from "@/lib/preferences-sync";
 import { DEFAULT_PRESET_ID, getPresetById } from "@/lib/themes/presets";
 import { readStoredTheme, writeStoredTheme } from "@/lib/themes/storage";
-import type {
-  CustomTheme,
-  StoredTheme,
-  ThemeMode,
-  ThemeTokens,
-} from "@/lib/themes/types";
+import type { StoredTheme, ThemeMode, ThemeTokens } from "@/lib/themes/types";
 
 type ThemeTokensContextValue = {
   stored: StoredTheme;
@@ -29,7 +31,14 @@ type ThemeTokensContextValue = {
   /** What's on screen: `stored`, or the previewed preset, with its palette. */
   shown: ResolvedTheme;
   setPreset: (presetId: string) => void;
-  setCustomTokens: (tokens: ThemeTokens) => void;
+  /** Commits `tokens` (hex) as the custom theme's `mode` colors. */
+  setCustomTokens: (tokens: ThemeTokens, mode: ThemeMode) => void;
+  /**
+   * Paints custom tokens on `<html>` without touching React state, storage or
+   * the account; for live previews while editing. Call `setCustomTokens` to
+   * commit them (that re-applies the stored theme).
+   */
+  paintCustomTokens: (tokens: ThemeTokens, mode: ThemeMode) => void;
   // Temporarily shows a preset without persisting it; null restores `stored`.
   previewPreset: (presetId: string | null) => void;
 };
@@ -56,6 +65,12 @@ export function ThemeTokensProvider({
   const activeMode: ThemeMode = resolvedTheme === "light" ? "light" : "dark";
   const [stored, setStored] = useState<StoredTheme>(defaultStoredTheme);
   const [previewId, setPreviewId] = useState<string | null>(null);
+  // Latest `stored`, so setters can derive the next value outside a setState
+  // updater (updaters must stay pure: StrictMode runs them twice).
+  const storedRef = useRef(stored);
+  useLayoutEffect(() => {
+    storedRef.current = stored;
+  }, [stored]);
 
   useEffect(() => {
     const fromStorage = readStoredTheme();
@@ -96,30 +111,25 @@ export function ThemeTokensProvider({
   }, []);
 
   const setCustomTokens = useCallback(
-    (tokens: ThemeTokens) => {
-      setStored((prev) => {
-        const prevCustom: CustomTheme =
-          prev.mode === "custom"
-            ? prev.custom
-            : {
-                light: getPresetById(
-                  prev.mode === "preset" ? prev.presetId : DEFAULT_PRESET_ID,
-                ).light,
-                dark: getPresetById(
-                  prev.mode === "preset" ? prev.presetId : DEFAULT_PRESET_ID,
-                ).dark,
-              };
-        const nextCustom: CustomTheme = {
-          ...prevCustom,
-          [activeMode]: tokens,
-        };
-        const next: StoredTheme = { mode: "custom", custom: nextCustom };
-        writeStoredTheme(next);
-        savePreference({ theme: next });
-        return next;
-      });
+    (tokens: ThemeTokens, mode: ThemeMode) => {
+      const next = withCustomTokens(
+        storedRef.current,
+        mode,
+        tokens,
+        cssColorToHex,
+      );
+      storedRef.current = next;
+      setStored(next);
+      writeStoredTheme(next);
+      savePreference({ theme: next });
     },
-    [activeMode],
+    [],
+  );
+
+  const paintCustomTokens = useCallback(
+    (tokens: ThemeTokens, mode: ThemeMode) =>
+      applyTheme({ tokens, palette: derivePalette(tokens, mode) }),
+    [],
   );
 
   const activeTokens = useMemo(
@@ -135,9 +145,18 @@ export function ThemeTokensProvider({
       shown,
       setPreset,
       setCustomTokens,
+      paintCustomTokens,
       previewPreset: setPreviewId,
     }),
-    [stored, activeMode, activeTokens, shown, setPreset, setCustomTokens],
+    [
+      stored,
+      activeMode,
+      activeTokens,
+      shown,
+      setPreset,
+      setCustomTokens,
+      paintCustomTokens,
+    ],
   );
 
   return (

@@ -1,16 +1,28 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { derivePalette } from "@/lib/themes/palette";
 import { PRESETS } from "@/lib/themes/presets";
 import { cn } from "@/lib/utils";
 import { useThemeTokens } from "@/providers/theme-tokens-provider";
+
+const noopSubscribe = () => () => {};
 
 /**
  * One card per preset in the current light/dark mode: its background, text
  * and a strip of its accent and syntax colors.
  */
 export function PresetGrid({ className }: { className?: string }) {
-  const { stored, activeMode, setPreset } = useThemeTokens();
+  const { stored, activeMode: clientMode, setPreset } = useThemeTokens();
+  // The server can't know the light/dark mode (it lives in localStorage) and
+  // renders dark: hydrate with that, then switch, or the cards' inline colors
+  // mismatch the server HTML.
+  const hydrated = useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
+  const activeMode = hydrated ? clientMode : "dark";
   const activePresetId = stored.mode === "preset" ? stored.presetId : null;
 
   return (
