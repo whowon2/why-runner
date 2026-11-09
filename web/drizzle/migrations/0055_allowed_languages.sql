@@ -1,0 +1,2 @@
+ALTER TABLE "exercise" ADD COLUMN "allowed_languages" "language"[] DEFAULT '{}'::language[] NOT NULL;--> statement-breakpoint
+ALTER TABLE "problem_on_contest" ADD COLUMN "allowed_languages" "language"[] DEFAULT '{}'::language[] NOT NULL;

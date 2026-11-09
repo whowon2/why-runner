@@ -119,6 +119,7 @@ function ContestWorkspace({
   );
   const errorMessage = useActionErrorMessage();
   const problem = contest.problems[index].problem;
+  const allowedLanguages = contest.problems[index].allowedLanguages;
   const letter = letters[index];
   const { data: liveAnswered } = useUserContestStatus(contest.id);
   const answered =
@@ -157,6 +158,7 @@ function ContestWorkspace({
       hiddenCount: tests?.hiddenCount ?? 0,
       compare: { mode: problem.compareMode, epsilon: problem.floatEpsilon },
       runsEnabled: contest.allowRuns && isMember,
+      allowedLanguages,
       lockedReason,
       submissions,
       submissionsPending,
@@ -196,6 +198,7 @@ function ContestWorkspace({
     [
       tests,
       problem,
+      allowedLanguages,
       contest,
       isMember,
       lockedReason,
@@ -245,7 +248,12 @@ function ContestWorkspace({
           />
         }
         rail={rail}
-        statement={<ProblemStatement problem={problem} />}
+        statement={
+          <ProblemStatement
+            allowedLanguages={allowedLanguages}
+            problem={problem}
+          />
+        }
         status={
           <>
             <span className="text-muted-foreground">

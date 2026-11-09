@@ -30,6 +30,7 @@ export type ProblemReviewEdgeCase = ProblemReview["edgeCases"][number];
 
 export async function reviewProblem(
   problemId: string,
+  locale: string,
 ): Promise<ActionResult<ProblemReview, "RATE_LIMITED">> {
   const currentUser = await getCurrentUser({});
   // Creator or admin.
@@ -50,7 +51,7 @@ export async function reviewProblem(
   return ok(
     await generateJson("problem-review", {
       system: SYSTEM_INSTRUCTION_PROBLEM_REVIEW,
-      prompt: getProblemReviewPrompt({ problem: found }),
+      prompt: getProblemReviewPrompt({ problem: found, locale }),
       schema: ReviewSchema,
     }),
   );
