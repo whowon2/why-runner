@@ -107,7 +107,7 @@ function CustomInputRow({ onSelect }: { onSelect?: () => void }) {
         aria-label={t("playCustom")}
         disabled={runner.running}
         onClick={() => {
-          if (runner.stdin.trim()) runCustom();
+          if (runner.getStdin().trim()) runCustom();
           else openCustomInput();
           onSelect?.();
         }}

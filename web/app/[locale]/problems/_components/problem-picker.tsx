@@ -2,7 +2,7 @@
 
 import { ChevronsUpDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -16,6 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useDebouncedValue } from "@/hooks/use-debounced";
 import { useProblems } from "@/hooks/use-problems";
 import { DifficultyBadge } from "./badge";
 
@@ -38,11 +39,7 @@ export function ProblemPicker({
   const t = useTranslations("ProblemPicker");
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  useEffect(() => {
-    const timeout = setTimeout(() => setDebouncedSearch(search), 250);
-    return () => clearTimeout(timeout);
-  }, [search]);
+  const debouncedSearch = useDebouncedValue(search, 250);
   const { data: problems, isFetching: isSearching } = useProblems({
     page: 1,
     pageSize: 20,
