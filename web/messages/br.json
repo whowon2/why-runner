@@ -2083,6 +2083,11 @@
     "cancel": "Cancelar",
     "cancelFailed": "Não foi possível cancelar a execução"
   },
+  "JudgePoll": {
+    "stillJudging": "Ainda em avaliação: o juiz está demorando mais que o normal.",
+    "checkAgain": "Verificar de novo",
+    "runUnavailable": "Esta execução não está mais disponível. Execute seu código de novo."
+  },
   "CodeRunStatus": {
     "PENDING": "Na fila",
     "RUNNING": "Executando",
