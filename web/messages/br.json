@@ -867,7 +867,10 @@
         "title": "Resumo da tarefa",
         "solvedBy": "Resolvido por",
         "attemptedBy": "Tentado por",
-        "successRate": "Taxa de sucesso"
+        "successRate": "Taxa de sucesso",
+        "students": "Alunos na turma",
+        "scopeClass": "Envios para este exercício pelos alunos desta turma (professores não contam).",
+        "scopeGlobal": "Envios para este problema por todos os usuários."
       },
       "Tests": {
         "title": "Testes",
@@ -1146,12 +1149,8 @@
           "yourOutputLabel": "Sua Saída",
           "expectedOutputLabel": "Saída Esperada",
           "errorLog": "Log de Erro (Stderr)",
-          "processing": "Processando...",
-          "codeLabel": "Seu código",
           "constraintViolation": "Passou em todos os {count} testes, mas violou uma restrição de solução",
           "pendingClassification": "Passou em todos os testes — verificando algoritmo exigido...",
-          "latestVerdict": "Última submissão: ver detalhes",
-          "latestVerdictTitle": "Última submissão",
           "extraOutputHint": "Seu programa imprimiu texto a mais, por exemplo a mensagem de um <code>input()</code>. Imprima só o que a saída pede.",
           "AI": {
             "title": "Assistente de IA",
@@ -1566,6 +1565,7 @@
     "subtitle": "Crie uma turma para seus alunos, ou entre em uma com um código.",
     "empty": "Você ainda não tem turmas.",
     "createClass": "Criar turma",
+    "teachHint": "Dá aulas? Crie uma turma e convide seus alunos com o código dela.",
     "joinCodePlaceholder": "Digite o código da turma",
     "join": "Entrar",
     "myClasses": "Turmas que você leciona",
@@ -1729,7 +1729,8 @@
     "RUNS_DISABLED": "Executar código não está disponível aqui.",
     "RUN_IN_PROGRESS": "Aguarde a execução atual terminar.",
     "ALREADY_RUNNING": "O juiz já começou a executar, então não dá mais para cancelar.",
-    "INPUT_TOO_LARGE": "Sua entrada é grande demais (máx. {max} caracteres)."
+    "INPUT_TOO_LARGE": "Sua entrada é grande demais (máx. {max} caracteres).",
+    "LANGUAGE_NOT_ALLOWED": "Esta linguagem não é permitida aqui. Permitidas: {languages}."
   },
   "JudgeReport": {
     "wrongAnswerOnTest": "Resposta errada no teste {index}",
@@ -2112,7 +2113,8 @@
       "results": "Resultados"
     },
     "Editor": {
-      "openFile": "Abrir arquivo"
+      "openFile": "Abrir arquivo",
+      "languageNotAllowed": "Este código está em {language}, que não é permitida aqui."
     },
     "Console": {
       "title": "Saída do console",
@@ -2205,5 +2207,24 @@
     "cancel": "Cancelar",
     "hint": "Nenhum juiz pegou esta submissão ainda. Cancele para parar de esperar; ela não conta como tentativa.",
     "failed": "Não foi possível cancelar a submissão"
+  },
+  "AllowedLanguages": {
+    "trigger": "Linguagens",
+    "title": "Linguagens permitidas",
+    "exerciseDescription": "Linguagens que os alunos podem usar neste exercício no modo código. Deixe todas desmarcadas para permitir qualquer linguagem. Exercícios de blocos e Parsons mantêm a própria linguagem.",
+    "contestDescription": "Linguagens que os participantes podem usar neste problema. Deixe todas desmarcadas para permitir qualquer linguagem. Não pode ser alterado depois que o contest começa.",
+    "any": "Qualquer linguagem",
+    "save": "Salvar",
+    "saved": "Linguagens permitidas salvas.",
+    "error": "Não foi possível salvar as linguagens permitidas.",
+    "statement": "Linguagens permitidas: {languages}"
+  },
+  "UnsavedChanges": {
+    "title": "Descartar alterações não salvas?",
+    "description": "Você tem alterações que ainda não foram salvas. Se sair agora, elas serão perdidas.",
+    "stay": "Continuar editando",
+    "leave": "Sair sem salvar",
+    "hint": "Alterações não salvas",
+    "publishBlocked": "Salve suas alterações antes de publicar: a publicação usa a última versão salva."
   }
 }

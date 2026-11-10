@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
+import { UnsavedChangesProvider } from "@/components/unsaved-changes/unsaved-changes";
 import { PreferencesSync } from "./preferences-sync";
 import { ThemeProvider } from "./theme-provider";
 import { ThemeTokensProvider } from "./theme-tokens-provider";
@@ -26,7 +27,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <ThemeProvider attribute="class" defaultTheme="dark">
         <ThemeTokensProvider>
           <PreferencesSync />
-          {children}
+          <UnsavedChangesProvider>{children}</UnsavedChangesProvider>
         </ThemeTokensProvider>
       </ThemeProvider>
     </QueryClientProvider>

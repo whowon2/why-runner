@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { HighlightedCode } from "@/components/highlighted-code";
 import type { GeneratorError } from "@/lib/blocks/portugol-generator";
 
 /** Read-only generated Portugol, plus the block errors that block submit. */
@@ -30,12 +31,11 @@ export function PortugolCodePanel({
       <span className="text-muted-foreground text-xs font-semibold">
         {t("generatedCode")}
       </span>
-      <pre
-        translate="no"
-        className="notranslate max-h-72 w-full overflow-auto whitespace-pre rounded-md border bg-muted/50 p-2 font-mono text-xs text-foreground"
-      >
-        {code}
-      </pre>
+      <HighlightedCode
+        className="max-h-72 w-full rounded-md border bg-muted/50 p-2 text-foreground"
+        code={code}
+        language="portugol"
+      />
     </div>
   );
 }

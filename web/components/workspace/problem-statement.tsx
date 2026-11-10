@@ -8,7 +8,7 @@ import {
   ProblemTags,
 } from "@/app/[locale]/problems/_components/badge";
 import { ProblemDescription } from "@/app/[locale]/problems/_components/description";
-import type { Problem } from "@/drizzle/schema";
+import type { Language, Problem } from "@/drizzle/schema";
 
 /**
  * Statement column for a problem: badges, limits, then narrative,
@@ -17,15 +17,19 @@ import type { Problem } from "@/drizzle/schema";
  */
 export function ProblemStatement({
   problem,
+  allowedLanguages = [],
   children,
 }: {
   problem: Pick<
     Problem,
     "id" | "difficulty" | "status" | "tags" | "timeLimitMs" | "memoryLimitMb"
   >;
+  /** Contest problem's allowed languages; empty = any (no line shown). */
+  allowedLanguages?: Language[];
   children?: ReactNode;
 }) {
   const t = useTranslations("Workspace.Status");
+  const tAllowed = useTranslations("AllowedLanguages");
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -39,6 +43,11 @@ export function ProblemStatement({
           })}
         </span>
       </div>
+      {allowedLanguages.length > 0 && (
+        <p className="text-muted-foreground text-sm" translate="no">
+          {tAllowed("statement", { languages: allowedLanguages.join(", ") })}
+        </p>
+      )}
       <ProblemDescription problemId={problem.id} />
       {children}
     </div>
