@@ -2,7 +2,7 @@
 
 import { Check, Copy, Loader, Play, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import { StillJudging } from "@/components/submissions/still-judging";
 import { Button } from "@/components/ui/button";
@@ -29,11 +29,19 @@ const IN_PROGRESS: readonly CodeRunStatus[] = ["PENDING", "RUNNING"];
  * State shared by an editor's `RunButton` (in its toolbar, next to Submit)
  * and its `RunPanel` (under the editor). `defaultStdin` prefills the input,
  * e.g. with an example already shown on the page.
+ *
+ * The stdin lives in a ref, not state: the runner sits in the workspace
+ * context, so typing must not re-render every consumer. `RunPanel` keeps the
+ * shown text; read the current input with `getStdin()`.
  */
 export function useCodeRunner(defaultStdin = "") {
   const t = useTranslations("CodeRun");
   const errorMessage = useActionErrorMessage();
-  const [stdin, setStdin] = useState(defaultStdin);
+  const stdinRef = useRef(defaultStdin);
+  const getStdin = useCallback(() => stdinRef.current, []);
+  const setStdin = useCallback((value: string) => {
+    stdinRef.current = value;
+  }, []);
   const [runId, setRunId] = useState<string | null>(null);
   const { mutate, isPending } = useCreateRun();
   const cancelMutation = useCancelRun();
@@ -53,7 +61,7 @@ export function useCodeRunner(defaultStdin = "") {
   /** `program` is null when the editor already warned (no language, …). */
   function run(program: RunProgram | null) {
     if (!program) return;
-    mutate({ ...program, stdin } as CreateRunInput, {
+    mutate({ ...program, stdin: stdinRef.current } as CreateRunInput, {
       onSuccess: ({ id }) => setRunId(id),
       onError: (error) =>
         toast.error(t("failed"), { description: errorMessage(error) }),
@@ -75,7 +83,7 @@ export function useCodeRunner(defaultStdin = "") {
   }
 
   return {
-    stdin,
+    getStdin,
     setStdin,
     runId,
     result,
@@ -129,6 +137,9 @@ export function RunPanel({
   const tPoll = useTranslations("JudgePoll");
   const run = runner.result.data;
   const pending = runner.running;
+  // Shown text; the runner's ref is the source the run reads. Seeded from it
+  // so switching console tabs keeps what was typed.
+  const [stdin, setStdin] = useState(runner.getStdin);
 
   return (
     <div className="flex flex-col gap-3">
@@ -140,11 +151,14 @@ export function RunPanel({
           className="min-h-20 font-mono text-sm notranslate"
           id="code-run-stdin"
           maxLength={MAX_RUN_STDIN}
-          onChange={(e) => runner.setStdin(e.target.value)}
+          onChange={(e) => {
+            setStdin(e.target.value);
+            runner.setStdin(e.target.value);
+          }}
           placeholder={t("inputPlaceholder")}
           spellCheck={false}
           translate="no"
-          value={runner.stdin}
+          value={stdin}
         />
         <p className="text-xs text-muted-foreground">
           {t("notGraded")}

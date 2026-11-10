@@ -35,10 +35,10 @@ export function ContestList() {
 
   // 1. Extract State using nuqs
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
-  const [search, setSearch] = useQueryState(
-    "q",
-    parseAsString.withDefault("").withOptions({ shallow: false }),
-  );
+  // Shallow: the server page never reads `q` (useContests fetches on the
+  // client), and a non-shallow update from the debounced search timer can
+  // leave the RSC transition hanging.
+  const [search, setSearch] = useQueryState("q", parseAsString.withDefault(""));
   const [status, setStatus] = useQueryState(
     "status",
     parseAsString.withDefault("all").withOptions({ shallow: false }),
