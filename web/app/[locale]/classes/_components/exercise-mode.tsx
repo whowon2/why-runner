@@ -261,7 +261,7 @@ function ParsonsCheckStatus({
   return (
     <span className="text-destructive text-xs">
       {t("failed")}
-      {error ? `: ${error}` : ""}
+      {error && <span>: {error}</span>}
     </span>
   );
 }

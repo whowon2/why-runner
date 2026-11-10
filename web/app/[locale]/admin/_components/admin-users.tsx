@@ -61,7 +61,7 @@ export function AdminUsers() {
                   </Link>{" "}
                   <span className="text-muted-foreground text-xs">
                     @{u.username}
-                    {isSelf && ` (${t("you")})`}
+                    {isSelf && <span> ({t("you")})</span>}
                   </span>
                 </TableCell>
                 <TableCell className="text-muted-foreground text-xs">

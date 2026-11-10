@@ -1,5 +1,6 @@
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Children } from "react";
 import type * as React from "react";
 
 import { cn } from "@/lib/utils";
@@ -36,11 +37,29 @@ const buttonVariants = cva(
   },
 );
 
+/**
+ * Wraps bare text children in a `<span>`. Browser page translators replace
+ * text nodes with their own `<font>` nodes; when React later swaps an icon
+ * next to that text (`{busy ? <Loader /> : <Check />}{label}`) it inserts
+ * before, or removes, the detached text node and throws `insertBefore` /
+ * `removeChild` NotFoundError. A span keeps React's anchor in the DOM.
+ */
+function wrapText(children: React.ReactNode) {
+  return Children.map(children, (child) =>
+    typeof child === "string" || typeof child === "number" ? (
+      <span>{child}</span>
+    ) : (
+      child
+    ),
+  );
+}
+
 function Button({
   className,
   variant,
   size,
   asChild = false,
+  children,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -53,7 +72,9 @@ function Button({
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
-    />
+    >
+      {asChild ? children : wrapText(children)}
+    </Comp>
   );
 }
 
