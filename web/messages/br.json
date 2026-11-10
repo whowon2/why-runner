@@ -1589,6 +1589,7 @@
     "removeStudentDescription": "Ele perderá acesso a esta turma e suas aulas. Pode entrar novamente depois com o código da turma.",
     "removeStudentSuccess": "Aluno removido.",
     "leaveClass": "Sair da turma",
+    "moreActions": "Mais ações",
     "leaveClassTitle": "Sair desta turma?",
     "leaveClassDescription": "Você perderá acesso a esta turma e suas aulas, a menos que entre novamente com o código.",
     "leaveClassSuccess": "Você saiu da turma.",

@@ -16,12 +16,14 @@ export function PageHeader({
 }: PageHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div className="flex items-center gap-3">
-        <span className="p-2 border bg-primary/10">
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="shrink-0 p-2 border bg-primary/10">
           <Icon className="w-6 h-6 text-primary" />
         </span>
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+        <div className="min-w-0 space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight break-words">
+            {title}
+          </h1>
           <p className="text-muted-foreground text-sm">{subtitle}</p>
         </div>
       </div>

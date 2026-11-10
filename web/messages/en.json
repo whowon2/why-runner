@@ -1589,6 +1589,7 @@
     "removeStudentDescription": "They will lose access to this class and its lessons. They can rejoin later with the class code.",
     "removeStudentSuccess": "Student removed.",
     "leaveClass": "Leave class",
+    "moreActions": "More actions",
     "leaveClassTitle": "Leave this class?",
     "leaveClassDescription": "You'll lose access to this class and its lessons unless you rejoin with the class code.",
     "leaveClassSuccess": "You left the class.",
