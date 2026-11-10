@@ -2083,6 +2083,11 @@
     "cancel": "Cancel",
     "cancelFailed": "Could not cancel the run"
   },
+  "JudgePoll": {
+    "stillJudging": "Still judging: the judge is taking longer than usual.",
+    "checkAgain": "Check again",
+    "runUnavailable": "This run is no longer available. Run your code again."
+  },
   "CodeRunStatus": {
     "PENDING": "Pending",
     "RUNNING": "Running",
