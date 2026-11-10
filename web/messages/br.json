@@ -6,7 +6,8 @@
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "zoom": "Zoom",
-    "copied": "Copiado para a área de transferência"
+    "copied": "Copiado para a área de transferência",
+    "back": "Voltar"
   },
   "ErrorPage": {
     "title": "Algo deu errado",
@@ -955,6 +956,7 @@
     "Review": {
       "backToTrack": "Voltar para a atividade",
       "title": "Revisão: {track}",
+      "subtitle": "Envios e feedback dos alunos nesta atividade",
       "noStudents": "Nenhum aluno entrou nessa turma ainda.",
       "notSent": "Não enviado",
       "noJudgeStatus": "Sem resultado do juiz",
@@ -1609,7 +1611,6 @@
     "gradebookNoStudents": "Nenhum aluno entrou ainda.",
     "gradebookNoLessons": "Nenhuma tarefa publicada ainda.",
     "gradebookLegend": "Cada exercício vale a fração de casos de teste aprovados (0–1); — indica tarefa não entregue.",
-    "backToClass": "Voltar para a turma",
     "roleOwner": "Dono",
     "roleCoTeacher": "Coprofessor",
     "teachers": "Professores",
@@ -1962,8 +1963,6 @@
     "title": "Similaridade de código",
     "exerciseSubtitle": "{problem} · {lesson}",
     "contestSubtitle": "Compare as respostas dos participantes a cada problema de {contest}",
-    "backToLesson": "Voltar para a lição",
-    "backToContest": "Voltar para a competição",
     "trigger": "Similaridade",
     "openReport": "Abrir relatório de similaridade",
     "contestCta": "Encontre pares de participantes cujo código para o mesmo problema é suspeitamente parecido, mesmo após renomear variáveis ou reformatar.",
@@ -2023,7 +2022,6 @@
       "users": "Usuários",
       "usersHint": "Promova ou rebaixe admins."
     },
-    "backToAdmin": "Voltar para admin",
     "showing": "Mostrando {count} de {total}",
     "page": "Página {page} de {totalPages}",
     "empty": "Nada encontrado.",

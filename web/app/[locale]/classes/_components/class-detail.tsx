@@ -73,6 +73,7 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
             <LeaveClassButton classroomId={classroomId} />
           )
         }
+        backHref="/classes"
         icon={School}
         subtitle={t("memberCount", { count: memberCount })}
         title={classroom.name}
