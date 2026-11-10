@@ -1,14 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
+import { submissionRows, useJudgeQuery } from "@/hooks/use-judge-query";
 import { getProblemValidation } from "@/lib/actions/problems/get-problem-validation";
 
+/** The problem's validation state; polls the latest run while it's judged. */
 export const useProblemValidation = (problemId: string) =>
-  useQuery({
+  useJudgeQuery({
     queryKey: ["problem-validation", problemId],
-    queryFn: async () => {
-      return await getProblemValidation(problemId);
-    },
-    refetchInterval: (query) => {
-      const status = query.state.data?.latest?.status;
-      return status === "PENDING" || status === "RUNNING" ? 2000 : false;
-    },
+    queryFn: () => getProblemValidation(problemId),
+    rows: (data) => submissionRows(data?.latest && [data.latest]),
   });

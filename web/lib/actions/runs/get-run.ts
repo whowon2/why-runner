@@ -6,7 +6,11 @@ import { db } from "@/drizzle/db";
 import { codeRun } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 
-/** One of the current user's own runs: result columns only. */
+/**
+ * One of the current user's own runs: result columns only, or null when it
+ * is gone (deleted after 24 h) or isn't theirs, so the console can stop
+ * polling instead of retrying a thrown error.
+ */
 export async function getRun(rawId: string) {
   const currentUser = await getCurrentUser({});
   const id = z.uuid().parse(rawId);
@@ -27,8 +31,7 @@ export async function getRun(rawId: string) {
       createdAt: true,
     },
   });
-  if (!run) throw new Error("Run not found.");
-  return run;
+  return run ?? null;
 }
 
-export type RunResult = Awaited<ReturnType<typeof getRun>>;
+export type RunResult = NonNullable<Awaited<ReturnType<typeof getRun>>>;

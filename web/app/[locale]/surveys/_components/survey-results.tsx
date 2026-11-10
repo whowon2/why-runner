@@ -283,6 +283,7 @@ export function SurveyResults() {
   return (
     <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col gap-8 py-8">
       <PageHeader
+        backHref="/surveys"
         icon={BarChart3}
         title={t("results.title")}
         subtitle={t("results.subtitle")}

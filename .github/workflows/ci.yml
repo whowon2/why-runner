@@ -5,9 +5,11 @@ on:
   push:
     branches: [main]
 
+# PR runs cancel superseded ones; main runs queue instead, so a newer push
+# can't kill judge-deploy mid-rollout.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
   contents: read
@@ -69,10 +71,10 @@ jobs:
       - name: Test
         run: cargo test --locked -- --skip grade_tests
 
-  # On main only, after the judge checks pass: push the judge image Fly pulls
-  # (fly.toml: whowon/why-runner-judge:latest), plus `sha-<commit>` (immutable)
-  # and `v<Cargo.toml version>` (moves until the version is bumped). Fly still needs `fly deploy` to pick
-  # it up. Secrets: DOCKERHUB_USERNAME, DOCKERHUB_TOKEN.
+  # On main only, after the judge checks pass: push the judge image as
+  # `latest` (fly.toml's default for a manual `fly deploy`), `sha-<commit>`
+  # (immutable; what judge-deploy ships) and `v<Cargo.toml version>` (moves
+  # until the version is bumped). Secrets: DOCKERHUB_USERNAME, DOCKERHUB_TOKEN.
   judge-image:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: judge
@@ -100,18 +102,22 @@ jobs:
           cache-to: type=gha,mode=max
 
   # On main only: tag the commit `judge-vX.Y.Z` / `web-vX.Y.Z` the first time
-  # judge/Cargo.toml or web/package.json carries a new version.
+  # judge/Cargo.toml or web/package.json carries a new version. Output
+  # `judge_new` = this run created the judge tag (gates judge-deploy).
   release-tags:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [web, judge]
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      judge_new: ${{ steps.tags.outputs.judge_new }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Create missing version tags
+        id: tags
         run: |
           judge="judge-v$(sed -n 's/^version = "\(.*\)"/\1/p' judge/Cargo.toml | head -1)"
           web="web-v$(jq -r .version web/package.json)"
@@ -121,8 +127,39 @@ jobs:
             else
               git tag "$tag" "$GITHUB_SHA"
               git push origin "$tag"
+              if [ "$tag" = "$judge" ]; then
+                echo "judge_new=true" >> "$GITHUB_OUTPUT"
+              fi
             fi
           done
+
+  # On main only, when this run created a new `judge-vX.Y.Z` tag: deploy the
+  # image judge-image just pushed (immutable `sha-<commit>`, not `latest`) to
+  # Fly. Web-only merges and judge changes without a version bump skip this.
+  # If the bump's run never tags (cancelled/failed), the next main run that
+  # tags it deploys. Never overlaps another deploy (queue, no cancel).
+  # Schema changes the judge needs must already be migrated (Vercel build) by
+  # an earlier PR; see "Versioning" in the root CLAUDE.md.
+  # Secret: FLY_API_TOKEN (`fly tokens create deploy -a why-runner-judge`).
+  judge-deploy:
+    if: >-
+      github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+      needs.release-tags.outputs.judge_new == 'true'
+    needs: [judge-image, release-tags]
+    runs-on: ubuntu-latest
+    concurrency:
+      group: fly-deploy-why-runner-judge
+      cancel-in-progress: false
+    defaults:
+      run:
+        working-directory: judge
+    steps:
+      - uses: actions/checkout@v7
+      - uses: superfly/flyctl-actions/setup-flyctl@1.5
+      - name: Deploy to Fly
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: flyctl deploy -a why-runner-judge --image whowon/why-runner-judge:sha-${{ github.sha }}
 
   enum-sync:
     runs-on: ubuntu-latest
