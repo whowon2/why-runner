@@ -54,7 +54,7 @@ export function TagMultiSelect({
           <span className="flex items-center gap-2 truncate">
             <Tags className="h-4 w-4 shrink-0" />
             {label ?? t("placeholder")}
-            {value.length > 0 && ` (${value.length})`}
+            {value.length > 0 && <span> ({value.length})</span>}
           </span>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>

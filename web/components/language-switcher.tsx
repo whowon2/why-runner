@@ -61,7 +61,7 @@ export function LanguageSwitcher() {
         {routing.locales.map((l) => (
           <DropdownMenuItem key={l} onClick={() => handleLocaleChange(l)}>
             {locale === l ? <Check /> : <span className="size-4" />}
-            {t(LABEL_KEYS[l])}
+            <span>{t(LABEL_KEYS[l])}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

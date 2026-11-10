@@ -135,7 +135,7 @@ export function RunPanel({
         />
         <p className="text-xs text-muted-foreground">
           {t("notGraded")}
-          {language === "portugol" && ` ${t("portugolInput")}`}
+          {language === "portugol" && <span> {t("portugolInput")}</span>}
         </p>
       </div>
 

@@ -16,7 +16,7 @@ export function SolveStatus({
     return (
       <span className="flex items-center gap-1.5 font-medium text-success">
         <CheckCircle2 className="size-4" />
-        {t("solved")}
+        <span>{t("solved")}</span>
       </span>
     );
   }
@@ -24,12 +24,12 @@ export function SolveStatus({
   return submissions.some((s) => s.status !== "CANCELED") ? (
     <span className="flex items-center gap-1.5 text-warning">
       <CircleDot className="size-4" />
-      {t("attempted")}
+      <span>{t("attempted")}</span>
     </span>
   ) : (
     <span className="flex items-center gap-1.5 text-muted-foreground">
       <Circle className="size-4" />
-      {t("notAttempted")}
+      <span>{t("notAttempted")}</span>
     </span>
   );
 }

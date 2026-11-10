@@ -250,7 +250,7 @@ function CoTeacherRow({
         <span className="truncate font-medium">{candidate.name}</span>
         <span className="text-muted-foreground truncate text-xs">
           @{candidate.username}
-          {candidate.email && ` · ${candidate.email}`}
+          {candidate.email && <span> · {candidate.email}</span>}
         </span>
       </div>
       {candidate.isOwner ? (
