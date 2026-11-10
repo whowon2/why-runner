@@ -6,6 +6,10 @@
 app = 'why-runner-judge'
 primary_region = 'gru'
 
+# CI (.github/workflows/ci.yml, job judge-deploy) deploys automatically on a
+# judge version bump, overriding this with the immutable
+# `--image whowon/why-runner-judge:sha-<commit>`. `latest` is only the default
+# for a manual `fly deploy -a why-runner-judge` run from judge/.
 [build]
   image = 'whowon/why-runner-judge:latest'
 
