@@ -1635,7 +1635,20 @@
     "removeCoTeacher": "Remover coprofessor",
     "removeCoTeacherTitle": "Remover este coprofessor?",
     "removeCoTeacherDescription": "Ele perderá acesso a esta turma. Você pode adicioná-lo de novo depois.",
-    "removeCoTeacherSuccess": "Coprofessor removido."
+    "removeCoTeacherSuccess": "Coprofessor removido.",
+    "tabLessons": "Aulas",
+    "tabPeople": "Pessoas",
+    "teachersWithCount": "Professores ({count})",
+    "studentsWithCount": "Alunos ({count})",
+    "searchStudents": "Buscar alunos",
+    "searchStudentsPlaceholder": "Nome, @usuário ou RA",
+    "noStudentsMatch": "Nenhum aluno corresponde à busca.",
+    "memberActionsFor": "Ações para {name}",
+    "studentJoined": "Entrou em {date}",
+    "studentScores": "Notas",
+    "studentRecentSubmissions": "Submissões recentes",
+    "studentNoSubmissions": "Nenhuma submissão nesta turma ainda.",
+    "studentSubmissionsError": "Não foi possível carregar as submissões."
   },
   "Blocks": {
     "start": "quando o programa começar",

@@ -1635,7 +1635,20 @@
     "removeCoTeacher": "Remove co-teacher",
     "removeCoTeacherTitle": "Remove this co-teacher?",
     "removeCoTeacherDescription": "They will lose access to this class. You can add them again later.",
-    "removeCoTeacherSuccess": "Co-teacher removed."
+    "removeCoTeacherSuccess": "Co-teacher removed.",
+    "tabLessons": "Lessons",
+    "tabPeople": "People",
+    "teachersWithCount": "Teachers ({count})",
+    "studentsWithCount": "Students ({count})",
+    "searchStudents": "Search students",
+    "searchStudentsPlaceholder": "Name, @username or RA",
+    "noStudentsMatch": "No students match your search.",
+    "memberActionsFor": "Actions for {name}",
+    "studentJoined": "Joined {date}",
+    "studentScores": "Scores",
+    "studentRecentSubmissions": "Recent submissions",
+    "studentNoSubmissions": "No submissions in this class yet.",
+    "studentSubmissionsError": "Couldn't load submissions."
   },
   "Blocks": {
     "start": "when the program starts",

@@ -1,22 +1,23 @@
 "use client";
 
 import {
+  BookOpen,
   Copy,
   Ellipsis,
-  Lock,
   LogOut,
   Pencil,
   School,
   Sheet,
   Trash2,
+  Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,23 +26,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "@/i18n/navigation";
 import { useClass } from "@/hooks/use-class";
-import { useClassLessons } from "@/hooks/use-lessons";
-import { AddCoTeacherDialog } from "./add-co-teacher-dialog";
+import { ClassLessons } from "./class-lessons";
+import { ClassPeople } from "./class-people";
 import { CreateLessonButton } from "./create-lesson-button";
 import { DeleteClassDialog } from "./delete-class-dialog";
 import { EditClassDialog } from "./edit-class-dialog";
 import { LeaveClassButton } from "./leave-class-button";
-import { MemberRoleButton } from "./member-role-button";
-import { RemoveMemberButton } from "./remove-member-button";
+
+const CLASS_TABS = ["lessons", "people"] as const;
+type ClassTab = (typeof CLASS_TABS)[number];
 
 export function ClassDetail({ classroomId }: { classroomId: string }) {
   const t = useTranslations("ClassesPage");
-  const tLessons = useTranslations("TracksPage");
   const { data: classData, isPending: isClassPending } = useClass(classroomId);
-  const { data: lessons, isPending: isLessonsPending } =
-    useClassLessons(classroomId);
+  // Managers' tab lives in the URL (`?tab=people`) so reloads and shared
+  // links keep it; students have no tabs.
+  const [tab, setTab] = useQueryState(
+    "tab",
+    parseAsStringLiteral(CLASS_TABS).withDefault("lessons"),
+  );
   const [openDialog, setOpenDialog] = useState<
     "edit" | "leave" | "delete" | null
   >(null);
@@ -53,6 +59,14 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
   // admin) — only they delete the class and manage co-teachers.
   const { classroom, role, canManage, isOwner, memberCount, members } =
     classData;
+
+  const lessons = (
+    <ClassLessons
+      canManage={canManage}
+      classSlug={classroom.slug}
+      classroomId={classroomId}
+    />
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -164,198 +178,37 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
         )}
       </div>
 
-      {canManage && (
-        <Card className="bg-transparent shadow-none">
-          <CardHeader className="flex flex-row items-center justify-between gap-2">
-            <CardTitle className="text-base">{t("teachers")}</CardTitle>
-            {isOwner && <AddCoTeacherDialog classroomId={classroomId} />}
-          </CardHeader>
-          <CardContent>
-            <ul className="flex flex-col gap-1">
-              {classData.owner && (
-                <li className="flex items-center gap-2">
-                  <Link
-                    className="text-sm hover:underline"
-                    href={`/user/${classData.owner.username}`}
-                  >
-                    {classData.owner.name}
-                  </Link>
-                  <Badge variant="default">{t("roleOwner")}</Badge>
-                </li>
-              )}
-              {classData.coTeachers.map((m) => (
-                <li
-                  className="flex items-center justify-between gap-2"
-                  key={m.id}
-                >
-                  <span className="flex items-center gap-2">
-                    <Link
-                      className="text-sm hover:underline"
-                      href={`/user/${m.username}`}
-                    >
-                      {m.name}
-                    </Link>
-                    <Badge variant="outline">{t("roleCoTeacher")}</Badge>
-                  </span>
-                  {isOwner && (
-                    <span className="flex items-center">
-                      <MemberRoleButton
-                        classroomId={classroomId}
-                        role="teacher"
-                        userId={m.id}
-                      />
-                      <RemoveMemberButton
-                        classroomId={classroomId}
-                        coTeacher
-                        userId={m.id}
-                      />
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      )}
-
-      {canManage && (
-        <Card className="bg-transparent shadow-none">
-          <CardHeader>
-            <CardTitle className="text-base">{t("students")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {members.length === 0 ? (
-              <p className="text-muted-foreground text-sm">
-                {t("noStudentsYet")}
-              </p>
-            ) : (
-              <ul className="flex flex-col gap-1">
-                {members.map((m) => (
-                  <li
-                    className="flex items-center justify-between gap-2"
-                    key={m.id}
-                  >
-                    <div className="flex items-baseline gap-2">
-                      <Link
-                        className="text-sm hover:underline"
-                        href={`/user/${m.username}`}
-                      >
-                        {m.name}
-                      </Link>
-                      {m.ra && (
-                        <span className="font-mono text-muted-foreground text-xs">
-                          {m.ra}
-                        </span>
-                      )}
-                    </div>
-                    <span className="flex items-center">
-                      {isOwner && (
-                        <MemberRoleButton
-                          classroomId={classroomId}
-                          role="student"
-                          userId={m.id}
-                        />
-                      )}
-                      <RemoveMemberButton
-                        classroomId={classroomId}
-                        userId={m.id}
-                      />
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {isLessonsPending ? (
-        <Skeleton className="h-24 w-full" />
-      ) : !lessons || lessons.length === 0 ? (
-        <p className="text-muted-foreground">{tLessons("empty")}</p>
+      {canManage ? (
+        <Tabs onValueChange={(value) => setTab(value as ClassTab)} value={tab}>
+          <TabsList>
+            <TabsTrigger value="lessons">
+              <BookOpen className="size-4" />
+              {t("tabLessons")}
+            </TabsTrigger>
+            <TabsTrigger value="people">
+              <Users className="size-4" />
+              {t("tabPeople")}
+              <Badge className="tabular-nums" variant="secondary">
+                {memberCount}
+              </Badge>
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent className="mt-4" value="lessons">
+            {lessons}
+          </TabsContent>
+          <TabsContent className="mt-4" value="people">
+            <ClassPeople
+              classSlug={classroom.slug}
+              classroomId={classroomId}
+              coTeachers={classData.coTeachers}
+              isOwner={isOwner}
+              owner={classData.owner}
+              students={members}
+            />
+          </TabsContent>
+        </Tabs>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {lessons.map((lesson) => {
-            const dueDatePassed = !!(
-              lesson.dueDate && new Date(lesson.dueDate) < new Date()
-            );
-
-            return (
-              <Link
-                href={`/classes/${classroom.slug}/lessons/${lesson.slug}`}
-                key={lesson.id}
-              >
-                <Card className="h-full bg-muted/30 transition-colors hover:bg-muted/60">
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between gap-2 text-lg">
-                      {lesson.title}
-                      {!lesson.isPublished && (
-                        <Badge variant="outline">
-                          <Lock className="size-3" />
-                          {tLessons("unpublished")}
-                        </Badge>
-                      )}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-2">
-                    {lesson.description && (
-                      <p className="text-muted-foreground text-sm">
-                        {lesson.description}
-                      </p>
-                    )}
-                    <div className="flex flex-wrap items-center gap-2 text-xs">
-                      {!canManage && (
-                        <Badge variant="outline">
-                          {tLessons("exerciseProgress", {
-                            done: lesson.completedCount ?? 0,
-                            total: lesson.exerciseCount,
-                          })}
-                        </Badge>
-                      )}
-                      {canManage && (
-                        <Badge variant="outline">
-                          {tLessons("exerciseCount", {
-                            count: lesson.exerciseCount,
-                          })}
-                        </Badge>
-                      )}
-                      {lesson.dueDate && (
-                        <Badge variant="outline">
-                          {tLessons("dueDatePrefix")}{" "}
-                          {new Date(lesson.dueDate).toLocaleDateString()}
-                        </Badge>
-                      )}
-                      {!canManage && lesson.mySubmission && (
-                        <Badge className="bg-blue-500">
-                          {tLessons("submittedAt", {
-                            date: new Date(
-                              lesson.mySubmission.submittedAt,
-                            ).toLocaleDateString(),
-                          })}
-                        </Badge>
-                      )}
-                      {!canManage && lesson.mySubmission?.reviewedAt && (
-                        <Badge className="bg-green-600">
-                          {tLessons("scoreLabel", {
-                            score: lesson.mySubmission.score.toFixed(2),
-                          })}
-                        </Badge>
-                      )}
-                      {!canManage &&
-                        lesson.mySubmission &&
-                        !lesson.mySubmission.reviewedAt &&
-                        dueDatePassed && (
-                          <Badge variant="outline">
-                            {tLessons("awaitingReview")}
-                          </Badge>
-                        )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            );
-          })}
-        </div>
+        lessons
       )}
     </div>
   );
