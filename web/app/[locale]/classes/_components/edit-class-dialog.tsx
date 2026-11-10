@@ -2,7 +2,7 @@
 
 import { Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,13 +22,24 @@ import { useUpdateClass } from "@/hooks/use-update-class";
 export function EditClassDialog({
   classroomId,
   name,
+  open: controlledOpen,
+  onOpenChange,
 }: {
   classroomId: string;
   name: string;
+  // When `open` is passed the dialog is controlled and renders no trigger
+  // (e.g. opened from a dropdown menu item).
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
   const t = useTranslations("ClassesPage");
   const tCommon = useTranslations("Common");
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const controlled = controlledOpen !== undefined;
+  const open = controlled ? controlledOpen : uncontrolledOpen;
+  const setOpen = controlled
+    ? (onOpenChange ?? (() => {}))
+    : setUncontrolledOpen;
   const [value, setValue] = useState(name);
   const { mutate: updateClass, isPending } = useUpdateClass();
 
@@ -44,20 +55,20 @@ export function EditClassDialog({
     );
   }
 
+  useEffect(() => {
+    if (open) setValue(name);
+  }, [open, name]);
+
   return (
-    <Dialog
-      onOpenChange={(next) => {
-        setOpen(next);
-        if (next) setValue(name);
-      }}
-      open={open}
-    >
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          <Pencil className="size-4" />
-          {t("editClass")}
-        </Button>
-      </DialogTrigger>
+    <Dialog onOpenChange={setOpen} open={open}>
+      {!controlled && (
+        <DialogTrigger asChild>
+          <Button variant="outline">
+            <Pencil className="size-4" />
+            {t("editClass")}
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("editClass")}</DialogTitle>
