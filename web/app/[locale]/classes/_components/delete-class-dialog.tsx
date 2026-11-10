@@ -19,7 +19,17 @@ import { LoadingSwap } from "@/components/ui/loading-swap";
 import { useDeleteClass } from "@/hooks/use-delete-class";
 import { useRouter } from "@/i18n/navigation";
 
-export function DeleteClassDialog({ classroomId }: { classroomId: string }) {
+export function DeleteClassDialog({
+  classroomId,
+  open,
+  onOpenChange,
+}: {
+  classroomId: string;
+  // When `open` is passed the dialog is controlled and renders no trigger
+  // (e.g. opened from a dropdown menu item).
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}) {
   const t = useTranslations("ClassesPage");
   const tCommon = useTranslations("Common");
   const { mutate: deleteClass, isPending } = useDeleteClass();
@@ -36,18 +46,20 @@ export function DeleteClassDialog({ classroomId }: { classroomId: string }) {
   }
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button disabled={isPending} variant="destructive">
-          <LoadingSwap
-            className="inline-flex items-center gap-2"
-            isLoading={isPending}
-          >
-            <Trash2 className="size-4" />
-            {t("deleteClass")}
-          </LoadingSwap>
-        </Button>
-      </AlertDialogTrigger>
+    <AlertDialog onOpenChange={onOpenChange} open={open}>
+      {open === undefined && (
+        <AlertDialogTrigger asChild>
+          <Button disabled={isPending} variant="destructive">
+            <LoadingSwap
+              className="inline-flex items-center gap-2"
+              isLoading={isPending}
+            >
+              <Trash2 className="size-4" />
+              {t("deleteClass")}
+            </LoadingSwap>
+          </Button>
+        </AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{t("deleteClassTitle")}</AlertDialogTitle>

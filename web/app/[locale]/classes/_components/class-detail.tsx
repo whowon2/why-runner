@@ -1,12 +1,29 @@
 "use client";
 
-import { Copy, Lock, School, Sheet } from "lucide-react";
+import {
+  Copy,
+  Ellipsis,
+  Lock,
+  LogOut,
+  Pencil,
+  School,
+  Sheet,
+  Trash2,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { useClass } from "@/hooks/use-class";
@@ -25,6 +42,9 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
   const { data: classData, isPending: isClassPending } = useClass(classroomId);
   const { data: lessons, isPending: isLessonsPending } =
     useClassLessons(classroomId);
+  const [openDialog, setOpenDialog] = useState<
+    "edit" | "leave" | "delete" | null
+  >(null);
 
   if (isClassPending) return <Skeleton className="h-32 w-full" />;
   if (!classData) return null;
@@ -36,48 +56,113 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader
-        action={
-          canManage ? (
-            <>
-              <Button
-                onClick={() => {
-                  navigator.clipboard.writeText(classroom.joinCode);
-                  toast.success(t("codeCopied"));
-                }}
-                variant="outline"
-              >
-                <Copy className="size-4" />
-                {t("joinCode")}: {classroom.joinCode}
-              </Button>
+      <div className="flex flex-col gap-4">
+        <PageHeader
+          backHref="/classes"
+          icon={School}
+          subtitle={t("memberCount", { count: memberCount })}
+          title={classroom.name}
+        />
+        {canManage ? (
+          <div className="flex flex-wrap items-center justify-between gap-2 border-y py-2">
+            <Button
+              aria-label={`${t("joinCode")}: ${classroom.joinCode}`}
+              className="font-mono"
+              onClick={() => {
+                navigator.clipboard.writeText(classroom.joinCode);
+                toast.success(t("codeCopied"));
+              }}
+              size="sm"
+              title={t("joinCode")}
+              variant="outline"
+            >
+              <span className="text-muted-foreground">{t("joinCode")}</span>
+              <span className="font-semibold tracking-wider">
+                {classroom.joinCode}
+              </span>
+              <Copy className="size-3.5 text-muted-foreground" />
+            </Button>
+            <div className="flex flex-wrap items-center gap-2">
               <Button asChild variant="outline">
                 <Link href={`/classes/${classroom.slug}/gradebook`}>
                   <Sheet className="size-4" />
                   {t("gradebook")}
                 </Link>
               </Button>
-              <EditClassDialog
-                classroomId={classroomId}
-                name={classroom.name}
-              />
               <CreateLessonButton
                 classSlug={classroom.slug}
                 classroomId={classroomId}
               />
-              {isOwner && <DeleteClassDialog classroomId={classroomId} />}
-              {role === "teacher" && (
-                <LeaveClassButton classroomId={classroomId} />
-              )}
-            </>
-          ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    aria-label={t("moreActions")}
+                    size="icon"
+                    title={t("moreActions")}
+                    variant="outline"
+                  >
+                    <Ellipsis className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  // Keep focus from snapping back to the trigger, which
+                  // would count as "focus outside" and close the dialog
+                  // the selected item just opened.
+                  onCloseAutoFocus={(e) => e.preventDefault()}
+                >
+                  <DropdownMenuItem onSelect={() => setOpenDialog("edit")}>
+                    <Pencil />
+                    {t("editClass")}
+                  </DropdownMenuItem>
+                  {role === "teacher" && (
+                    <DropdownMenuItem onSelect={() => setOpenDialog("leave")}>
+                      <LogOut />
+                      {t("leaveClass")}
+                    </DropdownMenuItem>
+                  )}
+                  {isOwner && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onSelect={() => setOpenDialog("delete")}
+                        variant="destructive"
+                      >
+                        <Trash2 />
+                        {t("deleteClass")}
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <EditClassDialog
+              classroomId={classroomId}
+              name={classroom.name}
+              onOpenChange={(open) => setOpenDialog(open ? "edit" : null)}
+              open={openDialog === "edit"}
+            />
+            {role === "teacher" && (
+              <LeaveClassButton
+                classroomId={classroomId}
+                onOpenChange={(open) => setOpenDialog(open ? "leave" : null)}
+                open={openDialog === "leave"}
+              />
+            )}
+            {isOwner && (
+              <DeleteClassDialog
+                classroomId={classroomId}
+                onOpenChange={(open) => setOpenDialog(open ? "delete" : null)}
+                open={openDialog === "delete"}
+              />
+            )}
+          </div>
+        ) : (
+          <div className="flex justify-end">
             <LeaveClassButton classroomId={classroomId} />
-          )
-        }
-        backHref="/classes"
-        icon={School}
-        subtitle={t("memberCount", { count: memberCount })}
-        title={classroom.name}
-      />
+          </div>
+        )}
+      </div>
 
       {canManage && (
         <Card className="bg-transparent shadow-none">

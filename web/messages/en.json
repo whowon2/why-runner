@@ -1591,6 +1591,7 @@
     "removeStudentDescription": "They will lose access to this class and its lessons. They can rejoin later with the class code.",
     "removeStudentSuccess": "Student removed.",
     "leaveClass": "Leave class",
+    "moreActions": "More actions",
     "leaveClassTitle": "Leave this class?",
     "leaveClassDescription": "You'll lose access to this class and its lessons unless you rejoin with the class code.",
     "leaveClassSuccess": "You left the class.",
@@ -2080,6 +2081,11 @@
     "truncated": "Output too long: only the first 64 KB is shown.",
     "cancel": "Cancel",
     "cancelFailed": "Could not cancel the run"
+  },
+  "JudgePoll": {
+    "stillJudging": "Still judging: the judge is taking longer than usual.",
+    "checkAgain": "Check again",
+    "runUnavailable": "This run is no longer available. Run your code again."
   },
   "CodeRunStatus": {
     "PENDING": "Pending",

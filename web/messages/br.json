@@ -1591,6 +1591,7 @@
     "removeStudentDescription": "Ele perderá acesso a esta turma e suas aulas. Pode entrar novamente depois com o código da turma.",
     "removeStudentSuccess": "Aluno removido.",
     "leaveClass": "Sair da turma",
+    "moreActions": "Mais ações",
     "leaveClassTitle": "Sair desta turma?",
     "leaveClassDescription": "Você perderá acesso a esta turma e suas aulas, a menos que entre novamente com o código.",
     "leaveClassSuccess": "Você saiu da turma.",
@@ -2080,6 +2081,11 @@
     "truncated": "Saída muito longa: só os primeiros 64 KB são mostrados.",
     "cancel": "Cancelar",
     "cancelFailed": "Não foi possível cancelar a execução"
+  },
+  "JudgePoll": {
+    "stillJudging": "Ainda em avaliação: o juiz está demorando mais que o normal.",
+    "checkAgain": "Verificar de novo",
+    "runUnavailable": "Esta execução não está mais disponível. Execute seu código de novo."
   },
   "CodeRunStatus": {
     "PENDING": "Na fila",
