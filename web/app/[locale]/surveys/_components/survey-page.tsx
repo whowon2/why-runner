@@ -33,6 +33,7 @@ export function SurveyPage({
   return (
     <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col gap-8 py-8">
       <PageHeader
+        backHref="/surveys"
         icon={ClipboardList}
         title={t(`forms.${form}.title`)}
         subtitle={survey?.entity.name ?? t(`formLabels.${form}`)}

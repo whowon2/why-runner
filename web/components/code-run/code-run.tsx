@@ -4,6 +4,7 @@ import { Check, Copy, Loader, Play, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
+import { StillJudging } from "@/components/submissions/still-judging";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { CodeRunStatus, Language } from "@/drizzle/schema";
@@ -44,10 +45,17 @@ export function useCodeRunner(defaultStdin = "") {
   const [runId, setRunId] = useState<string | null>(null);
   const { mutate, isPending } = useCreateRun();
   const cancelMutation = useCancelRun();
-  const result = useRun(runId);
+  const { query: result, stuck } = useRun(runId);
+  /** The run is gone (deleted after 24 h) or could not be loaded. */
+  const unavailable =
+    runId !== null &&
+    (result.isError || (result.isSuccess && result.data === null));
+  // A stuck run no longer blocks Run: the student may try again.
   const running =
     isPending ||
     (runId !== null &&
+      !unavailable &&
+      !stuck &&
       (!result.data || IN_PROGRESS.includes(result.data.status)));
 
   /** `program` is null when the editor already warned (no language, …). */
@@ -80,6 +88,10 @@ export function useCodeRunner(defaultStdin = "") {
     runId,
     result,
     running,
+    stuck,
+    unavailable,
+    /** Check again: one refetch of a stuck run. */
+    recheck: () => void result.refetch(),
     run,
     cancelable,
     cancel,
@@ -122,6 +134,7 @@ export function RunPanel({
 }) {
   const t = useTranslations("CodeRun");
   const tStatus = useTranslations("CodeRunStatus");
+  const tPoll = useTranslations("JudgePoll");
   const run = runner.result.data;
   const pending = runner.running;
   // Shown text; the runner's ref is the source the run reads. Seeded from it
@@ -155,7 +168,28 @@ export function RunPanel({
 
       {runner.runId !== null && (
         <div aria-live="polite" className="flex flex-col gap-2 border p-3">
-          {pending || !run ? (
+          {runner.unavailable ? (
+            <p className="text-sm text-muted-foreground">
+              {tPoll("runUnavailable")}
+            </p>
+          ) : runner.stuck ? (
+            <StillJudging
+              checking={runner.result.isFetching}
+              onCheck={runner.recheck}
+            >
+              {runner.cancelable && (
+                <Button
+                  onClick={runner.cancel}
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  <X />
+                  {t("cancel")}
+                </Button>
+              )}
+            </StillJudging>
+          ) : pending || !run ? (
             <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
               <Loader className="size-4 animate-spin" />
               {t("waiting")}

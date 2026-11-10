@@ -15,6 +15,7 @@ interface ListPageHeaderProps {
   title: string;
   subtitle: string;
   action?: ReactNode;
+  backHref?: string;
   search: {
     value: string;
     onChange: (value: string) => void;
@@ -28,6 +29,7 @@ export function ListPageHeader({
   title,
   subtitle,
   action,
+  backHref,
   search,
   filters,
 }: ListPageHeaderProps) {
@@ -58,6 +60,7 @@ export function ListPageHeader({
         title={title}
         subtitle={subtitle}
         action={action}
+        backHref={backHref}
       />
 
       <div className="flex flex-col md:flex-row gap-3">
