@@ -56,33 +56,31 @@ using plain code only and no constraints.
 
 ## Tasks
 
-Status checked against `main` on 2026-11-09.
+Status checked against `main` on 2026-11-09, updated 2026-11-10 after #99–#105 merged.
 
 | # | Feedback (summary) | Status | Fix / where |
 |---|---|---|---|
 | P1 | Let students test their code and see the output before submitting | **Fixed** (#89, web 1.2.0 / judge 1.1.0) | "Run with custom input": non-graded judge run. Same as student F6. |
-| P2 | Limit which languages students may use for a problem/list | **Open** | `lesson_exercise.primaryLanguage` only sets the default; the editor still offers every language. Add an allowed-languages list per exercise (and per contest problem), enforced in the submit/run actions, not only in the UI. M |
-| P3 | AI writes English text when authoring problems, even with the site in Portuguese | **Open** | Student AI help passes `locale` (`get-ai-help.ts`), but the authoring prompts don't: `getNarrativePrompt`, `getProblemReviewPrompt`, `getTagSuggestionPrompt` (and reference-solution comments). Pass the request locale and tell the model which language to answer in. S |
-| P4 | Any signed-up user can create classes and sees the full interface; students only need the problems their teacher assigned | **Open** (decided 2026-11-09) | Every user keeps the right to create a class: no teacher role. The "Criar turma" button sits right next to the join-code form on `/classes` (`class-list.tsx`), so students can hit it by mistake. Move it away from the join form: next to the "Turmas que você leciona" heading, or in a separate "Dá aulas? Crie uma turma" box when the user teaches none. XS |
-| P5 | Leaving the problem editor without "Salvar rascunho" loses edits with no warning; some screens autosave, others don't, standardize | **Open** | No `beforeunload`/route-leave guard anywhere in `web/` (`grep beforeunload`). Add an unsaved-changes guard to the problem editor (`problems/_components/create.tsx`) and other explicit-save forms; then pick one rule (explicit save + guard, or autosave drafts) and apply it everywhere. Ties to SUS item 6 = 3. S–M |
+| P2 | Limit which languages students may use for a problem/list | **Fixed** (#101, web 1.8.0) | `lesson_exercise.primaryLanguage` only sets the default; the editor still offers every language. Add an allowed-languages list per exercise (and per contest problem), enforced in the submit/run actions, not only in the UI. M |
+| P3 | AI writes English text when authoring problems, even with the site in Portuguese | **Fixed** (#100) | Student AI help passes `locale` (`get-ai-help.ts`), but the authoring prompts don't: `getNarrativePrompt`, `getProblemReviewPrompt`, `getTagSuggestionPrompt` (and reference-solution comments). Pass the request locale and tell the model which language to answer in. S |
+| P4 | Any signed-up user can create classes and sees the full interface; students only need the problems their teacher assigned | **Fixed** (#99) | Every user keeps the right to create a class: no teacher role. The "Criar turma" button sits right next to the join-code form on `/classes` (`class-list.tsx`), so students can hit it by mistake. Move it away from the join form: next to the "Turmas que você leciona" heading, or in a separate "Dá aulas? Crie uma turma" box when the user teaches none. XS |
+| P5 | Leaving the problem editor without "Salvar rascunho" loses edits with no warning; some screens autosave, others don't, standardize | **Fixed** (#104) | No `beforeunload`/route-leave guard anywhere in `web/` (`grep beforeunload`). Add an unsaved-changes guard to the problem editor (`problems/_components/create.tsx`) and other explicit-save forms; then pick one rule (explicit save + guard, or autosave drafts) and apply it everywhere. Ties to SUS item 6 = 3. S–M |
 | P6 | Allow problems created by any user in an activity list | **Fixed** (#81) | `ProblemPicker` searches every published problem plus your own drafts (was: first 50 of your own). |
 | P7 | Problem narrative doesn't show when the problem is in a list | **Fixed** (#90, web 1.3.0) | Lesson exercises moved to the workspace shell; `exercise-workspace.tsx` renders `problem.narrative`. |
 | P8 | Number of examples shown to students doesn't work, all examples are shown | **Fixed** (#83) | Per-test `visible` flag (new tests hidden by default) plus lesson mode `problem_default` / `show_all` / `hide_all`. |
 | P9 | With a browser auto-translate plugin, generic errors appear while coding | **Likely fixed** (#81), verify | Code surfaces, editors and the language selector are `translate="no"`. Verify in the Helium browser (translate extension installed there, 2026-11-09): translate a lesson exercise page to another language, write/run/submit code, switch site locale. If React still crashes (`removeChild`/`insertBefore` on text rewritten by the translator), mark the workspace routes `translate="no"` or wrap dynamic text nodes in elements. S |
-| P10 | List a class's students alphabetically | **Open** | `get-class.ts` orders members by `joinedAt`. Sort by name (case/accent-insensitive, `localeCompare` with `pt-BR`) in the member list and gradebook; keep teachers first. XS |
-| P11 | Show the problem's statistics in the activity list view too | **Open** | Statistics (`use-problem-statistics`, `workspace/statistics.tsx`) only appear on the problem page. Add a statistics tab to the exercise workspace, scoped to the class (lesson submissions) rather than global. S |
-| P12 | Submission results hard to reach with many test cases; paginate test cases, put submission history right under the statement | **Partly fixed** (#88, #90) | Done: latest verdict + pass count in the editor toolbar opens the report (#88); the workspace shell has a submission-history panel (#90). Decided 2026-11-09: next step is syntax highlighting of the submitted code wherever it is shown read-only (submission history, latest-verdict dialog, the teacher's lesson review, generated Portugol), same grammar and theme as the editor. S |
+| P10 | List a class's students alphabetically | **Fixed** (#102) | `get-class.ts` orders members by `joinedAt`. Sort by name (case/accent-insensitive, `localeCompare` with `pt-BR`) in the member list and gradebook; keep teachers first. XS |
+| P11 | Show the problem's statistics in the activity list view too | **Fixed** (#103) | Statistics (`use-problem-statistics`, `workspace/statistics.tsx`) only appear on the problem page. Add a statistics tab to the exercise workspace, scoped to the class (lesson submissions) rather than global. S |
+| P12 | Submission results hard to reach with many test cases; paginate test cases, put submission history right under the statement | **Fixed** (#105) | Done: latest verdict + pass count in the editor toolbar opens the report (#88); the workspace shell has a submission-history panel (#90). Decided 2026-11-09: next step is syntax highlighting of the submitted code wherever it is shown read-only (submission history, latest-verdict dialog, the teacher's lesson review, generated Portugol), same grammar and theme as the editor. S |
 
 ### Summary by status
 
-- **Fixed (4)**: P1, P6, P7, P8.
-- **Partly / likely fixed (2)**: P9 (verify), P12 (test-case list).
-- **Open (6)**, by impact: P5 unsaved-changes guard, P3 AI language,
-  P4 move the create-class button, P2 allowed languages, P10 sort students,
-  P11 stats in lesson.
+- **Fixed (11)**: P1 (#89), P2 (#101), P3 (#100), P4 (#99), P5 (#104),
+  P6 (#81), P7 (#90), P8 (#83), P10 (#102), P11 (#103), P12 (#105).
+- **In progress (1)**: P9, verifying the translate-extension errors in
+  Helium (branch `fix/translate-extension-errors`).
 
-Each open task (plus P9 verify and P12 highlighting) gets its own branch,
-worktree and OpenSpec change.
+Each task got its own branch, worktree and OpenSpec change.
 
 ## Limitations
 
