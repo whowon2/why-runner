@@ -58,6 +58,7 @@ export function ClassDetail({ classroomId }: { classroomId: string }) {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
         <PageHeader
+          backHref="/classes"
           icon={School}
           subtitle={t("memberCount", { count: memberCount })}
           title={classroom.name}
