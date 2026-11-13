@@ -12,6 +12,7 @@ import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -45,7 +46,7 @@ import {
   useUnsavedChanges,
 } from "@/components/unsaved-changes/unsaved-changes";
 import "katex/dist/katex.min.css";
-import { Eye, Pencil } from "lucide-react";
+import { Eye, EyeOff, Pencil } from "lucide-react";
 import { ProblemTags } from "./badge";
 import {
   CHECKER_LANGUAGES,
@@ -417,8 +418,13 @@ export function NewProblem({
                       name={`tests.${index}.input`}
                       render={({ field }) => (
                         <FormItem className="w-full">
-                          <FormLabel>
+                          <FormLabel className="flex items-center gap-2">
                             {t("inputLabel", { n: index + 1 })}
+                            <TestVisibilityBadge
+                              visible={
+                                formValues.tests?.[index]?.visible === true
+                              }
+                            />
                           </FormLabel>
                           <FormControl>
                             <Textarea
@@ -482,6 +488,16 @@ export function NewProblem({
                   </div>
                 ))}
               </div>
+              {tests.fields.length > 0 && (
+                <p className="text-sm">
+                  {t("visibleCount", {
+                    visible:
+                      formValues.tests?.filter((test) => test.visible).length ??
+                      0,
+                    total: tests.fields.length,
+                  })}
+                </p>
+              )}
               {tests.fields.length > 0 &&
                 !formValues.tests?.some((test) => test.visible) && (
                   <p className="text-muted-foreground text-sm">
@@ -625,5 +641,24 @@ export function NewProblem({
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+/** At-a-glance state of one test case, next to its label in the editor. */
+function TestVisibilityBadge({ visible }: { visible: boolean }) {
+  const t = useTranslations("ProblemsPage.Create");
+  return visible ? (
+    <Badge
+      variant="outline"
+      className="border-success/40 bg-success/10 font-normal text-success"
+    >
+      <Eye aria-hidden />
+      {t("visibleBadge")}
+    </Badge>
+  ) : (
+    <Badge variant="outline" className="font-normal text-muted-foreground">
+      <EyeOff aria-hidden />
+      {t("hiddenBadge")}
+    </Badge>
   );
 }

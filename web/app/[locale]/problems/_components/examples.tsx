@@ -1,6 +1,10 @@
 import { useTranslations } from "next-intl";
 import { CopyButton } from "@/components/copy-button";
 
+/**
+ * Lists every test it is given. Callers must pass only the tests the viewer
+ * may see (server-filtered with `visibleTests`, `lib/judge-report.ts`).
+ */
 export function ProblemExamples({
   inputs,
   outputs,
@@ -11,7 +15,7 @@ export function ProblemExamples({
   const t = useTranslations("ContestsPage.Tabs.Problem.Examples");
   return (
     <div className="space-y-4">
-      {inputs.slice(0, 2).map((input, i) => (
+      {inputs.map((input, i) => (
         <div className="flex gap-4" key={`${i}-${input}`}>
           <div className="min-w-0 w-full">
             <div className="flex items-center justify-between">
