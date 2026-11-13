@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ScanSearch } from "lucide-react";
+import { ScanSearch } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/components/page-header";
@@ -8,7 +8,6 @@ import {
   SimilarityReport,
   usePickParam,
 } from "@/components/similarity/similarity-report";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -17,7 +16,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useContestProblemSimilarity } from "@/hooks/use-contest-problem-similarity";
-import { Link } from "@/i18n/navigation";
 
 export function ContestSimilarity({
   contestId,
@@ -44,13 +42,8 @@ export function ContestSimilarity({
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 py-8">
-      <Button asChild className="w-fit px-0" variant="link">
-        <Link href={`/contests/${contestSlug}?tab=manage`}>
-          <ArrowLeft />
-          {t("backToContest")}
-        </Link>
-      </Button>
       <PageHeader
+        backHref={`/contests/${contestSlug}?tab=manage`}
         icon={ScanSearch}
         subtitle={t("contestSubtitle", { contest: contestName })}
         title={t("title")}

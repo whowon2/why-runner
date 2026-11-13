@@ -127,7 +127,15 @@ function ContestWorkspace({
     contest.users.find((u) => u.userId === userId)?.answered ??
     [];
   const { data: tests } = useProblemTests(problem.id);
-  const { data: rows, isPending: submissionsPending } = useProblemSubmissions({
+  const {
+    query: {
+      data: rows,
+      isPending: submissionsPending,
+      isFetching: recheckingSubmissions,
+      refetch: recheckSubmissions,
+    },
+    stuck: submissionsStuck,
+  } = useProblemSubmissions({
     problemId: problem.id,
     contestId: contest.id,
     userId,
@@ -162,6 +170,9 @@ function ContestWorkspace({
       lockedReason,
       submissions,
       submissionsPending,
+      submissionsStuck,
+      recheckSubmissions,
+      recheckingSubmissions,
       ai:
         contest.aiAssistance === "off"
           ? false
@@ -204,6 +215,9 @@ function ContestWorkspace({
       lockedReason,
       submissions,
       submissionsPending,
+      submissionsStuck,
+      recheckSubmissions,
+      recheckingSubmissions,
       submitting,
       mutate,
       tUpload,

@@ -1,6 +1,13 @@
 "use client";
 
-import { CircleDashed, Loader, Lock, Play, Terminal } from "lucide-react";
+import {
+  CircleDashed,
+  Hourglass,
+  Loader,
+  Lock,
+  Play,
+  Terminal,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
@@ -107,7 +114,7 @@ function CustomInputRow({ onSelect }: { onSelect?: () => void }) {
         aria-label={t("playCustom")}
         disabled={runner.running}
         onClick={() => {
-          if (runner.stdin.trim()) runCustom();
+          if (runner.getStdin().trim()) runCustom();
           else openCustomInput();
           onSelect?.();
         }}
@@ -131,9 +138,11 @@ function TestRow({
 }) {
   const t = useTranslations("Workspace.Tests");
   const tStatus = useTranslations("CodeRunStatus");
+  const tPoll = useTranslations("JudgePoll");
   const { source, examples, event, setEvent, playExamples } = useWorkspace();
   const play = examples.plays[test.index];
-  const { data: run } = useRun(play?.runId ?? null);
+  const { query, stuck } = useRun(play?.runId ?? null);
+  const run = query.data;
   const running = !!play && !play.done;
   const selected = event?.type === "example" && event.index === test.index;
 
@@ -145,6 +154,17 @@ function TestRow({
   );
   if (running) {
     result = <Loader className="size-4 animate-spin text-muted-foreground" />;
+  } else if (stuck) {
+    // The console (opened by selecting the row) has Check again.
+    result = (
+      <span
+        className="flex items-center gap-1 text-muted-foreground text-xs"
+        title={tPoll("stillJudging")}
+      >
+        <Hourglass className="size-3.5" />
+        {tStatus("PENDING")}
+      </span>
+    );
   } else if (play?.done && run) {
     result =
       run.status === "OK" ? (

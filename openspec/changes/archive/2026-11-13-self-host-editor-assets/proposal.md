@@ -22,4 +22,4 @@ On 2026-11-12 a teacher ran an exam in a lab whose firewall allowed only the Why
 - `web/lib/monaco-loader.ts` (new), `web/components/code-editor.tsx`, `web/components/highlighted-code.tsx`, `web/components/blocks/block-workspace.tsx`
 - `web/scripts/copy-static-assets.mjs` (new), `web/package.json` scripts and deps, `web/.gitignore`
 - Deploy: about 16 MB of extra static files under `public/monaco/vs`. Vercel serves them from its CDN on the same domain.
-- Version: web 1.11.1 → 1.11.2 (patch).
+- Version: web 1.14.2 → 1.14.3 (patch).

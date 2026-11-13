@@ -1,14 +1,12 @@
 "use client";
 
-import { ArrowLeft, type LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import type { ReactNode } from "react";
 import { ListPageHeader } from "@/components/list-page-header";
 import { PaginationControls } from "@/components/pagination-controls";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
 
 export const ADMIN_PAGE_SIZE = 20;
 
@@ -58,14 +56,7 @@ export function AdminList({
         icon={icon}
         title={title}
         subtitle={subtitle}
-        action={
-          <Button asChild variant="outline">
-            <Link href="/admin">
-              <ArrowLeft className="size-4" />
-              {t("backToAdmin")}
-            </Link>
-          </Button>
-        }
+        backHref="/admin"
         search={{
           value: state.params.search,
           onChange: state.setSearch,

@@ -1,6 +1,6 @@
 {
   "name": "why-runner",
-  "version": "1.11.2",
+  "version": "1.14.3",
   "private": true,
   "scripts": {
     "dev": "node scripts/copy-static-assets.mjs && next dev",

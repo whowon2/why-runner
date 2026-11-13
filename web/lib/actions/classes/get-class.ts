@@ -31,7 +31,7 @@ export async function getClass(classroomId: string) {
   // group, members are listed by name (pt-BR, case/accent-insensitive).
   const students = memberships
     .filter((m) => isClassStudent(m, classroom.createdBy))
-    .map((m) => m.user)
+    .map((m) => ({ ...m.user, joinedAt: m.joinedAt }))
     .sort(compareByName);
   const coTeachers = memberships
     .filter((m) => m.role === "teacher" && m.userId !== classroom.createdBy)
