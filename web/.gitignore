@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# self-hosted editor assets (scripts/copy-static-assets.mjs)
+/public/monaco/
+/public/blockly/
