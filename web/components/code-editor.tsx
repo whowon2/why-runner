@@ -32,6 +32,7 @@ import {
   useEditorVim,
   useEditorWordWrap,
 } from "@/hooks/use-editor-settings";
+import "@/lib/monaco-loader";
 import { registerPortugol } from "@/lib/monaco-portugol";
 import { buildMonacoTheme, MONACO_THEME } from "@/lib/themes/monaco-theme";
 import { cn } from "@/lib/utils";

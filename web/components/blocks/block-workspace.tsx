@@ -144,6 +144,9 @@ export default function BlockWorkspace({
     const workspace = Blockly.inject(container.current, {
       toolbox: readOnly ? undefined : buildToolbox(labels),
       readOnly,
+      // Same-origin copy (scripts/copy-static-assets.mjs); the default is
+      // static.blockly.com, unreachable in labs that only allow our domain.
+      media: "/blockly/media/",
       renderer: "zelos",
       theme: resolvedTheme === "dark" ? getDarkTheme() : Blockly.Themes.Classic,
       trashcan: !readOnly,

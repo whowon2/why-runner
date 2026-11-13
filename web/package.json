@@ -1,11 +1,12 @@
 {
   "name": "why-runner",
-  "version": "1.14.2",
+  "version": "1.14.3",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "node scripts/migrate-if-production.mjs && next build",
+    "dev": "node scripts/copy-static-assets.mjs && next dev",
+    "build": "node scripts/copy-static-assets.mjs && node scripts/migrate-if-production.mjs && next build",
     "start": "next start",
+    "postinstall": "node scripts/copy-static-assets.mjs",
     "lint": "oxlint",
     "format": "oxfmt",
     "db:generate": "drizzle-kit generate",
@@ -53,6 +54,7 @@
     "jszip": "^3.10.1",
     "katex": "^0.18.2",
     "lucide-react": "^0.561.0",
+    "monaco-editor": "0.55.1",
     "monaco-vim": "0.4.4",
     "motion": "^12.23.26",
     "next": "^16.0.10",
