@@ -48,6 +48,7 @@ export default async function EditProblemPage({
               </Button>
             </>
           }
+          backHref="/problems"
           icon={Pencil}
           subtitle={t("subtitle", { title: problem.title })}
           title={t("title")}

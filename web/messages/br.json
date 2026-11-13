@@ -6,7 +6,8 @@
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "zoom": "Zoom",
-    "copied": "Copiado para a área de transferência"
+    "copied": "Copiado para a área de transferência",
+    "back": "Voltar"
   },
   "ErrorPage": {
     "title": "Algo deu errado",
@@ -958,6 +959,7 @@
     "Review": {
       "backToTrack": "Voltar para a atividade",
       "title": "Revisão: {track}",
+      "subtitle": "Envios e feedback dos alunos nesta atividade",
       "noStudents": "Nenhum aluno entrou nessa turma ainda.",
       "notSent": "Não enviado",
       "noJudgeStatus": "Sem resultado do juiz",
@@ -1592,6 +1594,7 @@
     "removeStudentDescription": "Ele perderá acesso a esta turma e suas aulas. Pode entrar novamente depois com o código da turma.",
     "removeStudentSuccess": "Aluno removido.",
     "leaveClass": "Sair da turma",
+    "moreActions": "Mais ações",
     "leaveClassTitle": "Sair desta turma?",
     "leaveClassDescription": "Você perderá acesso a esta turma e suas aulas, a menos que entre novamente com o código.",
     "leaveClassSuccess": "Você saiu da turma.",
@@ -1612,7 +1615,6 @@
     "gradebookNoStudents": "Nenhum aluno entrou ainda.",
     "gradebookNoLessons": "Nenhuma tarefa publicada ainda.",
     "gradebookLegend": "Cada exercício vale a fração de casos de teste aprovados (0–1); — indica tarefa não entregue.",
-    "backToClass": "Voltar para a turma",
     "roleOwner": "Dono",
     "roleCoTeacher": "Coprofessor",
     "teachers": "Professores",
@@ -1636,7 +1638,20 @@
     "removeCoTeacher": "Remover coprofessor",
     "removeCoTeacherTitle": "Remover este coprofessor?",
     "removeCoTeacherDescription": "Ele perderá acesso a esta turma. Você pode adicioná-lo de novo depois.",
-    "removeCoTeacherSuccess": "Coprofessor removido."
+    "removeCoTeacherSuccess": "Coprofessor removido.",
+    "tabLessons": "Aulas",
+    "tabPeople": "Pessoas",
+    "teachersWithCount": "Professores ({count})",
+    "studentsWithCount": "Alunos ({count})",
+    "searchStudents": "Buscar alunos",
+    "searchStudentsPlaceholder": "Nome, @usuário ou RA",
+    "noStudentsMatch": "Nenhum aluno corresponde à busca.",
+    "memberActionsFor": "Ações para {name}",
+    "studentJoined": "Entrou em {date}",
+    "studentScores": "Notas",
+    "studentRecentSubmissions": "Submissões recentes",
+    "studentNoSubmissions": "Nenhuma submissão nesta turma ainda.",
+    "studentSubmissionsError": "Não foi possível carregar as submissões."
   },
   "Blocks": {
     "start": "quando o programa começar",
@@ -1965,8 +1980,6 @@
     "title": "Similaridade de código",
     "exerciseSubtitle": "{problem} · {lesson}",
     "contestSubtitle": "Compare as respostas dos participantes a cada problema de {contest}",
-    "backToLesson": "Voltar para a lição",
-    "backToContest": "Voltar para a competição",
     "trigger": "Similaridade",
     "openReport": "Abrir relatório de similaridade",
     "contestCta": "Encontre pares de participantes cujo código para o mesmo problema é suspeitamente parecido, mesmo após renomear variáveis ou reformatar.",
@@ -2026,7 +2039,6 @@
       "users": "Usuários",
       "usersHint": "Promova ou rebaixe admins."
     },
-    "backToAdmin": "Voltar para admin",
     "showing": "Mostrando {count} de {total}",
     "page": "Página {page} de {totalPages}",
     "empty": "Nada encontrado.",
@@ -2085,6 +2097,11 @@
     "truncated": "Saída muito longa: só os primeiros 64 KB são mostrados.",
     "cancel": "Cancelar",
     "cancelFailed": "Não foi possível cancelar a execução"
+  },
+  "JudgePoll": {
+    "stillJudging": "Ainda em avaliação: o juiz está demorando mais que o normal.",
+    "checkAgain": "Verificar de novo",
+    "runUnavailable": "Esta execução não está mais disponível. Execute seu código de novo."
   },
   "CodeRunStatus": {
     "PENDING": "Na fila",

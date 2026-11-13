@@ -10,6 +10,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { StillJudging } from "@/components/submissions/still-judging";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -45,7 +46,10 @@ interface JudgeReport {
 
 export function ProblemValidationPanel({ problemId }: { problemId: string }) {
   const t = useTranslations("ProblemsPage.Create.Validation");
-  const { data, isPending: isLoadingState } = useProblemValidation(problemId);
+  const {
+    query: { data, isPending: isLoadingState, isFetching, refetch },
+    stuck,
+  } = useProblemValidation(problemId);
   const { mutate: saveReference, isPending: isSaving } =
     useUpdateProblemReferenceSolution();
   const { mutate: triggerValidation, isPending: isTriggering } =
@@ -77,7 +81,8 @@ export function ProblemValidationPanel({ problemId }: { problemId: string }) {
   }, [data?.latest?.output]);
 
   const status = data?.latest?.status;
-  const isRunning = status === "PENDING" || status === "RUNNING";
+  // A stuck validation no longer blocks a new one.
+  const isRunning = (status === "PENDING" || status === "RUNNING") && !stuck;
 
   function handleValidate() {
     if (!language) {
@@ -185,11 +190,15 @@ export function ProblemValidationPanel({ problemId }: { problemId: string }) {
         >
           {isRunning ? t("running") : t("validate")}
         </Button>
-        <ValidationStatusBadge
-          isStale={data?.isStale ?? true}
-          report={report}
-          status={status}
-        />
+        {stuck ? (
+          <StillJudging checking={isFetching} onCheck={() => refetch()} />
+        ) : (
+          <ValidationStatusBadge
+            isStale={data?.isStale ?? true}
+            report={report}
+            status={status}
+          />
+        )}
       </div>
 
       {report && status === "FAILED" && report.failure_details && (

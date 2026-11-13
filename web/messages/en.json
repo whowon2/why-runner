@@ -6,7 +6,8 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "zoom": "Zoom",
-    "copied": "Copied to clipboard"
+    "copied": "Copied to clipboard",
+    "back": "Go back"
   },
   "ErrorPage": {
     "title": "Something went wrong",
@@ -958,6 +959,7 @@
     "Review": {
       "backToTrack": "Back to assignment",
       "title": "Review: {track}",
+      "subtitle": "Student submissions and feedback for this assignment",
       "noStudents": "No students have joined this class yet.",
       "notSent": "Not sent",
       "noJudgeStatus": "No judge result",
@@ -1592,6 +1594,7 @@
     "removeStudentDescription": "They will lose access to this class and its lessons. They can rejoin later with the class code.",
     "removeStudentSuccess": "Student removed.",
     "leaveClass": "Leave class",
+    "moreActions": "More actions",
     "leaveClassTitle": "Leave this class?",
     "leaveClassDescription": "You'll lose access to this class and its lessons unless you rejoin with the class code.",
     "leaveClassSuccess": "You left the class.",
@@ -1612,7 +1615,6 @@
     "gradebookNoStudents": "No students have joined yet.",
     "gradebookNoLessons": "No published assignments yet.",
     "gradebookLegend": "Each exercise scores the fraction of test cases passed (0–1); — means the assignment was not handed in.",
-    "backToClass": "Back to class",
     "roleOwner": "Owner",
     "roleCoTeacher": "Co-teacher",
     "teachers": "Teachers",
@@ -1636,7 +1638,20 @@
     "removeCoTeacher": "Remove co-teacher",
     "removeCoTeacherTitle": "Remove this co-teacher?",
     "removeCoTeacherDescription": "They will lose access to this class. You can add them again later.",
-    "removeCoTeacherSuccess": "Co-teacher removed."
+    "removeCoTeacherSuccess": "Co-teacher removed.",
+    "tabLessons": "Lessons",
+    "tabPeople": "People",
+    "teachersWithCount": "Teachers ({count})",
+    "studentsWithCount": "Students ({count})",
+    "searchStudents": "Search students",
+    "searchStudentsPlaceholder": "Name, @username or RA",
+    "noStudentsMatch": "No students match your search.",
+    "memberActionsFor": "Actions for {name}",
+    "studentJoined": "Joined {date}",
+    "studentScores": "Scores",
+    "studentRecentSubmissions": "Recent submissions",
+    "studentNoSubmissions": "No submissions in this class yet.",
+    "studentSubmissionsError": "Couldn't load submissions."
   },
   "Blocks": {
     "start": "when the program starts",
@@ -1965,8 +1980,6 @@
     "title": "Code similarity",
     "exerciseSubtitle": "{problem} · {lesson}",
     "contestSubtitle": "Compare participants' answers to each problem of {contest}",
-    "backToLesson": "Back to lesson",
-    "backToContest": "Back to contest",
     "trigger": "Similarity",
     "openReport": "Open similarity report",
     "contestCta": "Find pairs of participants whose code for the same problem is suspiciously similar, even after renaming variables or reformatting.",
@@ -2026,7 +2039,6 @@
       "users": "Users",
       "usersHint": "Promote or demote admins."
     },
-    "backToAdmin": "Back to admin",
     "showing": "Showing {count} of {total}",
     "page": "Page {page} of {totalPages}",
     "empty": "Nothing found.",
@@ -2085,6 +2097,11 @@
     "truncated": "Output too long: only the first 64 KB is shown.",
     "cancel": "Cancel",
     "cancelFailed": "Could not cancel the run"
+  },
+  "JudgePoll": {
+    "stillJudging": "Still judging: the judge is taking longer than usual.",
+    "checkAgain": "Check again",
+    "runUnavailable": "This run is no longer available. Run your code again."
   },
   "CodeRunStatus": {
     "PENDING": "Pending",

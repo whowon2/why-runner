@@ -3,6 +3,7 @@
 import { Calendar, CalendarDays, ListOrdered, Lock, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { BackButton } from "@/components/back-button";
 import { useContest } from "@/hooks/use-contest";
 import { authClient } from "@/lib/auth/client";
 import { formatDuration } from "@/lib/format-duration";
@@ -49,6 +50,7 @@ export function ContestDescription({ contestId }: { contestId: string }) {
 
   return (
     <div className="relative flex flex-col items-center justify-center gap-6 mt-6 mb-8 w-full max-w-6xl p-6 rounded-none bg-white/40 dark:bg-neutral-900/40 backdrop-blur-xl border border-white/20 shadow-2xl shadow-indigo-500/5">
+      <BackButton className="absolute left-4 top-4" href="/contests" />
       {/* Status badges */}
       <div className="flex items-center gap-3 flex-wrap justify-center mt-2">
         <span

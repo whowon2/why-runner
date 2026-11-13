@@ -1,5 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { isPendingStatus } from "@/lib/submission-status";
+import { useQueryClient } from "@tanstack/react-query";
+import { contestLeaderboardKey } from "@/hooks/use-contest-leaderboard";
+import {
+  submissionRows,
+  useJudgeQuery,
+  useVerdictTransition,
+} from "@/hooks/use-judge-query";
 import { getContestSubmissions } from "@/lib/actions/contest/get-submissions";
 
 export type GetUserSubmissionsOnContest = {
@@ -8,12 +13,26 @@ export type GetUserSubmissionsOnContest = {
   problemId: string;
 };
 
-export const useProblemSubmissions = (input: GetUserSubmissionsOnContest) =>
-  useQuery({
+/**
+ * The viewer's submissions on a contest problem. Polls only while one is
+ * being judged; new ones arrive through the submit mutation's invalidation.
+ * A verdict refreshes the solved problems, the leaderboard and the history.
+ */
+export function useProblemSubmissions(input: GetUserSubmissionsOnContest) {
+  const queryClient = useQueryClient();
+  const result = useJudgeQuery({
     queryKey: ["submissions", String(input.problemId)],
     queryFn: () => getContestSubmissions(input),
-    // Fast while something is being judged, so the editor's verdict
-    // updates soon after the judge finishes.
-    refetchInterval: (query) =>
-      query.state.data?.some((s) => isPendingStatus(s.status)) ? 2000 : 10000,
+    rows: submissionRows,
   });
+  useVerdictTransition(result.query.data, () => {
+    queryClient.invalidateQueries({
+      queryKey: ["user-contest-status", input.contestId],
+    });
+    queryClient.invalidateQueries({
+      queryKey: contestLeaderboardKey(input.contestId),
+    });
+    queryClient.invalidateQueries({ queryKey: ["submissions", "me"] });
+  });
+  return result;
+}
