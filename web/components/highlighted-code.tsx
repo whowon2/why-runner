@@ -1,8 +1,8 @@
 "use client";
 
-import { loader } from "@monaco-editor/react";
 import { useEffect, useState } from "react";
 import type { Language } from "@/drizzle/schema";
+import { loader } from "@/lib/monaco-loader";
 import { registerPortugol } from "@/lib/monaco-portugol";
 import { buildMonacoTheme, MONACO_THEME } from "@/lib/themes/monaco-theme";
 import { cn } from "@/lib/utils";

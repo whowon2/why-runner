@@ -44,6 +44,11 @@ export type WorkspaceSource = {
   /** The viewer's own submissions in this context, newest first. */
   submissions: Submission[] | undefined;
   submissionsPending: boolean;
+  /** Polling stopped with the newest submission still pending (5 min). */
+  submissionsStuck: boolean;
+  /** Check again: one refetch of the submissions. */
+  recheckSubmissions: () => unknown;
+  recheckingSubmissions: boolean;
   /** `false` hides AI help; otherwise the contest cap (null = no cap). */
   ai: false | { maxLevel: AiAssistance | null };
   submit: (answer: WorkspaceAnswer) => void;

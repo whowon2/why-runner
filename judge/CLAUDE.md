@@ -35,6 +35,10 @@ Throughput benchmark (thesis numbers, results in `openspec/changes/archive/2026-
 DATABASE_URL=postgres://user:password@localhost/runner
 ```
 
+## Deploy (Fly.io)
+
+Prod runs on the Fly app `why-runner-judge` (`fly.toml`). CI deploys it automatically: on a push to `main` whose `Cargo.toml` version has no `judge-vX.Y.Z` tag yet, `.github/workflows/ci.yml` pushes the image and its `judge-deploy` job runs `flyctl deploy -a why-runner-judge --image whowon/why-runner-judge:sha-<commit>`. So bump the version (see root `CLAUDE.md` "Versioning") or the change never reaches prod. Schema changes this judge needs must already be migrated by an earlier web PR (Vercel production build), or the new judge fails those rows to `ERROR`. Check what's live with `fly logs -a why-runner-judge` (`WhyRunner judge vX.Y.Z (<sha>)`). Manual deploy/rollback from this dir: `fly deploy -a why-runner-judge --image whowon/why-runner-judge:sha-<commit>` (or `:vX.Y.Z`). `judge/deploy/` is the VPS fallback, unrelated to Fly.
+
 ## Architecture
 
 Three files, straight-line flow, no framework:

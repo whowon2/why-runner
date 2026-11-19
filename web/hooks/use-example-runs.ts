@@ -9,9 +9,9 @@ import { cancelRun } from "@/lib/actions/runs/cancel-run";
 import { type CreateRunInput, createRun } from "@/lib/actions/runs/create-run";
 import { getRun, type RunResult } from "@/lib/actions/runs/get-run";
 import type { RunProgram } from "@/components/code-run/code-run";
+import { runPollMs } from "@/hooks/use-run";
 
 const IN_PROGRESS: readonly CodeRunStatus[] = ["PENDING", "RUNNING"];
-const POLL_MS = 1000;
 
 /** One example's latest play: `runId` is null while the run is being created. */
 export type ExamplePlay = { runId: string | null; done: boolean };
@@ -36,16 +36,21 @@ export function useExampleRuns() {
   const current = useRef<string | null>(null);
 
   // Polls through the same cache key as `useRun`, so the console showing
-  // this run reads the same data without a second request stream.
-  async function waitForRun(runId: string): Promise<RunResult> {
+  // this run reads the same data without a second request stream. Waits on
+  // the judge-result schedule: resolves with the finished run, with the
+  // still-pending run once the schedule gives up, or null if it is gone.
+  async function waitForRun(runId: string): Promise<RunResult | null> {
     for (;;) {
       const run = await queryClient.fetchQuery({
         queryKey: ["code-run", runId],
         queryFn: () => getRun(runId),
         staleTime: 0,
       });
-      if (!IN_PROGRESS.includes(run.status)) return run;
-      await new Promise((resolve) => setTimeout(resolve, POLL_MS));
+      if (!run || !IN_PROGRESS.includes(run.status)) return run;
+      const at = queryClient.getQueryState(["code-run", runId])?.dataUpdatedAt;
+      const delay = runPollMs(run, at ?? Date.now());
+      if (delay === false) return run;
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
 
@@ -63,9 +68,11 @@ export function useExampleRuns() {
       setPlays((prev) => ({ ...prev, [index]: { runId: id, done: false } }));
       onStarted?.(id);
       current.current = id;
-      await waitForRun(id);
+      const run = await waitForRun(id);
       setPlays((prev) => ({ ...prev, [index]: { runId: id, done: true } }));
-      return true;
+      // A run the judge never finished: the rest of the batch would wait
+      // just as long, so stop here (the console shows "still judging").
+      return run !== null && !IN_PROGRESS.includes(run.status);
     } catch (error) {
       setPlays((prev) => {
         const { [index]: _, ...rest } = prev;
@@ -95,7 +102,8 @@ export function useExampleRuns() {
         const ok = await playOne(example.index, program, example.input, (id) =>
           onStarted?.(example.index, id),
         );
-        // A refused run (rate limit, …) would refuse the rest too.
+        // A refused run (rate limit, …) would refuse the rest too, and a
+        // stuck one would leave the rest waiting as long.
         if (!ok) break;
       }
     } finally {

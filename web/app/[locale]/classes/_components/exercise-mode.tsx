@@ -4,6 +4,7 @@ import { Blocks, Code2, ListOrdered } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { StillJudging } from "@/components/submissions/still-judging";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -42,7 +43,10 @@ const MODES: { mode: ExerciseMode; icon: typeof Code2 }[] = [
 // problem itself.
 export function ExerciseModePanel({ exerciseId }: { exerciseId: string }) {
   const t = useTranslations("RoadmapPage.Mode");
-  const { data, isPending } = useExerciseModeState(exerciseId);
+  const {
+    query: { data, isPending, isFetching, refetch },
+    stuck,
+  } = useExerciseModeState(exerciseId);
   const setMode = useSetExerciseMode();
   const [selected, setSelected] = useState<ExerciseMode | null>(null);
 
@@ -99,6 +103,9 @@ export function ExerciseModePanel({ exerciseId }: { exerciseId: string }) {
           exerciseId={exerciseId}
           isApplying={setMode.isPending}
           onApply={() => apply("parsons")}
+          recheck={
+            stuck ? { checking: isFetching, onCheck: () => refetch() } : null
+          }
           state={data}
         />
       ) : (
@@ -122,11 +129,14 @@ function ParsonsSolutionEditor({
   state,
   onApply,
   isApplying,
+  recheck,
 }: {
   exerciseId: string;
-  state: NonNullable<ReturnType<typeof useExerciseModeState>["data"]>;
+  state: NonNullable<ReturnType<typeof useExerciseModeState>["query"]["data"]>;
   onApply: () => void;
   isApplying: boolean;
+  /** Set once the latest check stopped polling while still pending. */
+  recheck: { checking: boolean; onCheck: () => void } | null;
 }) {
   const t = useTranslations("RoadmapPage.Mode");
   const check = useCheckParsonsSolution();
@@ -148,8 +158,9 @@ function ParsonsSolutionEditor({
     setHydrated(true);
   }, [hydrated, latest, state]);
 
+  // A stuck check no longer blocks a new one.
   const isRunning =
-    latest?.status === "PENDING" || latest?.status === "RUNNING";
+    (latest?.status === "PENDING" || latest?.status === "RUNNING") && !recheck;
   // Only a passed check of exactly what is in the editor can be applied.
   const canApply =
     state.parsonsCheckPassed &&
@@ -195,12 +206,20 @@ function ParsonsSolutionEditor({
         value={code}
       />
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <ParsonsCheckStatus
-          isRunning={isRunning}
-          output={latest?.output ?? null}
-          status={latest?.status}
-          upToDate={latest?.code === code && latest?.language === language}
-        />
+        {recheck ? (
+          <StillJudging
+            checking={recheck.checking}
+            className="text-xs"
+            onCheck={recheck.onCheck}
+          />
+        ) : (
+          <ParsonsCheckStatus
+            isRunning={isRunning}
+            output={latest?.output ?? null}
+            status={latest?.status}
+            upToDate={latest?.code === code && latest?.language === language}
+          />
+        )}
         <div className="flex gap-2">
           <Button
             disabled={isRunning || check.isPending || !code.trim()}

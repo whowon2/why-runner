@@ -10,7 +10,8 @@ const withNextIntl = createNextIntlPlugin();
 const config: NextConfig = {
   turbopack: {
     resolveAlias: {
-      // monaco-vim imports Monaco's API; give it the CDN-loaded instance.
+      // monaco-vim imports Monaco's API; give it the loader's instance
+      // (self-hosted from public/monaco, see lib/monaco-loader.ts).
       "monaco-editor/esm/vs/editor/editor.api": "./lib/monaco-global.ts",
     },
   },

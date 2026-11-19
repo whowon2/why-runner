@@ -1,9 +1,7 @@
 ## Purpose
 
 Defines the app-wide visual design system for WhyRunner's frontend: a monospace, "Linux rice"-inspired aesthetic with zero-radius surfaces, flat bordered elevation, a single-accent terminal color palette, no decorative animated gradients, a consistent page container width, and a shared list-page header pattern.
-
 ## Requirements
-
 ### Requirement: App-wide monospace typography
 The system SHALL use a monospace typeface as the default font for all UI text (body, headings, buttons, inputs, nav), loaded via `next/font/google` and exposed through the `--font-sans` CSS variable, rather than a proportional sans-serif.
 
@@ -98,3 +96,23 @@ Where a shared `web/components/ui/` primitive already exists for a UI pattern (l
 #### Scenario: Standalone section divider uses Separator
 - **WHEN** a component renders a purely visual horizontal divider between two sections (not a border that also defines a container's outline)
 - **THEN** it renders that divider using the `Separator` primitive rather than a `border-t` utility class
+
+### Requirement: Header back button on nested pages
+The shared `PageHeader` (and `ListPageHeader`) SHALL accept an optional `backHref`. When provided, the header SHALL render an icon-only back button (left arrow) before the icon badge that navigates to that explicit parent route via a locale-aware link, not via browser history. The button SHALL carry a localized accessible label (`aria-label` and `title`) from the `Common.back` message key in every supported locale. Every nested/detail page under `web/app/[locale]/` that has a hierarchical parent route and a page header SHALL pass its parent route as `backHref`; top-level destinations, editor workspaces (which have their own back rail item), redirect-only pages, and standalone pages SHALL NOT render it.
+
+#### Scenario: Detail page shows back button to its parent
+- **WHEN** a user opens `/classes/<slug>/lessons/<lesson>` directly (no prior history)
+- **THEN** the page header shows a back icon button whose link target is `/classes/<slug>` in the current locale
+
+#### Scenario: Accessible localized label
+- **WHEN** the back button renders with locale `en` and then `br`
+- **THEN** its accessible name is "Go back" and "Voltar" respectively
+
+#### Scenario: Top-level page has no back button
+- **WHEN** a user opens `/classes`, `/contests`, `/problems` or `/home`
+- **THEN** the page header renders no back button
+
+#### Scenario: No duplicate back links
+- **WHEN** a page renders the header back button
+- **THEN** it does not also render a separate text "Back to …" link to the same parent
+

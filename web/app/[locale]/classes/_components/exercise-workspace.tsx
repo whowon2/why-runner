@@ -73,8 +73,15 @@ function Workspace({ exercise }: { exercise: Exercise }) {
     "ContestsPage.Tabs.Problem.Submissions.Upload",
   );
   const errorMessage = useActionErrorMessage();
-  const { data: submissions, isPending: submissionsPending } =
-    useExerciseSubmissions(exercise.id);
+  const {
+    query: {
+      data: submissions,
+      isPending: submissionsPending,
+      isFetching: recheckingSubmissions,
+      refetch: recheckSubmissions,
+    },
+    stuck: submissionsStuck,
+  } = useExerciseSubmissions(exercise.id);
   const { mutate, isPending: submitting } = useCreateExerciseSubmission();
   const { data: next } = useNextExercise(exercise.id);
   const { data: previous } = usePreviousExercise(exercise.id);
@@ -94,6 +101,9 @@ function Workspace({ exercise }: { exercise: Exercise }) {
       lockedReason: exercise.submissionsLocked ? t("Locked.dueDate") : null,
       submissions: submissions as Submission[] | undefined,
       submissionsPending,
+      submissionsStuck,
+      recheckSubmissions,
+      recheckingSubmissions,
       ai: { maxLevel: null },
       submitting,
       submit: (answer) =>
@@ -145,6 +155,9 @@ function Workspace({ exercise }: { exercise: Exercise }) {
       exercise,
       submissions,
       submissionsPending,
+      submissionsStuck,
+      recheckSubmissions,
+      recheckingSubmissions,
       submitting,
       mutate,
       t,

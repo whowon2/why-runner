@@ -112,6 +112,7 @@ export function LessonRoadmap({ lessonId }: { lessonId: string }) {
             </>
           ) : undefined
         }
+        backHref={`/classes/${classroom.slug}`}
         icon={ListChecks}
         subtitle={lesson.description || tLessons("defaultSubtitle")}
         title={lesson.title}

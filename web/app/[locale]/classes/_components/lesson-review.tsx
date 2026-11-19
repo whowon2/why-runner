@@ -1,10 +1,11 @@
 "use client";
 
-import { ArrowLeft, Clock, Copy } from "lucide-react";
+import { ArrowLeft, ClipboardCheck, Clock, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import { HighlightedCode } from "@/components/highlighted-code";
+import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -56,16 +57,12 @@ export function LessonReview({ lessonId }: { lessonId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <Button asChild className="w-fit px-0" variant="link">
-        <Link href={`/classes/${lesson.classroom.slug}/lessons/${lesson.slug}`}>
-          <ArrowLeft />
-          {t("backToTrack")}
-        </Link>
-      </Button>
-
-      <h1 className="font-bold text-2xl">
-        {t("title", { track: lesson.title })}
-      </h1>
+      <PageHeader
+        backHref={`/classes/${lesson.classroom.slug}/lessons/${lesson.slug}`}
+        icon={ClipboardCheck}
+        subtitle={t("subtitle")}
+        title={t("title", { track: lesson.title })}
+      />
 
       {students.length === 0 ? (
         <p className="text-muted-foreground">{t("noStudents")}</p>

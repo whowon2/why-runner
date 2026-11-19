@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ChevronDown, Download, Loader, Sheet } from "lucide-react";
+import { ChevronDown, Download, Loader, Sheet } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -120,12 +120,6 @@ export function ClassGradebook({ classroomId }: { classroomId: string }) {
       <PageHeader
         action={
           <>
-            <Button asChild variant="outline">
-              <Link href={`/classes/${classroom.slug}`}>
-                <ArrowLeft className="size-4" />
-                {t("backToClass")}
-              </Link>
-            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -165,6 +159,7 @@ export function ClassGradebook({ classroomId }: { classroomId: string }) {
             </DropdownMenu>
           </>
         }
+        backHref={`/classes/${classroom.slug}`}
         icon={Sheet}
         subtitle={t("gradebookSubtitle")}
         title={`${t("gradebook")} — ${classroom.name}`}

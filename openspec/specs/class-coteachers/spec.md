@@ -76,11 +76,11 @@ The add-co-teacher control SHALL suggest users through an owner-level search act
 - **THEN** the add action is called with `maria`'s user id and she becomes co-teacher
 
 ### Requirement: Co-teacher UI
-The class page SHALL show the roster split into teachers (owner first, then co-teachers) and students to managers. Owner-level users SHALL see a control to add a co-teacher by username or email, and per-member actions to promote to teacher, demote to student and remove. Co-teachers SHALL see the remove action only on students. Delete-class SHALL be shown only to owner-level users.
+The class page SHALL show managers the roster in its People tab, split into teachers (owner first, then co-teachers) and students. Owner-level users SHALL see a control to add a co-teacher by username or email. Through each row's action menu, owner-level users SHALL be able to promote a member to teacher, demote them to student, and remove them. Co-teachers SHALL see the remove action only on students. Delete-class SHALL be shown only to owner-level users.
 
 #### Scenario: Co-teacher views roster
-- **WHEN** a co-teacher opens the class page
-- **THEN** they see teachers and students, a remove action on students only, and no add-co-teacher or delete-class control
+- **WHEN** a co-teacher opens the class page's People tab
+- **THEN** they see teachers and students, a remove action only in student rows' menus, and no add-co-teacher or delete-class control
 
 ### Requirement: Staff are not students
 Co-teachers and the owner SHALL be excluded from every set of class students: roster count, gradebook rows, results export rows, lesson review lists, similarity comparisons, and home-page pending lessons. Admins who are not members SHALL never be counted as students.

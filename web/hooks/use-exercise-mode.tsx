@@ -1,4 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { submissionRows, useJudgeQuery } from "@/hooks/use-judge-query";
 import type { ExerciseMode, Language } from "@/drizzle/schema";
 import {
   checkParsonsSolution,
@@ -6,16 +7,13 @@ import {
   setExerciseMode,
 } from "@/lib/actions/lessons/exercise-mode";
 
+/** Polls the latest parsons check on the judge-result schedule. */
 export const useExerciseModeState = (exerciseId: string) =>
-  useQuery({
+  useJudgeQuery({
     queryKey: ["exercise-mode", exerciseId],
-    queryFn: async () => {
-      return await getExerciseModeState(exerciseId);
-    },
-    refetchInterval: (query) => {
-      const status = query.state.data?.latestParsonsCheck?.status;
-      return status === "PENDING" || status === "RUNNING" ? 2000 : false;
-    },
+    queryFn: () => getExerciseModeState(exerciseId),
+    rows: (data) =>
+      submissionRows(data?.latestParsonsCheck && [data.latestParsonsCheck]),
   });
 
 export const useCheckParsonsSolution = () => {

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { CancelSubmissionButton } from "@/components/submissions/cancel-submission-button";
 import { StatusBadge } from "@/components/submissions/status-badge";
+import { StillJudging } from "@/components/submissions/still-judging";
 import { Button } from "@/components/ui/button";
 import { parseReport } from "@/lib/judge-report";
 import { isPendingStatus, statusTone } from "@/lib/submission-status";
@@ -84,18 +85,18 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
               type="button"
             >
               <StatusBadge status={latest.status} />
-              {isPendingStatus(latest.status) ? (
-                <Loader className="size-3.5 animate-spin" />
-              ) : (
-                report && (
-                  <span className="text-muted-foreground text-xs tabular-nums">
-                    {t("passedCount", {
-                      passed: report.passed_count,
-                      total: report.total_tests,
-                    })}
-                  </span>
-                )
-              )}
+              {isPendingStatus(latest.status)
+                ? !source.submissionsStuck && (
+                    <Loader className="size-3.5 animate-spin" />
+                  )
+                : report && (
+                    <span className="text-muted-foreground text-xs tabular-nums">
+                      {t("passedCount", {
+                        passed: report.passed_count,
+                        total: report.total_tests,
+                      })}
+                    </span>
+                  )}
             </button>
             <span className="ml-auto flex items-center gap-2">
               {latest.status === "PENDING" && (
@@ -103,6 +104,13 @@ export function ActionsPanel({ onAction }: { onAction?: () => void }) {
               )}
               <AiHelpButton submission={latest} />
             </span>
+            {isPendingStatus(latest.status) && source.submissionsStuck && (
+              <StillJudging
+                checking={source.recheckingSubmissions}
+                className="basis-full"
+                onCheck={source.recheckSubmissions}
+              />
+            )}
           </div>
         )}
       </div>
@@ -127,6 +135,13 @@ export function CompactActions() {
           )}
         >
           <StatusBadge status={latest.status} />
+          {isPendingStatus(latest.status) && source.submissionsStuck && (
+            <StillJudging
+              checking={source.recheckingSubmissions}
+              compact
+              onCheck={source.recheckSubmissions}
+            />
+          )}
           {latest.status === "PENDING" && (
             <CancelSubmissionButton compact submissionId={latest.id} />
           )}

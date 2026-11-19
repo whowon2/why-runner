@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { RunButton, RunPanel } from "@/components/code-run/code-run";
 import { CancelSubmissionButton } from "@/components/submissions/cancel-submission-button";
 import { StatusBadge } from "@/components/submissions/status-badge";
+import { StillJudging } from "@/components/submissions/still-judging";
 import { SubmissionDetails } from "@/components/submissions/submission-details";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRun } from "@/hooks/use-run";
@@ -92,7 +93,8 @@ export function ExampleOutput({ index }: { index: number }) {
   const { source, examples } = useWorkspace();
   const test = source.tests.find((x) => x.index === index);
   const play = examples.plays[index];
-  const { data: run } = useRun(play?.runId ?? null);
+  const { query, stuck } = useRun(play?.runId ?? null);
+  const run = query.data;
 
   if (!test) return null;
   const finished = run && !["PENDING", "RUNNING"].includes(run.status);
@@ -110,7 +112,12 @@ export function ExampleOutput({ index }: { index: number }) {
     <div className="flex flex-col gap-2 text-sm">
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-medium">{t("example", { index })}</span>
-        {!finished ? (
+        {stuck ? (
+          <StillJudging
+            checking={query.isFetching}
+            onCheck={() => void query.refetch()}
+          />
+        ) : !finished ? (
           <span className="flex items-center gap-1 text-muted-foreground">
             <Loader className="size-3.5 animate-spin" />
             {t("running")}
@@ -191,7 +198,16 @@ function SubmissionOutput({ previousId }: { previousId: string | null }) {
         </span>
         <AiHelpButton submission={latest} />
       </div>
-      {pending ? (
+      {pending && source.submissionsStuck ? (
+        <StillJudging
+          checking={source.recheckingSubmissions}
+          onCheck={source.recheckSubmissions}
+        >
+          {latest.status === "PENDING" && (
+            <CancelSubmissionButton submissionId={latest.id} />
+          )}
+        </StillJudging>
+      ) : pending ? (
         <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
           <Loader className="size-4 animate-spin" />
           {t("judging")}

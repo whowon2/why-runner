@@ -15,6 +15,7 @@ export function SurveyPreview({ form }: { form: SurveyFormKey }) {
   return (
     <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col gap-8 py-8">
       <PageHeader
+        backHref="/surveys"
         icon={Eye}
         title={t(`forms.${form}.title`)}
         subtitle={`${t("preview.subtitle")} · ${t(`formLabels.${form}`)}`}

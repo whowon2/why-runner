@@ -62,7 +62,7 @@ export function CreateLessonButton({
       open={open}
     >
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button>
           <Plus className="h-4 w-4" />
           {t("createTrack")}
         </Button>

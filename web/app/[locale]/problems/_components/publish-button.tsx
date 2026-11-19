@@ -22,7 +22,9 @@ export function PublishProblem({ problem }: { problem: Problem }) {
   const t = useTranslations("ProblemsPage.Publish");
   const { mutate: publishProblem, isPending, isSuccess } = usePublishProblem();
   const queryClient = useQueryClient();
-  const { data: validation } = useProblemValidation(problem.id);
+  const {
+    query: { data: validation },
+  } = useProblemValidation(problem.id);
   // Publishing uses the saved problem, not what is typed in the editor.
   const hasUnsavedEdits = useHasUnsavedChanges("problem-editor");
   const tUnsaved = useTranslations("UnsavedChanges");

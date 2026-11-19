@@ -35,8 +35,15 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
   const isOwner =
     session?.user?.id === problem.createdBy || session?.user?.role === "admin";
   const { data: tests } = useProblemTests(problem.id);
-  const { data: submissions, isPending: submissionsPending } =
-    useProblemPracticeSubmissions(problem.id);
+  const {
+    query: {
+      data: submissions,
+      isPending: submissionsPending,
+      isFetching: recheckingSubmissions,
+      refetch: recheckSubmissions,
+    },
+    stuck: submissionsStuck,
+  } = useProblemPracticeSubmissions(problem.id);
   const { mutate, isPending: submitting } = useCreateProblemSubmission();
 
   const source = useMemo<WorkspaceSource>(
@@ -48,6 +55,9 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
       lockedReason: null,
       submissions: submissions as Submission[] | undefined,
       submissionsPending,
+      submissionsStuck,
+      recheckSubmissions,
+      recheckingSubmissions,
       ai: { maxLevel: null },
       submitting,
       submit: (answer) => {
@@ -81,6 +91,9 @@ export function ProblemWorkspace({ problem }: { problem: Problem }) {
       problem,
       submissions,
       submissionsPending,
+      submissionsStuck,
+      recheckSubmissions,
+      recheckingSubmissions,
       submitting,
       mutate,
       tSubmit,
