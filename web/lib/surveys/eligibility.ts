@@ -1,9 +1,10 @@
 import "server-only";
 
-import { and, eq, exists } from "drizzle-orm";
+import { and, eq, exists, or } from "drizzle-orm";
 import { db } from "@/drizzle/db";
 import {
   classroom,
+  classroomMembership,
   contest,
   exercise,
   lesson,
@@ -88,7 +89,8 @@ const lessonHasExercises = exists(
  * entity. Rules (see the `evaluation-surveys` spec):
  * - contest_author: created the contest; published with ≥1 problem.
  * - contest_participant: accepted in a published contest with ≥1 submission.
- * - lesson_author: created the lesson; published with ≥1 exercise.
+ * - lesson_author: teaches the lesson's class (owner or `teacher` member,
+ *   not a platform admin as such); published with ≥1 exercise.
  * - lesson_student: has a `lessonSubmission` for the lesson.
  */
 async function eligibleRows(
@@ -144,7 +146,21 @@ async function eligibleRows(
         .innerJoin(classroom, eq(classroom.id, lesson.classroomId))
         .where(
           and(
-            eq(lesson.createdBy, userId),
+            or(
+              eq(classroom.createdBy, userId),
+              exists(
+                db
+                  .select({ x: classroomMembership.userId })
+                  .from(classroomMembership)
+                  .where(
+                    and(
+                      eq(classroomMembership.classroomId, classroom.id),
+                      eq(classroomMembership.userId, userId),
+                      eq(classroomMembership.role, "teacher"),
+                    ),
+                  ),
+              ),
+            ),
             eq(lesson.isPublished, true),
             lessonHasExercises,
             entityId ? eq(lesson.id, entityId) : undefined,

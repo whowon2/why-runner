@@ -21,8 +21,9 @@ const FORMS_BY_KIND: Record<"contest" | "lesson", SurveyFormKey[]> = {
 
 /**
  * The survey to invite the current user to from a contest or lesson page,
- * or `null`. Contest cards wait for `endDate`; the lesson author's card
- * waits for the first student hand-in.
+ * or `null`. Contest cards wait for `endDate`; each class teacher's
+ * (owner or co-teacher) `lesson_author` card waits for the first student
+ * hand-in.
  */
 export async function getSurveyCta(
   input: unknown,
