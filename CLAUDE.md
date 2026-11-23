@@ -42,6 +42,7 @@ Migration ordering: web migrations run in the Vercel production build (`web/scri
 - `openspec/` — spec-driven change workflow config (currently no active changes or specs checked in).
 - `overleaf/` — LaTeX source for the accompanying thesis paper (SBC template).
 - `bench/` — reproducible benchmarks behind every performance number in the thesis and deck v4 (`bench/README.md`: hardware, safety rules, re-run commands; raw data in `bench/results/`, charts via `bench/charts.py`).
+- `docs/wsi/` — VIII WSI banner (A1 poster): official template `ModeloPosterWSI.pptx`, generator `build_banner.py` (python-pptx + LibreOffice; intermediates go to a temp dir), output `banner.pdf`.
 - `docs/presentation/` — deck build scripts (`build_v3.py`, `build_v4.py`), screenshot seed/shooter (`seed_v4.py`, `shoot_v4.py`), screenshots and charts.
 - `AUDITORIA_PRE_DEFESA.md` — Portuguese-language pre-defense audit/punch-list notes for the thesis, not application docs.
 - `problems.json`, `Why-runner.pdf`, `cbie.txt` — supporting TCC artifacts (sample problem set, thesis PDF, conference info), not consumed by either app at runtime.
