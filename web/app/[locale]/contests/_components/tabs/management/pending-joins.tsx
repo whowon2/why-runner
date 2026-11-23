@@ -70,7 +70,7 @@ export function PendingJoins({ contestId }: { contestId: string }) {
                   className="h-8 w-8 rounded-none"
                 />
               )}
-              <div>
+              <div translate="no">
                 <p className="font-medium text-sm">{entry.user.name}</p>
                 <p className="text-xs text-muted-foreground">
                   @{entry.user.username}

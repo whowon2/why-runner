@@ -1,5 +1,6 @@
 "use client";
 
+import { withBrand } from "@/components/brand";
 import { ClipboardList, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -58,7 +59,7 @@ export function SurveyCta({
           <ClipboardList className="size-5 text-primary" />
         </span>
         <div className="space-y-1">
-          <p className="font-semibold">{t("title")}</p>
+          <p className="font-semibold">{withBrand(t("title"))}</p>
           <p className="text-sm text-muted-foreground">{t(kind)}</p>
         </div>
       </div>

@@ -55,6 +55,7 @@ export function AdminClasses() {
                   <Link
                     className="hover:underline"
                     href={`/user/${c.owner.username}`}
+                    translate="no"
                   >
                     {c.owner.name}
                   </Link>

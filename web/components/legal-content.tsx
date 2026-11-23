@@ -1,4 +1,6 @@
+import { Fragment } from "react";
 import type React from "react";
+import { withBrand } from "@/components/brand";
 import { Link } from "@/i18n/navigation";
 
 type Block = { type: "p"; text: string } | { type: "ul"; items: string[] };
@@ -11,25 +13,30 @@ function renderInline(text: string): React.ReactNode[] {
   const parts: React.ReactNode[] = [];
   let lastIndex = 0;
   let key = 0;
+  // Plain text keeps the brand name out of page translation; withBrand may
+  // return an array, so each piece gets its own keyed fragment.
+  const brand = (piece: string) => (
+    <Fragment key={key++}>{withBrand(piece)}</Fragment>
+  );
 
   for (const match of text.matchAll(INLINE_PATTERN)) {
     const index = match.index ?? 0;
-    if (index > lastIndex) parts.push(text.slice(lastIndex, index));
+    if (index > lastIndex) parts.push(brand(text.slice(lastIndex, index)));
 
     const [, linkLabel, linkHref, boldText] = match;
     if (linkHref !== undefined) {
       parts.push(
         <Link key={key++} href={linkHref}>
-          {linkLabel}
+          {withBrand(linkLabel)}
         </Link>,
       );
     } else {
-      parts.push(<strong key={key++}>{boldText}</strong>);
+      parts.push(<strong key={key++}>{withBrand(boldText)}</strong>);
     }
 
     lastIndex = index + match[0].length;
   }
-  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+  if (lastIndex < text.length) parts.push(brand(text.slice(lastIndex)));
 
   return parts;
 }

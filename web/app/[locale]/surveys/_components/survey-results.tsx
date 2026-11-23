@@ -1,5 +1,6 @@
 "use client";
 
+import { withBrand } from "@/components/brand";
 import { BarChart3, Download } from "lucide-react";
 import { useFormatter } from "next-intl";
 import { useState } from "react";
@@ -77,7 +78,7 @@ function LikertTable({
           {rows.map((row, i) => (
             <TableRow key={row.key}>
               <TableCell className="whitespace-normal text-sm">
-                {labelFor(row.key, i)}
+                {withBrand(labelFor(row.key, i))}
               </TableCell>
               {row.distribution.map((n, v) => (
                 <TableCell
@@ -251,7 +252,9 @@ function FormResults({ form }: { form: SurveyFormKey }) {
             </h2>
             {data.open.map((q) => (
               <div key={q.key} className="flex flex-col gap-2">
-                <p className="text-sm font-medium">{t(`open.${q.key}`)}</p>
+                <p className="text-sm font-medium">
+                  {withBrand(t(`open.${q.key}`))}
+                </p>
                 {q.answers.length === 0 ? (
                   <p className="text-sm text-muted-foreground">
                     {t("results.noOpenAnswers")}

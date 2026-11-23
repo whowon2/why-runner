@@ -107,7 +107,7 @@
     "admin": "Admin"
   },
   "Footer": {
-    "copyright": "© {year} Why Runner",
+    "copyright": "© {year} <brand>Why Runner</brand>",
     "githubLabel": "GitHub",
     "links": {
       "terms": "Terms of Use",

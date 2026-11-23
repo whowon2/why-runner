@@ -207,6 +207,7 @@ export default function Profile({
             <div className="flex items-center gap-3 flex-wrap">
               <h1
                 className={`text-2xl font-extrabold tracking-tight ${onCover ? `text-white ${COVER_TEXT_SHADOW}` : "text-foreground"}`}
+                translate="no"
               >
                 {data.name}
               </h1>
