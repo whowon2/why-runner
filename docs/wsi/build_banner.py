@@ -71,7 +71,7 @@ LINE = 1.5  # rendered line height / font size for Poppins at the template's 120
 # --------------------------------------------------------------- content ----
 
 TITLE = "WhyRunner: Online Judge for Competitive Programming"
-AUTHORS = [("Juan Israel dos Anjos", "¹"), ("Suellen Mapa (orientadora)", "¹")]
+AUTHORS = [("Juan Israel dos Anjos", "¹"), ("Suelen Mapa (orientadora)", "¹")]
 INSTITUTION = [("1.", True), (" Instituto Federal de Minas Gerais (IFMG) – Campus Ouro Branco", False)]
 
 # A paragraph is a list of runs (text, bold); a bullet paragraph is ("•", runs).
@@ -122,7 +122,7 @@ CONCLUSIONS = [
 ]
 
 THANKS = [
-    [("À orientadora Suellen Mapa, ao IFMG – Campus Ouro Branco e aos 30 alunos participantes.", False)],
+    [("À orientadora Suelen Mapa, ao IFMG – Campus Ouro Branco e aos 30 alunos participantes.", False)],
 ]
 
 FIG1 = "Figura 1 - Arquitetura do WhyRunner"

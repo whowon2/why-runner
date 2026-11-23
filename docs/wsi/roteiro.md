@@ -10,7 +10,7 @@ Os números vêm de `bench/results/` (os mesmos do artigo e do deck v5).
 ## 1 · Título (≈ 45 s)
 
 > Bom dia. Eu sou o Juan Israel dos Anjos, do Bacharelado em Sistemas de Informação do
-> IFMG, e meu TCC, orientado pela professora Suellen Mapa, é o **WhyRunner**: um juiz
+> IFMG, e meu TCC, orientado pela professora Suelen Mapa, é o **WhyRunner**: um juiz
 > online para programação competitiva e para o ensino de programação.
 >
 > Um juiz online recebe o código do aluno, roda contra casos de teste e devolve um
