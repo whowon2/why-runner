@@ -133,7 +133,7 @@ def cover():
   <div class="cmd mono">$ whyrunner --wsi</div>
   <div class="name">WhyRunner</div>
   <div class="sub">Juiz online para programação competitiva e para o ensino de programação</div>
-  <div class="who"><b>Juan Israel dos Anjos</b><br>Orientadora: Suellen Mapa<br>
+  <div class="who"><b>Juan Israel dos Anjos</b><br>Orientadora: Suelen Mapa<br>
     Bacharelado em Sistemas de Informação · IFMG Campus Ouro Branco</div>
   <div class="grid">{grid}</div>
   <div class="event mono">VIII WSI · fast-track de TCC · 03/12/2026</div>

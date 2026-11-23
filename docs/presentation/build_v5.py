@@ -147,7 +147,7 @@ class S(v4.S):
 
 # ------------------------------------------------------------- builders ----
 
-AUTHOR = ["Juan Israel dos Anjos", "Orientadora: Suellen Mapa",
+AUTHOR = ["Juan Israel dos Anjos", "Orientadora: Suelen Mapa",
           "Bacharelado em Sistemas de Informação · IFMG Ouro Branco", "TCC II · outubro de 2026"]
 
 PARTS = [("Introdução", "o problema e a pergunta"),
@@ -439,7 +439,7 @@ def b_thanks(s):
     s.text(0.8, 2.2, SLIDE_W - 1.6, 1.4, "Obrigado!", size=60, color="accent1", bold=True, align="ctr",
            anchor="ctr", count=False)
     s.text(0.8, 3.7, SLIDE_W - 1.6, 0.6, "Perguntas?", size=24, color="bg2", align="ctr", count=False)
-    s.text(0.8, 5.0, SLIDE_W - 1.6, 0.4, "Juan Israel dos Anjos · Orientadora: Suellen Mapa · IFMG Ouro Branco",
+    s.text(0.8, 5.0, SLIDE_W - 1.6, 0.4, "Juan Israel dos Anjos · Orientadora: Suelen Mapa · IFMG Ouro Branco",
            size=14, color="bg2", align="ctr", count=False)
 
 
