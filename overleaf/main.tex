@@ -42,87 +42,25 @@
 
 \section{Introduction}
 
-Competitive programming plays a significant role in algorithmic thinking, logical reasoning, and problem-solving skills. These capabilities are essential for students pursuing careers in computer science and related fields. In recent years, the adoption of online judge systems (automated platforms that evaluate submitted code against predefined test cases) has become increasingly popular, especially in academic settings. These platforms simulate real-world programming contests, enabling students to practice and improve their skills outside of traditional classroom environments.
+Competitive programming develops algorithmic thinking and problem-solving, and online judges (platforms that automatically evaluate submitted code against predefined test cases) have become common in academic settings. Most of them, however, were designed for contests and prioritize fairness and efficiency over pedagogy: students receive little more than ``Wrong Answer'' or ``Time Limit Exceeded'', with no explanation that helps them learn, and instructors find them rigid to configure for classroom use.
 
-Most online judges are not optimized for educational use. They were primarily designed for competitive environments, prioritizing fairness and efficiency over pedagogical considerations. As a result, students receive limited feedback typically restricted to ``Wrong Answer'' or ``Time Limit Exceeded'' without explanations that help learning.
-
-Many platforms are rigid in design, making it difficult for educators and students to configure and use. Features such as adaptive problem sets, real-time contest control, and support for multiple programming languages are either limited or absent. The increasing complexity of software development tools and the diverse backgrounds of students further highlight the need for more accessible and educationally driven platforms.
-
-To address these limitations, this work presents \textbf{WhyRunner}, a modern and modular online judge system developed specifically for educational contexts. WhyRunner was designed from the ground up with three core objectives: (1) to provide rich, automated feedback using artificial intelligence; (2) to support safe, scalable, and multi-language code execution through kernel-level sandboxing; and (3) to enable flexible real-time contest management for classroom or remote settings.
-
-This paper details the design, development, and current implementation status of WhyRunner, and evaluates its performance with a suite of reproducible benchmarks (\S\ref{sec:performance}): judge throughput and latency, per-language execution cost, sandbox overhead, verdict classification accuracy, the impact of output comparison modes, the quality and cost of code similarity detection, the structural-constraint checker, and the latency and reliability of the AI features. It also reports a first classroom evaluation, in which 30 students solved one exercise list and answered the questionnaire built into the system (\S\ref{sec:evaluation-status}); contests and the instructor's perspective have not been evaluated yet.
+This work presents \textbf{WhyRunner}, an online judge designed for education with three objectives: (1) rich, automated feedback using artificial intelligence; (2) safe, scalable, multi-language execution through kernel-level sandboxing; and (3) flexible real-time contests and teacher-curated coursework. This paper describes its design and implementation (\S\ref{sec:design}), evaluates its performance with reproducible benchmarks (\S\ref{sec:performance}), and reports a first classroom evaluation in which 30 students solved one exercise list (\S\ref{sec:evaluation-status}); contests and the instructor's perspective have not been evaluated yet.
 
 \section{Methodology}\label{sec:methodology}
 
-The system development followed an iterative and incremental methodology. This means the system was built step by step, adding features and improvements after each test and evaluation.
+Development was iterative and incremental. Requirements came from a literature review, informal conversations with students and instructors, and the author's experience with contest platforms; the main gaps found were limited pedagogical feedback, limited language support, and contest management. Several technologies were tried and discarded along the way: the submission queue moved from BullMQ (Redis), whose idle polling was costly, to AWS SQS, and finally to PostgreSQL's native \texttt{LISTEN/NOTIFY}, removing the external queue; Supabase and a separate NestJS API gave way to a standalone PostgreSQL with Drizzle ORM and Next.js Server Actions; and execution moved from per-submission Docker containers to the \texttt{isolate} sandbox (\S\ref{sec:execution-environment}).
 
-\subsection{Requirements Analysis}
+A minimum viable product was used informally by five colleagues, with no script or questionnaire; three of their complaints became changes (submitted code shown in each attempt, a marathon-style leaderboard, and field-level errors in the JSON problem import). A security review of the web layer found that, since every exported Server Action is a public HTTP endpoint and TypeScript types are erased at runtime, some actions copied client input directly into database writes, one lacked authentication, and submission reports exposed hidden test cases; these were fixed with explicit input schemas, server-side ownership checks, and report filtering (\S\ref{sec:test-confidentiality}). Validation is technical (tests on every push and a benchmark suite, \S\ref{sec:performance}) and educational, so far one classroom test (\S\ref{sec:evaluation-status}).
 
-The initial phase consisted of identifying shortcomings in existing judges through a combination of literature review, informal conversations with students and instructors, and the author's own practical experience with competitive programming platforms. Key problems found included limited pedagogical feedback, lack of support for different programming languages and website display languages, and contest management.
+\section{Related Work}\label{sec:related}
 
-\subsection{Design Principles}
-
-The system was designed with modularity, scalability, and pedagogical value as central principles:
-
-\begin{itemize}
-  \item \textbf{Modularity}: Components such as code execution, feedback generation, user interface, and contest management were developed as loosely coupled modules, enabling easier maintenance and future upgrades.
-  \item \textbf{Scalability}: Submissions are dispatched through PostgreSQL \texttt{LISTEN/NOTIFY}, and judge workers claim them with row-level locking, so several workers can share the load without an external queue.
-  \item \textbf{Security}: All submitted code is executed in a per-run \texttt{isolate} sandbox \cite{mares2012isolate}, with no network access and capped time, memory, and process count, minimizing the risk of malicious code affecting the system. On the web side, every Server Action authenticates the caller, checks ownership, and validates its input against an explicit list of accepted fields.
-  \item \textbf{Educational Feedback}: Instead of reporting only binary results (e.g., ``Accepted'' or ``Wrong Answer''), the system uses AI to generate contextual explanations and suggestions for improvement.
-\end{itemize}
-
-\subsection{Technology Evaluation}
-
-The selection of technologies for WhyRunner was guided by practicality, familiarity, and empirical testing. Throughout development, multiple frameworks and tools were evaluated based on performance, maintainability, and ease of deployment in cloud environments.
-
-Initially, the front-end was built using the React framework due to prior experience and its robust ecosystem. To ensure server-side rendering, route handling, and production-readiness, the Next.js framework was selected. It offered a seamless development experience, especially for projects requiring both front-end and server-side logic.
-
-Queue management went through two discarded approaches before settling: BullMQ (Redis-based) generated excessive idle polling traffic in production, and its replacement, AWS SQS, added external operational overhead. The final architecture uses PostgreSQL's native \texttt{LISTEN/NOTIFY} instead, eliminating the external queue entirely while keeping asynchronous, event-driven behavior.
-
-Similarly, Supabase was dropped in favor of a standalone PostgreSQL instance (via Drizzle ORM) once it proved restrictive for custom server-side logic, and a separate NestJS API was dropped in favor of Next.js Server Actions once the split-repository model made shared types and auth logic too costly to maintain. A short-lived TurboRepo monorepo was also abandoned, as it complicated Docker-based deployment of the judge worker, which now ships as a standalone Rust binary listening for submissions over \texttt{LISTEN/NOTIFY}. Code execution itself was migrated from per-submission Docker containers to the \texttt{isolate} sandbox; the motivation and trade-offs are discussed in \S\ref{sec:execution-environment}.
-
-\subsection{Development Process}
-
-Development occurred in cycles, each involving implementation, integration, informal testing, and refinement. A minimum viable product (MVP) was used informally by five colleagues on the author's Discord server, outside any classroom setting and with no script or questionnaire. Three of their complaints became changes to the system: a contest's attempt list did not show the code submitted in each attempt, which is now shown with a copy button; the leaderboard showed only medals, and was rebuilt in the style of programming marathons, with attempt counts, solve minute, first-to-solve marks, and penalty (\S\ref{sec:contests-bank}); and the JSON problem import returned generic errors, and now documents the expected format and reports the failing field and problem. Positive comments concerned the visual design, a dark terminal-like theme, and the name, read as the Minas Gerais interjection ``uai'', a nod to the goal of explaining \emph{why} code failed. Being small, informal, and without instructors, this session does not replace a user evaluation. Each subsequent cycle refactored code, adjusted parameters (e.g., time/memory limits), and improved usability based on the author's own testing.
-
-A security review of the web layer was also carried out during development. Next.js turns every exported Server Action into a public HTTP endpoint that any client can call with arbitrary arguments, and TypeScript types are erased at runtime, so the end-to-end type safety of the stack does not by itself validate anything. The review found actions that copied client input directly into database writes, an action with no authentication, and submission reports that exposed hidden test cases. These were fixed with explicit input schemas, server-side ownership checks, and the report filtering described in \S\ref{sec:test-confidentiality}.
-
-\subsection{Current Validation Status}
-
-Two kinds of validation were carried out. The technical one is continuous: automated tests run on every push (\S\ref{sec:integration}), and a benchmark suite measures the judge, the similarity detector, and the AI features (\S\ref{sec:performance}). The educational one so far consists of a single classroom test on 29 October 2026, in which one class of students solved an exercise list and answered the student questionnaire built into the system (\S\ref{sec:evaluation-status}). The feedback from that session fed one more development cycle, whose changes are listed with the results. No contest has been run in a classroom and no instructor has answered the questionnaire yet.
-
-\section{Related Work} \label{sec:related}
-
-\subsection{Ataux} \cite{silva2021ataux}
-
-Ataux lets an administrator create programming problem lists that a class submits solutions to, generating a results sheet. It offers admin/collaborator/member roles, difficulty/type filtering, team registration, and solving via Codeforces, on a RESTful React/NestJS/PostgreSQL stack deployed on Heroku. Its supported-language range is limited compared to larger platforms, and feedback is correctness-only. Usability was assessed with PSSUQ across 71 students and 1 teaching assistant over two weeks.
-
-\subsection{GOJ} \cite{lima2022gamma}
-
-GOJ stores and automatically judges problems from past UnB Programming Marathon editions, organized by event, with beginner tutorials and admin tooling (Gamma Judge Admin). It is a microservices/Web-API architecture on AWS (SQS, SNS, S3), .NET, and MongoDB, with a React front-end and Bash-script-based judging.
-
-\subsection{Run Codes} \cite{runcodes2024}
-
-Run Codes is an online judge platform developed by Brazilian universities, designed to create and manage programming contests and activities. It allows teachers to create problem lists and competitions, automates the evaluation of code submissions, and generates reports for performance analysis.
-
-It supports a wide variety of programming languages and integrates with virtual learning environments. However, Run Codes' complexity and external dependencies can make it less flexible for fully customized learning activities or research projects.
-
-\subsection{BOCA} \cite{de2004boca}
-
-BOCA (BOCA Online Contest Administrator) is an open-source system widely used in Brazilian programming competitions like the ACM ICPC regional contests. BOCA allows managing contests, teams, problems, and automated judging.
-
-The system is built mainly with PHP and relies on a LAMP stack (Linux, Apache, MySQL, PHP). While robust for traditional contests, its interface and extensibility are more limited compared to newer platforms.
-
-\section{Comparative Analysis}
-
-Comparing the analyzed platforms to WhyRunner:
+\textbf{Ataux} \cite{silva2021ataux} lets an administrator create problem lists that a class solves via Codeforces, with roles, filtering, and team registration on a React/NestJS/PostgreSQL stack; its language range is limited and its feedback correctness-only; usability was assessed with PSSUQ across 71 students. \textbf{GOJ} \cite{lima2022gamma} stores and judges problems from past UnB Programming Marathons, on a microservices architecture over AWS (SQS, SNS, S3), .NET, and MongoDB, with Bash-script judging. \textbf{Run Codes} \cite{runcodes2024}, developed by Brazilian universities, lets teachers create problem lists and contests, supports many languages, and integrates with virtual learning environments, but its complexity and external dependencies limit customized activities. \textbf{BOCA} \cite{de2004boca} is the open-source PHP/LAMP system used in Brazilian ICPC regionals; robust for traditional contests, its interface and extensibility are more limited. Table~\ref{tab:judge-comparison} compares them with WhyRunner.
 
 \begin{table}[ht]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.25}
-\caption{Comparison of programming judge systems. n/r: not reported in the sources analysed (\S\ref{sec:related}); the last four rows were added in this version and were not assessed for the other systems.}
+\caption{Comparison of programming judge systems. n/r: not reported in the sources analysed; the last four rows were not assessed for the other systems.}
 \label{tab:judge-comparison}
 \begin{tabular}{lccccc}
 \hline
@@ -142,189 +80,100 @@ Custom output checker        & n/r     & n/r      & n/r       & n/r      & Yes \
 \end{tabular}
 \end{table}
 
-Beyond AI feedback, WhyRunner's second differentiator is the professor-curated Class/Lesson/Exercise model (\S\ref{sec:class-lesson-model}): none of the compared systems let an instructor assemble an ordered, gradable assignment from existing problems and review it per exercise outside of a timed contest. Solution-constraint enforcement (\S\ref{sec:prepublish-validation}) is a related but separate differentiator: it lets a professor require a specific algorithmic approach, not just a correct output, which none of the compared systems support either. Finally, block-based answers that compile to Portugol (\S\ref{sec:class-lesson-model}) give beginners a visual entry point that the compared judges, all text-only, do not offer. The four rows added in this version (plagiarism detection, distinct verdicts, a class gradebook, and custom output checkers) are standard in mature contest systems and are listed to show that WhyRunner now covers them, not as differentiators; they were not assessed for the other systems.
+Beyond AI feedback, WhyRunner's differentiators are the professor-curated Class/Lesson/Exercise model (\S\ref{sec:class-lesson-model}), which lets an instructor assemble an ordered, gradable assignment outside a timed contest; solution constraints (\S\ref{sec:prepublish-validation}), which require a specific approach and not just a correct output; and block-based answers compiled to Portugol, a visual entry point the text-only judges lack. The last four rows are standard in mature contest systems and are listed to show coverage, not as differentiators.
 
-\section{System Design}
+\section{System Design}\label{sec:design}
 
-\subsection{Overview}
+WhyRunner consists of two services sharing one PostgreSQL \cite{stonebraker1986design} database: a \textbf{Next.js} \cite{nextjs2024} web application, which handles the interface, authentication (Better-Auth), and all business logic through Server Actions, with type-safe database access via Drizzle ORM \cite{drizzleorm2024}; and a \textbf{judge worker} written in Rust \cite{matsakis2014rust}, packaged with \texttt{isolate} \cite{mares2012isolate} and every language toolchain in one Docker \cite{merkel2014docker} image. The services communicate only through the database, using \texttt{LISTEN/NOTIFY} instead of an external broker. AI features are served by a chain of language models, Gemini 3.5 Flash and Flash-Lite \cite{gemini2023} and Claude Haiku 5.5 \cite{anthropic2026haiku}, called only by the web application (\S\ref{sec:ai-chain}).
 
-WhyRunner is structured as two cooperating services: a \textbf{Next.js web application} responsible for the user interface, authentication, and all server-side business logic via Server Actions; and a \textbf{Rust-based judge worker} responsible for code execution and result evaluation.
-
-The system's backend relies on \textbf{PostgreSQL} for persistent data storage, managed by \textbf{Drizzle ORM}. Asynchronous communication between the web application and the judge worker is handled through PostgreSQL's native \texttt{LISTEN/NOTIFY} mechanism, eliminating the need for an external message broker. When a user submits code, the web application inserts a row into the \texttt{submission} table and issues a \texttt{NOTIFY}; the judge worker, which holds an open connection via \texttt{PgListener}, receives the notification and begins processing. AI features (student hints and professor-facing authoring aids) are served by a chain of large language models, called only by the web application (\S\ref{sec:ai-chain}).
-
-Beyond timed contests, WhyRunner also supports a professor-curated Class/Lesson/Exercise model: a professor assembles lessons from existing problems for their class, and students submit and are graded exercise-by-exercise, independent of the contest scoreboard flow (\S\ref{sec:class-lesson-model}).
-
-\subsection{Technology Stack}
-
-\begin{itemize}
-    \item \textbf{Next.js} \cite{nextjs2024}: Full-stack web framework for the user interface and server-side logic via Server Actions.
-    \item \textbf{Better-Auth:} Authentication library integrated with Next.js for session management.
-    \item \textbf{Drizzle ORM} \cite{drizzleorm2024}: Type-safe database access layer for PostgreSQL.
-    \item \textbf{PostgreSQL} \cite{stonebraker1986design}: Relational database for persistent data storage and inter-service messaging via \texttt{LISTEN/NOTIFY}.
-    \item \textbf{Rust} \cite{matsakis2014rust}: Systems language used for the judge worker, chosen for performance and memory safety.
-    \item \textbf{isolate} \cite{mares2012isolate}: Linux namespace/cgroup sandbox, originally built for the International Olympiad in Informatics, used to run each submission with no network and enforced resource limits.
-    \item \textbf{Docker} \cite{merkel2014docker}: Packaging of the judge worker, the sandbox, and every language toolchain into a single deployable image.
-    \item \textbf{Gemini 3.5 Flash and Flash-Lite} \cite{gemini2023} \textbf{and Claude Haiku 5.5} \cite{anthropic2026haiku}: Language models behind hints, authoring aids, and algorithm-requirement checks, tried in that order (\S\ref{sec:ai-chain}).
-\end{itemize}
-
-\newpage
 \subsection{Submission Pipeline}\label{sec:submission-pipeline}
 
-The core implementation revolves around a pipeline that ensures decoupling between submission, execution, constraint checking, and feedback. Figure~\ref{fig:submission-flow} illustrates the current flow, which now branches by submission type (contest/standalone vs. lesson exercise) and includes the solution-constraint checks introduced in \S\ref{sec:prepublish-validation}.
+Figure~\ref{fig:submission-flow} shows the pipeline. A Server Action accepts only the problem, contest, language, and source code from the browser; every other field (status, author, question letter) is decided on the server, which also checks contest membership, start time, and rate limits. It stores the submission as \texttt{PENDING} and issues a \texttt{NOTIFY}; the judge, listening through \texttt{sqlx}'s \texttt{PgListener}, wakes its worker pool (\S\ref{sec:concurrency}). Compiled languages are compiled once, and each test case runs in a fresh \texttt{isolate} box (\S\ref{sec:execution-environment}); the output is compared according to the problem's comparison mode (\S\ref{sec:output-comparison}). Contest and standalone submissions stop at the first failing case, while lesson exercises run every case, so the pass count measures exactly how many cases were right. The final status is persisted, an in-app notification is raised, and the front-end refreshes via TanStack Query; on failure, the student may request an AI hint.
 
-\begin{figure}[H]
+\begin{figure}[t]
 \centering
 \begin{tikzpicture}[
-  node distance=0.5cm and 1.6cm,
-  box/.style={draw, rounded corners, fill=gray!10, text width=4.6cm, align=center, minimum height=0.9cm, font=\footnotesize},
-  note/.style={draw, dashed, rounded corners, fill=gray!5, text width=4.0cm, align=center, minimum height=0.8cm, font=\scriptsize},
-  arr/.style={-{Latex[length=2.2mm]}, thick}
+  node distance=0.28cm and 0.6cm,
+  box/.style={draw, rounded corners, fill=gray!10, text width=6.4cm, align=center, minimum height=0.6cm, font=\scriptsize},
+  note/.style={draw, dashed, rounded corners, fill=gray!5, text width=5.6cm, align=center, minimum height=0.6cm, font=\scriptsize},
+  arr/.style={-{Latex[length=2mm]}, thick}
 ]
-
 \node[box] (submit) {Student submits code (contest, standalone, or lesson exercise)};
-\node[box, below=of submit] (save) {Server Action validates, saves submission as \texttt{PENDING}, issues \texttt{NOTIFY}};
-\node[box, below=of save] (pickup) {Judge worker (\texttt{PgListener}) picks up the submission and its test cases};
-\node[box, below=of pickup] (exec) {\texttt{isolate} sandbox compiles the code once, then runs it against each test case in a fresh box};
-\node[note, right=of exec] (policy) {Contest/standalone: stop at first failing case. Lesson exercise: run every case, for a per-exercise pass fraction};
-\node[box, below=of exec] (constraints) {If the exercise has solution constraints, run structural static analysis, then (if configured) an LLM classification for the algorithm requirement};
-\node[note, right=of constraints] (statuses) {Outcomes: \texttt{PASSED}, a verdict (WA, TLE, MLE, CE, RE), judge \texttt{ERROR}, or \texttt{CONSTRAINT\_VIOLATION}};
-\node[box, below=of constraints] (persist) {Final status written to PostgreSQL; in-app notification created};
-\node[box, below=of persist] (client) {Frontend updates via TanStack Query; student sees results, may request an AI hint on failure};
-
+\node[box, below=of submit] (save) {Server Action validates, saves as \texttt{PENDING}, issues \texttt{NOTIFY}};
+\node[box, below=of save] (pickup) {Judge worker (\texttt{PgListener}) claims the submission and its test cases};
+\node[box, below=of pickup] (exec) {\texttt{isolate}: compile once, run each test case in a fresh box};
+\node[note, right=of exec] (policy) {Contest/standalone: stop at first failure. Lesson exercise: run every case (pass fraction)};
+\node[box, below=of exec] (constraints) {Solution constraints: structural analysis, then optional LLM algorithm check};
+\node[note, right=of constraints] (statuses) {\texttt{PASSED}, a verdict (WA, TLE, MLE, CE, RE), judge \texttt{ERROR}, or \texttt{CONSTRAINT\_VIOLATION}};
+\node[box, below=of constraints] (persist) {Status written to PostgreSQL; notification; UI refresh; optional AI hint};
 \draw[arr] (submit) -- (save);
 \draw[arr] (save) -- (pickup);
 \draw[arr] (pickup) -- (exec);
 \draw[arr] (exec) -- (constraints);
 \draw[arr] (constraints) -- (persist);
-\draw[arr] (persist) -- (client);
 \draw[arr, dashed] (exec) -- (policy);
 \draw[arr, dashed] (constraints) -- (statuses);
-
 \end{tikzpicture}
-\caption{Current submission pipeline: grading policy branches by submission type, and solution-constraint checks run before the final status is persisted}
+\caption{Submission pipeline: grading policy branches by submission type, and solution-constraint checks run before the final status is persisted}
 \label{fig:submission-flow}
 \end{figure}
 
-\subsubsection{Sending Submission}
-The user submits code via the web interface. A Next.js Server Action validates the submission, checks contest membership and rate limits, and saves it to PostgreSQL with a \texttt{PENDING} status. The action accepts only the problem, contest, language, and source code from the browser; every other field of the stored row (status, author, contest question letter, code size) is decided on the server, and the action also checks that the problem belongs to the contest and that the contest has started. A \texttt{NOTIFY} is then issued on the \texttt{new\_submission} channel.
+\textbf{Verdicts.}\label{sec:verdicts} Early versions reported only passed or failed. A failing submission now receives the verdict of its first failing case: \emph{wrong answer} (normal exit, mismatching output), \emph{time limit exceeded} (CPU or wall-clock limit), \emph{memory limit exceeded}, \emph{compilation error} (compiler output always shown), \emph{runtime error} (any other non-zero exit or signal), or \emph{judge error} (a sandbox or checker failure, never penalized). Without \texttt{isolate}'s control-group mode the memory cap is an address-space limit, so exceeding it makes an allocation fail with no distinct signal; the judge infers MLE when peak resident memory reached 90\% of the cap or the error output contains an allocation-failure message (e.g., \texttt{MemoryError}, \texttt{std::bad\_alloc}), a heuristic measured in \S\ref{sec:perf-verdicts}. In standings, rejected attempts on a solved problem add 20 penalty minutes, but compilation and judge errors do not count, following the ICPC \cite{icpc2024rules}.
 
-\subsubsection{Queue Dispatch}
-The judge worker holds a persistent connection to PostgreSQL and listens on the \texttt{new\_submission} channel using \texttt{PgListener} from the \texttt{sqlx} library. Upon receiving a notification, it wakes its pool of workers (\S\ref{sec:concurrency}); a worker claims the oldest pending submission and fetches it with its test cases from the database.
+\textbf{Test-case confidentiality.}\label{sec:test-confidentiality} Test cases are split into public samples, marked by the author, and hidden cases. The judge stores a report of the first failing case (input, expected output, program output, error output); returned unchanged, it would let a student extract hidden cases one submission at a time. As in BOCA \cite{de2004boca}, the server filters the report by viewer: the problem author sees it in full; failures on a sample are shown in full; failures on a hidden case show only the verdict, the case number, and the cases passed, also withholding the program's own output, which could simply echo its input; compiler output is always shown. In lessons, the lesson's test-visibility mode decides which cases count as visible, and the class's teachers see every report. A contest organizer who did not write the problem is treated as a participant, since any user may create a contest. The same filter applies wherever a report leaves the server, including the contest export, and the AI hint model receives the unfiltered report but returns only its answer.
 
-\subsubsection{Execution and Grading Policy}
-Compiled languages are compiled once per submission; then, for each test case, the judge worker runs the program inside a fresh \texttt{isolate} box with per-language memory caps, a CPU-time limit derived from the problem's own time limit, a wall-clock limit, and a process-count cap (\S\ref{sec:execution-environment}). Contest and standalone submissions stop at the first failing test case; lesson-exercise submissions run every declared test case, so the pass count reflects exactly how many cases the code got right (\S\ref{sec:class-lesson-model}). Each run's output is compared with the declared output according to the problem's comparison mode (\S\ref{sec:output-comparison}).
+\subsection{Classes, Lessons, Contests, and Workspace}\label{sec:class-lesson-model}
 
-\subsubsection{Verdicts}\label{sec:verdicts}
-Early versions of the judge reported only \emph{passed} or \emph{failed}. A failing submission now receives the verdict of its first failing test case, following programming-contest practice:
+Alongside contests, WhyRunner offers an asynchronous mode with three entities: a \textbf{Class}, a \textbf{Lesson} (a professor-curated assignment for one class, with an optional due date), and an \textbf{Exercise} (an existing problem attached to a lesson in a fixed order). Students join with a code, submit the whole lesson at once (with confirmation if exercises are unsolved), and the professor reviews it with free-text feedback per exercise. A per-lesson test-visibility mode shows students the sample cases (default), all cases, or none. Each exercise scores the fraction of test cases passed, and a lesson sums those fractions with equal weight. Following the recommendation that programming education start with visual environments and move gradually to text \cite{audrito2012contests}, each exercise has an answer mode: \emph{code}, \emph{blocks} (Blockly blocks converted to Portugol, with a read-only panel of the generated code as a bridge to text), or \emph{Parsons} (shuffled lines of a professor solution, which must pass the tests, to be ordered and indented). The judged program is always generated on the server, so constraints, scores, and hints work unchanged, with hints adapted to the mode. A \textbf{gradebook} shows every student against every exercise, from the same snapshot and formula as the lesson review, and exports CSV (RFC 4180 quoting, UTF-8 byte-order mark, and cells starting with \texttt{=}, \texttt{+}, \texttt{-}, or \texttt{@} neutralized against CSV injection).\label{sec:contests-bank}
 
-\begin{itemize}
-  \item \textbf{Wrong answer (WA):} the program exited normally but its output does not match the expected output.
-  \item \textbf{Time limit exceeded (TLE):} the run exceeded its CPU or wall-clock limit.
-  \item \textbf{Memory limit exceeded (MLE):} the run failed in a way that looks like memory exhaustion. Without \texttt{isolate}'s control-group mode, the memory cap is an address-space limit (\texttt{RLIMIT\_AS}): exceeding it makes an allocation fail and the program crash, with no distinct out-of-memory signal. The judge therefore infers MLE when the peak resident memory reached 90\% of the cap or the error output contains an allocation-failure message (e.g., \texttt{MemoryError}, \texttt{std::bad\_alloc}, \texttt{OutOfMemoryError}); this is a heuristic, measured in \S\ref{sec:perf-verdicts}.
-  \item \textbf{Compilation error (CE):} the compiler rejected the code; the compiler output is always shown.
-  \item \textbf{Runtime error (RE):} any other non-zero exit or termination by a signal.
-  \item \textbf{Judge error:} a sandbox or checker failure on the judge's side. It is never the student's fault and is never penalized.
-\end{itemize}
+Problems have short codes and can be searched, filtered by difficulty and topic tags, and imported in bulk from JSON. A \textbf{contest} has a period, an optional private mode with join approval, and a cap on AI assistance (\emph{off}, \emph{concept}, \emph{hint}, or \emph{pinpoint}) enforced on the server for every request. Its leaderboard follows programming-marathon conventions: attempt counts, solve minute, first-solver marks, and ties broken by penalty. In the \textbf{solving workspace} (Figure~\ref{fig:workspace}) the editor autosaves per problem and language, every attempt keeps its submitted code, visible failures show input, own output, and expected output, and an ``Explain'' button requests a hint within the contest's cap. A home page, a command palette (\texttt{Ctrl+K}), and a notification inbox complete the interface.
 
-In contest standings, rejected attempts on a solved problem add 20 penalty minutes, but compilation errors and judge errors do not count, following the convention of the ICPC \cite{icpc2024rules}: a program that did not compile was never judged. Submissions that violate a solution constraint keep their separate \texttt{CONSTRAINT\_VIOLATION} status (\S\ref{sec:prepublish-validation}).
-
-\subsubsection{Constraint Checking}
-If the exercise has active solution constraints, the checks described in \S\ref{sec:prepublish-validation} run once I/O grading completes: structural static analysis first, then, if configured, an algorithm-requirement classification by a language model. Either violation path resolves the submission to \texttt{CONSTRAINT\_VIOLATION} instead of \texttt{PASSED}.
-
-\subsubsection{Test-Case Confidentiality}\label{sec:test-confidentiality}
-A problem's test cases are split into public samples, which the author marks one by one and which are shown to students, and hidden cases that only the judge sees. When a submission fails, the judge stores a report of the first failing case: its input, the expected output, the program's output, and its error output. If that report reached the student unchanged, hidden cases could be extracted one per submission and hard-coded. Following the practice of contest judges such as BOCA \cite{de2004boca}, the web application therefore filters the report on the server before returning it, according to who is viewing it:
-
-\begin{itemize}
-  \item \textbf{Problem author:} sees the full report, for any submission.
-  \item \textbf{Failure on a sample case:} the full report is shown, since the case is already public.
-  \item \textbf{Failure on a hidden case:} only the verdict (wrong answer, time limit exceeded, memory limit exceeded, or runtime error; \S\ref{sec:verdicts}), the case number, and the number of cases passed are shown. The program's own output and error output are withheld too, because a submission can simply print its input there and read it back.
-  \item \textbf{Compile errors:} the compiler output is always shown, since it does not depend on any test input.
-  \item \textbf{Lesson exercises:} the same rule applies, but the lesson's test-visibility mode decides which cases count as visible (\S\ref{sec:class-lesson-model}); the class's teachers, like the problem's author, see every report in full. The exercise page lists the same visible cases, and the server never sends a hidden case's input or output to the student.
-\end{itemize}
-
-A contest organizer who did not write the problem is treated like a participant: since any user may create a contest, granting organizers the full report would expose the hidden cases of every public problem. The same filter applies to every place a report leaves the server, including the contest export.
-
-\subsubsection{AI Feedback}
-On failed submissions, the student may request AI assistance. The system calls the language-model chain (\S\ref{sec:ai-chain}) with a structured prompt containing the problem statement, the student's code, and the judge's failure report. The AI is instructed to provide vague but directional hints, supporting learning rather than providing direct solutions. The model receives the unfiltered report on the server, so its hints can reason about the actual failing case; only its answer is returned to the student.
-
-\subsubsection{Result Notification}
-The final status and optional feedback are persisted. The front-end polls for updates via TanStack Query, and students can view their submission history with the result of each submission, including the failing case's details when they may see it (\S\ref{sec:test-confidentiality}). Beyond polling, the system raises an in-app notification whenever a submission finishes grading, alongside notifications for contest (join request/approval) and lesson (newly unlocked, assignment-related) events; each user has a notification inbox with an unread count and read/unread state, and repeated same-type events are aggregated into a single running-count entry rather than flooding the inbox.
-
-\subsection{Class, Lesson, and Exercise Model}\label{sec:class-lesson-model}
-
-Alongside timed contests, WhyRunner offers a second, asynchronous mode built on three entities: a \textbf{Class}, a \textbf{Lesson} (a professor-curated assignment scoped to one class), and an \textbf{Exercise} (an existing problem attached to a lesson, in a fixed order). A professor creates a class, assembles a lesson from existing problems, sets an optional due date, and publishes it; students join via a code and submit code per exercise through the same judge pipeline used elsewhere. A per-lesson test-visibility mode decides which test cases students see, with their input and expected output: those the problem's author marked as samples (the default), all of them, trading answer-secrecy for easier debugging and review, or none. Students submit the whole lesson at once; after the due date, the professor reviews it and leaves free-text feedback per exercise. Submitting with exercises still unsolved requires confirmation, so partial submissions are always intentional.
-
-Grading differs from the contest path in one respect: the judge runs every declared test case for a lesson-exercise submission instead of stopping at the first failure, so each exercise's score is derived automatically as the fraction of test cases passed, and a lesson's total score sums those fractions, weighting every exercise equally regardless of its test-case count.
-
-\textbf{Visual answer modes.} Following the recommendation that programming education start with friendly, visual environments and move gradually to more algorithmic, text-based work \cite{audrito2012contests}, each exercise has an answer mode chosen by the professor for that lesson: \emph{code} (the default text editor), \emph{blocks}, or \emph{Parsons}. In block mode the student assembles the program from Blockly blocks (variables, input/output, decisions, and loops, labeled in the user's language); the blocks are converted into Portugol, and the student can open a read-only panel showing the generated code, which serves as a bridge from blocks to text. In Parsons mode the student receives the lines of a professor-provided solution in shuffled order and only has to arrange their order and indentation; the professor's solution must pass the problem's test cases before it can be used. In both modes the program the judge runs is generated on the server from what the student built, never taken from the browser, and is graded by the same judge pipeline, so solution constraints, scores, and AI hints work unchanged. Hints are adapted to the mode: they refer to blocks by their on-screen labels, or, for Parsons exercises, only to the order and nesting of lines. The professor's review shows the student's blocks or ordered lines alongside the generated code.
-
-\textbf{Gradebook.} A class gradebook shows every student against every exercise of the published lessons, with per-lesson subtotals and a total, and marks lessons a student did not hand in. Its scores come from the same snapshot and formula as the lesson review (fraction of test cases passed per exercise), so the two views never disagree. It can be exported as CSV following RFC 4180 quoting, prefixed with a UTF-8 byte-order mark so spreadsheet software opens accented names correctly, and with cells that start with \texttt{=}, \texttt{+}, \texttt{-}, or \texttt{@} neutralized, so that a crafted student name cannot become a formula in the professor's spreadsheet (CSV injection).
-
-\subsection{Contests, Problem Bank, and Solving Workspace}\label{sec:contests-bank}
-
-\textbf{Problem bank.} Every problem has a short code (e.g., \texttt{DEMO-101}). The problem list can be searched by title or code and filtered by difficulty, by topic tags drawn from a fixed catalog, and to the viewer's own problems; several problems can be imported at once from a JSON file whose expected format is documented in the import dialog, with errors reported per problem and field.
-
-\textbf{Contests.} A professor sets a contest's name, period, whether it is private (participants must request to join and be approved), and the maximum AI assistance participants may receive: \emph{off}, \emph{concept}, \emph{hint}, or \emph{pinpoint}. The cap is enforced on the server for every request, and a change applies to the next request. Problems are added by searching their code and are labeled A, B, C, and so on. The leaderboard follows programming-marathon conventions: each cell shows the attempt count and the minute of the accepted submission, the first solver of each problem is marked, ties on solved count are broken by penalty (solve minutes plus 20 minutes per rejected attempt on solved problems), and the table refreshes while the contest runs.
-
-\textbf{Solving workspace.} Students write code in an editor with syntax highlighting, whose content is saved automatically in the browser per problem and language (Figure~\ref{fig:workspace}). Every attempt keeps the code that was submitted, which can be expanded next to its verdict and copied; for failures the student may see (\S\ref{sec:test-confidentiality}), the input, the program's output, and the expected output are shown, and an ``Explain'' button requests an AI hint within the contest's cap.
-
-\begin{figure}[H]
+\begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{resolucao.png}
+\includegraphics[width=0.8\textwidth]{resolucao.png}
 \caption{Solving workspace in a contest: statement, attempts with their submitted code and the ``Explain'' button, and the editor with its autosave indicator}
 \label{fig:workspace}
 \end{figure}
 
-Students also have a home page summarizing pending lesson exercises, their latest contest, recently solved problems, and suggested problems; a command palette (\texttt{Ctrl+K}, advertised in the navigation dock) that searches problems, pages, and actions; and an in-app notification inbox (\S\ref{sec:submission-pipeline}).
-
 \subsection{Code Similarity Detection}\label{sec:similarity}
 
-To support academic integrity, the owner of a contest or class can request a similarity report for one problem of a contest or one exercise of a lesson. The detector follows the fingerprinting approach of MOSS \cite{schleimer2003winnowing}:
-
-\begin{enumerate}
-  \item \textbf{Tokenization and normalization.} Each submission is tokenized with per-language lexical rules (comments, string and character literals, preprocessor lines, Python's triple quotes, Rust's raw strings). Identifiers become \texttt{V}, numbers \texttt{N}, and literals \texttt{S}, while keywords and operators are kept, so renaming variables, reformatting, and editing comments change nothing that is compared. Each token keeps its character offsets in the original source.
-  \item \textbf{Fingerprinting.} Every run of $k=5$ normalized tokens is hashed (k-grams), and winnowing with a window of $w=4$ hashes keeps the minimum hash of each window as the document's fingerprints, which guarantees that any shared run of at least $w+k-1$ tokens is detected.
-  \item \textbf{Boilerplate filter.} Within one language, fingerprints present in more than half of the submissions (when there are at least four) are treated as the problem's skeleton and never seed a match.
-  \item \textbf{Comparison.} For every pair of submissions from different students in the same language, shared fingerprints seed matches that are extended while tokens are equal; matches are accepted longest first without overlap (greedy string tiling) and shorter than $k$ tokens are discarded. Similarity is the fraction of tokens of both programs covered by matches.
-\end{enumerate}
-
-The report runs on demand, only for the owner, over one submission per student (their latest, or their best by test cases passed), up to 300 submissions. It lists pairs above a chosen threshold, and opening a pair shows both programs side by side with the matched regions highlighted in the same color. The interface states that a high score is a reason to read both programs, not proof of copying. Its quality and cost are measured in \S\ref{sec:perf-similarity}.
+The owner of a contest or class can request a similarity report for one problem or exercise, following MOSS's fingerprinting approach \cite{schleimer2003winnowing}. Each submission is tokenized with per-language rules; identifiers become \texttt{V}, numbers \texttt{N}, and literals \texttt{S}, while keywords and operators are kept, so renaming, reformatting, and comment edits change nothing compared. Every run of $k=5$ tokens is hashed and winnowing with window $w=4$ keeps the fingerprints, guaranteeing that any shared run of at least $w+k-1$ tokens is detected. Fingerprints present in more than half of a language's submissions (with at least four) are treated as boilerplate. For each pair of students in the same language, shared fingerprints seed matches extended while tokens agree and accepted longest first without overlap (greedy string tiling); similarity is the fraction of both programs' tokens covered. The report covers up to 300 submissions (latest or best per student) and shows matched regions side by side; the interface states that a high score is a reason to read both programs, not proof of copying.
 
 \subsection{Execution Environment}\label{sec:execution-environment}
 
-\textbf{Motivation for the sandbox design.} Earlier versions of the judge ran each submission in a sibling Docker container, created through the host's Docker daemon socket (\texttt{/var/run/docker.sock}) mounted into the judge worker. This had two drawbacks. First, access to the Docker socket is effectively root access to the host, so a compromise of the worker would compromise the machine. Second, it required a host that exposes a privileged Docker daemon, which rules out most managed container platforms (PaaS), leaving a self-managed virtual machine as the only deployment target. Resource reporting was also imprecise: peak memory was approximated by polling \texttt{docker stats} every 50\,ms, which can miss short allocation spikes.
+Earlier versions ran each submission in a sibling Docker container through the host's Docker socket mounted into the worker, which is effectively root access to the host, rules out most managed platforms, and approximated peak memory by polling \texttt{docker stats}. Execution therefore moved to \texttt{isolate} \cite{mares2012isolate}, the sandbox of the International Olympiad in Informatics, which confines one process with Linux namespaces and resource limits; all toolchains (Python, GCC/G++, \texttt{rustc}, JDK 21, Portugol) live in the judge's image. C, C++, Rust, and Java are compiled once in a box of their own (30\,s budget); then each test case runs in a fresh box (\texttt{--init}, run, read metadata, \texttt{--cleanup}) with no network; a CPU-time limit derived from the problem's limit (1\,s by default), unchanged for C, C++, and Rust, doubled plus 0.5\,s for Java, tripled for Python, and doubled plus 3\,s for Portugol; a wall-clock limit of twice the CPU limit plus 1\,s; 128\,MB of address space for C, C++, and Python, 768\,MB for Rust, and 2\,GB for the JVM languages (heap bounded by \texttt{-Xmx64m}); and at most 64 processes, which contains fork bombs. Exit code, times, peak memory, and termination cause are read from \texttt{isolate}'s metadata. \texttt{isolate} still needs \texttt{CAP\_SYS\_ADMIN} and \texttt{CAP\_NET\_ADMIN}, a much narrower grant than the Docker socket.
 
-To address this, execution was migrated to \texttt{isolate} \cite{mares2012isolate}, the sandbox developed for the International Olympiad in Informatics and used by contest systems such as CMS. Instead of a full container runtime, \texttt{isolate} confines a single process using Linux namespaces and resource limits, so the judge worker no longer depends on a Docker daemon at runtime. All language toolchains (Python, GCC/G++, \texttt{rustc}, JDK 21, and the Portugol interpreter) are installed in the judge's own image.
+\textbf{Concurrent worker pool.}\label{sec:concurrency} The judge runs $N$ workers in one process (\texttt{JUDGE\_CONCURRENCY}, by default the CPU count capped at 4). A dispatcher owns the \texttt{LISTEN} connection and, on each notification or a 60\,s sweep, dead-letters submissions whose worker crashed too often and wakes idle workers. Each worker claims a row atomically with \texttt{UPDATE \ldots{} WHERE id = (SELECT \ldots{} FOR UPDATE SKIP LOCKED)}, so no two workers or replicas grade the same submission, and uses its slot number as its box id.
 
-\textbf{Per-run lifecycle.} Submissions in compiled languages (C, C++, Rust, and Java) are first compiled once, in a box of their own with a fixed 30\,s budget; the resulting program is copied out and the box destroyed. A compile failure ends grading with a compile-error verdict. Then, for each test case, the worker initializes a fresh box (\texttt{isolate --init}), writes the program (or, for Python and Portugol, the source code) and the test input into it, runs it under the limits below, reads the outcome from \texttt{isolate}'s metadata file, and destroys the box (\texttt{--cleanup}). Compiling once keeps compilation time out of the per-test limit and avoids recompiling the same code for every test case. The limits are:
+\subsection{Output Comparison, AI, and Solution Constraints}\label{sec:output-comparison}
 
-\begin{itemize}
-  \item \textbf{Network}: none; boxes are created without network access.
-  \item \textbf{Time}: a CPU-time limit per test case derived from the problem's configured time limit (1\,s by default), scaled by language: unchanged for C, C++, and Rust; doubled plus 0.5\,s for Java, to cover JVM startup; tripled for Python; and doubled plus 3\,s for Portugol, whose interpreter compiles the program again on every run. A wall-clock limit of twice the CPU limit plus 1\,s also stops programs that sleep or block on input.
-  \item \textbf{Memory}: 128\,MB of address space for C, C++, and Python; larger caps for Rust (768\,MB) and the JVM-based languages, Java and Portugol (2\,GB), because their toolchains reserve large amounts of virtual memory up front. For the JVM, actual heap use is bounded separately through JVM flags (\texttt{-Xmx64m}).
-  \item \textbf{Processes}: at most 64 processes/threads per box, which contains fork bombs, a protection the previous Docker setup lacked.
-\end{itemize}
+Each problem chooses a comparison mode: \emph{exact} (after trimming; all older problems), \emph{tokens} (default for new problems; whitespace-insensitive), \emph{float} (tokens with numeric tolerance $\varepsilon$, $10^{-6}$ by default), or \emph{checker}, an author program for problems with several correct answers. Checkers are stored in a separate table, sent only to the owner, and run in their own box with testlib-style \texttt{input.txt}, \texttt{output.txt}, and \texttt{answer.txt}: exit 0 accepts, exit 1 is a wrong answer with the checker's message, and anything else is a judge error.
 
-Exit code, CPU and wall time, peak resident memory, and the termination cause (time limit, signal, runtime error) are read directly from the metadata \texttt{isolate} writes, replacing the earlier polling approximation. The system currently supports six languages: C, C++, Java, Python, Rust, and Portugol.
+\label{sec:ai-chain}Every AI call goes through one server-side module that tries Gemini 3.5 Flash, then Flash-Lite, then Claude Haiku 5.5, with a 30\,s timeout per attempt; only transient failures (timeout, rate limiting, server errors, output failing schema validation) fall through. Prompts enclose user content in XML delimiters against prompt injection, results are localized, and calls are rate-limited per user and feature within a ten-minute window. The chain backs five features. Students may request a \emph{hint} on a failed submission, instructed to explain the logical error without giving the fix, and capped and revealed level by level in contests. Problem authors get four drafts that must be explicitly saved: a reference solution, a review of the statement with suggested edge cases, a narrative, and topic tags.\label{sec:prepublish-validation}
 
-\textbf{Remaining requirements.} \texttt{isolate} still needs two Linux capabilities in the judge container (\texttt{CAP\_SYS\_ADMIN} and \texttt{CAP\_NET\_ADMIN}) to create its namespaces. This is a much narrower grant than Docker socket access, but many managed platforms do not allow it either, so in practice the judge still targets a virtual machine or a platform that grants these capabilities (\S\ref{sec:limitations}).
+Before publishing, a problem's reference solution must pass its test cases through the same sandboxed execution; the pass is tied to the exact test-case and constraint content, so any edit marks it stale. Exercises may also carry \emph{solution constraints}: structural rules from a fixed catalog (maximum loop nesting, forbidden or required constructs), checked by scanning source text rather than parsing; and an optional \emph{algorithm requirement} in free text (e.g., ``must use Dijkstra's algorithm''), checked by the model chain from the requirement, language, and source, returning \texttt{\{satisfied, rationale\}}. A violation yields a distinct \texttt{CONSTRAINT\_VIOLATION} status that denies credit even though every test passed, showing the violated rule to the student.
 
-\subsubsection{Concurrent Worker Pool}\label{sec:concurrency}
+\subsection{Integration and Deployment}\label{sec:integration}
 
-Earlier versions graded one submission at a time, so a class submitting together waited in a single line. The judge now runs a pool of $N$ workers in one process, where $N$ comes from \texttt{JUDGE\_CONCURRENCY} and defaults to the number of available CPUs, capped at 4. A dispatcher task owns the \texttt{LISTEN} connection: on every notification, and on a 60\,s periodic sweep in case a notification was missed, it dead-letters submissions whose worker crashed too many times and wakes the idle workers. Each worker claims a submission atomically with \texttt{UPDATE \ldots{} WHERE id = (SELECT \ldots{} FOR UPDATE SKIP LOCKED)}, so no two workers (or two judge replicas) ever grade the same row, and grades it in its own \texttt{isolate} box, whose id is the worker's slot. Table~\ref{tab:concurrency} summarizes the measured effect (method in \S\ref{sec:performance}).
+Every push runs three GitHub Actions jobs: \emph{web} (type check, lint, 112 unit tests), \emph{judge} (formatting, Clippy, 31 tests; the 20 end-to-end sandbox tests run locally in the judge image), and \emph{enum-sync}, which fails the build when the status and language enums, declared both in Rust and in Drizzle, diverge. The judge is deployed as a persistent service with the two required capabilities, keeping its \texttt{LISTEN} connection open.
+
+\section{Performance Evaluation}\label{sec:performance}
+
+Every number below comes from scripts and raw results in the repository's \texttt{bench/} directory. Measurements ran on 28 October 2026 on an AMD Ryzen 5 5600 (6 cores, 12 threads) with 32\,GB of RAM, using the production judge image (\texttt{isolate} 2.7, GCC 12.2, \texttt{rustc} 1.63, OpenJDK 21, Python 3.11, Portugol 2.7.5) against a throwaway PostgreSQL 16 container; the production database was only read. This machine has far more cores than the production judge, which runs on one shared vCPU.
+
+\textbf{Throughput and latency.} A burst of 40 or 100 submissions rotating over the six languages (five test cases each) is inserted at once, followed by one \texttt{NOTIFY}, as when a class submits together, and graded by the real judge with $N \in \{1, 2, 4, 8\}$ workers (Table~\ref{tab:concurrency}). Four workers graded 100 submissions $2.8\times$ faster than one (51\,s instead of 143\,s) and eight $3.8\times$ faster, cutting the median wait from 66\,s to 18\,s; scaling is sub-linear because compilers and JVMs compete for CPU, memory, and disk. Pinned to one CPU, four workers gave no speedup, and no spurious time-limit verdict occurred. With an idle judge, insertion to claim took about 1\,ms, so \texttt{LISTEN/NOTIFY} adds no meaningful delay; the median time to a verdict for five cases was 0.08\,s in C, 0.09\,s in Python, 0.35\,s in C++, 0.38\,s in Rust, 1.09\,s in Java, and 7.17\,s in Portugol.
 
 \begin{table}[ht]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{5pt}
-\caption{Judge worker pool under a burst of mixed-language submissions (six languages, five test cases each); latency is from insertion to verdict. All submissions were accepted in every run.}
+\caption{Judge worker pool under a burst of mixed-language submissions; latency is from insertion to verdict. All submissions were accepted in every run.}
 \label{tab:concurrency}
 \begin{tabular}{lrrrrr}
 \hline
 \textbf{Run} & \textbf{Workers} & \textbf{Wall time} & \textbf{Speedup} & \textbf{p50 latency} & \textbf{p95 latency} \\
 \hline
 40 submissions, 12 CPUs  & 1 & 54.3\,s  & 1.00$\times$ & 26.9\,s & 53.2\,s \\
-                         & 2 & 28.9\,s  & 1.88$\times$ & 12.8\,s & 28.3\,s \\
                          & 4 & 19.1\,s  & 2.84$\times$ & 7.1\,s  & 14.6\,s \\
                          & 8 & 14.2\,s  & 3.82$\times$ & 2.7\,s  & 12.9\,s \\
 \hline
@@ -339,96 +188,7 @@ Earlier versions graded one submission at a time, so a class submitting together
 \end{tabular}
 \end{table}
 
-The pool helps only when there are cores to use: with the container pinned to one CPU, four workers were no faster than one. The production judge runs on a single shared vCPU (Fly.io \texttt{shared-cpu-1x}), where the default resolves to one worker, so production as deployed today gets no speedup (\S\ref{sec:limitations}). Workers should not exceed the vCPUs, since oversubscribed CPUs stretch wall time towards the wall-clock limit; in the 1-CPU run with four workers no spurious time-limit verdict occurred.
-
-\subsection{Output Comparison and Checkers}\label{sec:output-comparison}
-
-Whether an output is correct is decided per problem by a comparison mode chosen by its author:
-
-\begin{itemize}
-  \item \textbf{Exact:} the output must equal the expected output after trimming leading and trailing whitespace. All problems created before this feature use it, so they grade exactly as before.
-  \item \textbf{Tokens} (default for new problems): outputs are compared as sequences of whitespace-separated tokens, so extra spaces, blank lines, and line-ending differences do not matter.
-  \item \textbf{Float:} as tokens, but numeric tokens match when they differ by at most $\varepsilon$, absolute or relative to the expected value ($\varepsilon$ is set per problem, $10^{-6}$ by default).
-  \item \textbf{Checker:} a program written by the author decides, for problems with more than one correct answer (e.g., ``print any divisor of $n$'').
-\end{itemize}
-
-A checker is stored in a separate table, so that queries returning problems to students cannot leak it, and is sent only to the problem's owner. It is compiled once per graded submission and run, in its own \texttt{isolate} box, after every test case the submission completed successfully, with three files as arguments in the convention of testlib-style checkers: \texttt{input.txt} (the test input), \texttt{output.txt} (the submission's output), and \texttt{answer.txt} (the declared output). Exit code 0 means accepted; exit code 1 means wrong answer, and what the checker prints becomes the message shown to the student; any other outcome (another exit code, a timeout, a checker that does not compile, or a missing checker) is a judge error, which never penalizes the student. Changing the comparison settings invalidates the problem's pre-publish validation (\S\ref{sec:prepublish-validation}), since the same reference output may no longer pass.
-
-\subsection{AI-Assisted Authoring and Feedback}
-
-\label{sec:ai-chain}Every AI call goes through a single server-side module, invoked only by the web application and never by the judge, which tries an ordered chain of models: Gemini 3.5 Flash \cite{gemini2023}, then Gemini 3.5 Flash-Lite, then Claude Haiku 5.5 \cite{anthropic2026haiku} when an Anthropic API key is configured. Each attempt is aborted after 30\,s, and only transient failures (timeout, network error, model not found, rate limiting, server errors, or output that fails to parse against the expected schema) fall through to the next model; other errors fail immediately. Every failed attempt is logged, so fallback frequency can be monitored.
-
-This chain backs five distinct capabilities in WhyRunner, one student-facing and four professor-facing, all following the same pattern: a structured prompt with user-supplied content enclosed in XML delimiters to prevent prompt injection, and a result that is either returned directly to the requester or left as an editable draft that must be explicitly saved before it affects the problem. Every AI call is also counted per user and feature, and requests beyond a fixed limit within a ten-minute window are refused with a localized message, which bounds API cost per user.
-
-\subsubsection{Student Hint Feedback}
-
-On a failed submission, a student may explicitly request AI help rather than receiving it automatically, supporting learner autonomy and limiting API usage. The \texttt{getAIHelp} Server Action sends the problem statement, the student's code and language, and the judge's failure report (status, failing input, expected vs. actual output) to the model, with an instruction to stay vague about the direct fix while explaining the logical error; user-supplied content is XML-delimited against prompt injection, and the response is localized to the user's language. This reduces teacher workload while giving contextual, constructivist-aligned assistance instead of a binary verdict. In contests, the hint is capped by the contest's assistance level (\S\ref{sec:contests-bank}) and revealed one level at a time.
-
-\subsubsection{AI-Assisted Problem Authoring}
-
-Four further, non-mutating capabilities target the problem creator from the edit workspace, each returning an editable draft rather than writing directly:
-
-\begin{itemize}
-  \item \textbf{AI-drafted reference solution:} in the pre-publish validation panel, writes a reference solution in the chosen language from the problem's last saved description and test cases, ready to be run by the judge (\S\ref{sec:prepublish-validation}).
-  \item \textbf{AI problem review:} critiques the draft's description and suggests edge-case test cases (input, output, rationale), each addable with one click.
-  \item \textbf{AI-generated narrative:} short, optional themed flavor text framing the problem, never required for publishing.
-  \item \textbf{AI tag suggestion:} proposes one to five topic tags from the fixed catalog, pre-filling the tag picker.
-\end{itemize}
-
-A preview tab renders the problem exactly as students will see it, with Markdown and \LaTeX, before it is published.
-
-\subsection{Pre-Publish Validation and Solution Constraints}\label{sec:prepublish-validation}
-
-Two mechanisms let a professor set stricter grading guarantees than ordinary test-case matching.
-
-\textbf{Pre-publish I/O validation.} A draft problem's reference solution runs through the same sandboxed judge execution used for student submissions, against the problem's current test cases, before the problem can be published; validation runs are stored separately and never appear in leaderboards or history. A passing run is tied to the exact test-case content (and any constraints, below) it ran against, so editing either after a pass marks it stale and re-blocks publish. Figure~\ref{fig:validation} shows a passing validation of a reference solution drafted by the AI.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.85\textwidth]{validacao.png}
-\caption{Pre-publish validation: the author picks a language, drafts the reference solution with AI (or pastes one), and runs it against every test case}
-\label{fig:validation}
-\end{figure}
-
-\textbf{Solution constraints.} Attached per exercise, constraints come in two kinds: \emph{structural} rules from a fixed catalog (max loop-nesting depth, forbidden/required constructs), checked via lightweight source-text scanning across all six submission languages rather than a real parser, which can false-positive on a token inside a string or comment; and a single optional \emph{algorithm-requirement} constraint, a free-text description (e.g. ``must use Dijkstra's algorithm'') checked once test cases and structural rules pass, via a call to the language-model chain (\S\ref{sec:ai-chain}) given only the requirement text, submission language, and source (never the problem statement, since correctness was already verified), returning a structured \texttt{\{satisfied, rationale\}} result. Either kind of violation resolves the submission to a distinct \texttt{CONSTRAINT\_VIOLATION} status, separate from \texttt{PASSED} and from the failure verdicts (\S\ref{sec:verdicts}), denying contest and completion credit even though every test case passed, with the violated rule (and, for algorithm requirements, the model's rationale) shown to the student.
-
-\subsection{Integration and Deployment}\label{sec:integration}
-
-The system is organized as a two-project repository: the Next.js web application and the Rust judge worker. Both services share the same PostgreSQL instance and communicate exclusively through database primitives, with no shared runtime dependencies.
-
-\textbf{Continuous integration.} Every push and pull request runs three GitHub Actions jobs: \emph{web} (type check, Biome lint, and the 112 unit tests of the web application's pure modules), \emph{judge} (formatting, Clippy, and the 31 judge tests that need no sandbox; the 20 end-to-end tests that run real programs in \texttt{isolate} need elevated container capabilities and are run locally in the judge image), and \emph{enum-sync}. The last one exists because the two services share the database but not a schema source: the submission status and language are Postgres enums declared twice, as Rust enums in the judge and as Drizzle enums in the web application, and a value added on one side only would break the judge when it reads a row. The script \texttt{check-enum-sync.ts} compares both declarations and fails the build when they diverge. In the 13 runs so far, all jobs passed, with a median of 24.5\,s for the web and judge jobs and 7\,s for enum-sync.
-
-The web application is deployed on a platform supporting long-running Next.js applications. The judge worker is built as a single Docker image (worker binary, \texttt{isolate}, and all language toolchains) and deployed as a persistent background service with the \texttt{CAP\_SYS\_ADMIN} and \texttt{CAP\_NET\_ADMIN} capabilities, maintaining its \texttt{LISTEN} connection to PostgreSQL at all times.
-
-\section{Performance Evaluation}\label{sec:performance}
-
-This section measures the system, not its educational effect. Every number below comes from scripts and raw results committed in the repository's \texttt{bench/} directory, which also documents how to re-run each measurement.
-
-\textbf{Environment.} All measurements ran on 28 October 2026 on a desktop with an AMD Ryzen 5 5600 (6 cores, 12 threads), 32\,GB of RAM, and Linux 7.2, with Docker 29.9. The judge ran from the same Docker image built for production (Debian bookworm, \texttt{isolate} 2.7, GCC 12.2, \texttt{rustc} 1.63, OpenJDK 21, Python 3.11, Portugol console 2.7.5), against a throwaway PostgreSQL 16 container with the web application's migrations applied. Benchmarks that write to a database used only that container; the production database was only read, in read-only sessions. The web-side measurements import the application's own modules under Bun 1.3. This machine has far more cores than the production judge, which runs on one shared vCPU.
-
-\subsection{Judge Throughput and Latency}
-
-\textbf{Method.} A burst of 40 or 100 submissions, rotating over the six languages (a program that doubles its input, five test cases each), is inserted at once followed by one \texttt{NOTIFY}, as when a class submits together; the real judge binary grades it with $N \in \{1, 2, 4, 8\}$ workers. A trigger present only in the benchmark database timestamps when each row is claimed and finished. Table~\ref{tab:concurrency} (\S\ref{sec:concurrency}) and Figure~\ref{fig:concurrency} show the results: four workers graded a burst of 100 submissions $2.8\times$ faster than one (51\,s instead of 143\,s) and eight workers $3.8\times$ faster, reducing the median wait for a verdict from 66\,s to 18\,s. Scaling is sub-linear because compilers and JVMs compete for CPU, memory, and disk. Pinned to one CPU, four workers gave no speedup ($0.98\times$).
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.85\textwidth]{figures/concurrency_throughput.png}
-\caption{Judge throughput by number of workers, for bursts of 40 and 100 mixed-language submissions (12-thread desktop).}
-\label{fig:concurrency}
-\end{figure}
-
-\textbf{End-to-end latency.} With an idle judge and one submission at a time (eight repetitions per language), the time from insertion to claim was about 1\,ms in every language, so \texttt{LISTEN/NOTIFY} adds no meaningful delay. The median time to a verdict for five test cases was 0.08\,s in C, 0.09\,s in Python, 0.35\,s in C++, 0.38\,s in Rust, 1.09\,s in Java, and 7.17\,s in Portugol (Figure~\ref{fig:e2e}).
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.85\textwidth]{figures/e2e_stages.png}
-\caption{Time from submission to verdict on an idle judge, split into queue, compilation, test runs, and the rest (database writes and process overhead).}
-\label{fig:e2e}
-\end{figure}
-
-\subsection{Per-Language Cost and Sandbox Overhead}
-
-Table~\ref{tab:lang-cost} gives, per language, the median of six runs inside \texttt{isolate} of the compile step and of two programs: a ``hello world'' and a CPU-bound loop of $10^7$ modular multiply-adds. Portugol dominates: its console runner compiles the generated Java on every run, about 1.3\,s per test case even for ``hello world''. The JVM languages also use an order of magnitude more memory. The judge compiles without optimization flags, which is why the Rust loop is slower than C's. The first run of each program was not measurably slower than later ones.
+\textbf{Per-language cost and sandbox overhead.} Table~\ref{tab:lang-cost} gives medians of six runs inside \texttt{isolate}. Portugol dominates, since its runner compiles the generated Java on every run, and the JVM languages use an order of magnitude more memory; the judge compiles without optimization flags, hence Rust's slower loop. Compared with running the same commands directly in the container, the sandbox added 5--6\,ms per run (14\,ms for Rust); an empty box alone took 2.6\,ms.
 
 \begin{table}[ht]
 \centering
@@ -449,98 +209,70 @@ Portugol & ---     & 1264\,ms  & 1444\,ms  & 86.6\,MB \\
 \end{tabular}
 \end{table}
 
-To measure what the sandbox costs, the same programs were run with the same commands directly in the container and through the judge's execution function, which creates a fresh box, stages the files, runs, reads the metadata, and destroys the box. The overhead was 5--6\,ms per run for C, C++, Java, and Python, and 14\,ms for Rust; creating and destroying an empty box alone took 2.6\,ms. For Portugol the difference was lost in the noise of its 1.3\,s runs.
+\textbf{Verdict accuracy.}\label{sec:perf-verdicts} Two programs per intended verdict and language, 72 in total, were graded by the judge's real grading function; 63 (87.5\%) got the intended verdict (Figure~\ref{fig:verdicts}), and accepted, wrong answer, and time limit were always right. The Portugol runner prints compilation and runtime errors to standard output and exits with status 0, so all six such programs were graded WA; Python's two syntax errors were graded as runtime errors, since it has no compile step; and a C program writing through a failed \texttt{malloc} crashed before its memory grew, so the MLE heuristic graded it RE. Excluding Portugol, 57 of 60 verdicts were correct.
 
-\subsection{Verdict Classification Accuracy}\label{sec:perf-verdicts}
-
-For each of the six languages, two programs were written for each intended verdict (accepted, wrong answer, time limit, memory limit, compilation error, runtime error), 72 in total, and graded by the judge's real grading function. The judge gave the intended verdict for 63 of them (87.5\%); Figure~\ref{fig:verdicts} shows the confusion matrix. Accepted, wrong answer, and time limit were always right. The nine errors have three causes. First, the Portugol console runner prints compilation and runtime errors to standard output and exits with status 0, so the judge sees a wrong answer: all six non-WA error programs in Portugol were graded WA. Second, Python has no compilation step, so its two syntax-error programs were graded as runtime errors. Third, the memory heuristic (\S\ref{sec:verdicts}) missed a C program that writes through a failed \texttt{malloc}: it crashes with a segmentation fault before its resident memory grows, and was graded as a runtime error. Excluding Portugol, 57 of 60 verdicts were correct, and memory-limit recall was 9 of 10.
-
-\begin{figure}[H]
+\begin{figure}[t]
 \centering
-\includegraphics[width=0.7\textwidth]{figures/verdict_confusion.png}
+\includegraphics[width=0.5\textwidth]{figures/verdict_confusion.png}
 \caption{Intended verdict versus verdict given by the judge, 12 programs per intended verdict (two per language).}
 \label{fig:verdicts}
 \end{figure}
 
-\subsection{Impact of Output Comparison Modes}
+\textbf{Output comparison modes.} The 16 historical output-mismatch failures were genuine wrong answers under every mode. Rewriting the sample problems' expected outputs the way correct programs commonly differ, the exact mode rejected 3 of 35 outputs with trailing spaces and 3 of 35 with Windows line endings, tokens accepted all, and float accepted 7 of 12 different-precision numbers at $\varepsilon=10^{-6}$ and 10 of 12 at $10^{-3}$. No mode accepted a real error.
 
-The historical data is small: the local development database and the production database together hold 16 failed submissions whose failure was an output mismatch, and re-grading their stored outputs with the judge's comparison code showed that all 16 were genuine wrong answers under every mode. To show what each mode accepts, every distinct expected output of the ten sample problems was rewritten the way a correct program commonly differs (trailing spaces, extra blank lines, Windows line endings, other float precision), plus two real errors (changed letter case, a missing token). The exact mode rejected 3 of 35 outputs with trailing spaces and 3 of 35 with Windows line endings (the multi-line ones, since only the ends are trimmed); the tokens mode accepted all of them; the float mode accepted 7 of 12 correct numbers written with a different precision at $\varepsilon = 10^{-6}$ and 10 of 12 at $\varepsilon = 10^{-3}$. No mode accepted a real error.
+\textbf{Code similarity.}\label{sec:perf-similarity} Thirty-six hand-written solutions (four problems, Python, C, and Java, three ``authors'' each) received six automatic obfuscations each (renaming, reformatting, comment changes, function reordering, dead code, and all combined), giving 216 copy pairs, 36 hard negatives, and 162 easy negatives. Renaming, reformatting, and comments always scored 100\% (Figure~\ref{fig:similarity}); the combined obfuscation had a median of 84\% and a minimum of 37\%, while independent solutions to the same problem reached at most 68\%. The ROC AUC was 0.998, and the best-F1 threshold (0.52) gave 98.2\% precision and 99.5\% recall. Over a whole ``class'' of 21 submissions, the boilerplate filter pushed independent solutions to at most 16\%, separating copies perfectly. These systematic obfuscations make the figures an upper bound. The report took about 15\,ms for 30 students and under 0.9\,s for 300.
 
-\subsection{Code Similarity Detection}\label{sec:perf-similarity}
-
-\textbf{Corpus.} Thirty-six independent solutions were written by hand: four problems (sum and maximum, counting primes, Fibonacci modulo $10^9+7$, sorting) in Python, C, and Java, each by three ``authors'' with different styles and algorithms. Each solution received six automatically obfuscated copies: identifiers renamed, reformatted, comments replaced, top-level functions reordered, dead code inserted, and all of these combined. This gives 216 copy pairs, 36 hard negatives (two authors, same problem and language) and 162 easy negatives (same language, different problems).
-
-\textbf{Quality.} Renaming, reformatting, and comment changes always scored 100\% (Figure~\ref{fig:similarity}). Reordering and dead code lowered some scores (minimum 52\% and 62\%), and the combined obfuscation had a median of 84\% and a minimum of 37\%. Independent solutions to the same problem had a median of 34\% and a maximum of 68\% when each pair is compared alone. The area under the ROC curve was 0.998; the threshold with the best F1 score, 0.52, gave 98.2\% precision and 99.5\% recall. When the report runs over the whole ``class'' of 21 submissions per problem and language, as a teacher would run it, the boilerplate filter pushed independent solutions down to at most 16\%, and copies and non-copies were perfectly separated in this corpus. The obfuscations are systematic, not those of a determined student, so these figures are an upper bound on real-world quality.
-
-\begin{figure}[H]
+\begin{figure}[t]
 \centering
-\includegraphics[width=0.9\textwidth]{figures/plagiarism_levels.png}
+\includegraphics[width=0.72\textwidth]{figures/plagiarism_levels.png}
 \caption{Similarity score by obfuscation level (blue: copies) and for independent solutions (orange), comparing each pair alone. The dashed line is the best-F1 threshold.}
 \label{fig:similarity}
 \end{figure}
 
-\textbf{Cost.} Building the report compares every pair, so its cost grows quadratically with the number of students. For one exercise in one language it took about 15\,ms for 30 students, 80--120\,ms for 100, 270--420\,ms for 200, and under 0.9\,s for 300, the report's maximum.
-
-\subsection{Structural Constraint Checker}
-
-Thirty hand-labelled samples exercised the structural checker (\S\ref{sec:prepublish-validation}): real violations (10), clean code (6), and code where the forbidden or required word is part of a longer identifier (3) were all classified correctly. Where the word appears only inside a string literal (5) or a comment (6), the checker was wrong in 10 of 11 cases, flagging clean code or accepting code that lacked the required construct. Among the 17 samples that do not violate their rule, the false-positive rate was 47\% overall and 0\% without string or comment traps.
-
-\subsection{AI Features}
-
-Each AI feature was called ten times with its production prompt through the production model chain (twenty times for reference solutions, in Python and C), 60 calls in total. During the run the primary model's API key exceeded its quota (HTTP 429): 37 of the 60 calls needed at least one fallback, 30 were answered by Gemini 3.5 Flash-Lite and 7 by Claude Haiku 5.5, and none failed. Median latencies, which include the failed attempts, ranged from 13.1\,s (reference solution) to 20.4\,s (failure explanation), with a maximum of 65\,s for one narrative. The generated reference solutions were then graded by the judge against the sample problems' test cases: 10 of 10 passed in Python and 8 of 10 in C. Both failures came from the last fallback model, which wrote a sentence before the code despite the instruction to return code only, so the program did not compile; pre-publish validation (\S\ref{sec:prepublish-validation}) exists precisely to catch such cases.
-
-\subsection{Web Computation and Continuous Integration}
-
-Contest standings and the class gradebook are recomputed on the server from the submissions on every visit. With synthetic data far larger than a class, computing standings for 1000 participants and 52\,252 submissions took 116\,ms, and building a gradebook for 1000 students and 240 exercises, including its CSV export, took 267\,ms; for 30 students both took under 2\,ms (database time not included). The continuous-integration pipeline (\S\ref{sec:integration}) had a median of 31\,s per run.
+\textbf{Constraint checker, AI, and web.} On 30 labelled samples, the structural checker classified real violations, clean code, and identifier look-alikes correctly, but was wrong in 10 of 11 cases where the word appeared only in a string or comment. Sixty calls of the AI features through the production chain met a quota error on the primary model: 37 needed a fallback and none failed, with median latencies of 13.1--20.4\,s; generated reference solutions passed 10 of 10 in Python and 8 of 10 in C, the two failures being a sentence the last fallback model wrote before the code, which pre-publish validation catches. Standings for 1000 participants and 52\,252 submissions took 116\,ms, and a 1000-student gradebook with CSV export 267\,ms.
 
 \section{Classroom Evaluation}\label{sec:evaluation-status}
 
-The instrument for the educational evaluation is built into the system. When a contest or a lesson the user took part in ends, the application invites the participant to answer a questionnaire; eligibility (participation and the activity having ended) is checked on the server. There are four questionnaires, for instructors and for students, about contests and about exercise lists. Each starts with an informed-consent term (TCLE) and includes the System Usability Scale (SUS) \cite{brooke1996sus}, whose 0--100 score is computed automatically, followed by Likert items specific to the activity and open questions. Responses are anonymous in the analysis; a results page restricted to the researcher shows response counts, the mean, median, and standard deviation of the SUS score per questionnaire, filters by activity, and exports the responses as CSV.
+The evaluation instrument is built into the system: when a contest or lesson ends, participants are invited to a questionnaire (eligibility checked on the server), with an informed-consent term, the System Usability Scale (SUS) \cite{brooke1996sus}, activity-specific Likert items, and open questions; a researcher-only page summarizes and exports the anonymous responses.
 
-\subsection{Participants and Procedure}
+\textbf{Participants and procedure.} The first test took place on 29 October 2026 at IFMG, in a first-year class of the Técnico em Informática course integrated with high school. Students solved one lesson with two problems in Python and answered the student questionnaire right after; 30 responses were submitted within ten minutes. Twenty-four had never used an online judge and six had used one a few times. No contest was held and no instructor answered.
 
-The first classroom test took place on 29 October 2026 at IFMG, in one class of the first year of the Técnico em Informática course integrated with high school. The students solved one exercise list (a lesson with two problems) in Python and answered the student questionnaire for exercise lists right after the session; all 30 responses were submitted within ten minutes. Of the 30 respondents, 24 had never used an online judge and 6 had used one a few times. Only this questionnaire was answered: no contest was held in the session and no instructor questionnaire was answered, so the results below describe the students' view of one exercise list, not the contest path or the instructor's experience.
+\textbf{Usability.} The mean SUS score was 72.1 (median 76.2, SD 18.3, range 22.5--95; 95\% CI about 65.6--78.6), above the benchmark of 68 \cite{sauro2011sus} and in the ``good'' range of the adjective scale \cite{bangor2009sus}. The spread is wide (Figure~\ref{fig:sus-bands}): 13 respondents scored 80.3 or more, 4 between 68 and 80, 8 between 51 and 67, and 5 below 51. Integration and learnability were the strongest items (Table~\ref{tab:sus-items}); the weakest concerned autonomy, need for support (9 of 30 agreed) and confidence, consistent with a class in which 80\% had never used a judge.
 
-\subsection{Usability (SUS)}
-
-The mean SUS score was 72.1 (median 76.2, standard deviation 18.3, range 22.5--95; 95\% confidence interval about 65.6--78.6). This is above the benchmark average of 68 \cite{sauro2011sus}; on the adjective scale proposed in \cite{bangor2009sus} it falls in the ``good'' range, roughly a C+/B$-$ grade. The spread is wide (Figure~\ref{fig:sus-bands}): 13 respondents scored 80.3 or more (grade A), 4 between 68 and 80, 8 between 51 and 67, and 5 below 51. The median is higher than the mean because a small group of low scores pulls the mean down. No respondent gave the same answer to all ten items.
-
-\begin{figure}[ht]
+\begin{figure}[t]
 \centering
-\includegraphics[width=0.8\textwidth]{figures/survey_sus_bands.png}
-\caption{Distribution of SUS scores among the 30 respondents, grouped by grade band.}
+\begin{minipage}[c]{0.46\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/survey_sus_bands.png}
+\caption{Distribution of SUS scores among the 30 respondents, by grade band.}
 \label{fig:sus-bands}
-\end{figure}
-
-Table~\ref{tab:sus-items} gives the mean of each SUS item. Integration of the functions and learnability were the strongest positive items. The weakest were the two about autonomy: the need for technical support (item 4, where 9 of 30 students agreed or strongly agreed) and confidence when using the system (item 9), which is consistent with a class in which 80\% had never used an online judge.
-
-\begin{table}[ht]
+\end{minipage}\hfill
+\begin{minipage}[c]{0.5\textwidth}
 \centering
-\footnotesize
-\caption{Mean answer per SUS item (n = 30). For the negative items, lower is better.}
+\scriptsize
+\captionof{table}{Mean answer per SUS item (n = 30, scale 1--5). For negative items, lower is better.}
 \label{tab:sus-items}
 \begin{tabular}{lr}
 \hline
-\textbf{SUS item (1--5)} & \textbf{Mean} \\
+\textbf{SUS item} & \textbf{Mean} \\
 \hline
-5. Functions are well integrated                     & 4.13 \\
-7. Most people would learn to use it quickly         & 4.07 \\
-3. Easy to use                                       & 3.93 \\
-1. Would like to use it frequently                   & 3.77 \\
-9. Felt confident using it                           & 3.50 \\
+5. Functions are well integrated              & 4.13 \\
+7. Most people would learn it quickly         & 4.07 \\
+3. Easy to use                                & 3.93 \\
+1. Would like to use it frequently            & 3.77 \\
+9. Felt confident using it                    & 3.50 \\
 \hline
-4. Would need technical support (negative)           & 2.57 \\
-10. Needed to learn a lot first (negative)           & 2.13 \\
-6. Too much inconsistency (negative)                 & 2.03 \\
-8. Cumbersome to use (negative)                      & 1.97 \\
-2. Unnecessarily complex (negative)                  & 1.87 \\
+4. Would need technical support (neg.)        & 2.57 \\
+10. Needed to learn a lot first (neg.)        & 2.13 \\
+6. Too much inconsistency (neg.)              & 2.03 \\
+8. Cumbersome to use (neg.)                   & 1.97 \\
+2. Unnecessarily complex (neg.)               & 1.87 \\
 \hline
 \end{tabular}
-\end{table}
+\end{minipage}
+\end{figure}
 
-\subsection{Activity-Specific Items}
-
-Table~\ref{tab:survey-items} shows the Likert items about the exercise list. The classroom flow scored highest: joining the class and finding the list (24 of 30 students fully agreed) and knowing how to hand it in (no answer below 3). Most students would use WhyRunner to study alone. The AI hints were rated as helpful without giving away the answer by the 23 students who used them. The judge's feedback was rated lower than the AI's, and the gain in confidence was the lowest item. The answer-mode item only covers plain code, since every student used the code editor rather than blocks or Parsons problems.
+\textbf{Activity items.} The classroom flow scored highest (Table~\ref{tab:survey-items}): 24 of 30 fully agreed that joining the class and finding the list was easy. The 23 students who used AI hints rated them helpful without giving the answer; the judge's feedback was rated lower, and the gain in confidence was the lowest item. Every student used the code editor, not blocks or Parsons.
 
 \begin{table}[ht]
 \centering
@@ -555,111 +287,46 @@ Joining the class and finding the list was easy    & 4.70 & 30 \\
 It was clear how to hand in the list               & 4.43 & 30 \\
 Would use WhyRunner to study alone                 & 4.13 & 30 \\
 AI hints helped without giving the answer          & 4.04 & 23 \\
-The judge's feedback helped me fix my errors        & 3.53 & 30 \\
+The judge's feedback helped me fix my errors       & 3.53 & 30 \\
 The answer mode helped me solve the exercises      & 3.41 & 29 \\
 I feel more confident programming after the list   & 3.23 & 30 \\
 \hline
 \end{tabular}
 \end{table}
 
-\subsection{Open Answers}
+\textbf{Open answers.} What helped most was the AI assistance (about 14 mentions, e.g., ``as dicas sem entregar a resposta da IA'') and the immediate correction (about 9); all seven general comments were positive, one noting that the system ``não mostra resposta, o que é muito bom, pois desenvolve o raciocínio lógico''. The most frequent complaint (about 9) was exact output matching: both problems used the \emph{exact} mode, and in one, 26 failed submissions from 13 students differed only in whitespace and would have passed under \emph{tokens} (12 of those students passed later). Many other failures came from printing the prompt of Python's \texttt{input()}. The second complaint (about 6) was that students could not see their own output or the traceback; smaller themes included a small editor, a non-scrollable AI panel, and the wish to run code before submitting. One student reported being deaf and finding the activity somewhat hard.
 
-The answers to ``what helped'' fall mostly into two themes: the AI assistance (about 14 mentions, e.g., ``as dicas sem entregar a resposta da IA'') and the immediate automatic correction (about 9, e.g., ``respostas e feedbacks quase imediatos''); a few mentioned the classroom flow and the ease of the interface. All seven general comments were positive, one noting that the system ``não mostra resposta, o que é muito bom, pois desenvolve o raciocínio lógico''.
-
-The most frequent complaint (about 9 mentions) was that the output had to match the expected output exactly, down to spaces. Submission data from the session confirms it: both problems of the list used exact comparison, a setting kept by problems created before the \texttt{tokens} mode existed. In one of them, whose expected output had a trailing space after every number, 26 failed submissions from 13 students differed from the expected output only in whitespace and would have been accepted under \texttt{tokens}; 12 of those 13 students passed after further attempts. Many other failures on that problem came from programs that printed the prompt of Python's \texttt{input()} to the standard output. The second complaint (about 6 mentions) was that the judge's errors were unclear: students could not see their own output or the Python traceback. Smaller themes were a small editor (3), an AI explanation panel that could not be scrolled (2), the wish to run the program before submitting (2), and single reports of code erased when changing the site language, the verdict shown far from the editor, intrusive auto-closing brackets, and problems pasting code from another editor. Some students found the statements unclear or the exercises hard, which concerns the content written by the instructor rather than the platform. One student reported being deaf and finding the activity somewhat hard.
-
-\subsection{Changes After the Test}
-
-The feedback collected in the session and in the questionnaire fed one more development cycle. Table~\ref{tab:feedback-fixes} lists the main changes, all merged within two days of the test. The exact-output complaint was deliberately not addressed by switching the existing problems to \texttt{tokens}; it remains a limitation (\S\ref{sec:limitations}). Requests outside the scope of this work, such as a mobile app, avatars, and more languages, were not acted upon, and output that differs in letter case or wording is still rejected, since respecting the output specification is part of what a judge teaches.
+\textbf{Changes after the test.} Table~\ref{tab:feedback-fixes} lists the changes, all merged within two days. Switching existing problems to \emph{tokens} was deliberately left out (\S\ref{sec:limitations}), and output differing in case or wording is still rejected, since respecting the output specification is part of what a judge teaches.
 
 \begin{table}[ht]
 \centering
-\footnotesize
+\scriptsize
 \caption{Classroom feedback and the resulting changes, with their pull requests.}
 \label{tab:feedback-fixes}
 \begin{tabular}{>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{8.6cm}c}
 \hline
 \textbf{Classroom feedback} & \textbf{Change} & \textbf{PR} \\
 \hline
-Interface opened in English & Portuguese is the default locale & \#81 \\
-Browser translation broke the starter code & Code surfaces excluded from automatic translation & \#81 \\
-Small editor & Fullscreen toggle and persisted font size & \#81 \\
-Students typed their enrollment number as username & Onboarding step removed; optional enrollment-number field shown to the class's teachers & \#82 \\
-No own output or Python traceback on failure & Exercise submissions show input, own output, expected output, and error output for visible tests; per-test visibility & \#83 \\
-AI explanation could not be scrolled & Scrollable help, which can also be docked beside the editor & \#88 \\
-Changing the language erased the code & Editor drafts saved in the browser and restored & \#88 \\
-Intrusive auto-closing brackets & Persisted toggle next to the font size & \#88 \\
-Verdict far from the editor & Latest verdict and pass count in the editor toolbar & \#88 \\
-Code pasted from another editor failed & Invisible characters and line endings normalized on submit & \#88 \\
-Prompts of \texttt{input()} printed to the output & Hint in the failure view to print only the requested output & \#88 \\
-No way to run before submitting & Ungraded run with custom input in the judge sandbox & \#89 \\
+Interface opened in English; browser translation broke starter code; small editor & Portuguese default; code excluded from translation; fullscreen and persisted font size & \#81 \\
+Enrollment number typed as username & Onboarding step removed; optional enrollment-number field & \#82 \\
+No own output or traceback on failure & Input, own output, expected output, and error output for visible tests & \#83 \\
+Non-scrollable AI panel; code erased on language change; intrusive brackets; verdict far from editor; pasted code failed; \texttt{input()} prompts printed & Scrollable, dockable help; drafts restored; bracket toggle; verdict in editor toolbar; invisible characters normalized; hint to print only the requested output & \#88 \\
+No way to run before submitting & Ungraded run with custom input in the sandbox & \#89 \\
 \hline
 \end{tabular}
 \end{table}
 
-\subsection{Threats to Validity}
+\textbf{Threats to validity.} The evaluation is small and descriptive: one class, one list, one language, and a questionnaire right after a single session, with no comparison group or pre/post measure, so it shows perception, not learning gains. Thirty respondents give a reasonably stable SUS mean (about $\pm$7 points) but no subgroup analysis; novelty and social desirability (the developer was present) may have raised scores; and only students answered.
 
-The evaluation is small and descriptive: one class, one exercise list, one language, and a questionnaire answered right after a single session, with no comparison group and no pre/post measure, so it shows how students perceived the system, not whether it improved their learning. Thirty respondents are enough for a reasonably stable SUS mean (about $\pm$7 points) but not for subgroup analysis. A novelty effect is likely, and social desirability may have raised the scores if the students knew the developer was present. Finally, only students answered: contests and the instructor's perspective remain unevaluated.
+\section{Discussion}\label{sec:limitations}
 
-\section{Discussion}
+The results support the design: isolated execution adds only about 5\,ms per run, the pool scales with cores, the similarity detector separates copies from independent solutions, and novice students rated usability above the benchmark. They also expose limitations. (1) \emph{AI dependency}: the fallback chain tolerates one provider's outage but not all, answers vary between models, total cost grows with users, and the last fallback model twice broke the code-only contract. (2) \emph{Sandbox}: \texttt{isolate}'s capabilities exclude many managed platforms; memory is capped per process rather than per box; and without control-group mode MLE is a heuristic that missed a crash after a failed allocation. (3) \emph{No production concurrency gain}: the production judge runs on one shared vCPU, where the pool resolves to one worker. (4) \emph{Portugol}: its errors are graded as wrong answers, and it is the slowest language, about 1.3\,s per test case. (5) \emph{Similarity scope}: comparison is same-language only and does not detect AI-generated code. (6) \emph{Heuristic constraints and visibility}: structural checks scan text and fail on strings and comments, and a lesson's ``show all'' mode reveals hidden cases of problems written by other authors. (7) \emph{Evaluation}: one class, the students' view only, and exact matching on older problems, the most frequent complaint; contests, authoring, the gradebook, and the instructor's experience remain unevaluated, so the research question is only partially answered.\label{sec:future-work}
 
-\subsection{Strengths}
-
-WhyRunner exhibits several notable strengths:
-
-\begin{itemize}
-  \item \textbf{Modular and scalable architecture:} Clear separation of concerns across the web layer, judge worker, and execution containers allows for easy maintenance and future expansion.
-  \item \textbf{Secure code execution:} User code runs in ephemeral \texttt{isolate} sandboxes with no network and enforced time, memory, and process limits, and the worker does not need access to the host's Docker daemon.
-  \item \textbf{No external queue dependency:} Using PostgreSQL \texttt{LISTEN/NOTIFY} for inter-service communication removes operational overhead while maintaining reliability.
-  \item \textbf{AI-powered feedback:} The use of large language models enhances the learning process by offering tailored hints and performance improvement suggestions without revealing direct solutions.
-  \item \textbf{Type-safe full-stack:} The combination of Next.js Server Actions, Drizzle ORM, and Zod validation provides end-to-end type safety from database schema to user interface.
-  \item \textbf{Contest-grade judging:} distinct verdicts, configurable output comparison with custom checkers, and ICPC-style standings bring the judge close to contest systems, while compile errors and judge faults never cost the student penalty time.
-  \item \textbf{Scales with cores and holds up under a class-sized burst:} the worker pool graded 100 simultaneous submissions $2.8\times$ faster with four workers, with no wrong verdict, and the sandbox adds only about 5\,ms per run.
-  \item \textbf{Integrity tools for the instructor:} the similarity detector ignores renaming, reformatting, and comments, separated copies from independent solutions with an AUC of 0.998 on a synthetic corpus, and runs in under a second for a 300-student exercise.
-  \item \textbf{Well received by novice students:} in the first classroom test, students who had mostly never used an online judge rated its usability above the SUS benchmark (72.1) and found joining a class, finding the exercise list, and handing it in easy (\S\ref{sec:evaluation-status}).
-  \item \textbf{Measured, reproducible claims:} every performance figure in this paper comes from scripts and raw data in the repository, and continuous integration checks every change, including the enum contract between the two services.
-\end{itemize}
-
-\subsection{Limitations}\label{sec:limitations}
-
-Despite its strengths, WhyRunner has some limitations:
-
-\begin{itemize}
-  \item \textbf{Dependency on third-party AI APIs:} The feedback system relies on external model providers. The fallback chain (\S\ref{sec:ai-chain}) tolerates the outage of a single model, but not of every provider at once, and answers may vary between models. Per-user limits bound the cost a single user can generate, but total cost still grows with the number of active users.
-  \item \textbf{Sandbox deployment and memory accounting:} \texttt{isolate} requires the \texttt{CAP\_SYS\_ADMIN} and \texttt{CAP\_NET\_ADMIN} capabilities, which many managed container platforms do not grant, so the judge is in practice deployed on a self-managed virtual machine. In addition, memory caps are currently applied per process (as an address-space limit) rather than to the whole box, so a submission that spawns several processes can use more memory in total than its nominal cap; enabling \texttt{isolate}'s control-group mode would fix this but requires further host configuration.
-  \item \textbf{Deployment complexity:} The initial setup requires knowledge of Docker, Linux capabilities, and PostgreSQL configuration, which may present a barrier for non-technical instructors.
-  \item \textbf{Narrow classroom evaluation:} The only classroom evaluation so far (\S\ref{sec:evaluation-status}) covers one class, one exercise list, one language (Python), and the students' perspective only, measured right after a single session with no comparison group and no pre/post measure. Contests, AI-assisted authoring, the gradebook, similarity detection, and the instructor's experience have not been evaluated in class, so the research question is only partially answered.
-  \item \textbf{Exact output matching on older problems:} Problems created before the \texttt{tokens} comparison mode existed still compare output exactly, and in the classroom test this was the students' most frequent complaint (\S\ref{sec:evaluation-status}). Switching those problems to \texttt{tokens} was deliberately left out of the post-test changes.
-  \item \textbf{No concurrency gain in production as deployed:} the worker pool only helps on a multi-core machine. The production judge runs on a single shared vCPU, where the default resolves to one worker, and the benchmark showed no speedup with four workers on one CPU (\S\ref{sec:concurrency}).
-  \item \textbf{Memory-limit verdict is a heuristic:} without \texttt{isolate}'s control-group mode there is no clean out-of-memory signal, so MLE is inferred from peak memory and error messages; a program that crashes right after a failed allocation is graded as a runtime error (\S\ref{sec:perf-verdicts}).
-  \item \textbf{Portugol errors are graded as wrong answers:} the Portugol console runner reports compilation and runtime errors on standard output with exit status 0, so in the verdict benchmark all such programs received a wrong-answer verdict instead of a compilation or runtime error (\S\ref{sec:perf-verdicts}). Portugol is also the slowest language to judge, about 1.3\,s per test case, because its runner compiles the program on every run.
-  \item \textbf{Similarity detection is same-language and does not detect AI-generated code:} submissions are only compared within one language, so translating a solution to another language evades it; and code produced by an AI assistant is not a copy of another student's code, so it is not flagged. Its measured quality comes from automatic, systematic obfuscations, which are easier than those of a determined student.
-  \item \textbf{Fallback models may break output contracts:} in the AI benchmark, the last model of the chain twice prefixed a sentence to a reference solution that should contain only code; pre-publish validation caught it, but other AI outputs that are not machine-checked depend on the author's review.
-  \item \textbf{Lesson test visibility crosses problem ownership:} A lesson owner can set the lesson's test-visibility mode to show every test case (\S\ref{sec:class-lesson-model}), including for problems written by other authors, which reveals those problems' hidden inputs and expected outputs to the class; the class's teachers also see every case of any problem used in their lessons. Limiting the ``show all'' mode to problems the lesson owner wrote, or requiring the author's consent, is planned.
-  \item \textbf{Structural constraint analysis is heuristic, not a real parser:} Loop-nesting and forbidden/required-construct checks (\S\ref{sec:prepublish-validation}) scan raw source text (indentation width or brace depth, plus word-boundary substring search) rather than building an AST, so a matching token inside a string literal or comment can produce a false positive. In the benchmark, such samples were misclassified in 10 of 11 cases, while samples without these traps were all classified correctly.
-\end{itemize}
-
-\subsection{Future Work}\label{sec:future-work}
-
-Planned improvements include:
-
-\begin{itemize}
-  \item \textbf{Broader classroom evaluation:} Repeat the classroom test with a contest, more classes and languages, and the instructor questionnaire (the instructor's perspective on creating the activities, reviewing submissions, and dosing the AI assistance), ideally with a comparison group or a pre/post measure, and analyze it together with the usage data the system records.
-  \item \textbf{Whitespace-tolerant comparison by default:} Move the problems that still use exact comparison to \texttt{tokens}, which in the classroom data would have accepted 26 submissions that differed from the expected output only in whitespace, and make the comparison mode more visible in the problem editor.
-  \item \textbf{Accessibility review:} One student reported being deaf and finding the activity somewhat hard; the platform is text-based, but no accessibility review has been done.
-  \item \textbf{Detection of AI-generated code:} Complement the similarity detector, which finds copies between students, with signals that a submission was produced by an AI assistant.
-  \item \textbf{\texttt{isolate} control-group mode:} Enable \texttt{isolate}'s cgroup mode to enforce memory per box instead of per process and to obtain a clean out-of-memory signal, replacing the MLE heuristic.
-  \item \textbf{Multi-core production judge:} Deploy the judge on a machine with several cores (or several single-core replicas, which the row-level claim already supports) so that the worker pool's measured speedup reaches production.
-  \item \textbf{Portugol error detection:} Recognize the Portugol runner's error messages so that its compilation and runtime errors receive the right verdict.
-  \item \textbf{Language support expansion:} Add further languages, such as Kotlin, by installing their toolchains in the judge image and adding a runner for each.
-  \item \textbf{Improved test case management:} Develop tooling for automated test case generation and validation based on problem constraints, building on the AI-assisted edge-case suggestions already available in problem review.
-\end{itemize}
+Future work follows from these: repeat the evaluation with a contest, more classes and languages, and the instructor questionnaire, ideally with a comparison group; move older problems to \emph{tokens}; review accessibility; enable \texttt{isolate}'s control-group mode for per-box memory and a clean out-of-memory signal; deploy a multi-core judge or several replicas, which the row-level claim already supports; recognize Portugol's error messages; add signals for AI-generated code; restrict ``show all'' to the lesson owner's problems; and add languages and automated test generation.
 
 \section{Conclusion}
 
-WhyRunner introduces a novel approach to online code evaluation in educational settings by combining real-time contest features, secure multi-language execution, and AI-powered feedback. It has grown beyond timed contests into a professor-curated Class/Lesson/Exercise authoring platform, adding AI-assisted reference solutions, problem review, narrative generation, and tag suggestion behind a multi-provider model chain; pre-publish reference-solution validation; solution-constraint enforcement; per-exercise grading with a class gradebook; and an in-app notification system, extending the same secure judge pipeline to asynchronous, instructor-led coursework. The judge now reports distinct verdicts, compares output in configurable ways including custom checkers, and grades submissions concurrently, and instructors can check a contest or exercise for copied code. A reproducible benchmark suite measured these components and also exposed their limits, such as the memory-limit heuristic and Portugol's error reporting. A first classroom test with 30 students who solved one exercise list gave a mean SUS score of 72.1, above the usual benchmark; students most valued the AI hints that do not give the answer and the immediate feedback, and the problems they reported, such as missing program output and the impossibility of running code before submitting, were fixed shortly after. The evaluation is still narrow, one class and only the students' perspective, so contests and the instructor's view remain the next step (\S\ref{sec:future-work}).
-
-With a modular and extensible design, WhyRunner can evolve to meet broader needs in computer science teaching and competitive programming training. The continued integration of AI technologies and developer tooling positions it as a promising platform for the future of automated learning environments.
+WhyRunner combines a sandboxed multi-language judge with distinct verdicts, configurable output comparison, and a concurrent worker pool; real-time contests; professor-curated lessons with visual answer modes and a gradebook; AI-assisted hints and authoring behind a multi-provider model chain; pre-publish validation and solution constraints; and code similarity detection. A reproducible benchmark suite measured these components and exposed their limits. In a first classroom test, 30 students who solved one exercise list gave a mean SUS score of 72.1, above the usual benchmark, valued most the AI hints that do not give the answer and the immediate feedback, and reported problems that were fixed within two days. The evaluation is still narrow, so contests and the instructor's view are the next step.
 
 \bibliographystyle{sbc}
 \bibliography{refs}
