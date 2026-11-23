@@ -1,0 +1,342 @@
+\documentclass[12pt]{article}
+
+% Versão em português (pt-BR) de main.tex. Mantenha as duas versões em
+% sincronia: mesmas seções, rótulos, tabelas, figuras, números e citações.
+
+\usepackage{sbc-template}
+
+\usepackage{graphicx,url}
+
+\usepackage[english,brazilian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage{float}
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+
+\sloppy
+\setlength{\belowcaptionskip}{6pt}
+
+% Nota de acesso das referências online (refs.bib usa \bibaccessed; main.tex
+% fica com o padrão em inglês definido no próprio campo note).
+\newcommand{\bibaccessed}{Acesso em: nov. 2026}
+
+\title{WhyRunner: Juiz Online para Programação Competitiva}
+
+\author{Juan Israel dos Anjos}
+
+\address{Instituto Federal de Educação, Ciência e Tecnologia de Minas Gerais
+  (IFMG)\\
+  Rua Afonso Sardinha, 90, Bairro Minas Talco\\
+  Ouro Branco/MG – CEP: 36494-018 – Brasil
+  \email{juaniwk3@gmail.com}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{otherlanguage}{english}
+\begin{abstract}
+  This paper presents WhyRunner, an online judge for competitive programming designed for education. It runs submissions in an \texttt{isolate} sandbox with distinct verdicts, custom output checkers, and a concurrent worker pool, and adds real-time contests, teacher-curated lessons with a class gradebook, AI-assisted problem authoring and feedback, and code similarity detection. We describe its architecture and implementation and report a reproducible performance evaluation. In a first classroom test, 30 technical high-school students solved an exercise list; the mean System Usability Scale score was 72.1, above the benchmark of 68. Contests and the instructor's perspective have not been evaluated yet.
+\end{abstract}
+\end{otherlanguage}
+
+\begin{resumo}
+  Este artigo apresenta o WhyRunner, um juiz online de programação competitiva para o ensino. Executa submissões no sandbox \texttt{isolate}, com vereditos distintos, corretores de saída personalizados e um pool concorrente de workers, e oferece competições em tempo real, aulas curadas pelo professor com boletim da turma, autoria de problemas e feedback assistidos por IA e detecção de similaridade de código. Descrevemos sua arquitetura e implementação e relatamos uma avaliação de desempenho reproduzível. Num primeiro teste em sala, 30 alunos do ensino médio técnico resolveram uma lista de exercícios; a nota média na System Usability Scale foi 72,1, acima da referência de 68. Competições e a visão do professor ainda não foram avaliadas.
+\end{resumo}
+
+\section{Introdução}
+
+A programação competitiva desenvolve o pensamento algorítmico e a resolução de problemas, e os juízes online (plataformas que avaliam automaticamente o código submetido contra casos de teste predefinidos) tornaram-se comuns no meio acadêmico. A maioria, porém, foi projetada para competições e prioriza a justiça e a eficiência em detrimento da pedagogia: o aluno recebe pouco mais que ``Wrong Answer'' ou ``Time Limit Exceeded'', sem explicação que o ajude a aprender, e o professor os considera rígidos de configurar para uso em sala.
+
+Este trabalho apresenta o \textbf{WhyRunner}, um juiz online voltado ao ensino com três objetivos: (1) feedback rico e automatizado com inteligência artificial; (2) execução segura, escalável e multilinguagem por meio de isolamento em nível de kernel; e (3) competições em tempo real flexíveis e atividades curadas pelo professor. Este artigo descreve seu projeto e implementação (\S\ref{sec:design}), avalia seu desempenho com benchmarks reproduzíveis (\S\ref{sec:performance}) e relata uma primeira avaliação em sala de aula, na qual 30 alunos resolveram uma lista de exercícios (\S\ref{sec:evaluation-status}); competições e a perspectiva do professor ainda não foram avaliadas.
+
+\section{Metodologia}\label{sec:methodology}
+
+O desenvolvimento foi iterativo e incremental. Os requisitos vieram de uma revisão da literatura, de conversas informais com alunos e professores e da experiência do autor com plataformas de competição; as principais lacunas encontradas foram o feedback pedagógico limitado, o suporte restrito a linguagens e a gestão de competições. Várias tecnologias foram testadas e descartadas no caminho: a fila de submissões passou do BullMQ (Redis), cujo polling ocioso era custoso, para o AWS SQS e, por fim, para o \texttt{LISTEN/NOTIFY} nativo do PostgreSQL, eliminando a fila externa; o Supabase e uma API NestJS separada deram lugar a um PostgreSQL próprio com Drizzle ORM e Server Actions do Next.js; e a execução passou de contêineres Docker por submissão para o sandbox \texttt{isolate} (\S\ref{sec:execution-environment}).
+
+Um produto mínimo viável foi usado informalmente por cinco colegas, sem roteiro nem questionário; três de suas queixas viraram mudanças (o código submetido exibido em cada tentativa, um placar no estilo de maratona e erros por campo na importação de problemas em JSON). Uma revisão de segurança da camada web constatou que, como toda Server Action exportada é um endpoint HTTP público e os tipos do TypeScript são apagados em tempo de execução, algumas ações copiavam a entrada do cliente diretamente para escritas no banco, uma não exigia autenticação e os relatórios de submissão expunham casos de teste ocultos; isso foi corrigido com esquemas explícitos de entrada, verificações de posse no servidor e filtragem dos relatórios (\S\ref{sec:test-confidentiality}). A validação é técnica (testes a cada push e uma suíte de benchmarks, \S\ref{sec:performance}) e educacional, até agora um teste em sala (\S\ref{sec:evaluation-status}).
+
+\section{Trabalhos Relacionados}\label{sec:related}
+
+O \textbf{Ataux} \cite{silva2021ataux} permite que um administrador crie listas de problemas que uma turma resolve pelo Codeforces, com papéis, filtragem e inscrição de equipes sobre React/NestJS/PostgreSQL; sua gama de linguagens é limitada e seu feedback informa apenas a correção; a usabilidade foi avaliada com o PSSUQ junto a 71 alunos. O \textbf{GOJ} \cite{lima2022gamma} armazena e julga problemas de Maratonas de Programação da UnB anteriores, com arquitetura de microsserviços sobre a AWS (SQS, SNS, S3), .NET e MongoDB e julgamento por scripts Bash. O \textbf{Run Codes} \cite{runcodes2024}, desenvolvido por universidades brasileiras, permite ao professor criar listas de problemas e competições, suporta muitas linguagens e se integra a ambientes virtuais de aprendizagem, mas sua complexidade e dependências externas limitam atividades personalizadas. O \textbf{BOCA} \cite{de2004boca} é o sistema de código aberto em PHP/LAMP usado nas regionais brasileiras da ICPC; robusto para competições tradicionais, tem interface e extensibilidade mais limitadas. A Tabela~\ref{tab:judge-comparison} compara esses sistemas com o WhyRunner.
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Comparação de sistemas de julgamento de programação. n/i: não informado nas fontes analisadas; as quatro últimas linhas não foram avaliadas nos demais sistemas.}
+\label{tab:judge-comparison}
+\begin{tabular}{lccccc}
+\hline
+\textbf{Recurso} & \textbf{Ataux} & \textbf{GOJ} & \textbf{Run Codes} & \textbf{BOCA} & \textbf{WhyRunner} \\
+\hline
+Feedback por IA              & Não      & Não       & Não       & Não       & Sim \\
+Multilinguagem               & Limitado & Moderado  & Amplo     & Moderado  & Amplo \\
+Recursos em tempo real       & Não      & Limitado  & Sim       & Sim       & Sim \\
+Aulas curadas                & Não      & Não       & Não       & Não       & Sim \\
+Restrições de solução        & Não      & Não       & Não       & Não       & Sim \\
+Portugol + blocos            & Não      & Não       & Não       & Não       & Sim \\
+Detecção de plágio           & n/i      & n/i       & n/i       & n/i       & Sim \\
+Vereditos distintos          & n/i      & n/i       & n/i       & n/i       & Sim \\
+Boletim da turma             & n/i      & n/i       & n/i       & n/i       & Sim \\
+Corretor de saída próprio    & n/i      & n/i       & n/i       & n/i       & Sim \\
+\hline
+\end{tabular}
+\end{table}
+
+Além do feedback por IA, os diferenciais do WhyRunner são o modelo Turma/Aula/Exercício curado pelo professor (\S\ref{sec:class-lesson-model}), que permite montar uma atividade ordenada e avaliável fora de uma competição cronometrada; as restrições de solução (\S\ref{sec:prepublish-validation}), que exigem uma abordagem específica e não apenas uma saída correta; e as respostas em blocos compiladas para Portugol, uma porta de entrada visual que os juízes somente textuais não têm. As quatro últimas linhas são comuns em sistemas de competição maduros e aparecem para mostrar a cobertura, não como diferenciais.
+
+\section{Projeto do Sistema}\label{sec:design}
+
+O WhyRunner é composto por dois serviços que compartilham um banco PostgreSQL \cite{stonebraker1986design}: uma aplicação web em \textbf{Next.js} \cite{nextjs2024}, responsável pela interface, pela autenticação (Better-Auth) e por toda a lógica de negócio por meio de Server Actions, com acesso tipado ao banco via Drizzle ORM \cite{drizzleorm2024}; e um \textbf{worker juiz} escrito em Rust \cite{matsakis2014rust}, empacotado com o \texttt{isolate} \cite{mares2012isolate} e as ferramentas de todas as linguagens em uma única imagem Docker \cite{merkel2014docker}. Os serviços se comunicam apenas pelo banco, usando \texttt{LISTEN/NOTIFY} em vez de um broker externo. Os recursos de IA são atendidos por uma cadeia de modelos de linguagem, Gemini 3.5 Flash e Flash-Lite \cite{gemini2023} e Claude Haiku 5.5 \cite{anthropic2026haiku}, chamados apenas pela aplicação web (\S\ref{sec:ai-chain}).
+
+\subsection{Fluxo de Submissão}\label{sec:submission-pipeline}
+
+A Figura~\ref{fig:submission-flow} mostra o fluxo. Uma Server Action aceita do navegador apenas o problema, a competição, a linguagem e o código-fonte; todos os demais campos (status, autor, letra da questão) são decididos no servidor, que também verifica a participação na competição, o horário de início e os limites de taxa. A submissão é gravada como \texttt{PENDING} e é emitido um \texttt{NOTIFY}; o juiz, escutando pelo \texttt{PgListener} do \texttt{sqlx}, acorda seu pool de workers (\S\ref{sec:concurrency}). Linguagens compiladas são compiladas uma única vez, e cada caso de teste roda em uma caixa nova do \texttt{isolate} (\S\ref{sec:execution-environment}); a saída é comparada conforme o modo de comparação do problema (\S\ref{sec:output-comparison}). Submissões de competição e avulsas param no primeiro caso que falha, enquanto exercícios de aula executam todos os casos, de modo que a contagem de acertos mede exatamente quantos casos estavam certos. O status final é persistido, uma notificação é gerada no aplicativo e o front-end se atualiza via TanStack Query; em caso de falha, o aluno pode pedir uma dica à IA.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=0.28cm and 0.6cm,
+  box/.style={draw, rounded corners, fill=gray!10, text width=6.4cm, align=center, minimum height=0.6cm, font=\scriptsize},
+  note/.style={draw, dashed, rounded corners, fill=gray!5, text width=5.6cm, align=center, minimum height=0.6cm, font=\scriptsize},
+  arr/.style={-{Latex[length=2mm]}, thick}
+]
+\node[box] (submit) {Aluno submete o código (competição, avulsa ou exercício de aula)};
+\node[box, below=of submit] (save) {Server Action valida, grava como \texttt{PENDING} e emite \texttt{NOTIFY}};
+\node[box, below=of save] (pickup) {Worker juiz (\texttt{PgListener}) reivindica a submissão e seus casos de teste};
+\node[box, below=of pickup] (exec) {\texttt{isolate}: compila uma vez e roda cada caso de teste em uma caixa nova};
+\node[note, right=of exec] (policy) {Competição/avulsa: para na primeira falha. Exercício de aula: roda todos os casos (fração de acertos)};
+\node[box, below=of exec] (constraints) {Restrições de solução: análise estrutural e, opcionalmente, verificação do algoritmo por LLM};
+\node[note, right=of constraints] (statuses) {\texttt{PASSED}, um veredito (WA, TLE, MLE, CE, RE), \texttt{ERROR} do juiz ou \texttt{CONSTRAINT\_VIOLATION}};
+\node[box, below=of constraints] (persist) {Status gravado no PostgreSQL; notificação; atualização da interface; dica opcional da IA};
+\draw[arr] (submit) -- (save);
+\draw[arr] (save) -- (pickup);
+\draw[arr] (pickup) -- (exec);
+\draw[arr] (exec) -- (constraints);
+\draw[arr] (constraints) -- (persist);
+\draw[arr, dashed] (exec) -- (policy);
+\draw[arr, dashed] (constraints) -- (statuses);
+\end{tikzpicture}
+\caption{Fluxo de submissão: a política de correção varia conforme o tipo de submissão, e as verificações de restrições de solução rodam antes de o status final ser persistido}
+\label{fig:submission-flow}
+\end{figure}
+
+\textbf{Vereditos.}\label{sec:verdicts} As primeiras versões informavam apenas aprovado ou reprovado. Hoje, uma submissão reprovada recebe o veredito de seu primeiro caso com falha: \emph{wrong answer} (término normal, saída divergente), \emph{time limit exceeded} (limite de CPU ou de tempo real), \emph{memory limit exceeded}, \emph{compilation error} (saída do compilador sempre exibida), \emph{runtime error} (qualquer outro término com código não nulo ou por sinal) ou \emph{judge error} (falha do sandbox ou do corretor, nunca penalizada). Sem o modo de control groups do \texttt{isolate}, o limite de memória é um limite de espaço de endereçamento, de modo que excedê-lo faz uma alocação falhar sem sinal distinto; o juiz infere MLE quando a memória residente de pico atingiu 90\% do limite ou quando a saída de erro contém uma mensagem de falha de alocação (por exemplo, \texttt{MemoryError}, \texttt{std::bad\_alloc}), heurística medida na \S\ref{sec:perf-verdicts}. Na classificação, tentativas rejeitadas em um problema resolvido somam 20 minutos de penalidade, mas erros de compilação e do juiz não contam, seguindo a ICPC \cite{icpc2024rules}.
+
+\textbf{Sigilo dos casos de teste.}\label{sec:test-confidentiality} Os casos de teste se dividem em exemplos públicos, marcados pelo autor, e casos ocultos. O juiz guarda um relatório do primeiro caso com falha (entrada, saída esperada, saída do programa, saída de erro); devolvido sem alterações, ele permitiria ao aluno extrair os casos ocultos uma submissão por vez. Como no BOCA \cite{de2004boca}, o servidor filtra o relatório conforme quem o vê: o autor do problema o vê por inteiro; falhas em um exemplo são exibidas por inteiro; falhas em um caso oculto mostram apenas o veredito, o número do caso e os casos aprovados, omitindo também a própria saída do programa, que poderia simplesmente ecoar a entrada; a saída do compilador é sempre exibida. Nas aulas, o modo de visibilidade de testes da aula decide quais casos contam como visíveis, e os professores da turma veem todos os relatórios. O organizador de uma competição que não escreveu o problema é tratado como participante, já que qualquer usuário pode criar uma competição. O mesmo filtro vale onde quer que um relatório saia do servidor, inclusive na exportação da competição, e o modelo de dicas recebe o relatório sem filtro, mas devolve apenas sua resposta.
+
+\subsection{Turmas, Aulas, Competições e Área de Resolução}\label{sec:class-lesson-model}
+
+Além das competições, o WhyRunner oferece um modo assíncrono com três entidades: a \textbf{Turma}, a \textbf{Aula} (uma atividade curada pelo professor para uma turma, com prazo opcional) e o \textbf{Exercício} (um problema existente vinculado a uma aula em ordem fixa). O aluno entra na turma com um código, entrega a aula inteira de uma vez (com confirmação se houver exercícios não resolvidos), e o professor a revisa com feedback textual por exercício. Um modo de visibilidade de testes por aula mostra ao aluno os casos de exemplo (padrão), todos os casos ou nenhum. Cada exercício vale a fração de casos de teste aprovados, e a aula soma essas frações com pesos iguais. Seguindo a recomendação de que o ensino de programação comece por ambientes visuais e passe gradualmente ao texto \cite{audrito2012contests}, cada exercício tem um modo de resposta: \emph{código}, \emph{blocos} (blocos do Blockly convertidos em Portugol, com um painel somente leitura do código gerado como ponte para o texto) ou \emph{Parsons} (linhas embaralhadas de uma solução do professor, que deve passar nos testes, a serem ordenadas e indentadas). O programa julgado é sempre gerado no servidor, de modo que restrições, notas e dicas funcionam sem mudanças, com dicas adaptadas ao modo. Um \textbf{boletim} mostra cada aluno contra cada exercício, a partir do mesmo snapshot e da mesma fórmula da revisão da aula, e exporta CSV (aspas conforme a RFC 4180, marca de ordem de bytes UTF-8 e células iniciadas por \texttt{=}, \texttt{+}, \texttt{-} ou \texttt{@} neutralizadas contra injeção de CSV).\label{sec:contests-bank}
+
+Os problemas têm códigos curtos e podem ser buscados, filtrados por dificuldade e por tags de tópico e importados em lote a partir de JSON. Uma \textbf{competição} tem um período, um modo privado opcional com aprovação de entrada e um teto de assistência de IA (\emph{off}, \emph{concept}, \emph{hint} ou \emph{pinpoint}) imposto no servidor a cada requisição. Seu placar segue as convenções das maratonas de programação: número de tentativas, minuto da solução, marcação do primeiro a resolver e desempate por penalidade. Na \textbf{área de resolução} (Figura~\ref{fig:workspace}), o editor salva automaticamente por problema e linguagem, cada tentativa guarda o código submetido, falhas visíveis mostram a entrada, a própria saída e a saída esperada, e um botão ``Explicar'' pede uma dica dentro do teto da competição. Uma página inicial, uma paleta de comandos (\texttt{Ctrl+K}) e uma caixa de notificações completam a interface.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\textwidth]{resolucao.png}
+\caption{Área de resolução em uma competição: enunciado, tentativas com o código submetido e o botão ``Explicar'', e o editor com seu indicador de salvamento automático}
+\label{fig:workspace}
+\end{figure}
+
+\subsection{Detecção de Similaridade de Código}\label{sec:similarity}
+
+O dono de uma competição ou turma pode pedir um relatório de similaridade para um problema ou exercício, seguindo a abordagem de impressões digitais do MOSS \cite{schleimer2003winnowing}. Cada submissão é tokenizada com regras por linguagem; identificadores viram \texttt{V}, números \texttt{N} e literais \texttt{S}, enquanto palavras-chave e operadores são mantidos, de modo que renomear, reformatar e editar comentários não muda nada do que é comparado. Cada sequência de $k=5$ tokens recebe um hash, e o winnowing com janela $w=4$ seleciona as impressões digitais, garantindo que qualquer sequência compartilhada de pelo menos $w+k-1$ tokens seja detectada. Impressões presentes em mais da metade das submissões de uma linguagem (havendo ao menos quatro) são tratadas como código-padrão. Para cada par de alunos na mesma linguagem, as impressões compartilhadas originam trechos coincidentes, estendidos enquanto os tokens coincidem e aceitos do mais longo ao mais curto sem sobreposição (greedy string tiling); a similaridade é a fração dos tokens dos dois programas coberta. O relatório abrange até 300 submissões (a última ou a melhor de cada aluno) e mostra os trechos coincidentes lado a lado; a interface avisa que uma nota alta é motivo para ler os dois programas, não prova de cópia.
+
+\subsection{Ambiente de Execução}\label{sec:execution-environment}
+
+Versões anteriores executavam cada submissão em um contêiner Docker irmão, por meio do socket Docker do hospedeiro montado no worker, o que equivale a acesso root ao hospedeiro, exclui a maioria das plataformas gerenciadas e aproximava a memória de pico consultando periodicamente o \texttt{docker stats}. A execução passou então ao \texttt{isolate} \cite{mares2012isolate}, o sandbox da Olimpíada Internacional de Informática, que confina um processo com namespaces e limites de recursos do Linux; todas as ferramentas (Python, GCC/G++, \texttt{rustc}, JDK 21, Portugol) ficam na imagem do juiz. C, C++, Rust e Java são compilados uma vez em uma caixa própria (orçamento de 30\,s); depois, cada caso de teste roda em uma caixa nova (\texttt{--init}, execução, leitura dos metadados, \texttt{--cleanup}) sem rede; com limite de tempo de CPU derivado do limite do problema (1\,s por padrão), inalterado para C, C++ e Rust, dobrado mais 0,5\,s para Java, triplicado para Python e dobrado mais 3\,s para Portugol; limite de tempo real de duas vezes o limite de CPU mais 1\,s; 128\,MB de espaço de endereçamento para C, C++ e Python, 768\,MB para Rust e 2\,GB para as linguagens da JVM (heap limitado por \texttt{-Xmx64m}); e no máximo 64 processos, o que contém fork bombs. Código de saída, tempos, memória de pico e causa do término são lidos dos metadados do \texttt{isolate}. O \texttt{isolate} ainda precisa de \texttt{CAP\_SYS\_ADMIN} e \texttt{CAP\_NET\_ADMIN}, uma concessão muito mais restrita que o socket Docker.
+
+\textbf{Pool concorrente de workers.}\label{sec:concurrency} O juiz executa $N$ workers em um único processo (\texttt{JUDGE\_CONCURRENCY}, por padrão o número de CPUs limitado a 4). Um despachante detém a conexão \texttt{LISTEN} e, a cada notificação ou varredura de 60\,s, envia para dead-letter as submissões cujo worker travou vezes demais e acorda os workers ociosos. Cada worker reivindica uma linha atomicamente com \texttt{UPDATE \ldots{} WHERE id = (SELECT \ldots{} FOR UPDATE SKIP LOCKED)}, de modo que dois workers ou réplicas nunca corrigem a mesma submissão, e usa o número de seu slot como id da caixa.
+
+\subsection{Comparação de Saída, IA e Restrições de Solução}\label{sec:output-comparison}
+
+Cada problema escolhe um modo de comparação: \emph{exact} (após remover espaços nas extremidades; todos os problemas antigos), \emph{tokens} (padrão para problemas novos; indiferente a espaços em branco), \emph{float} (tokens com tolerância numérica $\varepsilon$, $10^{-6}$ por padrão) ou \emph{checker}, um programa do autor para problemas com várias respostas corretas. Os corretores ficam em uma tabela separada, são enviados apenas ao dono e rodam em uma caixa própria com \texttt{input.txt}, \texttt{output.txt} e \texttt{answer.txt} no estilo do testlib: saída 0 aceita, saída 1 é wrong answer com a mensagem do corretor, e qualquer outra coisa é erro do juiz.
+
+\label{sec:ai-chain}Toda chamada de IA passa por um único módulo no servidor, que tenta o Gemini 3.5 Flash, depois o Flash-Lite e depois o Claude Haiku 5.5, com tempo limite de 30\,s por tentativa; apenas falhas transitórias (tempo esgotado, limitação de taxa, erros do servidor, saída reprovada na validação de esquema) passam ao modelo seguinte. Os prompts delimitam o conteúdo do usuário com XML contra injeção de prompt, os resultados são localizados e as chamadas são limitadas por usuário e recurso em uma janela de dez minutos. A cadeia sustenta cinco recursos. O aluno pode pedir uma \emph{dica} sobre uma submissão reprovada, instruída a explicar o erro lógico sem dar a correção, limitada e revelada nível a nível nas competições. O autor de problemas recebe quatro rascunhos que precisam ser salvos explicitamente: uma solução de referência, uma revisão do enunciado com casos-limite sugeridos, uma narrativa e tags de tópico.\label{sec:prepublish-validation}
+
+Antes da publicação, a solução de referência de um problema precisa passar em seus casos de teste pela mesma execução isolada; a aprovação fica atrelada ao conteúdo exato dos casos de teste e das restrições, de modo que qualquer edição a torna desatualizada. Os exercícios podem ainda ter \emph{restrições de solução}: regras estruturais de um catálogo fixo (aninhamento máximo de laços, construções proibidas ou obrigatórias), verificadas varrendo o texto-fonte em vez de fazer sua análise sintática; e um \emph{requisito de algoritmo} opcional em texto livre (por exemplo, ``deve usar o algoritmo de Dijkstra''), verificado pela cadeia de modelos a partir do requisito, da linguagem e do código, que devolve \texttt{\{satisfied, rationale\}}. Uma violação gera o status distinto \texttt{CONSTRAINT\_VIOLATION}, que nega o crédito mesmo com todos os testes aprovados, mostrando ao aluno a regra violada.
+
+\subsection{Integração e Implantação}\label{sec:integration}
+
+Cada push executa três jobs do GitHub Actions: \emph{web} (verificação de tipos, lint, 112 testes unitários), \emph{judge} (formatação, Clippy, 31 testes; os 20 testes de ponta a ponta do sandbox rodam localmente na imagem do juiz) e \emph{enum-sync}, que reprova o build quando os enums de status e de linguagem, declarados tanto em Rust quanto no Drizzle, divergem. O juiz é implantado como serviço persistente com as duas capabilities necessárias, mantendo aberta sua conexão \texttt{LISTEN}.
+
+\section{Avaliação de Desempenho}\label{sec:performance}
+
+Todos os números abaixo vêm de scripts e resultados brutos no diretório \texttt{bench/} do repositório. As medições foram feitas em 28 de outubro de 2026 em um AMD Ryzen 5 5600 (6 núcleos, 12 threads) com 32\,GB de RAM, usando a imagem de produção do juiz (\texttt{isolate} 2.7, GCC 12.2, \texttt{rustc} 1.63, OpenJDK 21, Python 3.11, Portugol 2.7.5) contra um contêiner descartável de PostgreSQL 16; o banco de produção foi apenas lido. Esta máquina tem muito mais núcleos que o juiz de produção, que roda em uma vCPU compartilhada.
+
+\textbf{Vazão e latência.} Uma rajada de 40 ou 100 submissões alternando entre as seis linguagens (cinco casos de teste cada) é inserida de uma só vez, seguida de um único \texttt{NOTIFY}, como quando uma turma submete junta, e corrigida pelo juiz real com $N \in \{1, 2, 4, 8\}$ workers (Tabela~\ref{tab:concurrency}). Quatro workers corrigiram 100 submissões $2{,}8\times$ mais rápido que um (51\,s em vez de 143\,s) e oito, $3{,}8\times$ mais rápido, reduzindo a espera mediana de 66\,s para 18\,s; o ganho é sublinear porque compiladores e JVMs disputam CPU, memória e disco. Restritos a uma CPU, quatro workers não trouxeram ganho, e não houve nenhum veredito espúrio de limite de tempo. Com o juiz ocioso, a reivindicação ocorreu cerca de 1\,ms após a inserção, de modo que o \texttt{LISTEN/NOTIFY} não acrescenta atraso relevante; o tempo mediano até o veredito para cinco casos foi de 0,08\,s em C, 0,09\,s em Python, 0,35\,s em C++, 0,38\,s em Rust, 1,09\,s em Java e 7,17\,s em Portugol.
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\caption{Pool de workers do juiz sob uma rajada de submissões em várias linguagens; a latência vai da inserção ao veredito. Todas as submissões foram aceitas em todas as execuções.}
+\label{tab:concurrency}
+\begin{tabular}{lrrrrr}
+\hline
+\textbf{Execução} & \textbf{Workers} & \textbf{Tempo total} & \textbf{Ganho} & \textbf{Latência p50} & \textbf{Latência p95} \\
+\hline
+40 submissões, 12 CPUs  & 1 & 54,3\,s  & 1,00$\times$ & 26,9\,s & 53,2\,s \\
+                        & 4 & 19,1\,s  & 2,84$\times$ & 7,1\,s  & 14,6\,s \\
+                        & 8 & 14,2\,s  & 3,82$\times$ & 2,7\,s  & 12,9\,s \\
+\hline
+100 submissões, 12 CPUs & 1 & 143,0\,s & 1,00$\times$ & 66,2\,s & 134,2\,s \\
+                        & 2 & 84,0\,s  & 1,70$\times$ & 41,9\,s & 81,2\,s \\
+                        & 4 & 51,0\,s  & 2,80$\times$ & 21,4\,s & 42,6\,s \\
+                        & 8 & 37,9\,s  & 3,77$\times$ & 17,6\,s & 32,7\,s \\
+\hline
+40 submissões, 1 CPU    & 1 & 80,4\,s  & 1,00$\times$ & 41,3\,s & 79,1\,s \\
+                        & 4 & 81,8\,s  & 0,98$\times$ & 33,2\,s & 67,4\,s \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Custo por linguagem e sobrecarga do sandbox.} A Tabela~\ref{tab:lang-cost} traz medianas de seis execuções dentro do \texttt{isolate}. O Portugol domina, pois seu executor compila o Java gerado a cada execução, e as linguagens da JVM usam uma ordem de grandeza a mais de memória; o juiz compila sem flags de otimização, daí o laço mais lento do Rust. Em comparação com a execução dos mesmos comandos diretamente no contêiner, o sandbox acrescentou 5--6\,ms por execução (14\,ms no Rust); uma caixa vazia sozinha levou 2,6\,ms.
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\caption{Tempo mediano de compilação, tempo de execução e memória residente de pico por linguagem, dentro do \texttt{isolate}.}
+\label{tab:lang-cost}
+\begin{tabular}{lrrrr}
+\hline
+\textbf{Linguagem} & \textbf{Compilação} & \textbf{Execução: hello} & \textbf{Execução: laço $10^7$} & \textbf{Memória de pico (laço)} \\
+\hline
+C        & 40\,ms  & 7\,ms     & 52\,ms    & 1,6\,MB \\
+C++      & 309\,ms & 7\,ms     & 54\,ms    & 3,1\,MB \\
+Java     & 619\,ms & 34\,ms    & 117\,ms   & 44,3\,MB \\
+Python   & ---     & 17\,ms    & 907\,ms   & 7,9\,MB \\
+Rust     & 236\,ms & 18\,ms    & 166\,ms   & 1,7\,MB \\
+Portugol & ---     & 1264\,ms  & 1444\,ms  & 86,6\,MB \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Acurácia dos vereditos.}\label{sec:perf-verdicts} Dois programas por veredito pretendido e por linguagem, 72 no total, foram corrigidos pela função de correção real do juiz; 63 (87,5\%) receberam o veredito pretendido (Figura~\ref{fig:verdicts}), e accepted, wrong answer e time limit acertaram sempre. O executor do Portugol imprime erros de compilação e de execução na saída padrão e termina com status 0, de modo que todos os seis programas desse tipo receberam WA; os dois erros de sintaxe em Python foram classificados como erros de execução, já que não há etapa de compilação; e um programa em C que escrevia por um \texttt{malloc} que falhou travou antes de sua memória crescer, de modo que a heurística de MLE o classificou como RE. Excluindo o Portugol, 57 de 60 vereditos estavam corretos.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{figures/pt/verdict_confusion.png}
+\caption{Veredito pretendido versus veredito dado pelo juiz, 12 programas por veredito pretendido (dois por linguagem).}
+\label{fig:verdicts}
+\end{figure}
+
+\textbf{Modos de comparação de saída.} As 16 falhas históricas por saída divergente eram respostas realmente erradas em todos os modos. Reescrevendo as saídas esperadas dos problemas de exemplo da forma como programas corretos costumam divergir, o modo exact rejeitou 3 de 35 saídas com espaços no fim da linha e 3 de 35 com quebras de linha do Windows, tokens aceitou todas, e float aceitou 7 de 12 números com precisão diferente com $\varepsilon=10^{-6}$ e 10 de 12 com $10^{-3}$. Nenhum modo aceitou um erro real.
+
+\textbf{Similaridade de código.}\label{sec:perf-similarity} Trinta e seis soluções escritas à mão (quatro problemas, em Python, C e Java, três ``autores'' cada) receberam seis ofuscações automáticas cada (renomeação, reformatação, mudança de comentários, reordenação de funções, código morto e todas combinadas), resultando em 216 pares de cópias, 36 negativos difíceis e 162 negativos fáceis. Renomeação, reformatação e comentários tiveram sempre 100\% (Figura~\ref{fig:similarity}); a ofuscação combinada teve mediana de 84\% e mínimo de 37\%, enquanto soluções independentes para o mesmo problema chegaram no máximo a 68\%. A AUC da curva ROC foi de 0,998, e o limiar de melhor F1 (0,52) deu 98,2\% de precisão e 99,5\% de revocação. Em uma ``turma'' inteira de 21 submissões, o filtro de código-padrão levou as soluções independentes a no máximo 16\%, separando as cópias perfeitamente. Essas ofuscações sistemáticas fazem desses números um limite superior. O relatório levou cerca de 15\,ms para 30 alunos e menos de 0,9\,s para 300.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\textwidth]{figures/pt/plagiarism_levels.png}
+\caption{Similaridade por nível de ofuscação (azul: cópias) e para soluções independentes (laranja), comparando cada par isoladamente. A linha tracejada é o limiar de melhor F1.}
+\label{fig:similarity}
+\end{figure}
+
+\textbf{Verificador de restrições, IA e web.} Em 30 amostras rotuladas, o verificador estrutural classificou corretamente violações reais, código limpo e identificadores parecidos, mas errou em 10 de 11 casos em que a palavra aparecia apenas em uma string ou comentário. Sessenta chamadas dos recursos de IA pela cadeia de produção encontraram um erro de cota no modelo principal: 37 precisaram de um modelo reserva e nenhuma falhou, com latências medianas de 13,1--20,4\,s; as soluções de referência geradas passaram em 10 de 10 em Python e 8 de 10 em C, sendo as duas falhas uma frase que o último modelo reserva escreveu antes do código, o que a validação antes da publicação detecta. A classificação de 1000 participantes e 52\,252 submissões levou 116\,ms, e um boletim de 1000 alunos com exportação CSV, 267\,ms.
+
+\section{Avaliação em Sala de Aula}\label{sec:evaluation-status}
+
+O instrumento de avaliação está embutido no sistema: ao fim de uma competição ou aula, os participantes são convidados a um questionário (com elegibilidade verificada no servidor), com termo de consentimento livre e esclarecido, a System Usability Scale (SUS) \cite{brooke1996sus}, itens Likert específicos da atividade e perguntas abertas; uma página restrita ao pesquisador resume e exporta as respostas anônimas.
+
+\textbf{Participantes e procedimento.} O primeiro teste ocorreu em 29 de outubro de 2026 no IFMG, em uma turma do primeiro ano do curso Técnico em Informática integrado ao ensino médio. Os alunos resolveram uma aula com dois problemas em Python e responderam ao questionário do aluno logo em seguida; 30 respostas foram enviadas em dez minutos. Vinte e quatro nunca tinham usado um juiz online e seis o tinham usado poucas vezes. Não houve competição e nenhum professor respondeu.
+
+\textbf{Usabilidade.} A nota SUS média foi 72,1 (mediana 76,2, DP 18,3, amplitude 22,5--95; IC 95\% de cerca de 65,6--78,6), acima da referência de 68 \cite{sauro2011sus} e na faixa ``boa'' da escala de adjetivos \cite{bangor2009sus}. A dispersão é grande (Figura~\ref{fig:sus-bands}): 13 respondentes tiveram 80,3 ou mais, 4 entre 68 e 80, 8 entre 51 e 67 e 5 abaixo de 51. Integração e facilidade de aprendizado foram os itens mais fortes (Tabela~\ref{tab:sus-items}); os mais fracos diziam respeito à autonomia, à necessidade de suporte (9 de 30 concordaram) e à confiança, o que condiz com uma turma em que 80\% nunca tinham usado um juiz.
+
+\begin{figure}[t]
+\centering
+\begin{minipage}[c]{0.46\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/pt/survey_sus_bands.png}
+\caption{Distribuição das notas SUS dos 30 respondentes, por faixa de conceito.}
+\label{fig:sus-bands}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.5\textwidth}
+\centering
+\scriptsize
+\captionof{table}{Resposta média por item da SUS (n = 30, escala 1--5). Nos itens negativos, quanto menor, melhor.}
+\label{tab:sus-items}
+\begin{tabular}{lr}
+\hline
+\textbf{Item da SUS} & \textbf{Média} \\
+\hline
+5. As funções são bem integradas              & 4,13 \\
+7. A maioria aprenderia a usá-lo rápido       & 4,07 \\
+3. Fácil de usar                              & 3,93 \\
+1. Gostaria de usá-lo com frequência          & 3,77 \\
+9. Senti-me confiante ao usá-lo               & 3,50 \\
+\hline
+4. Precisaria de suporte técnico (neg.)       & 2,57 \\
+10. Precisei aprender muito antes (neg.)      & 2,13 \\
+6. Inconsistência demais (neg.)               & 2,03 \\
+8. Complicado de usar (neg.)                  & 1,97 \\
+2. Desnecessariamente complexo (neg.)         & 1,87 \\
+\hline
+\end{tabular}
+\end{minipage}
+\end{figure}
+
+\textbf{Itens da atividade.} O fluxo da turma teve as notas mais altas (Tabela~\ref{tab:survey-items}): 24 de 30 concordaram totalmente que entrar na turma e encontrar a lista foi fácil. Os 23 alunos que usaram as dicas da IA as avaliaram como úteis sem entregar a resposta; o feedback do juiz teve nota menor, e o ganho de confiança foi o item mais baixo. Todos os alunos usaram o editor de código, não os blocos nem o Parsons.
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\caption{Itens específicos da atividade no questionário do aluno para listas de exercícios.}
+\label{tab:survey-items}
+\begin{tabular}{lrr}
+\hline
+\textbf{Item (1 = discordo totalmente, 5 = concordo totalmente)} & \textbf{Média} & \textbf{n} \\
+\hline
+Foi fácil entrar na turma e encontrar a lista             & 4,70 & 30 \\
+Ficou claro como entregar a lista                         & 4,43 & 30 \\
+Usaria o WhyRunner para estudar sozinho                   & 4,13 & 30 \\
+As dicas da IA ajudaram sem entregar a resposta           & 4,04 & 23 \\
+O feedback do juiz me ajudou a corrigir meus erros        & 3,53 & 30 \\
+O modo de resposta me ajudou a resolver os exercícios     & 3,41 & 29 \\
+Sinto-me mais confiante para programar após a lista       & 3,23 & 30 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Respostas abertas.} O que mais ajudou foi a assistência da IA (cerca de 14 menções, por exemplo, ``as dicas sem entregar a resposta da IA'') e a correção imediata (cerca de 9); todos os sete comentários gerais foram positivos, um deles observando que o sistema ``não mostra resposta, o que é muito bom, pois desenvolve o raciocínio lógico''. A queixa mais frequente (cerca de 9) foi a comparação exata de saída: os dois problemas usavam o modo \emph{exact} e, em um deles, 26 submissões reprovadas de 13 alunos diferiam apenas em espaços em branco e teriam passado no modo \emph{tokens} (12 desses alunos passaram depois). Muitas outras falhas vieram da impressão do prompt do \texttt{input()} do Python. A segunda queixa (cerca de 6) foi não poder ver a própria saída nem o traceback; temas menores incluíram o editor pequeno, o painel de IA sem rolagem e o desejo de executar o código antes de submeter. Um aluno relatou ser surdo e ter achado a atividade um tanto difícil.
+
+\textbf{Mudanças após o teste.} A Tabela~\ref{tab:feedback-fixes} lista as mudanças, todas integradas em até dois dias. A troca dos problemas existentes para \emph{tokens} foi deixada de fora deliberadamente (\S\ref{sec:limitations}), e uma saída que difere em maiúsculas ou na redação continua sendo rejeitada, já que respeitar a especificação de saída faz parte do que um juiz ensina.
+
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{Feedback da turma e mudanças resultantes, com seus pull requests.}
+\label{tab:feedback-fixes}
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{8.6cm}c}
+\hline
+\textbf{Feedback da turma} & \textbf{Mudança} & \textbf{PR} \\
+\hline
+Interface abriu em inglês; tradução do navegador quebrou o código inicial; editor pequeno & Português como padrão; código excluído da tradução; tela cheia e tamanho de fonte persistido & \#81 \\
+Número de matrícula digitado como nome de usuário & Etapa de cadastro inicial removida; campo opcional de matrícula & \#82 \\
+Sem a própria saída nem traceback na falha & Entrada, própria saída, saída esperada e saída de erro nos testes visíveis & \#83 \\
+Painel de IA sem rolagem; código apagado ao trocar de linguagem; colchetes intrusivos; veredito longe do editor; código colado falhava; prompts do \texttt{input()} impressos & Ajuda com rolagem e acoplável; rascunhos restaurados; opção de fechar colchetes; veredito na barra do editor; caracteres invisíveis normalizados; aviso para imprimir só a saída pedida & \#88 \\
+Não dava para executar antes de submeter & Execução sem correção, com entrada personalizada, no sandbox & \#89 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Ameaças à validade.} A avaliação é pequena e descritiva: uma turma, uma lista, uma linguagem e um questionário logo após uma única sessão, sem grupo de comparação nem medida pré/pós, de modo que mostra percepção, não ganho de aprendizagem. Trinta respondentes dão uma média SUS razoavelmente estável (cerca de $\pm$7 pontos), mas não permitem análise de subgrupos; novidade e desejabilidade social (o desenvolvedor estava presente) podem ter elevado as notas; e só os alunos responderam.
+
+\section{Discussão}\label{sec:limitations}
+
+Os resultados sustentam o projeto: a execução isolada acrescenta apenas cerca de 5\,ms por execução, o pool escala com os núcleos, o detector de similaridade separa cópias de soluções independentes e alunos iniciantes avaliaram a usabilidade acima da referência. Eles também expõem limitações. (1) \emph{Dependência de IA}: a cadeia de modelos reserva tolera a indisponibilidade de um provedor, mas não de todos, as respostas variam entre modelos, o custo total cresce com os usuários e o último modelo reserva quebrou duas vezes o contrato de devolver só código. (2) \emph{Sandbox}: as capabilities do \texttt{isolate} excluem muitas plataformas gerenciadas; a memória é limitada por processo e não por caixa; e, sem o modo de control groups, MLE é uma heurística que deixou passar um travamento após uma alocação que falhou. (3) \emph{Sem ganho de concorrência em produção}: o juiz de produção roda em uma vCPU compartilhada, na qual o pool se reduz a um worker. (4) \emph{Portugol}: seus erros são classificados como wrong answer, e é a linguagem mais lenta, cerca de 1,3\,s por caso de teste. (5) \emph{Escopo da similaridade}: a comparação é feita só entre submissões da mesma linguagem e não detecta código gerado por IA. (6) \emph{Restrições e visibilidade heurísticas}: as verificações estruturais varrem o texto e falham em strings e comentários, e o modo ``mostrar todos'' de uma aula revela casos ocultos de problemas escritos por outros autores. (7) \emph{Avaliação}: uma turma, só a visão dos alunos e comparação exata nos problemas antigos, a queixa mais frequente; competições, autoria, o boletim e a experiência do professor continuam sem avaliação, de modo que a questão de pesquisa é respondida apenas em parte.\label{sec:future-work}
+
+Os trabalhos futuros decorrem disso: repetir a avaliação com uma competição, mais turmas e linguagens e o questionário do professor, de preferência com grupo de comparação; migrar os problemas antigos para \emph{tokens}; revisar a acessibilidade; ativar o modo de control groups do \texttt{isolate}, para limite de memória por caixa e um sinal claro de falta de memória; implantar um juiz com vários núcleos ou várias réplicas, o que a reivindicação por linha já permite; reconhecer as mensagens de erro do Portugol; adicionar sinais de código gerado por IA; restringir o ``mostrar todos'' aos problemas do dono da aula; e adicionar linguagens e geração automática de testes.
+
+\section{Conclusão}
+
+O WhyRunner combina um juiz multilinguagem isolado em sandbox, com vereditos distintos, comparação de saída configurável e um pool concorrente de workers; competições em tempo real; aulas curadas pelo professor, com modos visuais de resposta e boletim; dicas e autoria assistidas por IA por trás de uma cadeia de modelos de vários provedores; validação antes da publicação e restrições de solução; e detecção de similaridade de código. Uma suíte de benchmarks reproduzível mediu esses componentes e expôs seus limites. Em um primeiro teste em sala, 30 alunos que resolveram uma lista de exercícios deram nota SUS média de 72,1, acima da referência usual, valorizaram sobretudo as dicas da IA que não entregam a resposta e o feedback imediato, e relataram problemas que foram corrigidos em até dois dias. A avaliação ainda é restrita, de modo que competições e a visão do professor são o próximo passo.
+
+\bibliographystyle{sbc}
+\bibliography{refs}
+
+\end{document}

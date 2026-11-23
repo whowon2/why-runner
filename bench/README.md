@@ -5,7 +5,9 @@ Reproducible measurements behind every number in deck v4
 Evaluation* section of `overleaf/main.tex`. Raw results live in
 `bench/results/`; `bench/charts.py` turns them into the charts in
 `docs/presentation/charts/` (dark, Portuguese, for the deck) and
-`docs/presentation/charts/light/` (light, English, for the thesis), and into
+`docs/presentation/charts/light/` (light, English, for the thesis; copied to
+`overleaf/figures/`), `docs/presentation/charts/light-pt/` (light, Portuguese,
+for the pt-BR thesis; copied to `overleaf/figures/pt/`), and into
 `bench/results/summary.json`, which holds every headline number quoted.
 
 Measured on 2026-10-28.

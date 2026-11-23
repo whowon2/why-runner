@@ -7,6 +7,7 @@ alone (no database, no API).
 Writes two variants of each chart:
   docs/presentation/charts/<name>.png        light, Portuguese (deck v5)
   docs/presentation/charts/light/<name>.png  light, English   (thesis; copied to overleaf/figures/)
+  docs/presentation/charts/light-pt/<name>.png  light, Portuguese (pt-BR thesis; copied to overleaf/figures/pt/)
 Palette: the dataviz reference categorical slots (validated for both
 surfaces with its validate_palette.js); single-series charts use the deck's
 green accent. Deck v4 was dark; v5 switched the deck to a light theme.
@@ -35,6 +36,9 @@ THEMES = {
     "light": dict(surface="#ffffff", text="#0b0b0b", muted="#52514e", grid="#e2e1dc", accent="#0ca30c",
                   series=["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#6250d6"],
                   seq="Blues", lang="en", dir=OUT / "light"),
+    "light_pt": dict(surface="#ffffff", text="#0b0b0b", muted="#52514e", grid="#e2e1dc", accent="#0ca30c",
+                     series=["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#6250d6"],
+                     seq="Blues", lang="pt", dir=OUT / "light-pt"),
 }
 T = THEMES["deck"]
 SUMMARY = {}
@@ -394,10 +398,12 @@ def plagiarism():
         b.set_edgecolor(T["surface"])
     thr = SUMMARY["plagiarism_quality"]["best_f1_pair"]["threshold"]
     ax.axhline(thr, color=T["muted"], linestyle="--", linewidth=1)
-    ax.annotate(L(f"limiar {thr:.2f}", f"threshold {thr:.2f}"), (8.45, thr), xytext=(0, 5),
+    ax.annotate(L(f"limiar {thr:.2f}".replace(".", ","), f"threshold {thr:.2f}"), (8.45, thr), xytext=(0, 5),
                 textcoords="offset points", ha="right", fontsize=12, color=T["muted"])
     ax.set_xticks(range(1, len(levels) + 1), [names[lv] for lv in levels], fontsize=12)
     ax.set_ylim(0, 1.05)
+    if T["lang"] == "pt":
+        ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{v:.1f}".replace(".", ",")))
     axis_labels(ax, None, L("similaridade (0–1)", "similarity (0–1)"))
     ax.annotate(L("cópias ofuscadas", "obfuscated copies"), (3.5, 1.04), ha="center", fontsize=13,
                 color=T["series"][0])
@@ -656,7 +662,7 @@ def survey():
 
 def main():
     global T
-    for name in ("deck", "light"):
+    for name in ("deck", "light_pt", "light"):  # English last: SUMMARY keeps its labels
         T = THEMES[name]
         for step in (concurrency, lang_cost, e2e, sandbox, verdicts, regrade, plagiarism, constraints, ai,
                      web_compute, ci, survey):
@@ -672,6 +678,9 @@ def main():
     figs.mkdir(exist_ok=True)
     for png in THEMES["light"]["dir"].glob("*.png"):
         (figs / png.name).write_bytes(png.read_bytes())
+    (figs / "pt").mkdir(exist_ok=True)
+    for png in THEMES["light_pt"]["dir"].glob("*.png"):
+        (figs / "pt" / png.name).write_bytes(png.read_bytes())
     print("charts ->", OUT)
 
 
