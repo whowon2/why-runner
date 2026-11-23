@@ -195,7 +195,7 @@ export function SimilarityReport({
                         key={key}
                         onClick={() => setPairKey(key === pairKey ? null : key)}
                       >
-                        <TableCell className="font-medium">
+                        <TableCell className="font-medium" translate="no">
                           {a?.user.name} · {b?.user.name}
                         </TableCell>
                         <TableCell>

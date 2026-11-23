@@ -58,11 +58,15 @@ export function MemberRow({
       <MemberAvatar member={member} />
       <span className="flex min-w-0 flex-col">
         <span className="flex min-w-0 items-center gap-2">
-          <span className="truncate text-sm font-medium">{member.name}</span>
+          <span className="truncate text-sm font-medium" translate="no">
+            {member.name}
+          </span>
           {badge}
         </span>
         <span className="text-muted-foreground flex min-w-0 flex-wrap gap-x-2 text-xs">
-          <span className="truncate">@{member.username}</span>
+          <span className="truncate" translate="no">
+            @{member.username}
+          </span>
           {member.ra && <span className="font-mono">{member.ra}</span>}
         </span>
       </span>

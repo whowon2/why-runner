@@ -174,7 +174,9 @@ function StandingsTableRow({
               {row.user.name.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="truncate font-medium">{row.user.name}</span>
+          <span className="truncate font-medium" translate="no">
+            {row.user.name}
+          </span>
           {isViewer && (
             <span className="shrink-0 rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
               {t("you")}
@@ -281,11 +283,7 @@ export function Leaderboard({
 
   const { problems, rows } = standings;
   const minWidth =
-    RANK_W +
-    PARTICIPANT_W +
-    problems.length * PROBLEM_W +
-    SOLVED_W +
-    PENALTY_W;
+    RANK_W + PARTICIPANT_W + problems.length * PROBLEM_W + SOLVED_W + PENALTY_W;
 
   const headBase = "sticky top-0 z-20 bg-card";
 

@@ -1,3 +1,4 @@
+import { withBrand } from "@/components/brand";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { BackButton } from "@/components/back-button";
@@ -27,9 +28,9 @@ export function PageHeader({
         </span>
         <div className="min-w-0 space-y-1">
           <h1 className="text-2xl font-bold tracking-tight break-words">
-            {title}
+            {withBrand(title)}
           </h1>
-          <p className="text-muted-foreground text-sm">{subtitle}</p>
+          <p className="text-muted-foreground text-sm">{withBrand(subtitle)}</p>
         </div>
       </div>
       {action && <div className="shrink-0 flex gap-2">{action}</div>}

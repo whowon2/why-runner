@@ -1,3 +1,4 @@
+import { withBrand } from "@/components/brand";
 import { useId } from "react";
 import { LIKERT_VALUES, NOT_APPLICABLE } from "@/lib/surveys/forms";
 import type { ItemAnswer } from "@/lib/surveys/forms";
@@ -33,8 +34,8 @@ export function LikertField({
       )}
       aria-invalid={invalid}
     >
-      <legend className="sr-only">{label}</legend>
-      <p className="text-sm font-medium">{label}</p>
+      <legend className="sr-only">{withBrand(label)}</legend>
+      <p className="text-sm font-medium">{withBrand(label)}</p>
       {/* One column per point: number on top, its label under it. N/A
           wraps to its own row on narrow screens. */}
       <div className="grid grid-cols-5 gap-1.5 sm:flex sm:flex-wrap sm:gap-2">

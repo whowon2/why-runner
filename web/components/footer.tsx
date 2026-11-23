@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { Brand } from "@/components/brand";
 import { LegalFooterLinks } from "@/components/legal-footer-links";
 import { Separator } from "@/components/ui/separator";
 import { APP_COMMIT, APP_VERSION } from "@/lib/version";
@@ -23,7 +24,10 @@ export async function Footer() {
       <Separator />
       <div className="p-4 space-y-3">
         <p className="text-sm text-muted-foreground">
-          {t("copyright", { year: new Date().getFullYear() })}
+          {t.rich("copyright", {
+            brand: (chunks) => <Brand>{chunks}</Brand>,
+            year: new Date().getFullYear(),
+          })}
         </p>
         <LegalFooterLinks />
         <a

@@ -57,13 +57,26 @@ export const metadata: Metadata = {
   title: "Why Runner",
 };
 
-export default function RootLayout({
+/** BCP 47 tag for `<html lang>`, so translators detect the page's language. */
+function htmlLang(locale: string) {
+  return locale === "br" ? "pt-BR" : "en";
+}
+
+export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }>) {
+  const { locale } = await params;
+
   return (
-    <html lang="en" suppressHydrationWarning className={geistMono.variable}>
+    <html
+      lang={htmlLang(locale)}
+      suppressHydrationWarning
+      className={geistMono.variable}
+    >
       <body className="flex flex-col min-h-screen justify-between scroll-smooth">
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: static, build-time-generated script with no user input */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />

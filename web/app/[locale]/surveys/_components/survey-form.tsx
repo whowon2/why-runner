@@ -1,3 +1,4 @@
+import { withBrand } from "@/components/brand";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type ReactNode, useMemo, useState } from "react";
 import { Controller, type Resolver, useForm } from "react-hook-form";
@@ -36,7 +37,9 @@ function Section({
     <section className="flex flex-col gap-4">
       <div className="space-y-1 border-b pb-2">
         <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-        {hint && <p className="text-sm text-muted-foreground">{hint}</p>}
+        {hint && (
+          <p className="text-sm text-muted-foreground">{withBrand(hint)}</p>
+        )}
       </div>
       {children}
     </section>
@@ -146,7 +149,7 @@ export function SurveyForm({
     >
       <Section title={t("page.consentTitle")}>
         <p className="max-w-prose text-sm leading-relaxed">
-          {t("page.consentText")}
+          {withBrand(t("page.consentText"))}
         </p>
         <div className="flex items-center gap-3">
           <Checkbox
@@ -271,7 +274,7 @@ export function SurveyForm({
           {definition.open.map((q) => (
             <div key={q.key} className="flex flex-col gap-2">
               <Label htmlFor={`open-${q.key}`}>
-                {t(`open.${q.key}`)}
+                {withBrand(t(`open.${q.key}`))}
                 <span className="text-xs font-normal text-muted-foreground">
                   ({q.required ? t("page.required") : t("page.optional")})
                 </span>

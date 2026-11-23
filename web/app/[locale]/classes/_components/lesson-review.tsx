@@ -79,7 +79,7 @@ export function LessonReview({ lessonId }: { lessonId: string }) {
               value={student.id}
             >
               <AccordionTrigger className="text-sm">
-                <span>{student.name}</span>
+                <span translate="no">{student.name}</span>
                 <div className="flex items-center gap-2">
                   {submittedAt ? (
                     <Badge className="bg-blue-500">

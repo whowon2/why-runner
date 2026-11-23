@@ -149,7 +149,8 @@ export function EditContestProblems({
                     className="text-xs text-muted-foreground hover:underline"
                     href={`/user/${probOnCont.problem.user.username}`}
                   >
-                    {t("by")} {probOnCont.problem.user.name}
+                    {t("by")}{" "}
+                    <span translate="no">{probOnCont.problem.user.name}</span>
                   </Link>
                 )}
               </div>

@@ -56,7 +56,7 @@ export function ContestSubmissions({ contest }: { contest: Contest }) {
                     }}
                   />
                 </TableCell>
-                <TableCell>{submission.user.name}</TableCell>
+                <TableCell translate="no">{submission.user.name}</TableCell>
                 <TableCell className={statusTone(submission.status)}>
                   <StatusBadge status={submission.status} />
                 </TableCell>

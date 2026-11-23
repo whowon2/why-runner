@@ -243,6 +243,7 @@ export function ClassGradebook({ classroomId }: { classroomId: string }) {
                       <Link
                         className="hover:underline"
                         href={`/user/${r.student.username}`}
+                        translate="no"
                       >
                         {r.student.name}
                       </Link>

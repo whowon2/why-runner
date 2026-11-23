@@ -47,11 +47,14 @@ export function StudentSheet({
               <div className="flex items-center gap-3">
                 <MemberAvatar className="size-12" member={student} />
                 <div className="flex min-w-0 flex-col gap-1">
-                  <SheetTitle className="truncate">{student.name}</SheetTitle>
+                  <SheetTitle className="truncate" translate="no">
+                    {student.name}
+                  </SheetTitle>
                   <SheetDescription className="flex flex-wrap gap-x-2 text-xs">
                     <Link
                       className="hover:underline"
                       href={`/user/${student.username}`}
+                      translate="no"
                     >
                       @{student.username}
                     </Link>
