@@ -4,22 +4,25 @@
 
 \usepackage{graphicx,url}
 
-\usepackage[brazil]{babel}
+\usepackage[brazilian,english]{babel}
 \usepackage[utf8]{inputenc}
 
 \usepackage{float}
+\usepackage{array}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning}
 
 \sloppy
+\setlength{\belowcaptionskip}{6pt}
 
 \title{WhyRunner: Online Judge for Competitive Programming}
 
 \author{Juan Israel dos Anjos}
 
-\address{Instituto Federal de Educacao, Ciencia e Tecnologia de Minas Gerais
+\address{Instituto Federal de Educação, Ciência e Tecnologia de Minas Gerais
   (IFMG)\\
-  Rua Afonso Sardinha, 90, Bairro Minas Talco – Ouro Branco/MG – CEP: 36494-018 – Brazil
+  Rua Afonso Sardinha, 90, Bairro Minas Talco\\
+  Ouro Branco/MG – CEP: 36494-018 – Brazil
   \email{juaniwk3@gmail.com}
 }
 
@@ -28,12 +31,14 @@
 \maketitle
 
 \begin{abstract}
-  Existing online judges primarily focus on correctness-based evaluation, often neglecting pedagogical feedback and real-time contest dynamics essential for educational contexts. This paper introduces WhyRunner: Programming Online Judge, a modular and secure system that integrates sandboxed code execution with distinct verdicts and configurable output comparison (including custom checkers), a concurrent judge worker pool, real-time contest management, a professor-curated lesson/exercise authoring model with a class gradebook, AI-assisted problem authoring with mandatory pre-publish validation, AI-powered feedback, and MOSS-style code similarity detection. This paper presents the system's architecture, development methodology, and implementation, and a reproducible performance evaluation of the judge, the similarity detector, and the AI features. A first classroom test is also reported: 30 first-year students of a technical high-school course solved one exercise list and answered the in-app student questionnaire. The mean System Usability Scale score was 72.1, above the usual benchmark of 68; students valued the AI hints and the immediate feedback most, and their main complaint was exact output matching. Their feedback led to changes made within two days of the test. No contest or instructor evaluation has been carried out yet.
+  This paper presents WhyRunner, an online judge for competitive programming designed for education. It runs submissions in an \texttt{isolate} sandbox with distinct verdicts, custom output checkers, and a concurrent worker pool, and adds real-time contests, teacher-curated lessons with a class gradebook, AI-assisted problem authoring and feedback, and code similarity detection. We describe its architecture and implementation and report a reproducible performance evaluation. In a first classroom test, 30 technical high-school students solved an exercise list; the mean System Usability Scale score was 72.1, above the benchmark of 68. Contests and the instructor's perspective have not been evaluated yet.
 \end{abstract}
 
+\begin{otherlanguage}{brazilian}
 \begin{resumo}
-  Os juízes online existentes focam principalmente na avaliação baseada em correção, negligenciando o feedback pedagógico e a dinâmica de competições em tempo real, essenciais em contextos educacionais. Este artigo apresenta o WhyRunner: Programming Online Judge, um sistema modular e seguro que integra execução de código em ambiente isolado (sandbox), gerenciamento de competições em tempo real, vereditos distintos e comparação de saída configurável (inclusive com corretores personalizados), um conjunto concorrente de workers de correção, um modelo de autoria de aulas/exercícios curado pelo docente com boletim da turma, autoria de problemas assistida por IA com validação obrigatória antes da publicação, feedback assistido por inteligência artificial e detecção de similaridade de código no estilo MOSS. Este artigo descreve a arquitetura do sistema, a metodologia de desenvolvimento e a implementação, e apresenta uma avaliação de desempenho reproduzível do juiz, do detector de similaridade e dos recursos de IA. Também é relatado um primeiro teste em sala: 30 alunos do primeiro ano de um curso técnico integrado ao ensino médio resolveram uma lista de exercícios e responderam ao questionário do aluno, integrado ao sistema. A nota média na System Usability Scale foi 72,1, acima da referência usual de 68; os alunos valorizaram sobretudo as dicas da IA e a correção imediata, e a principal queixa foi a exigência de saída idêntica à esperada. O retorno da turma levou a mudanças feitas nos dois dias seguintes ao teste. Ainda não houve avaliação de competições nem com professores.
+  Este artigo apresenta o WhyRunner, um juiz online de programação competitiva para o ensino. Executa submissões no sandbox \texttt{isolate}, com vereditos distintos, corretores de saída personalizados e um pool concorrente de workers, e oferece competições em tempo real, aulas curadas pelo professor com boletim da turma, autoria de problemas e feedback assistidos por IA e detecção de similaridade de código. Descrevemos sua arquitetura e implementação e relatamos uma avaliação de desempenho reproduzível. Num primeiro teste em sala, 30 alunos do ensino médio técnico resolveram uma lista de exercícios; a nota média na System Usability Scale foi 72,1, acima da referência de 68. Competições e a visão do professor ainda não foram avaliadas.
 \end{resumo}
+\end{otherlanguage}
 
 \section{Introduction}
 
@@ -112,12 +117,14 @@ The system is built mainly with PHP and relies on a LAMP stack (Linux, Apache, M
 
 Comparing the analyzed platforms to WhyRunner:
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.25}
-\begin{tabular}{|l|c|c|c|c|c|}
+\caption{Comparison of programming judge systems. n/r: not reported in the sources analysed (\S\ref{sec:related}); the last four rows were added in this version and were not assessed for the other systems.}
+\label{tab:judge-comparison}
+\begin{tabular}{lccccc}
 \hline
 \textbf{Feature} & \textbf{Ataux} & \textbf{GOJ} & \textbf{Run Codes} & \textbf{BOCA} & \textbf{WhyRunner} \\
 \hline
@@ -133,8 +140,6 @@ Class gradebook              & n/r     & n/r      & n/r       & n/r      & Yes \
 Custom output checker        & n/r     & n/r      & n/r       & n/r      & Yes \\
 \hline
 \end{tabular}
-\caption{Comparison of programming judge systems. n/r: not reported in the sources analysed (\S\ref{sec:related}); the last four rows were added in this version and were not assessed for the other systems.}
-\label{tab:judge-comparison}
 \end{table}
 
 Beyond AI feedback, WhyRunner's second differentiator is the professor-curated Class/Lesson/Exercise model (\S\ref{sec:class-lesson-model}): none of the compared systems let an instructor assemble an ordered, gradable assignment from existing problems and review it per exercise outside of a timed contest. Solution-constraint enforcement (\S\ref{sec:prepublish-validation}) is a related but separate differentiator: it lets a professor require a specific algorithmic approach, not just a correct output, which none of the compared systems support either. Finally, block-based answers that compile to Portugol (\S\ref{sec:class-lesson-model}) give beginners a visual entry point that the compared judges, all text-only, do not offer. The four rows added in this version (plagiarism detection, distinct verdicts, a class gradebook, and custom output checkers) are standard in mature contest systems and are listed to show that WhyRunner now covers them, not as differentiators; they were not assessed for the other systems.
@@ -308,11 +313,13 @@ Exit code, CPU and wall time, peak resident memory, and the termination cause (t
 
 Earlier versions graded one submission at a time, so a class submitting together waited in a single line. The judge now runs a pool of $N$ workers in one process, where $N$ comes from \texttt{JUDGE\_CONCURRENCY} and defaults to the number of available CPUs, capped at 4. A dispatcher task owns the \texttt{LISTEN} connection: on every notification, and on a 60\,s periodic sweep in case a notification was missed, it dead-letters submissions whose worker crashed too many times and wakes the idle workers. Each worker claims a submission atomically with \texttt{UPDATE \ldots{} WHERE id = (SELECT \ldots{} FOR UPDATE SKIP LOCKED)}, so no two workers (or two judge replicas) ever grade the same row, and grades it in its own \texttt{isolate} box, whose id is the worker's slot. Table~\ref{tab:concurrency} summarizes the measured effect (method in \S\ref{sec:performance}).
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{5pt}
-\begin{tabular}{|l|r|r|r|r|r|}
+\caption{Judge worker pool under a burst of mixed-language submissions (six languages, five test cases each); latency is from insertion to verdict. All submissions were accepted in every run.}
+\label{tab:concurrency}
+\begin{tabular}{lrrrrr}
 \hline
 \textbf{Run} & \textbf{Workers} & \textbf{Wall time} & \textbf{Speedup} & \textbf{p50 latency} & \textbf{p95 latency} \\
 \hline
@@ -330,8 +337,6 @@ Earlier versions graded one submission at a time, so a class submitting together
                          & 4 & 81.8\,s  & 0.98$\times$ & 33.2\,s & 67.4\,s \\
 \hline
 \end{tabular}
-\caption{Judge worker pool under a burst of mixed-language submissions (six languages, five test cases each); latency is from insertion to verdict. All submissions were accepted in every run.}
-\label{tab:concurrency}
 \end{table}
 
 The pool helps only when there are cores to use: with the container pinned to one CPU, four workers were no faster than one. The production judge runs on a single shared vCPU (Fly.io \texttt{shared-cpu-1x}), where the default resolves to one worker, so production as deployed today gets no speedup (\S\ref{sec:limitations}). Workers should not exceed the vCPUs, since oversubscribed CPUs stretch wall time towards the wall-clock limit; in the 1-CPU run with four workers no spurious time-limit verdict occurred.
@@ -425,10 +430,12 @@ This section measures the system, not its educational effect. Every number below
 
 Table~\ref{tab:lang-cost} gives, per language, the median of six runs inside \texttt{isolate} of the compile step and of two programs: a ``hello world'' and a CPU-bound loop of $10^7$ modular multiply-adds. Portugol dominates: its console runner compiles the generated Java on every run, about 1.3\,s per test case even for ``hello world''. The JVM languages also use an order of magnitude more memory. The judge compiles without optimization flags, which is why the Rust loop is slower than C's. The first run of each program was not measurably slower than later ones.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \footnotesize
-\begin{tabular}{|l|r|r|r|r|}
+\caption{Median compile time, run time, and peak resident memory per language, inside \texttt{isolate}.}
+\label{tab:lang-cost}
+\begin{tabular}{lrrrr}
 \hline
 \textbf{Language} & \textbf{Compile} & \textbf{Run: hello} & \textbf{Run: $10^7$ loop} & \textbf{Peak memory (loop)} \\
 \hline
@@ -440,8 +447,6 @@ Rust     & 236\,ms & 18\,ms    & 166\,ms   & 1.7\,MB \\
 Portugol & ---     & 1264\,ms  & 1444\,ms  & 86.6\,MB \\
 \hline
 \end{tabular}
-\caption{Median compile time, run time, and peak resident memory per language, inside \texttt{isolate}.}
-\label{tab:lang-cost}
 \end{table}
 
 To measure what the sandbox costs, the same programs were run with the same commands directly in the container and through the judge's execution function, which creates a fresh box, stages the files, runs, reads the metadata, and destroys the box. The overhead was 5--6\,ms per run for C, C++, Java, and Python, and 14\,ms for Rust; creating and destroying an empty box alone took 2.6\,ms. For Portugol the difference was lost in the noise of its 1.3\,s runs.
@@ -498,9 +503,9 @@ The first classroom test took place on 29 October 2026 at IFMG, in one class of 
 
 \subsection{Usability (SUS)}
 
-The mean SUS score was 72.1 (median 76.2, standard deviation 18.3, range 22.5--95; 95\% confidence interval about 65.6--78.6). This is above the benchmark average of 68 \cite{sauro2011sus}; on the adjective scale of Bangor et al. \cite{bangor2009sus} it falls in the ``good'' range, roughly a C+/B$-$ grade. The spread is wide (Figure~\ref{fig:sus-bands}): 13 respondents scored 80.3 or more (grade A), 4 between 68 and 80, 8 between 51 and 67, and 5 below 51. The median is higher than the mean because a small group of low scores pulls the mean down. No respondent gave the same answer to all ten items.
+The mean SUS score was 72.1 (median 76.2, standard deviation 18.3, range 22.5--95; 95\% confidence interval about 65.6--78.6). This is above the benchmark average of 68 \cite{sauro2011sus}; on the adjective scale proposed in \cite{bangor2009sus} it falls in the ``good'' range, roughly a C+/B$-$ grade. The spread is wide (Figure~\ref{fig:sus-bands}): 13 respondents scored 80.3 or more (grade A), 4 between 68 and 80, 8 between 51 and 67, and 5 below 51. The median is higher than the mean because a small group of low scores pulls the mean down. No respondent gave the same answer to all ten items.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.8\textwidth]{figures/survey_sus_bands.png}
 \caption{Distribution of SUS scores among the 30 respondents, grouped by grade band.}
@@ -509,10 +514,12 @@ The mean SUS score was 72.1 (median 76.2, standard deviation 18.3, range 22.5--9
 
 Table~\ref{tab:sus-items} gives the mean of each SUS item. Integration of the functions and learnability were the strongest positive items. The weakest were the two about autonomy: the need for technical support (item 4, where 9 of 30 students agreed or strongly agreed) and confidence when using the system (item 9), which is consistent with a class in which 80\% had never used an online judge.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \footnotesize
-\begin{tabular}{|l|r|}
+\caption{Mean answer per SUS item (n = 30). For the negative items, lower is better.}
+\label{tab:sus-items}
+\begin{tabular}{lr}
 \hline
 \textbf{SUS item (1--5)} & \textbf{Mean} \\
 \hline
@@ -529,18 +536,18 @@ Table~\ref{tab:sus-items} gives the mean of each SUS item. Integration of the fu
 2. Unnecessarily complex (negative)                  & 1.87 \\
 \hline
 \end{tabular}
-\caption{Mean answer per SUS item (n = 30). For the negative items, lower is better.}
-\label{tab:sus-items}
 \end{table}
 
 \subsection{Activity-Specific Items}
 
 Table~\ref{tab:survey-items} shows the Likert items about the exercise list. The classroom flow scored highest: joining the class and finding the list (24 of 30 students fully agreed) and knowing how to hand it in (no answer below 3). Most students would use WhyRunner to study alone. The AI hints were rated as helpful without giving away the answer by the 23 students who used them. The judge's feedback was rated lower than the AI's, and the gain in confidence was the lowest item. The answer-mode item only covers plain code, since every student used the code editor rather than blocks or Parsons problems.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \footnotesize
-\begin{tabular}{|l|r|r|}
+\caption{Activity-specific items of the student questionnaire for exercise lists.}
+\label{tab:survey-items}
+\begin{tabular}{lrr}
 \hline
 \textbf{Item (1 = strongly disagree, 5 = strongly agree)} & \textbf{Mean} & \textbf{n} \\
 \hline
@@ -553,8 +560,6 @@ The answer mode helped me solve the exercises      & 3.41 & 29 \\
 I feel more confident programming after the list   & 3.23 & 30 \\
 \hline
 \end{tabular}
-\caption{Activity-specific items of the student questionnaire for exercise lists.}
-\label{tab:survey-items}
 \end{table}
 
 \subsection{Open Answers}
@@ -567,10 +572,12 @@ The most frequent complaint (about 9 mentions) was that the output had to match 
 
 The feedback collected in the session and in the questionnaire fed one more development cycle. Table~\ref{tab:feedback-fixes} lists the main changes, all merged within two days of the test. The exact-output complaint was deliberately not addressed by switching the existing problems to \texttt{tokens}; it remains a limitation (\S\ref{sec:limitations}). Requests outside the scope of this work, such as a mobile app, avatars, and more languages, were not acted upon, and output that differs in letter case or wording is still rejected, since respecting the output specification is part of what a judge teaches.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \footnotesize
-\begin{tabular}{|p{4.6cm}|p{8.6cm}|c|}
+\caption{Classroom feedback and the resulting changes, with their pull requests.}
+\label{tab:feedback-fixes}
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{8.6cm}c}
 \hline
 \textbf{Classroom feedback} & \textbf{Change} & \textbf{PR} \\
 \hline
@@ -588,8 +595,6 @@ Prompts of \texttt{input()} printed to the output & Hint in the failure view to 
 No way to run before submitting & Ungraded run with custom input in the judge sandbox & \#89 \\
 \hline
 \end{tabular}
-\caption{Classroom feedback and the resulting changes, with their pull requests.}
-\label{tab:feedback-fixes}
 \end{table}
 
 \subsection{Threats to Validity}
