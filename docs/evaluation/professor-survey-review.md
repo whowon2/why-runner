@@ -68,17 +68,16 @@ Status checked against `main` on 2026-11-09, updated 2026-11-10 after #99–#105
 | P6 | Allow problems created by any user in an activity list | **Fixed** (#81) | `ProblemPicker` searches every published problem plus your own drafts (was: first 50 of your own). |
 | P7 | Problem narrative doesn't show when the problem is in a list | **Fixed** (#90, web 1.3.0) | Lesson exercises moved to the workspace shell; `exercise-workspace.tsx` renders `problem.narrative`. |
 | P8 | Number of examples shown to students doesn't work, all examples are shown | **Fixed** (#83) | Per-test `visible` flag (new tests hidden by default) plus lesson mode `problem_default` / `show_all` / `hide_all`. |
-| P9 | With a browser auto-translate plugin, generic errors appear while coding | **Likely fixed** (#81), verify | Code surfaces, editors and the language selector are `translate="no"`. Verify in the Helium browser (translate extension installed there, 2026-11-09): translate a lesson exercise page to another language, write/run/submit code, switch site locale. If React still crashes (`removeChild`/`insertBefore` on text rewritten by the translator), mark the workspace routes `translate="no"` or wrap dynamic text nodes in elements. S |
+| P9 | With a browser auto-translate plugin, generic errors appear while coding | **Fixed** (#81, #106, web 1.11.1) | Reproduced 2026-11-09 with a simulated translator: React crashed (`insertBefore`/`removeChild`) when swapping an icon next to a text node the translator had rewritten. `Button` now wraps bare text children in a `<span>`, and 8 more such spots were fixed the same way; code surfaces stay `translate=\"no\"` (#81). Details in `post-evaluation-changes.md` row 29. |
 | P10 | List a class's students alphabetically | **Fixed** (#102) | `get-class.ts` orders members by `joinedAt`. Sort by name (case/accent-insensitive, `localeCompare` with `pt-BR`) in the member list and gradebook; keep teachers first. XS |
 | P11 | Show the problem's statistics in the activity list view too | **Fixed** (#103) | Statistics (`use-problem-statistics`, `workspace/statistics.tsx`) only appear on the problem page. Add a statistics tab to the exercise workspace, scoped to the class (lesson submissions) rather than global. S |
 | P12 | Submission results hard to reach with many test cases; paginate test cases, put submission history right under the statement | **Fixed** (#105) | Done: latest verdict + pass count in the editor toolbar opens the report (#88); the workspace shell has a submission-history panel (#90). Decided 2026-11-09: next step is syntax highlighting of the submitted code wherever it is shown read-only (submission history, latest-verdict dialog, the teacher's lesson review, generated Portugol), same grammar and theme as the editor. S |
 
 ### Summary by status
 
-- **Fixed (11)**: P1 (#89), P2 (#101), P3 (#100), P4 (#99), P5 (#104),
-  P6 (#81), P7 (#90), P8 (#83), P10 (#102), P11 (#103), P12 (#105).
-- **In progress (1)**: P9, verifying the translate-extension errors in
-  Helium (branch `fix/translate-extension-errors`).
+- **Fixed (12)**: P1 (#89), P2 (#101), P3 (#100), P4 (#99), P5 (#104),
+  P6 (#81), P7 (#90), P8 (#83), P9 (#106), P10 (#102), P11 (#103),
+  P12 (#105).
 
 Each task got its own branch, worktree and OpenSpec change.
 
