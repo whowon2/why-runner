@@ -1,0 +1,25 @@
+  1  —  |  (sem título)
+  2  INTRODUÇÃO  |  Juízes online corrigem código; ensinar é outra coisa
+  3  INTRODUÇÃO  |  A pergunta que guia o trabalho
+  4  INTRODUÇÃO  |  O que BOCA, Run Codes, Ataux e GOJ não oferecem
+  5  O PROFESSOR  |  Ao criar um problema, ele só é publicado com uma solução que passa
+  6  O PROFESSOR  |  A IA escreve essa solução: passou em 18 de 20 problemas
+  7  O PROFESSOR  |  O professor também decide quanto a IA ajuda no torneio
+  8  O ALUNO  |  Cada tentativa recebe um veredito com nome e cor
+  9  O ALUNO  |  Ao errar, ele vê o caso que falhou e pode pedir uma explicação
+ 10  AULAS E TURMA  |  Para quem nunca programou, a resposta pode ser em blocos
+ 11  AULAS E TURMA  |  O professor pode exigir como resolver, não só o resultado
+ 12  PLÁGIO  |  Lado a lado, os trechos iguais aparecem destacados
+ 13  PLÁGIO  |  Com o limiar de 0,52: 98% de precisão e 99,5% de revocação
+ 14  POR DENTRO  |  Por trás de tudo isso, dois serviços que só conversam pelo banco
+ 15  POR DENTRO  |  Todo código do aluno roda numa caixa sem rede
+ 16  DESEMPENHO  |  Com 8 workers, metade da turma espera menos de 18 s, não 66 s
+ 17  DESEMPENHO  |  Sem fila, o veredito sai em menos de 0,4 s, exceto Java e Portugol
+ 18  DESEMPENHO  |  O judge acertou 63 de 72 vereditos; os erros têm causa conhecida
+ 19  AVALIAÇÃO  |  30 alunos fizeram uma lista em sala, em 29/10/2026
+ 20  AVALIAÇÃO  |  SUS 72,1: acima da referência de 68
+ 21  AVALIAÇÃO  |  O que mais ajudou: a IA e a correção imediata
+ 22  AVALIAÇÃO  |  Do retorno da turma às correções
+ 23  DISCUSSÃO  |  A maior limitação: uma turma, uma lista, só alunos
+ 24  DISCUSSÃO  |  Próximos passos
+ 25  —  |  (sem título)

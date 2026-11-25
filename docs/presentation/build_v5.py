@@ -925,9 +925,9 @@ add("", b_thanks, "Obrigado. Fico à disposição para perguntas.", kicker="")
 # ------------------------------------------------------------------ build ----
 
 
-def lint():
+def lint(slides=None):
     problems = []
-    for i, (kind, _, _, title, builder, notes, track, max_words) in enumerate(SLIDES, 1):
+    for i, (kind, _, _, title, builder, notes, track, max_words) in enumerate(slides or SLIDES, 1):
         if not notes or len(notes.split()) < 4:
             problems.append(f"slide {i}: missing notes")
         if title and len(title) > 95:
@@ -951,8 +951,12 @@ def lighten(xml):
     return xml.replace('<a:alpha val="55000"/>', '<a:alpha val="18000"/>')
 
 
-def build():
-    for p in lint():
+def build(slides=None, out=None, listing=None):
+    """Write `slides` (default: v5's) onto v3's package; build_v6.py passes its own list and paths."""
+    slides = slides or SLIDES
+    out = out or OUT
+    listing = listing or HERE / "v5-slides.txt"
+    for p in lint(slides):
         print("LINT", p)
     tmp = Path(tempfile.mkdtemp())
     with zipfile.ZipFile(SRC) as z:
@@ -982,7 +986,7 @@ def build():
     pres = (ppt / "presentation.xml").read_text("utf-8")
     v3_rid = {int(n): r for r, n in re.findall(r'Id="(rId\d+)"[^>]*Target="slides/slide(\d+)\.xml"', prels)}
     next_rid = max(int(r) for r in re.findall(r'Id="rId(\d+)"', prels)) + 1
-    used = {n for kind, n, *_ in SLIDES if kind == "v3"}
+    used = {n for kind, n, *_ in slides if kind == "v3"}
 
     for n, rid in v3_rid.items():
         if n in used:
@@ -997,7 +1001,7 @@ def build():
 
     next_slide = 23
     sld_entries, sid = [], 256
-    for kind, n, kicker, title, fn, notes, track, _ in SLIDES:
+    for kind, n, kicker, title, fn, notes, track, _ in slides:
         if kind == "v3":
             f = ppt / f"slides/slide{n}.xml"
             x = f.read_text("utf-8")
@@ -1062,7 +1066,7 @@ def build():
 
     app = tmp / "docProps/app.xml"
     a = app.read_text("utf-8")
-    count = len(SLIDES)
+    count = len(slides)
     a = re.sub(r"<Slides>\d+</Slides>", f"<Slides>{count}</Slides>", a)
     a = re.sub(r"<Notes>\d+</Notes>", f"<Notes>{count}</Notes>", a)
     a = re.sub(r"(<vt:lpstr>Slide Titles</vt:lpstr></vt:variant>\s*<vt:variant><vt:i4>)\d+", rf"\g<1>{count}", a)
@@ -1073,16 +1077,16 @@ def build():
                a, count=1, flags=re.S)
     app.write_text(a, "utf-8")
 
-    OUT.unlink(missing_ok=True)
-    with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as z:
+    out.unlink(missing_ok=True)
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
         for p in sorted(tmp.rglob("*")):
             if p.is_file():
                 z.write(p, p.relative_to(tmp).as_posix())
     shutil.rmtree(tmp)
-    print(f"wrote {OUT.name} ({count} slides)")
-    (HERE / "v5-slides.txt").write_text("".join(
+    print(f"wrote {out.name} ({count} slides)")
+    listing.write_text("".join(
         f"{i:3d}  {k or '—'}  |  {t or ('(v3 slide ' + str(n) + ')' if kind == 'v3' else '(sem título)')}\n"
-        for i, (kind, n, k, t, *_) in enumerate(SLIDES, 1)), "utf-8")
+        for i, (kind, n, k, t, *_) in enumerate(slides, 1)), "utf-8")
 
 
 if __name__ == "__main__":
