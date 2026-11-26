@@ -70,7 +70,7 @@ LINE = 1.5  # rendered line height / font size for Poppins at the template's 120
 
 # --------------------------------------------------------------- content ----
 
-TITLE = "WhyRunner: Online Judge for Competitive Programming"
+TITLE = "An Online Judge with Guided AI Feedback for Teaching Introductory Programming"
 AUTHORS = [("Juan Israel dos Anjos", "¹"), ("Suelen Mapa (orientadora)", "¹")]
 INSTITUTION = [("1.", True), (" Instituto Federal de Minas Gerais (IFMG) – Campus Ouro Branco", False)]
 
